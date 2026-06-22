@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="nexus-header">
+    <div class="container h-100 d-flex align-items-center">
+        <nav class="navbar navbar-expand-lg w-100 p-0">
+            <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+                <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#6b6eff,#a78bfa);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:1rem;">N</div>
+                <span>Nexus</span>
+            </a>
+            <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" style="color:var(--text-secondary);">
+                <i class="ti ti-menu-2 fs-4"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/#how-it-works}">Como funciona</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/#matching-engine}">Matchmaking</a></li>
+                </ul>
+                <div class="d-flex gap-2 ms-lg-4" th:if="${session.userName == null}">
+                    <a th:href="@{/auth/login}" class="btn btn-outline-light btn-sm">Entrar</a>
+                    <a th:href="@{/auth/register/professional}" class="btn btn-primary btn-sm btn-glow">Cadastre-se</a>
+                </div>
+                <div class="d-flex align-items-center gap-3 ms-lg-4" th:if="${session.userName != null}">
+                    <span class="small" style="color:var(--text-secondary);">Ol&aacute;, <span th:text="${session.userName}" class="text-light fw-medium">User</span></span>
+                    <a th:href="@{/auth/logout}" class="btn btn-outline-light btn-sm">
+                        <i class="ti ti-logout me-1"></i>Sair
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
+</body>
+</html>
