@@ -6,19 +6,19 @@ public class RegisterCompanyRequestDTO{
     private String companyName;
     private String taxId;
     private String phone;
-    private String city;
+    private String cep;
     private String description;
 
     public RegisterCompanyRequestDTO() {
     }
 
-    public RegisterCompanyRequestDTO(String email, String password, String companyName, String taxId, String phone, String city, String description) {
+    public RegisterCompanyRequestDTO(String email, String password, String companyName, String taxId, String phone, String cep, String description) {
         this.email = email;
         this.password = password;
         this.companyName = companyName;
         this.taxId = taxId;
         this.phone = phone;
-        this.city = city;
+        this.cep = cep;
         this.description = description;
     }
 
@@ -62,12 +62,12 @@ public class RegisterCompanyRequestDTO{
         this.phone = phone;
     }
 
-    public String getCity() {
-        return city;
+    public String getCep() {
+        return cep;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 
     public String getDescription() {

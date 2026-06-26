@@ -5,19 +5,19 @@ public class RegisterProfessionalRequestDTO{
     private String password;
     private String name;
     private String phone;
-    private String city;
+    private String cep;
     private Double minimumSalary;
     private Double maximumSalary;
 
     public RegisterProfessionalRequestDTO() {
     }
 
-    public RegisterProfessionalRequestDTO(String email, String password, String name, String phone, String city, Double minimumSalary, Double maximumSalary) {
+    public RegisterProfessionalRequestDTO(String email, String password, String name, String phone, String cep, Double minimumSalary, Double maximumSalary) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.phone = phone;
-        this.city = city;
+        this.cep = cep;
         this.minimumSalary = minimumSalary;
         this.maximumSalary = maximumSalary;
     }
@@ -54,12 +54,12 @@ public class RegisterProfessionalRequestDTO{
         this.phone = phone;
     }
 
-    public String getCity() {
-        return city;
+    public String getCep() {
+        return cep;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 
     public Double getMinimumSalary() {
