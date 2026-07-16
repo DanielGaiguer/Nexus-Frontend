@@ -13,7 +13,7 @@
                         <div class="card-body p-3">
                             <div class="text-center mb-4">
                                 <div class="auth-logo mx-auto mb-3">
-                                    <i class="ti ti-hexagon-letter-n"></i>
+                                    <img th:src="@{/img/nexus-icon.png}" alt="Nexus" style="width:60px;height:60px;border-radius:16px;object-fit:contain;" />
                                 </div>
                                 <h3 class="fw-bold mb-1 text-light">Bem-vindo de volta</h3>
                                 <p style="color:var(--text-secondary);" class="small mb-0">Entre com suas credenciais para continuar</p>
@@ -33,7 +33,7 @@
                                     <label class="form-label">Email</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ti ti-mail"></i></span>
-                                        <input type="email" class="form-control" name="email" required placeholder="seu@email.com">
+                                        <input type="email" class="form-control" name="email" required placeholder="seu@email.com" onchange="validarCampos()">
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -72,6 +72,7 @@
     </main>
 
     <div th:replace="~{fragments/scripts :: scripts}"></div>
-
+    
+    <script src="/static.js/script.js"></script>
 </body>
 </html>
