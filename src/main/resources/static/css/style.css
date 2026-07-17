@@ -1,4 +1,5 @@
 :root {
+  /* ─── Legacy tokens (used by public pages) ─── */
   --bg-deep: #040613;
   --bg-surface: #090e1f;
   --bg-card: #0d1329;
@@ -25,7 +26,112 @@
   --radius-lg: 14px;
   --radius-xl: 18px;
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ─── Nexus brand tokens ─── */
+  --nexus-primary: #6b6eff;
+  --nexus-secondary: #a78bfa;
+  --nexus-accent: #67e8f9;
+  --nexus-bg-1: #040613;
+  --nexus-bg-2: #090e1f;
+  --nexus-bg-3: #0d1329;
+  --nexus-success: #22c55e;
+  --nexus-warning: #f59e0b;
+  --nexus-info: #06b6d4;
+  --nexus-danger: #ef4444;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Authenticated pages — Tabler Core integration
+   ═══════════════════════════════════════════════════════════════ */
+.nexus-app {
+  /* ─── Map Nexus tokens → Tabler tokens ─── */
+  --tblr-primary: var(--nexus-primary);
+  --tblr-secondary: var(--nexus-secondary);
+  --tblr-success: var(--nexus-success);
+  --tblr-warning: var(--nexus-warning);
+  --tblr-danger: var(--nexus-danger);
+  --tblr-info: var(--nexus-info);
+  --tblr-body-bg: var(--nexus-bg-2);
+  --tblr-body-color: #f1f5f9;
+  --tblr-border-color: rgba(107, 110, 255, 0.12);
+  --tblr-card-bg: rgba(13, 19, 41, 0.85);
+  --tblr-body-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.nexus-app body {
+  background: linear-gradient(135deg, var(--nexus-bg-1), var(--nexus-bg-2), var(--nexus-bg-3));
+  background-attachment: fixed;
+  font-family: var(--font-family);
+  color: #f1f5f9;
+}
+.nexus-app .card {
+  background: rgba(13, 19, 41, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  box-shadow: none;
+}
+.nexus-app .page-body {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+.nexus-app .page-header {
+  margin-bottom: 1.5rem;
+}
+.nexus-app .navbar-vertical {
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  width: 264px;
+}
+.nexus-app .nav-link {
+  font-weight: 500;
+}
+.nexus-app .nav-link.active {
+  background: rgba(107, 110, 255, 0.15);
+  box-shadow: inset 2px 0 0 var(--nexus-primary);
+}
+.nexus-app .avatar {
+  font-weight: 600;
+}
+.nexus-app .badge {
+  font-weight: 500;
+}
+.nexus-app .form-control,
+.nexus-app .form-select {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(107, 110, 255, 0.12);
+  color: #f1f5f9;
+}
+.nexus-app .form-control:focus,
+.nexus-app .form-select:focus {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--nexus-primary);
+  box-shadow: 0 0 0 3px rgba(107, 110, 255, 0.12);
+}
+.nexus-app .table {
+  color: #f1f5f9;
+}
+.nexus-app .page-wrapper {
+  min-height: 100vh;
+}
+.nexus-app .navbar-expand-md .navbar-nav .nav-link {
+  padding: 0.5rem 0.75rem;
+}
+/* ─── Tabular numerals for money, scores, dates, IDs ─── */
+.nexus-app [data-tabular-nums],
+.nexus-app .h1, .nexus-app .h2, .nexus-app .h3,
+.nexus-app .h4, .nexus-app .h5, .nexus-app .h6,
+.nexus-app .display-1, .nexus-app .display-2, .nexus-app .display-3 {
+  font-variant-numeric: tabular-nums;
+}
+.nexus-app .page-header .page-pretitle,
+.nexus-app .page-header .page-title {
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 769px) {
+  .nexus-app .page {
+    padding-left: 264px;
+  }
+}
+
+/* ─── Public header ─── */
 * { box-sizing: border-box; }
 body {
   background: var(--bg-deep);

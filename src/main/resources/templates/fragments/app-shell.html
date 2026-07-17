@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     app-head — <head> for authenticated pages
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="app-head(title)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' — Nexus'">Nexus</title>
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     app-head-map — app-head + Leaflet CSS for map pages
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="app-head-map(title)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' — Nexus'">Nexus</title>
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     sidebar-pro — Professional sidebar (264px)
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="sidebar-pro(active)">
+<aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+            <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none">
+                <img th:src="@{/img/nexus-icon.png}" alt="Nexus" width="32" height="32"
+                     style="border-radius:8px;object-fit:contain;">
+                <span class="fw-bold text-white">Nexus</span>
+            </a>
+        </h1>
+        <div class="collapse navbar-collapse" id="sidebar-menu">
+            <div class="d-flex flex-column ms-2 mb-3">
+                <span class="navbar-brand-text text-uppercase text-muted fw-bold"
+                      style="font-size:0.65rem;letter-spacing:0.1em;">Profissional</span>
+            </div>
+            <ul class="navbar-nav flex-column fill-accent-tertiary w-100">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pro/dashboard}"
+                       th:classappend="${active == 'dashboard'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-layout-dashboard"></i>
+                        </span>
+                        <span class="nav-link-title">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pro/profile}"
+                       th:classappend="${active == 'profile'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-user"></i>
+                        </span>
+                        <span class="nav-link-title">Meu perfil</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pro/portfolio}"
+                       th:classappend="${active == 'portfolio'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-briefcase"></i>
+                        </span>
+                        <span class="nav-link-title">Portfólio</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pro/matches}"
+                       th:classappend="${active == 'matches'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-heart-handshake"></i>
+                        </span>
+                        <span class="nav-link-title">Matches</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pro/opportunities}"
+                       th:classappend="${active == 'opportunities'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-star"></i>
+                        </span>
+                        <span class="nav-link-title">Oportunidades</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/pro/map}"
+                       th:classappend="${active == 'map'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-map-pin"></i>
+                        </span>
+                        <span class="nav-link-title">Mapa</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     sidebar-company — Company sidebar
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="sidebar-company(active)">
+<aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+            <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none">
+                <img th:src="@{/img/nexus-icon.png}" alt="Nexus" width="32" height="32"
+                     style="border-radius:8px;object-fit:contain;">
+                <span class="fw-bold text-white">Nexus</span>
+            </a>
+        </h1>
+        <div class="collapse navbar-collapse" id="sidebar-menu">
+            <div class="d-flex flex-column ms-2 mb-3">
+                <span class="navbar-brand-text text-uppercase text-muted fw-bold"
+                      style="font-size:0.65rem;letter-spacing:0.1em;">Empresa</span>
+            </div>
+            <ul class="navbar-nav flex-column fill-accent-tertiary w-100">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/company/dashboard}"
+                       th:classappend="${active == 'dashboard'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-layout-dashboard"></i>
+                        </span>
+                        <span class="nav-link-title">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/company/profile}"
+                       th:classappend="${active == 'profile'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-building"></i>
+                        </span>
+                        <span class="nav-link-title">Perfil</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/company/projects}"
+                       th:classappend="${active == 'projects'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-folder"></i>
+                        </span>
+                        <span class="nav-link-title">Projetos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/company/matches}"
+                       th:classappend="${active == 'matches'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-heart-handshake"></i>
+                        </span>
+                        <span class="nav-link-title">Matches</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/company/map}"
+                       th:classappend="${active == 'map'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-map-pin"></i>
+                        </span>
+                        <span class="nav-link-title">Mapa</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     sidebar-admin — Admin sidebar
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="sidebar-admin(active)">
+<aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+            <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none">
+                <img th:src="@{/img/nexus-icon.png}" alt="Nexus" width="32" height="32"
+                     style="border-radius:8px;object-fit:contain;">
+                <span class="fw-bold text-white">Nexus</span>
+            </a>
+        </h1>
+        <div class="collapse navbar-collapse" id="sidebar-menu">
+            <div class="d-flex flex-column ms-2 mb-3">
+                <span class="navbar-brand-text text-uppercase text-muted fw-bold"
+                      style="font-size:0.65rem;letter-spacing:0.1em;">Admin</span>
+            </div>
+            <ul class="navbar-nav flex-column fill-accent-tertiary w-100">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/dashboard}"
+                       th:classappend="${active == 'dashboard'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-layout-dashboard"></i>
+                        </span>
+                        <span class="nav-link-title">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/approvals}"
+                       th:classappend="${active == 'approvals'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-checklist"></i>
+                        </span>
+                        <span class="nav-link-title">Aprovações</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/skills}"
+                       th:classappend="${active == 'skills'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-tag"></i>
+                        </span>
+                        <span class="nav-link-title">Skills</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/users}"
+                       th:classappend="${active == 'users'} ? 'active' : ''">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-users"></i>
+                        </span>
+                        <span class="nav-link-title">Usuários</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     app-header — Horizontal navbar (sticky, translucent + blur)
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="app-header()">
+<header class="navbar navbar-expand-md navbar-light d-print-none sticky-top"
+        style="background:rgba(4,6,19,0.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);">
+    <div class="container-xl">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbar-menu">
+            <div class="d-flex flex-column flex-fill">
+                <div class="input-icon flex-fill" style="max-width:24rem;">
+                    <input type="text" class="form-control" placeholder="Buscar..."
+                           aria-label="Buscar">
+                    <span class="input-icon-addon">
+                        <i class="ti ti-search"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="navbar-nav flex-row order-md-last">
+            <!-- Notifications bell (mock) -->
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link d-flex lh-1 text-reset p-0"
+                   data-bs-toggle="dropdown" aria-label="Notificações">
+                    <span class="position-relative">
+                        <i class="ti ti-bell fs-4"></i>
+                        <span class="badge bg-primary text-white fw-bold position-absolute top-0 start-100 translate-middle rounded-pill"
+                              style="font-size:0.6rem;padding:0.2em 0.45em;">3</span>
+                    </span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <div class="dropdown-item text-muted small p-3 text-center">
+                        Nenhuma notificação nova
+                    </div>
+                </div>
+            </div>
+
+            <!-- User menu -->
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link d-flex lh-1 text-reset p-0"
+                   data-bs-toggle="dropdown" aria-label="Menu do usuário">
+                    <span class="avatar avatar-rounded d-none d-sm-inline-flex"
+                          th:with="userName=${session.userName != null ? session.userName : 'U'},
+                                   initials=${#strings.substring(userName,0,1)},
+                                   hash=${userName.hashCode()},
+                                   hue=${(hash % 360) < 0 ? (hash % 360) + 360 : hash % 360}"
+                          th:style="'background:hsl(' + ${hue} + ',55%,45%);color:#fff;'"
+                          th:text="${initials}">U</span>
+                    <div class="d-none d-xl-block ps-2">
+                        <div class="fw-semibold text-white" th:text="${session.userName}">Usuário</div>
+                        <div class="mt-1 small text-muted" th:text="${session.userRole}">ROLE</div>
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <a class="dropdown-item" href="#">
+                        <i class="ti ti-user me-2"></i>Perfil
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" th:href="@{/auth/logout}">
+                        <i class="ti ti-logout me-2"></i>Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     app-layout — Main authenticated page layout
+     Parameters: title, active, content (~{this :: content})
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="app-layout(title, active, content)">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" class="nexus-app" data-bs-theme="dark">
+<th:block th:replace="~{fragments/app-shell :: app-head(${title})}"></th:block>
+<body>
+    <div class="page">
+        <!-- Sidebar (role-based) -->
+        <th:block th:if="${session.userRole == 'ADMIN'}"
+                  th:replace="~{fragments/app-shell :: sidebar-admin(${active})}"></th:block>
+        <th:block th:if="${session.userRole == 'COMPANY'}"
+                  th:replace="~{fragments/app-shell :: sidebar-company(${active})}"></th:block>
+        <th:block th:if="${session.userRole == 'PROFESSIONAL' or session.userRole == null}"
+                  th:replace="~{fragments/app-shell :: sidebar-pro(${active})}"></th:block>
+
+        <div class="page-wrapper">
+            <th:block th:replace="~{fragments/app-shell :: app-header()}"></th:block>
+            <div class="page-body">
+                <div class="container-xl">
+                    <th:block th:replace="${content}"></th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/js/tabler.min.js"></script>
+    <th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     app-layout-map — Same as app-layout but includes Leaflet JS
+     Use for pages that need the map (pro/map, company/map)
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="app-layout-map(title, active, content)">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" class="nexus-app" data-bs-theme="dark">
+<th:block th:replace="~{fragments/app-shell :: app-head-map(${title})}"></th:block>
+<body>
+    <div class="page">
+        <th:block th:if="${session.userRole == 'ADMIN'}"
+                  th:replace="~{fragments/app-shell :: sidebar-admin(${active})}"></th:block>
+        <th:block th:if="${session.userRole == 'COMPANY'}"
+                  th:replace="~{fragments/app-shell :: sidebar-company(${active})}"></th:block>
+        <th:block th:if="${session.userRole == 'PROFESSIONAL' or session.userRole == null}"
+                  th:replace="~{fragments/app-shell :: sidebar-pro(${active})}"></th:block>
+
+        <div class="page-wrapper">
+            <th:block th:replace="~{fragments/app-shell :: app-header()}"></th:block>
+            <div class="page-body">
+                <div class="container-xl">
+                    <th:block th:replace="${content}"></th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/js/tabler.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
+</th:block>
+
+</html>

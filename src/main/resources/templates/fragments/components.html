@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     stat-card — KPI card with icon
+     Parameters: label, value, icon, colorToken (e.g. "primary", "success")
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="stat-card(label, value, icon, colorToken)">
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="subheader text-uppercase fw-semibold"
+                     th:text="${label}"
+                     style="font-size:0.7rem;letter-spacing:0.06em;opacity:0.6;">Label</div>
+                <div class="h1 fw-bold mt-1 mb-0" th:text="${value}"
+                     style="font-variant-numeric:tabular-nums;">0</div>
+            </div>
+            <div class="avatar avatar-rounded"
+                 th:class="'avatar avatar-rounded bg-' + ${colorToken} + '-lt'"
+                 style="width:3rem;height:3rem;">
+                <i th:class="'ti ti-' + ${icon}" style="font-size:1.25rem;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     score-badge — Colored badge based on score value
+     Parameters: score (number), size ("sm" | "lg")
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="score-badge(score, size)">
+<th:block th:with="
+    scoreVal=${score},
+    color=${scoreVal >= 85 ? 'success' : (scoreVal >= 70 ? 'warning' : 'danger')}">
+    <!-- sm: number only -->
+    <th:block th:if="${size == 'sm'}">
+        <span th:class="'badge bg-' + ${color} + '-lt text-' + ${color}"
+              th:text="${scoreVal}" style="font-variant-numeric:tabular-nums;">0</span>
+    </th:block>
+    <!-- lg: number + progress + label -->
+    <th:block th:if="${size == 'lg'}">
+        <div class="d-flex flex-column gap-1" style="min-width:120px;">
+            <span th:class="'badge bg-' + ${color} + '-lt text-' + ${color} + ' fw-bold'"
+                  th:text="${scoreVal} + '%'" style="font-variant-numeric:tabular-nums;font-size:0.9rem;">0%</span>
+            <div class="progress progress-sm" style="height:4px;">
+                <div th:class="'progress-bar bg-' + ${color}"
+                     th:style="'width:' + ${scoreVal} + '%'"></div>
+            </div>
+            <span class="text-muted" style="font-size:0.7rem;">Compatibilidade</span>
+        </div>
+    </th:block>
+</th:block>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     status-badge — Colored badge for status strings or active boolean
+     Parameters: status (string or Boolean)
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="status-badge(status)">
+<th:block th:if="${status instanceof T(java.lang.Boolean)}">
+    <th:block th:with="active=${status}">
+        <span th:if="${active}" class="badge bg-success-lt text-success">Ativo</span>
+        <span th:unless="${active}" class="badge bg-danger-lt text-danger">Inativo</span>
+    </th:block>
+</th:block>
+<th:block th:unless="${status instanceof T(java.lang.Boolean)}">
+    <th:block th:with="
+        s=${status},
+        color=${(s == 'OPEN' or s == 'APPROVED' or s == 'MATCHED') ? 'success' :
+               ((s == 'PENDING' or s == 'COMPANY_INTERESTED' or s == 'PROFESSIONAL_INTERESTED') ? 'warning' : 'danger')},
+        label=${(s == 'OPEN') ? 'Aberto' :
+               (s == 'APPROVED') ? 'Aprovado' :
+               (s == 'MATCHED') ? 'Match' :
+               (s == 'PENDING') ? 'Pendente' :
+               (s == 'COMPANY_INTERESTED') ? 'Empresa interessada' :
+               (s == 'PROFESSIONAL_INTERESTED') ? 'Profissional interessado' :
+               (s == 'REJECTED') ? 'Rejeitado' :
+               (s == 'CLOSED') ? 'Fechado' :
+               (s == 'CANCELLED') ? 'Cancelado' : s}">
+        <span th:class="'badge bg-' + ${color} + '-lt text-' + ${color}" th:text="${label}">Status</span>
+    </th:block>
+</th:block>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     empty-state — Tabler .empty component
+     Parameters: icon, title, description, ctaLabel, ctaUrl
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="empty-state(icon, title, description, ctaLabel, ctaUrl)">
+<div class="empty">
+    <p class="empty-icon">
+        <i th:class="'ti ti-' + ${icon}" style="font-size:3rem;opacity:0.3;"></i>
+    </p>
+    <p class="empty-title" th:text="${title}">Título</p>
+    <p class="empty-subtitle text-muted" th:text="${description}">Descrição</p>
+    <div class="empty-action" th:if="${ctaLabel != null and ctaLabel != ''}">
+        <a th:href="${ctaUrl}" class="btn btn-primary">
+            <i class="ti ti-plus me-1"></i><span th:text="${ctaLabel}">Ação</span>
+        </a>
+    </div>
+</div>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     avatar — Tabler avatar with initials + deterministic color
+     Parameters: name, size ("sm" | "md" | "xl")
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="avatar(name, size)">
+<th:block th:with="
+    n=${name != null ? name : 'U'},
+    initials=${#strings.substring(n,0,1)},
+    hash=${n.hashCode()},
+    hue=${(hash % 360) < 0 ? (hash % 360) + 360 : hash % 360},
+    sz=${(size == 'xl') ? 'avatar-xl' : (size == 'sm') ? 'avatar-sm' : 'avatar-md'}">
+    <span th:class="'avatar avatar-rounded ' + ${sz}"
+          th:style="'background:hsl(' + ${hue} + ',55%,45%);color:#fff;font-weight:600;'"
+          th:text="${initials}">U</span>
+</th:block>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     skill-chip — Pill badge, active/inactive
+     Parameters: label, active (boolean)
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="skill-chip(label, active)">
+<th:block th:if="${active}">
+    <span class="badge rounded-pill"
+          style="background:rgba(107,110,255,0.12);color:#8b8eff;border:1px solid rgba(107,110,255,0.25);"
+          th:text="${label}">Skill</span>
+</th:block>
+<th:block th:unless="${active}">
+    <span class="badge rounded-pill"
+          style="background:transparent;color:#94a3b8;border:1px solid rgba(148,163,184,0.2);"
+          th:text="${label}">Skill</span>
+</th:block>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     modal-confirm — Confirmation modal with colored status bar
+     Parameters: id, title, subtitle, confirmLabel, confirmVariant
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="modal-confirm(id, title, subtitle, confirmLabel, confirmVariant)">
+<div class="modal modal-fade" th:id="${id}" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div th:class="'modal-status bg-' + ${confirmVariant}"></div>
+            <div class="modal-body">
+                <div class="modal-title" th:text="${title}">Título</div>
+                <p th:text="${subtitle}">Subtítulo</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" th:class="'modal-confirm-btn btn btn-' + ${confirmVariant}"
+                        th:text="${confirmLabel}">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     rejection-options — Clickable checkbox-cards for rejection reasons
+     Parameters: options (list of {value, label} maps)
+     Used in: Prompts 5 and 13
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="rejection-options(options)">
+<div class="rejection-options d-flex flex-column gap-2">
+    <th:block th:each="opt : ${options}">
+        <label class="rejection-option card p-3 cursor-pointer"
+               style="border:1px solid rgba(255,255,255,0.08);border-radius:0.75rem;transition:all 0.2s;">
+            <div class="d-flex align-items-center gap-3">
+                <input type="checkbox" class="form-check-input m-0 flex-shrink-0"
+                       th:name="'rejectionReason'"
+                       th:value="${opt.value}"
+                       style="width:1.1rem;height:1.1rem;">
+                <span class="text-light" th:text="${opt.label}">Motivo</span>
+            </div>
+        </label>
+    </th:block>
+</div>
+<style>
+    .rejection-option:has(input:checked) {
+        border-color: var(--nexus-primary) !important;
+        background: rgba(107, 110, 255, 0.08) !important;
+    }
+    .rejection-option:has(input:checked) .form-check-input {
+        background-color: var(--nexus-primary);
+        border-color: var(--nexus-primary);
+    }
+</style>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     reputation-bar — Horizontal bar 0-100 with label + color bands
+     Parameters: label, value (0-100)
+     Used in: Prompt 14
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="reputation-bar(label, value)">
+<th:block th:with="
+    v=${value},
+    color=${v >= 70 ? 'success' : (v >= 50 ? 'warning' : 'danger')}">
+<div class="d-flex align-items-center gap-3">
+    <span class="text-muted flex-shrink-0" style="min-width:140px;font-size:0.85rem;" th:text="${label}">Label</span>
+    <div class="progress flex-fill" style="height:8px;border-radius:4px;">
+        <div th:class="'progress-bar bg-' + ${color}"
+             th:style="'width:' + ${v} + '%;border-radius:4px;'"></div>
+    </div>
+    <span class="fw-semibold flex-shrink-0" style="font-variant-numeric:tabular-nums;min-width:2.5rem;text-align:right;"
+          th:text="${v}">0</span>
+</div>
+</th:block>
+</th:block>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     tag-input — Reusable tag input with optional suggestions
+     Parameters: id, label, suggestions (comma-separated string, nullable)
+     ═══════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="tag-input(id, label, suggestions)">
+<div class="tag-input-wrapper" th:id="${id}">
+    <label class="form-label" th:text="${label}">Tags</label>
+    <div class="tag-input-tags d-flex flex-wrap gap-1 mb-2" style="min-height:2rem;"></div>
+    <input type="text" class="form-control tag-input-field" placeholder="Digite e pressione Enter...">
+    <th:block th:if="${suggestions != null and suggestions != ''}">
+        <div class="tag-input-suggestions d-flex flex-wrap gap-1 mt-2">
+            <th:block th:each="sug : ${#strings.listSplit(suggestions, ',')}">
+                <button type="button" class="tag-suggestion badge rounded-pill"
+                        style="background:rgba(107,110,255,0.06);color:#94a3b8;border:1px solid rgba(148,163,184,0.15);cursor:pointer;font-size:0.75rem;"
+                        th:data-value="${#strings.trim(sug)}"
+                        th:text="${#strings.trim(sug)}">Sugestão</button>
+            </th:block>
+        </div>
+    </th:block>
+</div>
+<script>
+(function() {
+    document.querySelectorAll('.tag-input-wrapper').forEach(function(wrapper) {
+        if (wrapper._tagInit) return;
+        wrapper._tagInit = true;
+        var tags = [];
+        var tagsContainer = wrapper.querySelector('.tag-input-tags');
+        var input = wrapper.querySelector('.tag-input-field');
+
+        function renderTags() {
+            tagsContainer.innerHTML = '';
+            tags.forEach(function(tag, i) {
+                var chip = document.createElement('span');
+                chip.className = 'badge rounded-pill d-inline-flex align-items-center gap-1';
+                chip.style.cssText = 'background:rgba(107,110,255,0.12);color:#8b8eff;border:1px solid rgba(107,110,255,0.25);padding:0.3em 0.6em;font-size:0.8rem;';
+                chip.innerHTML = tag + ' <button type="button" class="border-0 bg-transparent text-white p-0" style="font-size:0.7rem;opacity:0.7;" data-i="' + i + '">&times;</button>';
+                chip.querySelector('button').addEventListener('click', function() {
+                    tags.splice(parseInt(this.dataset.i), 1);
+                    renderTags();
+                });
+                tagsContainer.appendChild(chip);
+            });
+            wrapper._tagValues = tags.slice();
+        }
+
+        function addTag(val) {
+            var v = val.trim();
+            if (v && tags.indexOf(v) === -1) {
+                tags.push(v);
+                renderTags();
+            }
+        }
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTag(this.value);
+                this.value = '';
+            }
+        });
+
+        wrapper.querySelectorAll('.tag-suggestion').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                addTag(this.dataset.value);
+            });
+        });
+
+        wrapper._tagValues = tags;
+    });
+})();
+</script>
+</th:block>
+
+</html>

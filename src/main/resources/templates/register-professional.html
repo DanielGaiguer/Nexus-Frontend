@@ -96,6 +96,18 @@
     </main>
 
     <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.querySelector('form[th\\:action="@{/auth/register/professional}"]');
+            if (!form) form = document.querySelector('form[action="/auth/register/professional"]');
+            if (!form) return;
+            attachSubmitGuard(form, function() {
+                var min = parseFloat(form.querySelector('[name="minimumSalary"]').value) || 0;
+                var max = parseFloat(form.querySelector('[name="maximumSalary"]').value) || 0;
+                return min > 0 && max > 0 && min <= max;
+            });
+        });
+    </script>
 
 </body>
 </html>
