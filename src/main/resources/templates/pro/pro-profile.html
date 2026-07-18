@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Meu Perfil')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
+      <!-- Header -->
+      <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
+        <div>
+          <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Meu Perfil</h1>
+          <p style="color:#64748b;font-size:0.875rem">Mantenha seu perfil atualizado para melhores matches</p>
+        </div>
+        <button type="button" class="nexus-btn nexus-btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">
+          <i class="ti ti-pencil"></i> Editar perfil
+        </button>
+      </div>
+
+      <div class="row g-3">
+
+        <!-- Left column -->
+        <div class="col-lg-4">
+
+          <!-- Avatar + name card -->
+          <div class="nexus-card p-4 text-center mb-3">
+            <div class="nexus-avatar-xl mx-auto mb-3"
+                 th:with="n=${profile.name != null ? profile.name : 'U'},
+                          h=${n.hashCode()},
+                          hue=${(h%360)<0?(h%360)+360:h%360}"
+                 th:style="'background:hsl('+${hue}+',50%,40%)'">
+              <span style="font-size:1.75rem;font-weight:700;color:#fff"
+                    th:text="${#strings.substring(n,0,2).toUpperCase()}">LF</span>
+            </div>
+            <div class="fw-bold text-white" style="font-size:1.15rem" th:text="${profile.name}">Nome</div>
+            <div style="color:#64748b;font-size:0.85rem;margin-top:2px">
+              <span th:switch="${profile.experienceLevel}">
+                <span th:case="'INTERNSHIP'">Estágio</span>
+                <span th:case="'TRAINEE'">Trainee</span>
+                <span th:case="'JUNIOR'">Júnior</span>
+                <span th:case="'PLENO'">Pleno</span>
+                <span th:case="'SENIOR'">Sênior</span>
+                <span th:case="*">Profissional</span>
+              </span>
+            </div>
+            <!-- Estrelas reputação -->
+            <div class="d-flex align-items-center justify-content-center gap-1 mt-2" th:if="${profile.reputation != null}">
+              <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                <i th:class="${i <= profile.reputation} ? 'ti ti-star-filled' : 'ti ti-star'"
+                   style="color:#f59e0b;font-size:0.9rem"></i>
+              </th:block>
+              <span class="tabular ms-1" style="color:#f59e0b;font-size:0.85rem;font-weight:600"
+                    th:text="${#numbers.formatDecimal(profile.reputation,1,1)}">0.0</span>
+            </div>
+          </div>
+
+          <!-- Disponibilidade -->
+          <div class="nexus-card p-3 mb-3">
+            <form th:action="@{/pro/profile/availability}" method="post">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <div class="fw-semibold"
+                       th:style="${profile.available} ? 'color:#22c55e' : 'color:#64748b'"
+                       th:text="${profile.available} ? 'Disponível' : 'Indisponível'">Status</div>
+                  <div style="color:#475569;font-size:0.75rem">Impacta o score</div>
+                </div>
+                <label class="nexus-toggle">
+                  <input type="checkbox" name="available"
+                         th:checked="${profile.available}"
+                         onchange="this.form.submit()">
+                  <div class="nexus-toggle-track"></div>
+                </label>
+              </div>
+            </form>
+          </div>
+
+          <!-- Score médio -->
+          <div class="nexus-card p-3 mb-3" th:if="${avgScore != null and avgScore > 0}">
+            <div class="nexus-section-title">Score Médio</div>
+            <div class="d-flex align-items-baseline gap-2">
+              <span class="tabular fw-bold" style="font-size:2rem;color:#6b6eff"
+                    th:text="${avgScore}+'%'">88%</span>
+              <span style="color:#475569;font-size:0.78rem">compatibilidade média<br>nos últimos 30 dias</span>
+            </div>
+          </div>
+
+          <!-- Contato -->
+          <div class="nexus-card p-3">
+            <div class="fw-semibold text-white mb-2">Contato</div>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-map-pin" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${(profile.city != null ? profile.city : '') + (profile.uf != null ? ', ' + profile.uf : '')}">Cidade, UF</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-phone" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${profile.phone}">Telefone</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-mail" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${profile.email}">email</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /col-lg-4 -->
+
+        <!-- Right column -->
+        <div class="col-lg-8">
+
+          <!-- Dados pessoais -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">Dados pessoais</div>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <div class="nexus-label">Nome Completo</div>
+                <div class="text-white fw-medium" th:text="${profile.name}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Cidade</div>
+                <div class="text-white fw-medium"
+                     th:text="${(profile.city != null ? profile.city : '') + (profile.uf != null ? ', ' + profile.uf : '')}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Telefone</div>
+                <div class="text-white fw-medium" th:text="${profile.phone}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">E-mail</div>
+                <div class="text-white fw-medium" th:text="${profile.email}">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pretensão salarial -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">Pretensão salarial</div>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <div class="nexus-label">Mínimo</div>
+                <div class="tabular fw-bold" style="color:#6b6eff;font-size:1.1rem"
+                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.minimumSalary,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Máximo</div>
+                <div class="tabular fw-bold" style="color:#6b6eff;font-size:1.1rem"
+                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.maximumSalary,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills -->
+          <div class="nexus-card p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="fw-semibold text-white">Skills</div>
+              <button type="button" class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                      data-bs-toggle="modal" data-bs-target="#skillsModal">
+                <i class="ti ti-pencil"></i> Editar skills
+              </button>
+            </div>
+            <div class="d-flex flex-wrap gap-2" th:if="${profile.skills != null and !#lists.isEmpty(profile.skills)}">
+              <span th:each="sk : ${profile.skills}" class="nexus-chip" th:text="${sk}">Skill</span>
+            </div>
+            <div th:unless="${profile.skills != null and !#lists.isEmpty(profile.skills)}"
+                 style="color:#475569;font-size:0.875rem">
+              Nenhuma skill cadastrada.
+              <button type="button" data-bs-toggle="modal" data-bs-target="#skillsModal"
+                      style="background:none;border:none;color:#6b6eff;cursor:pointer;font-size:0.875rem">
+                Adicionar agora →
+              </button>
+            </div>
+          </div>
+
+          <!-- Reputação link -->
+          <div class="mt-3">
+            <a th:href="@{/pro/reputation}" class="text-decoration-none"
+               style="color:#6b6eff;font-size:0.85rem;font-weight:500">
+              <i class="ti ti-chart-bar me-1"></i>Ver detalhamento completo da reputação →
+            </a>
+          </div>
+
+        </div><!-- /col-lg-8 -->
+      </div><!-- /row -->
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL EDITAR PERFIL ══════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="editModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-semibold text-white">Editar Perfil</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form th:action="@{/pro/profile}" method="post" id="editProfileForm">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="nexus-label">Nome completo</label>
+              <input type="text" class="nexus-input" name="name" id="editName"
+                     th:value="${profile.name}" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">Telefone</label>
+              <input type="text" class="nexus-input" name="phone" id="editPhone"
+                     th:value="${profile.phone}">
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">CEP</label>
+              <input type="text" class="nexus-input" name="cep" id="editCep"
+                     th:value="${profile.cep}" maxlength="9" placeholder="00000-000">
+              <div style="color:#475569;font-size:0.75rem;margin-top:4px">
+                Cidade e estado são preenchidos automaticamente
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <label class="nexus-label">Pretensão mín. (R$)</label>
+              <input type="number" class="nexus-input tabular" name="minimumSalary" id="editMinSalary"
+                     th:value="${profile.minimumSalary}" min="0" step="100">
+            </div>
+            <div class="col-sm-3">
+              <label class="nexus-label">Pretensão máx. (R$)</label>
+              <input type="number" class="nexus-input tabular" name="maximumSalary" id="editMaxSalary"
+                     th:value="${profile.maximumSalary}" min="0" step="100">
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">Nível de experiência</label>
+              <select class="nexus-select" name="experienceLevel">
+                <option value="">Não informar</option>
+                <option value="INTERNSHIP" th:selected="${profile.experienceLevel == 'INTERNSHIP'}">Estágio</option>
+                <option value="TRAINEE"    th:selected="${profile.experienceLevel == 'TRAINEE'}">Trainee</option>
+                <option value="JUNIOR"     th:selected="${profile.experienceLevel == 'JUNIOR'}">Júnior</option>
+                <option value="PLENO"      th:selected="${profile.experienceLevel == 'PLENO'}">Pleno</option>
+                <option value="SENIOR"     th:selected="${profile.experienceLevel == 'SENIOR'}">Sênior</option>
+              </select>
+            </div>
+            <!-- Tipos de projeto -->
+            <div class="col-12">
+              <label class="nexus-label">Tipos de oportunidade aceitos</label>
+              <div class="d-flex gap-3 flex-wrap">
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer">
+                  <input type="checkbox" name="preferredTypes" value="FREELANCE" class="form-check-input"
+                         style="width:1rem;height:1rem"
+                         th:checked="${profile.preferredTypes != null and profile.preferredTypes.contains('FREELANCE')}">
+                  <span style="color:#e2e8f0;font-size:0.875rem">Freelance</span>
+                </label>
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer">
+                  <input type="checkbox" name="preferredTypes" value="FULL_TIME" class="form-check-input"
+                         style="width:1rem;height:1rem"
+                         th:checked="${profile.preferredTypes != null and profile.preferredTypes.contains('FULL_TIME')}">
+                  <span style="color:#e2e8f0;font-size:0.875rem">Tempo integral</span>
+                </label>
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer">
+                  <input type="checkbox" name="preferredTypes" value="PART_TIME" class="form-check-input"
+                         style="width:1rem;height:1rem"
+                         th:checked="${profile.preferredTypes != null and profile.preferredTypes.contains('PART_TIME')}">
+                  <span style="color:#e2e8f0;font-size:0.875rem">Meio período</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="nexus-btn nexus-btn-primary" id="editSubmitBtn">Salvar perfil</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL SKILLS ══════════════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="skillsModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-semibold text-white">Editar Skills</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form th:action="@{/pro/profile/skills}" method="post">
+        <div class="modal-body">
+          <p style="color:#64748b;font-size:0.875rem;margin-bottom:1rem">
+            Selecione as skills que você domina. Elas impactam diretamente o componente de Skills no score de compatibilidade.
+          </p>
+          <!-- Skills do catálogo (allSkills vem do model como List de objetos com id e name) -->
+          <div class="d-flex flex-wrap gap-2" th:if="${allSkills != null and !#lists.isEmpty(allSkills)}">
+            <label th:each="sk : ${allSkills}"
+                   style="cursor:pointer;margin:0">
+              <input type="checkbox" name="skillIds" th:value="${sk.id}"
+                     style="display:none"
+                     th:checked="${profile.skills != null and profile.skills.contains(sk.name)}"
+                     class="skill-checkbox">
+              <span class="nexus-chip skill-chip-toggle"
+                    th:classappend="${profile.skills != null and profile.skills.contains(sk.name)} ? ' skill-chip-active' : ''"
+                    th:text="${sk.name}">Skill</span>
+            </label>
+          </div>
+          <div th:unless="${allSkills != null and !#lists.isEmpty(allSkills)}"
+               style="color:#475569;font-size:0.875rem">
+            Catálogo de skills não disponível. Contate o administrador.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="nexus-btn nexus-btn-primary">Salvar skills</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script>
+// Toggle visual do skill chip
+document.querySelectorAll('.skill-chip-toggle').forEach(function(chip) {
+  chip.addEventListener('click', function() {
+    var cb = this.previousElementSibling;
+    cb.checked = !cb.checked;
+    this.classList.toggle('skill-chip-active', cb.checked);
+  });
+});
+
+// Validação do formulário de edição de perfil
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('editProfileForm');
+  if (!form) return;
+  attachSubmitGuard(form, function() {
+    var name = document.getElementById('editName').value.trim();
+    var cep  = document.getElementById('editCep').value;
+    var min  = parseFloat(document.getElementById('editMinSalary').value) || 0;
+    var max  = parseFloat(document.getElementById('editMaxSalary').value) || 0;
+    return name.length >= 2 && validateCEP(cep) && min <= max;
+  });
+});
+</script>
+<style>
+.skill-chip-active {
+  border-color: rgba(107,110,255,0.5) !important;
+  background: rgba(107,110,255,0.18) !important;
+  color: #a5b4fc !important;
+}
+</style>
+</body>
+</html>

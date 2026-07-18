@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Dashboard')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
+      <!-- Greeting -->
+      <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size:2rem;letter-spacing:-0.02em;color:#fff"
+            th:text="${companyName}">Empresa</h1>
+        <p style="color:#64748b;font-size:0.9rem">Visão geral da sua empresa no Nexus</p>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" th:text="${totalProjects}">0</div>
+              <div class="nexus-stat-label">Total de Projetos</div>
+            </div>
+            <div class="nexus-stat-icon primary"><i class="ti ti-briefcase"></i></div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" th:text="${openProjects}">0</div>
+              <div class="nexus-stat-label">Projetos Abertos</div>
+            </div>
+            <div class="nexus-stat-icon accent"><i class="ti ti-folder-open"></i></div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" th:text="${confirmedMatches}">0</div>
+              <div class="nexus-stat-label">Matches Confirmados</div>
+            </div>
+            <div class="nexus-stat-icon success"><i class="ti ti-heart-handshake"></i></div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular"
+                   th:text="${totalProjects > 0 ? #numbers.formatDecimal(confirmedMatches * 100.0 / totalProjects, 1, 0) + '%' : '—'}">—</div>
+              <div class="nexus-stat-label">Taxa de Sucesso</div>
+            </div>
+            <div class="nexus-stat-icon warning"><i class="ti ti-trending-up"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projetos recentes -->
+      <div class="nexus-card p-0">
+        <div class="d-flex align-items-center justify-content-between p-3 pb-2">
+          <div>
+            <div class="fw-semibold text-white">Projetos Recentes</div>
+            <div style="color:#64748b;font-size:0.8rem">Seus últimos projetos publicados</div>
+          </div>
+          <a th:href="@{/company/projects}" class="text-decoration-none"
+             style="color:#6b6eff;font-size:0.8rem;font-weight:600">
+            Ver todos <i class="ti ti-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Empty -->
+        <div th:if="${#lists.isEmpty(recentProjects)}"
+             class="d-flex flex-column align-items-center py-5 text-center px-3">
+          <i class="ti ti-folder-off" style="font-size:2.5rem;color:#334155;margin-bottom:0.75rem"></i>
+          <div style="color:#475569;font-size:0.875rem;margin-bottom:1rem">Nenhum projeto publicado ainda</div>
+          <a th:href="@{/company/projects/new}" class="nexus-btn nexus-btn-primary nexus-btn-sm">
+            <i class="ti ti-plus"></i> Criar projeto
+          </a>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive" th:unless="${#lists.isEmpty(recentProjects)}">
+          <table class="nexus-table" style="border-spacing:0">
+            <thead>
+              <tr>
+                <th>Projeto</th>
+                <th>Orçamento</th>
+                <th>Modalidade</th>
+                <th>Status</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="proj : ${recentProjects}">
+                <td>
+                  <div class="fw-medium text-white" th:text="${proj.title}">—</div>
+                  <div style="color:#475569;font-size:0.75rem"
+                       th:text="'Criado em ' + ${#temporals.format(proj.createdAt,'dd/MM/yyyy')}">—</div>
+                </td>
+                <td>
+                  <span class="tabular" style="color:#6b6eff;font-weight:600"
+                        th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}+'–'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+                </td>
+                <td>
+                  <span th:switch="${proj.modality}">
+                    <span th:case="'REMOTE'">Remoto</span>
+                    <span th:case="'ONSITE'">Presencial</span>
+                    <span th:case="'HYBRID'">Híbrido</span>
+                    <span th:case="*" th:text="${proj.modality}">—</span>
+                  </span>
+                </td>
+                <td>
+                  <span th:switch="${proj.status}">
+                    <span th:case="'OPEN'"     class="nexus-status success">Aberto</span>
+                    <span th:case="'CLOSED'"   class="nexus-status danger">Encerrado</span>
+                    <span th:case="'CANCELLED'" class="nexus-status danger">Cancelado</span>
+                    <span th:case="*" class="nexus-status warning" th:text="${proj.status}">—</span>
+                  </span>
+                </td>
+                <td>
+                  <a th:href="@{/company/projects/{id}/ranking(id=${proj.id})}"
+                     class="text-decoration-none" style="color:#6b6eff;font-size:0.8rem;font-weight:600">
+                    Ver ranking <i class="ti ti-arrow-right"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Portfólio')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
+      <!-- Header -->
+      <div class="d-flex align-items-start justify-content-between mb-2 gap-3 flex-wrap">
+        <div>
+          <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Projetos Anteriores</h1>
+          <p style="color:#64748b;font-size:0.875rem">
+            Seu portfólio impacta diretamente o score de histórico
+            <span class="nexus-status-badge info ms-1">até 10 projetos = score máximo</span>
+          </p>
+        </div>
+        <button type="button" class="nexus-btn nexus-btn-primary" data-bs-toggle="modal" data-bs-target="#addProjectModal">
+          <i class="ti ti-plus"></i> Adicionar projeto
+        </button>
+      </div>
+
+      <!-- Empty state -->
+      <div th:if="${#lists.isEmpty(projects)}"
+           class="nexus-card p-5 text-center mt-4">
+        <i class="ti ti-briefcase" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhum projeto cadastrado</div>
+        <div style="color:#475569;font-size:0.875rem;margin-bottom:1.25rem">
+          Adicione seus projetos anteriores para aumentar o componente de Histórico no seu score de compatibilidade.
+        </div>
+        <button type="button" class="nexus-btn nexus-btn-primary"
+                data-bs-toggle="modal" data-bs-target="#addProjectModal">
+          <i class="ti ti-plus"></i> Adicionar meu primeiro projeto
+        </button>
+      </div>
+
+      <!-- Project list -->
+      <div class="d-flex flex-column gap-3 mt-3" th:unless="${#lists.isEmpty(projects)}">
+        <div th:each="proj : ${projects}" class="nexus-card p-4 portfolio-card">
+          <div class="d-flex align-items-start justify-content-between gap-3">
+            <div class="flex-fill">
+              <!-- Title + year -->
+              <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                <span class="fw-semibold text-white" style="font-size:1rem" th:text="${proj.title}">Título</span>
+                <span class="nexus-status-badge info" style="font-size:0.7rem">
+                  <i class="ti ti-calendar me-1"></i>
+                  <span th:text="${proj.yearOfCompletion}">2024</span>
+                </span>
+              </div>
+              <!-- Description -->
+              <p style="color:#94a3b8;font-size:0.875rem;margin-bottom:0.75rem;line-height:1.5"
+                 th:text="${proj.description}">Descrição</p>
+              <!-- Tech chips -->
+              <div class="d-flex flex-wrap gap-2" th:if="${proj.technologies != null}">
+                <span th:each="tech : ${#strings.listSplit(proj.technologies, ',')}"
+                      class="nexus-chip nexus-chip-tech"
+                      th:text="${#strings.trim(tech)}">Tech</span>
+              </div>
+            </div>
+            <!-- Delete -->
+            <button type="button"
+                    class="nexus-btn nexus-btn-danger-outline nexus-btn-sm flex-shrink-0 delete-trigger"
+                    style="opacity:0;transition:opacity 0.2s"
+                    th:data-id="${proj.id}"
+                    th:data-title="${proj.title}">
+              <i class="ti ti-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL ADICIONAR ══════════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="addProjectModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-semibold text-white">Adicionar Projeto</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form th:action="@{/pro/portfolio}" method="post" id="addProjForm">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="nexus-label">Título do projeto *</label>
+              <input type="text" class="nexus-input" name="title" id="projTitle" required
+                     placeholder="Ex: Sistema de Gestão Logística">
+            </div>
+            <div class="col-12">
+              <label class="nexus-label">Descrição</label>
+              <textarea class="nexus-input nexus-textarea" name="description"
+                        placeholder="Descreva o projeto, seus objetivos e resultados"></textarea>
+            </div>
+            <div class="col-sm-8">
+              <label class="nexus-label">Tecnologias usadas *</label>
+              <input type="text" class="nexus-input" name="technologies" id="projTechs" required
+                     placeholder="Ex: Java, Spring Boot, React, Docker">
+              <div style="color:#475569;font-size:0.75rem;margin-top:4px">Separe por vírgula</div>
+            </div>
+            <div class="col-sm-4">
+              <label class="nexus-label">Ano de conclusão *</label>
+              <input type="number" class="nexus-input tabular" name="yearOfCompletion" id="projYear"
+                     required min="1990" th:max="${#dates.format(#dates.createNow(),'yyyy')}"
+                     placeholder="2024">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="nexus-btn nexus-btn-primary" id="addProjBtn">Adicionar projeto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL CONFIRMAR DELETE ════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(239,68,68,0.2)">
+        <div style="width:4px;height:40px;background:#ef4444;border-radius:2px;margin-right:0.75rem"></div>
+        <h5 class="modal-title fw-semibold text-white">Remover projeto</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="color:#94a3b8">
+          Tem certeza que deseja remover o projeto
+          <strong class="text-white" id="deleteProjTitle">—</strong>?
+          Esta ação não pode ser desfeita.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <form id="deleteForm" method="post">
+          <button type="submit" class="nexus-btn nexus-btn-danger-outline">
+            <i class="ti ti-trash"></i> Remover
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script>
+// Hover: mostrar botão de deletar
+document.querySelectorAll('.portfolio-card').forEach(function(card) {
+  card.addEventListener('mouseenter', function() {
+    var btn = this.querySelector('.delete-trigger');
+    if (btn) btn.style.opacity = '1';
+  });
+  card.addEventListener('mouseleave', function() {
+    var btn = this.querySelector('.delete-trigger');
+    if (btn) btn.style.opacity = '0';
+  });
+});
+
+// Abrir modal de delete
+document.querySelectorAll('.delete-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var id = this.dataset.id;
+    var title = this.dataset.title;
+    document.getElementById('deleteProjTitle').textContent = title;
+    document.getElementById('deleteForm').action = '/pro/portfolio/' + id + '/delete';
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+  });
+});
+
+// Validação do formulário de adicionar projeto
+document.addEventListener('DOMContentLoaded', function() {
+  var currentYear = new Date().getFullYear();
+  var form = document.getElementById('addProjForm');
+  if (!form) return;
+  attachSubmitGuard(form, function() {
+    var title = document.getElementById('projTitle').value.trim();
+    var techs = document.getElementById('projTechs').value.trim();
+    var year  = parseInt(document.getElementById('projYear').value);
+    return title.length >= 2 && techs.length >= 2 && year >= 1990 && year <= currentYear;
+  });
+});
+</script>
+</body>
+</html>

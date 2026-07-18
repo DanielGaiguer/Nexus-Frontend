@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Dashboard')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
+      <!-- Greeting -->
+      <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size:2rem;letter-spacing:-0.02em;color:#fff;">
+          Olá, <span th:text="${userName}">Profissional</span> 👋
+        </h1>
+        <p style="color:#64748b;font-size:0.9rem"
+           th:text="${invitesCount > 0} ? 'Você tem ' + ${invitesCount} + ' convite(s) aguardando sua resposta.' : 'Bem-vindo de volta ao Nexus.'">
+        </p>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="row g-3 mb-4">
+        <!-- Convites pendentes -->
+        <div class="col-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" th:text="${invitesCount}">0</div>
+              <div class="nexus-stat-label">Convites Pendentes</div>
+            </div>
+            <div class="nexus-stat-icon accent">
+              <i class="ti ti-bell"></i>
+            </div>
+          </div>
+        </div>
+        <!-- Matches confirmados -->
+        <div class="col-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" th:text="${confirmedCount}">0</div>
+              <div class="nexus-stat-label">Matches Confirmados</div>
+            </div>
+            <div class="nexus-stat-icon success">
+              <i class="ti ti-heart-handshake"></i>
+            </div>
+          </div>
+        </div>
+        <!-- Score médio -->
+        <div class="col-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" th:text="${avgScore} + '%'">0%</div>
+              <div class="nexus-stat-label">Score Médio</div>
+            </div>
+            <div class="nexus-stat-icon primary">
+              <i class="ti ti-trending-up"></i>
+            </div>
+          </div>
+        </div>
+        <!-- Projetos entregues -->
+        <div class="col-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" th:text="${portfolioCount != null ? portfolioCount : 0}">0</div>
+              <div class="nexus-stat-label">Projetos Entregues</div>
+            </div>
+            <div class="nexus-stat-icon secondary">
+              <i class="ti ti-star"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-column: convites + confirmados -->
+      <div class="row g-3 mb-4">
+
+        <!-- Últimos convites -->
+        <div class="col-lg-6">
+          <div class="nexus-card p-0 h-100">
+            <div class="d-flex align-items-center justify-content-between p-3 pb-2">
+              <div>
+                <div class="fw-semibold text-white">Últimos Convites</div>
+                <div style="color:#64748b;font-size:0.8rem">Empresas com interesse no seu perfil</div>
+              </div>
+              <a th:href="@{/pro/matches}" class="text-decoration-none"
+                 style="color:#6b6eff;font-size:0.8rem;font-weight:600">
+                Ver todos <i class="ti ti-arrow-right"></i>
+              </a>
+            </div>
+
+            <!-- Empty -->
+            <div th:if="${#lists.isEmpty(recentInvites)}"
+                 class="d-flex flex-column align-items-center justify-content-center py-5 text-center px-3">
+              <i class="ti ti-mail-opened" style="font-size:2.5rem;color:#334155;margin-bottom:0.75rem"></i>
+              <div style="color:#475569;font-size:0.875rem">Nenhum convite ainda</div>
+              <a th:href="@{/pro/opportunities}" class="nexus-btn nexus-btn-primary nexus-btn-sm mt-3">
+                Ver oportunidades
+              </a>
+            </div>
+
+            <!-- List -->
+            <div th:unless="${#lists.isEmpty(recentInvites)}">
+              <div th:each="inv,iStat : ${recentInvites}"
+                   th:classappend="${!iStat.last} ? 'border-bottom' : ''"
+                   style="border-color:rgba(107,110,255,0.08)!important"
+                   class="d-flex align-items-center gap-3 p-3">
+                <!-- Avatar empresa -->
+                <div class="nexus-avatar-initials nexus-avatar-lg"
+                     th:with="n=${inv.project.company.companyName},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                     th:text="${#strings.substring(n,0,2).toUpperCase()}">TC</div>
+                <!-- Info -->
+                <div class="flex-fill overflow-hidden">
+                  <div class="fw-semibold text-white text-truncate" th:text="${inv.project.title}">Projeto</div>
+                  <div style="color:#64748b;font-size:0.8rem" th:text="${inv.project.company.companyName}">Empresa</div>
+                </div>
+                <!-- Score ring -->
+                <div th:with="s=${inv.getScoreAsInt()},
+                              c=${s>=85?'high':(s>=70?'medium':'low')},
+                              dash=${s*1.25}">
+                  <div class="nexus-score-ring" style="width:48px;height:48px">
+                    <svg width="48" height="48" viewBox="0 0 48 48">
+                      <circle cx="24" cy="24" r="19" class="nexus-score-ring-bg" stroke-width="4"/>
+                      <circle cx="24" cy="24" r="19"
+                              th:class="'nexus-score-ring-fill ' + ${c}"
+                              stroke-width="4"
+                              stroke-dasharray="119.38"
+                              th:stroke-dashoffset="${119.38 - (s/100.0)*119.38}"/>
+                    </svg>
+                    <div class="nexus-score-ring-label">
+                      <span class="nexus-score-ring-pct" style="font-size:0.7rem" th:text="${s}+'%'">0%</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Ver -->
+                <a th:href="@{/pro/matches}" class="nexus-btn nexus-btn-ghost nexus-btn-sm flex-shrink-0">Ver</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Matches confirmados -->
+        <div class="col-lg-6">
+          <div class="nexus-card p-0 h-100">
+            <div class="d-flex align-items-center justify-content-between p-3 pb-2">
+              <div>
+                <div class="fw-semibold text-white">Matches Confirmados</div>
+                <div style="color:#64748b;font-size:0.8rem">Contatos já liberados para você</div>
+              </div>
+              <a th:href="@{/pro/matches}" class="text-decoration-none"
+                 style="color:#6b6eff;font-size:0.8rem;font-weight:600">
+                Ver todos <i class="ti ti-arrow-right"></i>
+              </a>
+            </div>
+
+            <!-- Empty -->
+            <div th:if="${#lists.isEmpty(recentConfirmed)}"
+                 class="d-flex flex-column align-items-center justify-content-center py-5 text-center px-3">
+              <i class="ti ti-heart-handshake" style="font-size:2.5rem;color:#334155;margin-bottom:0.75rem"></i>
+              <div style="color:#475569;font-size:0.875rem">Nenhum match confirmado ainda</div>
+            </div>
+
+            <!-- List -->
+            <div th:unless="${#lists.isEmpty(recentConfirmed)}">
+              <div th:each="m,iStat : ${recentConfirmed}"
+                   th:classappend="${!iStat.last} ? 'border-bottom' : ''"
+                   style="border-color:rgba(107,110,255,0.08)!important"
+                   class="d-flex align-items-center gap-3 p-3">
+                <div class="nexus-avatar-initials nexus-avatar-lg"
+                     th:with="n=${m.project.company.companyName},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                     th:text="${#strings.substring(n,0,2).toUpperCase()}">TC</div>
+                <div class="flex-fill overflow-hidden">
+                  <div class="fw-semibold text-white text-truncate" th:text="${m.project.title}">Projeto</div>
+                  <div style="font-size:0.78rem" th:text="${m.project.company.companyName}">Empresa</div>
+                  <!-- email revelado se disponível -->
+                  <div th:if="${m.project.company.contactEmail != null}"
+                       style="color:#6b6eff;font-size:0.75rem"
+                       th:text="${m.project.company.contactEmail}">email</div>
+                </div>
+                <span class="nexus-status-badge success">Match Confirmado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick actions row -->
+      <div class="row g-3">
+        <div class="col-md-4">
+          <a th:href="@{/pro/profile}" class="nexus-quick-card">
+            <div class="nexus-quick-icon" style="background:rgba(107,110,255,0.12);color:#6b6eff">
+              <i class="ti ti-user"></i>
+            </div>
+            <div>
+              <div class="fw-semibold text-white" style="font-size:0.875rem">Atualizar perfil</div>
+              <div style="color:#475569;font-size:0.78rem">Mantenha skills e disponibilidade em dia</div>
+            </div>
+            <i class="ti ti-arrow-right text-muted ms-auto"></i>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a th:href="@{/pro/portfolio}" class="nexus-quick-card">
+            <div class="nexus-quick-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b">
+              <i class="ti ti-folder"></i>
+            </div>
+            <div>
+              <div class="fw-semibold text-white" style="font-size:0.875rem">Ver portfólio</div>
+              <div style="color:#475569;font-size:0.78rem">Adicione projetos anteriores para aumentar seu score</div>
+            </div>
+            <i class="ti ti-arrow-right text-muted ms-auto"></i>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a th:href="@{/pro/map}" class="nexus-quick-card">
+            <div class="nexus-quick-icon" style="background:rgba(103,232,249,0.12);color:#67e8f9">
+              <i class="ti ti-map-2"></i>
+            </div>
+            <div>
+              <div class="fw-semibold text-white" style="font-size:0.875rem">Explorar mapa</div>
+              <div style="color:#475569;font-size:0.78rem">Veja empresas que estão próximas de você</div>
+            </div>
+            <i class="ti ti-arrow-right text-muted ms-auto"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+</body>
+</html>
