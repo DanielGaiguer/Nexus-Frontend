@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
-<head th:replace="~{fragments/app-shell :: head('Usuários')}"></head>
+<head th:replace="~{fragments/app-shell :: head('Avaliar Match')}"></head>
 <body class="nexus-app">
 
 <div th:replace="~{fragments/app-shell :: shell}"></div>
@@ -9,175 +9,173 @@
   <div th:replace="~{fragments/app-shell :: topbar}"></div>
 
   <div class="page-body">
-    <div class="container-xl py-4">
+    <div class="container-xl py-4" style="max-width:680px">
 
       <!-- Flash -->
-      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
-        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Header -->
+      <!-- Back -->
+      <a th:href="${session.userRole == 'PROFESSIONAL'} ? '/pro/matches' : '/company/matches'"
+         class="text-decoration-none d-inline-flex align-items-center gap-1 mb-4"
+         style="color:#64748b;font-size:0.875rem">
+        <i class="ti ti-arrow-left"></i> Voltar para matches
+      </a>
+
       <div class="mb-4">
-        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Gerenciamento de Usuários</h1>
+        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Avaliar Match</h1>
         <p style="color:#64748b;font-size:0.875rem"
-           th:text="${#lists.size(users)} + ' usuários cadastrados na plataforma'">0</p>
+           th:text="'Avaliando: ' + ${match.project.title}">Projeto</p>
       </div>
 
-      <!-- Search + type filter -->
-      <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
-        <div style="position:relative;flex:1;min-width:220px;max-width:360px">
-          <i class="ti ti-search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
-          <input type="text" id="userSearch" class="nexus-input"
-                 placeholder="Buscar por nome ou e-mail..."
-                 style="padding-left:2.2rem" oninput="filterUsers()">
-        </div>
-        <div class="nexus-tabs">
-          <button class="nexus-tab active" id="utype-all"          onclick="filterType('all')">
-            Todos <span class="badge" th:text="${#lists.size(users)}">0</span>
-          </button>
-          <button class="nexus-tab" id="utype-PROFESSIONAL" onclick="filterType('PROFESSIONAL')">
-            Professional
-          </button>
-          <button class="nexus-tab" id="utype-COMPANY"      onclick="filterType('COMPANY')">
-            Company
-          </button>
-          <button class="nexus-tab" id="utype-ADMIN"        onclick="filterType('ADMIN')">
-            Admin
-          </button>
-        </div>
-      </div>
+      <div class="nexus-card p-4">
+        <form th:action="${session.userRole == 'PROFESSIONAL'} ?
+                          '/pro/matches/' + ${match.id} + '/review' :
+                          '/company/matches/' + ${match.id} + '/review'"
+              method="post" id="reviewForm">
 
-      <!-- Table -->
-      <div class="nexus-card p-0">
-        <div class="table-responsive">
-          <table class="nexus-table" style="border-spacing:0" id="usersTable">
-            <thead>
-              <tr>
-                <th>Usuário</th>
-                <th>E-mail</th>
-                <th>Tipo</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="u : ${users}"
-                  class="user-row"
-                  th:data-email="${u.email}"
-                  th:data-type="${u.type}">
-                <!-- Avatar + name derived from email -->
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="nexus-avatar-initials nexus-avatar-sm"
-                         th:with="initials=${#strings.substring(u.email,0,1).toUpperCase()},
-                                  h=${u.email.hashCode()},
-                                  hue=${(h%360)<0?(h%360)+360:h%360}"
-                         th:style="'background:hsl('+${hue}+',50%,38%)'"
-                         th:text="${initials}">U</div>
-                    <span class="fw-medium text-white" style="font-size:0.875rem"
-                          th:text="${u.email}">—</span>
-                  </div>
-                </td>
-                <td style="color:#64748b;font-size:0.82rem" th:text="${u.email}">—</td>
-                <td>
-                  <span th:switch="${u.type}">
-                    <span th:case="'PROFESSIONAL'" class="nexus-status-badge purple" style="font-size:0.72rem">
-                      <i class="ti ti-user me-1"></i>Professional
-                    </span>
-                    <span th:case="'COMPANY'" class="nexus-status-badge info" style="font-size:0.72rem">
-                      <i class="ti ti-building me-1"></i>Company
-                    </span>
-                    <span th:case="'ADMIN'" class="nexus-status-badge warning" style="font-size:0.72rem">
-                      <i class="ti ti-shield me-1"></i>Admin
-                    </span>
-                  </span>
-                </td>
-                <td>
-                  <span th:if="${u.active}"  class="nexus-status success">Ativo</span>
-                  <span th:unless="${u.active}" class="nexus-status danger">Inativo</span>
-                </td>
-                <td>
-                  <button type="button"
-                          class="nexus-btn nexus-btn-ghost nexus-btn-sm toggle-trigger"
-                          th:data-id="${u.id}"
-                          th:data-active="${u.active}"
-                          th:data-email="${u.email}"
-                          th:text="${u.active ? 'Desativar' : 'Ativar'}">Toggle</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+          <!-- Hidden authorType -->
+          <input type="hidden" name="authorType"
+                 th:value="${session.userRole == 'PROFESSIONAL'} ? 'PROFESSIONAL' : 'COMPANY'">
 
-    </div>
-  </div>
-</div>
+          <!-- Star rating -->
+          <div class="mb-4">
+            <label class="nexus-label mb-2">Avaliação geral *</label>
+            <div class="d-flex gap-2 align-items-center">
+              <div class="star-group d-flex gap-1">
+                <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                  <label th:for="'star' + ${i}" style="cursor:pointer">
+                    <input type="radio" name="rating" th:id="'star' + ${i}"
+                           th:value="${i}" style="display:none" class="star-radio">
+                    <i class="ti ti-star star-icon"
+                       style="font-size:2rem;color:#334155;transition:color 0.15s"
+                       th:data-val="${i}"></i>
+                  </label>
+                </th:block>
+              </div>
+              <span id="ratingLabel" style="color:#64748b;font-size:0.85rem">Selecione uma nota</span>
+            </div>
+          </div>
 
-<!-- ══ MODAL TOGGLE USER ═════════════════════════════════════ -->
-<div class="modal fade nexus-modal" id="toggleUserModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div id="toggleStatusBar"
-             style="width:4px;height:40px;border-radius:2px;margin-right:0.75rem;background:#f59e0b"></div>
-        <h5 class="modal-title fw-semibold text-white" id="toggleModalTitle">Alterar status</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p style="color:#94a3b8;font-size:0.875rem" id="toggleModalBody">
-          Deseja alterar o status deste usuário?
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
-        <form id="toggleForm" method="post">
-          <button type="submit" class="nexus-btn nexus-btn-primary" id="toggleConfirmBtn">Confirmar</button>
+          <!-- Positive reasons -->
+          <div class="mb-4">
+            <label class="nexus-label mb-2">Pontos positivos</label>
+            <div class="d-flex flex-wrap gap-2">
+              <label th:each="r : ${ {'EXCELLENT_COMMUNICATION','HIGH_TECHNICAL_SKILL','DELIVERED_ON_TIME','TEAM_PLAYER','PROACTIVE','EXCEEDED_EXPECTATIONS','RELIABLE','PUNCTUAL','HIGH_CODE_QUALITY','GOOD_PROBLEM_SOLVING'} }"
+                     style="cursor:pointer">
+                <input type="checkbox" name="positiveReasons" th:value="${r}" style="display:none" class="pos-cb">
+                <span class="nexus-chip reason-chip"
+                      th:text="${r == 'EXCELLENT_COMMUNICATION' ? 'Excelente comunicação' :
+                                 r == 'HIGH_TECHNICAL_SKILL'    ? 'Alta competência técnica' :
+                                 r == 'DELIVERED_ON_TIME'       ? 'Entregou no prazo' :
+                                 r == 'TEAM_PLAYER'             ? 'Trabalho em equipe' :
+                                 r == 'PROACTIVE'               ? 'Proativo' :
+                                 r == 'EXCEEDED_EXPECTATIONS'   ? 'Superou expectativas' :
+                                 r == 'RELIABLE'                ? 'Confiável' :
+                                 r == 'PUNCTUAL'                ? 'Pontual' :
+                                 r == 'HIGH_CODE_QUALITY'       ? 'Alta qualidade de código' :
+                                 r == 'GOOD_PROBLEM_SOLVING'    ? 'Boa resolução de problemas' : r}">Motivo</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Negative reasons -->
+          <div class="mb-4">
+            <label class="nexus-label mb-2">Pontos negativos</label>
+            <div class="d-flex flex-wrap gap-2">
+              <label th:each="r : ${ {'MISSED_DEADLINES','POOR_COMMUNICATION','LOW_CODE_QUALITY','UNPROFESSIONAL','ABSENT','UNRELIABLE','POOR_PROBLEM_SOLVING','DID_NOT_MEET_EXPECTATIONS','OTHER'} }"
+                     style="cursor:pointer">
+                <input type="checkbox" name="negativeReasons" th:value="${r}" style="display:none" class="neg-cb">
+                <span class="nexus-chip reason-chip-neg"
+                      th:text="${r == 'MISSED_DEADLINES'          ? 'Atrasou prazos' :
+                                 r == 'POOR_COMMUNICATION'        ? 'Comunicação ruim' :
+                                 r == 'LOW_CODE_QUALITY'          ? 'Baixa qualidade de código' :
+                                 r == 'UNPROFESSIONAL'            ? 'Pouco profissional' :
+                                 r == 'ABSENT'                    ? 'Ausente' :
+                                 r == 'UNRELIABLE'                ? 'Não confiável' :
+                                 r == 'POOR_PROBLEM_SOLVING'      ? 'Dificuldade para resolver problemas' :
+                                 r == 'DID_NOT_MEET_EXPECTATIONS' ? 'Não atendeu expectativas' :
+                                 r == 'OTHER'                     ? 'Outro' : r}">Motivo</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Comment -->
+          <div class="mb-4">
+            <label class="nexus-label">Comentário <span style="color:#475569">(opcional)</span></label>
+            <textarea class="nexus-input nexus-textarea" name="comment"
+                      placeholder="Compartilhe mais detalhes sobre sua experiência..."></textarea>
+          </div>
+
+          <div class="d-flex gap-2 justify-content-end">
+            <a th:href="${session.userRole == 'PROFESSIONAL'} ? '/pro/matches' : '/company/matches'"
+               class="nexus-btn nexus-btn-ghost">Cancelar</a>
+            <button type="submit" class="nexus-btn nexus-btn-primary" id="reviewSubmitBtn" disabled>
+              <i class="ti ti-star"></i> Enviar avaliação
+            </button>
+          </div>
+
         </form>
       </div>
+
     </div>
   </div>
 </div>
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
-var currentType = 'all';
+var ratingLabels = ['','Ruim','Abaixo do esperado','Regular','Bom','Excelente'];
 
-function filterType(type) {
-  currentType = type;
-  ['all','PROFESSIONAL','COMPANY','ADMIN'].forEach(function(t) {
-    document.getElementById('utype-' + t).classList.remove('active');
+// Star interaction
+document.querySelectorAll('.star-radio').forEach(function(radio) {
+  radio.addEventListener('change', function() {
+    var val = parseInt(this.value);
+    document.getElementById('ratingLabel').textContent = ratingLabels[val] || '';
+    document.querySelectorAll('.star-icon').forEach(function(icon) {
+      var v = parseInt(icon.dataset.val);
+      if (v <= val) {
+        icon.classList.replace('ti-star','ti-star-filled');
+        icon.style.color = '#f59e0b';
+      } else {
+        icon.classList.replace('ti-star-filled','ti-star');
+        icon.style.color = '#334155';
+      }
+    });
+    checkSubmit();
   });
-  document.getElementById('utype-' + type).classList.add('active');
-  applyUserFilters();
+});
+
+// Positive reasons toggle
+document.querySelectorAll('.pos-cb').forEach(function(cb) {
+  cb.addEventListener('change', function() {
+    this.nextElementSibling.style.background  = this.checked ? 'rgba(34,197,94,0.15)' : '';
+    this.nextElementSibling.style.borderColor = this.checked ? 'rgba(34,197,94,0.4)' : '';
+    this.nextElementSibling.style.color       = this.checked ? '#22c55e' : '';
+  });
+});
+
+// Negative reasons toggle
+document.querySelectorAll('.neg-cb').forEach(function(cb) {
+  cb.addEventListener('change', function() {
+    this.nextElementSibling.style.background  = this.checked ? 'rgba(239,68,68,0.12)' : '';
+    this.nextElementSibling.style.borderColor = this.checked ? 'rgba(239,68,68,0.35)' : '';
+    this.nextElementSibling.style.color       = this.checked ? '#ef4444' : '';
+  });
+});
+
+// Enable submit only when rating is selected
+function checkSubmit() {
+  var rated = document.querySelector('.star-radio:checked');
+  document.getElementById('reviewSubmitBtn').disabled = !rated;
 }
 
-function filterUsers() { applyUserFilters(); }
-
-function applyUserFilters() {
-  var search = (document.getElementById('userSearch').value || '').toLowerCase();
-  document.querySelectorAll('.user-row').forEach(function(row) {
-    var typeMatch  = currentType === 'all' || row.dataset.type === currentType;
-    var emailMatch = !search || (row.dataset.email || '').toLowerCase().includes(search);
-    row.style.display = (typeMatch && emailMatch) ? '' : 'none';
-  });
-}
-
-document.querySelectorAll('.toggle-trigger').forEach(function(btn) {
-  btn.addEventListener('click', function() {
-    var id     = this.dataset.id;
-    var active = this.dataset.active === 'true';
-    var email  = this.dataset.email;
-    var action = active ? 'desativar' : 'ativar';
-
-    document.getElementById('toggleStatusBar').style.background = active ? '#ef4444' : '#22c55e';
-    document.getElementById('toggleModalTitle').textContent = (active ? 'Desativar' : 'Ativar') + ' usuário';
-    document.getElementById('toggleModalBody').textContent  =
-      'Deseja ' + action + ' a conta de ' + email + '? O usuário ' +
-      (active ? 'perderá o acesso à plataforma.' : 'voltará a ter acesso normalmente.');
-    document.getElementById('toggleConfirmBtn').textContent = active ? 'Desativar' : 'Ativar';
-    document.getElementById('toggleForm').action = '/admin/users/' + id + '/toggle';
-    new bootstrap.Modal(document.getElementById('toggleUserModal')).show();
+// Chip click = check hidden radio/checkbox
+document.querySelectorAll('.star-icon').forEach(function(icon) {
+  icon.addEventListener('click', function() {
+    var val = this.dataset.val;
+    document.getElementById('star' + val).checked = true;
+    document.getElementById('star' + val).dispatchEvent(new Event('change'));
   });
 });
 </script>

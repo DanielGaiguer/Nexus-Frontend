@@ -98,6 +98,7 @@
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(107, 110, 255, 0.12);
   color: #f1f5f9;
+  color-scheme: dark;
 }
 .nexus-app .form-control:focus,
 .nexus-app .form-select:focus {
@@ -569,11 +570,6 @@ body.nexus-app {
 }
 
 /* ── Page layout ── */
-.page {
-  display: flex;
-  min-height: 100vh;
-}
-
 .page-wrapper {
   flex: 1;
   margin-left: 210px;
@@ -953,6 +949,7 @@ body.nexus-app {
   border: 1px solid rgba(107,110,255,0.15);
   border-radius: 9px;
   color: #e2e8f0;
+  color-scheme: dark;
   font-size: 0.875rem;
   padding: 0.55rem 0.9rem;
   width: 100%;

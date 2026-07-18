@@ -1,23 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <body>
-  <!DOCTYPE html>
-  <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
-  <head th:replace="~{fragments/app-shell :: head('Título da Página')}"></head>
-  <body class="nexus-app">
-  <div th:replace="~{fragments/app-shell :: shell}"></div>
-  <div class="page-wrapper">
-    <div th:replace="~{fragments/app-shell :: topbar}"></div>
-    <div class="page-body">
-      <div class="container-xl py-4">
-        <!-- conteúdo aqui -->
-      </div>
-    </div>
-  </div>
-  <div th:replace="~{fragments/app-shell :: scripts}"></div>
-  </body>
-  </html>
-  
+
 <head th:fragment="head(title)">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,7 +27,6 @@
 
 <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
 <th:block th:fragment="shell">
-<div class="page">
   <aside class="nexus-sidebar">
     <!-- Logo -->
     <div class="navbar-brand">
@@ -201,7 +184,6 @@
       </div>
     </div>
   </aside>
-</div>
 </th:block>
 
 <!-- ══ TOPBAR ════════════════════════════════════════════════ -->

@@ -38,6 +38,10 @@ public class AuthController {
 
             if ("ADMIN".equals(response.getRole())) {
                 return "redirect:/admin/dashboard";
+            } else if ("COMPANY".equals(response.getRole())) {
+                return "redirect:/company/dashboard";
+            } else if ("PROFESSIONAL".equals(response.getRole())) {
+                return "redirect:/pro/dashboard";
             }
             return "redirect:/";
         } catch (Exception e) {

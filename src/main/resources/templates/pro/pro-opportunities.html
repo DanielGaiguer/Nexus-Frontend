@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Oportunidades')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
+      <!-- Header -->
+      <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Oportunidades para você</h1>
+        <p style="color:#64748b;font-size:0.875rem">Projetos compatíveis com seu perfil — demonstre interesse para gerar um match</p>
+      </div>
+
+      <!-- Filters (client-side) -->
+      <div class="d-flex gap-3 flex-wrap mb-4">
+        <div class="nexus-tabs">
+          <button class="nexus-tab active" onclick="filterOpp('all')">Todas</button>
+          <button class="nexus-tab" onclick="filterOpp('REMOTE')">Remoto</button>
+          <button class="nexus-tab" onclick="filterOpp('ONSITE')">Presencial</button>
+          <button class="nexus-tab" onclick="filterOpp('HYBRID')">Híbrido</button>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+          <input type="number" class="nexus-input tabular" id="filterMinBudget"
+                 placeholder="Orç. min" min="0" style="width:110px;font-size:0.82rem" oninput="applyOppFilters()">
+          <span style="color:#475569">–</span>
+          <input type="number" class="nexus-input tabular" id="filterMaxBudget"
+                 placeholder="Orç. max" min="0" style="width:110px;font-size:0.82rem" oninput="applyOppFilters()">
+        </div>
+        <select class="nexus-select" id="filterExpLevel" style="width:auto;font-size:0.82rem" onchange="applyOppFilters()">
+          <option value="">Todos os níveis</option>
+          <option value="INTERNSHIP">Estágio</option>
+          <option value="TRAINEE">Trainee</option>
+          <option value="JUNIOR">Júnior</option>
+          <option value="PLENO">Pleno</option>
+          <option value="SENIOR">Sênior</option>
+        </select>
+      </div>
+
+      <!-- Empty state -->
+      <div th:if="${#lists.isEmpty(opportunities)}"
+           class="nexus-card p-5 text-center">
+        <i class="ti ti-sparkles" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhuma oportunidade disponível</div>
+        <div style="color:#475569;font-size:0.875rem">
+          Quando projetos compatíveis com seu perfil surgirem, aparecerão aqui.
+        </div>
+      </div>
+
+      <!-- Opportunity cards -->
+      <div class="d-flex flex-column gap-3" id="opportunityList">
+        <div th:each="opp : ${opportunities}"
+             class="nexus-match-card"
+             th:data-modality="${opp.project != null ? opp.project.modality : ''}"
+             th:data-min-budget="${opp.project != null ? opp.project.minimumBudget : ''}"
+             th:data-max-budget="${opp.project != null ? opp.project.maximumBudget : ''}"
+             th:data-exp-level="${opp.project != null ? opp.project.experienceLevel : ''}">
+          <div class="d-flex align-items-start gap-3 flex-wrap">
+            <!-- Avatar empresa -->
+            <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                 th:with="n=${opp.project != null and opp.project.company != null ? opp.project.company.companyName : 'E'},
+                          h=${n.hashCode()},
+                          hue=${(h%360)<0?(h%360)+360:h%360}"
+                 th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                 th:text="${#strings.substring(n,0,2).toUpperCase()}">TC</div>
+            <!-- Info -->
+            <div class="flex-fill">
+              <div class="fw-semibold text-white" style="font-size:1rem"
+                   th:text="${opp.project != null ? opp.project.title : 'Projeto'}">Projeto</div>
+              <div style="color:#64748b;font-size:0.85rem"
+                   th:text="${opp.project != null and opp.project.company != null ? opp.project.company.companyName : 'Empresa'}">Empresa</div>
+              <div class="d-flex gap-3 mt-1 flex-wrap">
+                <span style="color:#94a3b8;font-size:0.8rem">
+                  <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
+                  <span class="tabular"
+                        th:text="${opp.project != null ? 'R$ ' + ${#numbers.formatDecimal(opp.project.minimumBudget,1,'COMMA',0,'POINT')} + '–' + ${#numbers.formatDecimal(opp.project.maximumBudget,1,'COMMA',0,'POINT')} : '—'}">R$</span>
+                </span>
+                <span style="color:#94a3b8;font-size:0.8rem">
+                  <i class="ti ti-map-pin" style="color:#6b6eff"></i>
+                  <span th:if="${opp.project != null}" th:switch="${opp.project.modality}">
+                    <span th:case="'REMOTE'">Remoto</span>
+                    <span th:case="'ONSITE'">Presencial</span>
+                    <span th:case="'HYBRID'">Híbrido</span>
+                    <span th:case="*" th:text="${opp.project.modality}">—</span>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <!-- Score ring -->
+            <div th:with="s=${opp.getScoreAsInt()},
+                          c=${s>=85?'high':(s>=70?'medium':'low')}">
+              <div style="position:relative;width:64px;height:64px;flex-shrink:0">
+                <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
+                  <circle cx="32" cy="32" r="27" class="nexus-score-ring-bg" stroke-width="5"/>
+                  <circle cx="32" cy="32" r="27"
+                          th:class="'nexus-score-ring-fill ' + ${c}"
+                          stroke-width="5"
+                          stroke-dasharray="169.65"
+                          th:stroke-dashoffset="${169.65 - (s/100.0)*169.65}"/>
+                </svg>
+                <div class="nexus-score-ring-label">
+                  <span class="nexus-score-ring-pct" th:text="${s}+'%'">0%</span>
+                  <span class="nexus-score-ring-tag"
+                        th:text="${s>=85?'Alto':(s>=70?'Médio':'Baixo')}"
+                        th:style="${s>=85?'color:#22c55e':(s>=70?'color:#f59e0b':'color:#ef4444')}">Alto</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action -->
+          <div class="mt-3">
+            <th:block th:switch="${opp.professionalStatus}">
+              <th:block th:case="'PROFESSIONAL_INTERESTED'">
+                <span class="nexus-status-badge info">
+                  <i class="ti ti-check me-1"></i>Interesse demonstrado
+                </span>
+              </th:block>
+              <th:block th:case="*">
+                <form th:action="@{/pro/opportunities/{id}/interest(id=${opp.project != null ? opp.project.id : 0})}" method="post">
+                  <button type="submit" class="nexus-btn nexus-btn-primary nexus-btn-sm">
+                    <i class="ti ti-send"></i> Demonstrar interesse
+                  </button>
+                </form>
+              </th:block>
+            </th:block>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script>
+var currentModality = 'all';
+
+function filterOpp(modality) {
+  currentModality = modality;
+  document.querySelectorAll('.nexus-tabs .nexus-tab').forEach(function(t) { t.classList.remove('active'); });
+  event.target.classList.add('active');
+  applyOppFilters();
+}
+
+function applyOppFilters() {
+  var minB = parseFloat(document.getElementById('filterMinBudget').value) || 0;
+  var maxB = parseFloat(document.getElementById('filterMaxBudget').value) || Infinity;
+  var expLevel = document.getElementById('filterExpLevel').value;
+
+  document.querySelectorAll('#opportunityList .nexus-match-card').forEach(function(card) {
+    var mod = card.dataset.modality;
+    var cardMin = parseFloat(card.dataset.minBudget) || 0;
+    var cardMax = parseFloat(card.dataset.maxBudget) || Infinity;
+    var cardExp = card.dataset.expLevel || '';
+
+    var modMatch = currentModality === 'all' || mod === currentModality;
+    var budgetMatch = cardMax >= minB && cardMin <= maxB;
+    var expMatch = !expLevel || cardExp === expLevel;
+
+    card.style.display = (modMatch && budgetMatch && expMatch) ? 'block' : 'none';
+  });
+}
+</script>
+</body>
+</html>

@@ -13,156 +13,72 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class ProfessionalService {
+public class AdminService {
 
     private final RestClient restClient;
 
-    public ProfessionalService(@Value("${nexus.api.base-url}") String baseUrl) {
+    public AdminService(@Value("${nexus.api.base-url}") String baseUrl) {
         this.restClient = RestClient.builder()
                 .baseUrl(baseUrl)
                 .build();
     }
 
-    public ProfessionalProfileDTO getProfile(String token) {
+    public AdminDashboardDTO getDashboard(String token) {
         return restClient.get()
-                .uri("/professional/profile")
+                .uri("/admin/dashboard")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw new ResponseStatusException(
                             HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load profile");
+                            "Failed to load admin dashboard");
                 })
-                .body(ProfessionalProfileDTO.class);
+                .body(AdminDashboardDTO.class);
     }
 
-    public void updateProfile(String token, UpdateProfessionalDTO dto) {
-        restClient.put()
-                .uri("/professional/profile")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .body(dto)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to update profile");
-                })
-                .toBodilessEntity();
-    }
-
-    public void updateSkills(String token, List<Long> skillIds) {
-        restClient.put()
-                .uri("/professional/skills")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .body(skillIds)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to update skills");
-                })
-                .toBodilessEntity();
-    }
-
-    public List<MatchDTO> getMatches(String token) {
-        MatchDTO[] response = restClient.get()
-                .uri("/professional/matches")
+    public List<CompanyProfileDTO> getPendingCompanies(String token) {
+        CompanyProfileDTO[] response = restClient.get()
+                .uri("/admin/companies/pending")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw new ResponseStatusException(
                             HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load matches");
+                            "Failed to load pending companies");
                 })
-                .body(MatchDTO[].class);
+                .body(CompanyProfileDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
     }
 
-    public List<MatchDTO> getPendingInvites(String token) {
-        MatchDTO[] response = restClient.get()
-                .uri("/professional/matches/invites")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load invites");
-                })
-                .body(MatchDTO[].class);
-        return response != null ? Arrays.asList(response) : Collections.emptyList();
-    }
-
-    public List<PreviousProjectDTO> getProjects(String token) {
-        PreviousProjectDTO[] response = restClient.get()
-                .uri("/professional/projects")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load projects");
-                })
-                .body(PreviousProjectDTO[].class);
-        return response != null ? Arrays.asList(response) : Collections.emptyList();
-    }
-
-    public void addProject(String token, PreviousProjectDTO dto) {
+    public void approveCompany(String token, Long id) {
         restClient.post()
-                .uri("/professional/projects")
+                .uri("/admin/companies/{id}/approve", id)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .body(dto)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw new ResponseStatusException(
                             HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to add project");
+                            "Failed to approve company");
                 })
                 .toBodilessEntity();
     }
 
-    public void deleteProject(String token, Long projectId) {
-        restClient.delete()
-                .uri("/professional/projects/{projectId}", projectId)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to delete project");
-                })
-                .toBodilessEntity();
-    }
-
-    public List<MatchDTO> getOpportunities(String token) {
-        MatchDTO[] response = restClient.get()
-                .uri("/professional/opportunities")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load opportunities");
-                })
-                .body(MatchDTO[].class);
-        return response != null ? Arrays.asList(response) : Collections.emptyList();
-    }
-
-    public void sendInterest(String token, Long projectId) {
+    public void rejectCompany(String token, Long id) {
         restClient.post()
-                .uri("/professional/opportunities/{projectId}/interest", projectId)
+                .uri("/admin/companies/{id}/reject", id)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw new ResponseStatusException(
                             HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to send interest");
+                            "Failed to reject company");
                 })
                 .toBodilessEntity();
     }
 
-    public List<SkillDTO> getAllSkills(String token) {
+    public List<SkillDTO> getSkills(String token) {
         SkillDTO[] response = restClient.get()
-                .uri("/professional/skills")
+                .uri("/admin/skills")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
@@ -172,5 +88,62 @@ public class ProfessionalService {
                 })
                 .body(SkillDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public void createSkill(String token, String name, String category) {
+        restClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/admin/skills")
+                        .queryParam("name", name)
+                        .queryParam("category", category)
+                        .build())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to create skill");
+                })
+                .toBodilessEntity();
+    }
+
+    public void deleteSkill(String token, Long id) {
+        restClient.delete()
+                .uri("/admin/skills/{id}", id)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to delete skill");
+                })
+                .toBodilessEntity();
+    }
+
+    public List<UserSummaryDTO> getUsers(String token) {
+        UserSummaryDTO[] response = restClient.get()
+                .uri("/admin/users")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load users");
+                })
+                .body(UserSummaryDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public void toggleUser(String token, Long id) {
+        restClient.post()
+                .uri("/admin/users/{id}/toggle", id)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to toggle user");
+                })
+                .toBodilessEntity();
     }
 }

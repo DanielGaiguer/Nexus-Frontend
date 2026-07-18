@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Minha Reputação')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4" style="max-width:760px">
+
+      <!-- Back -->
+      <a th:href="@{/company/profile}"
+         class="text-decoration-none d-inline-flex align-items-center gap-1 mb-4"
+         style="color:#64748b;font-size:0.875rem">
+        <i class="ti ti-arrow-left"></i> Voltar ao perfil
+      </a>
+
+      <!-- Header -->
+      <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Minha Reputação</h1>
+        <p style="color:#64748b;font-size:0.875rem">Indicadores de desempenho baseados em avaliações de profissionais</p>
+      </div>
+
+      <!-- Hero card: overall score -->
+      <div class="nexus-card p-4 mb-4 text-center"
+           style="background:linear-gradient(135deg,rgba(107,110,255,0.12),rgba(13,19,41,0.9))">
+        <div th:with="score=${reputation.overallScore != null ? reputation.overallScore : 0.0},
+                      color=${score >= 4.0 ? '#22c55e' : (score >= 3.0 ? '#f59e0b' : '#ef4444')}">
+          <div class="tabular fw-bold" style="font-size:3.5rem;letter-spacing:-0.02em"
+               th:style="'color:' + ${color}"
+               th:text="${#numbers.formatDecimal(score,1,1)}">0.0</div>
+        </div>
+        <div style="color:#64748b;font-size:0.9rem;margin-top:0.25rem">
+          <span th:if="${reputation.totalReviews != null}">Baseado em <strong class="text-white" th:text="${reputation.totalReviews}">0</strong> avaliação(ões)</span>
+          <span th:unless="${reputation.totalReviews != null}">Nenhuma avaliação ainda</span>
+        </div>
+      </div>
+
+      <!-- Confidence bar -->
+      <div class="nexus-card p-4 mb-4" th:if="${reputation.confidencePercent != null}">
+        <div class="d-flex justify-content-between mb-2">
+          <div class="fw-semibold text-white">Nível de confiança</div>
+          <span class="tabular fw-semibold" style="color:#6b6eff"
+                th:text="${#numbers.formatDecimal(reputation.confidencePercent,1,0)} + '%'">0%</span>
+        </div>
+        <div class="nexus-breakdown-bar" style="height:10px">
+          <div class="nexus-breakdown-bar-fill"
+               th:style="'width:' + ${reputation.confidencePercent} + '%;background:linear-gradient(90deg,#6b6eff,#a78bfa)'"></div>
+        </div>
+        <div style="color:#475569;font-size:0.75rem;margin-top:0.5rem">
+          Indica a confiança estatística do score — baseada no número de avaliações recebidas.
+        </div>
+      </div>
+
+      <!-- Indicators -->
+      <div class="nexus-card p-4 mb-4">
+        <div class="fw-semibold text-white mb-3">Indicadores detalhados</div>
+        <div class="d-flex flex-column gap-3">
+
+          <!-- Comunicação -->
+          <div th:if="${reputation.communication != null}">
+            <div class="d-flex justify-content-between mb-1">
+              <span style="color:#94a3b8;font-size:0.85rem">Comunicação</span>
+              <span class="tabular fw-semibold" style="color:#a5b4fc;font-size:0.85rem"
+                    th:text="${#numbers.formatDecimal(reputation.communication,1,1)}">0.0</span>
+            </div>
+            <div class="nexus-breakdown-bar">
+              <div class="nexus-breakdown-bar-fill"
+                   th:style="'width:' + ${reputation.communication * 20} + '%;background:#67e8f9'"></div>
+            </div>
+          </div>
+
+          <!-- Confiabilidade -->
+          <div th:if="${reputation.reliability != null}">
+            <div class="d-flex justify-content-between mb-1">
+              <span style="color:#94a3b8;font-size:0.85rem">Confiabilidade</span>
+              <span class="tabular fw-semibold" style="color:#a5b4fc;font-size:0.85rem"
+                    th:text="${#numbers.formatDecimal(reputation.reliability,1,1)}">0.0</span>
+            </div>
+            <div class="nexus-breakdown-bar">
+              <div class="nexus-breakdown-bar-fill"
+                   th:style="'width:' + ${reputation.reliability * 20} + '%;background:#22c55e'"></div>
+            </div>
+          </div>
+
+          <!-- Pontualidade -->
+          <div th:if="${reputation.punctuality != null}">
+            <div class="d-flex justify-content-between mb-1">
+              <span style="color:#94a3b8;font-size:0.85rem">Pontualidade</span>
+              <span class="tabular fw-semibold" style="color:#a5b4fc;font-size:0.85rem"
+                    th:text="${#numbers.formatDecimal(reputation.punctuality,1,1)}">0.0</span>
+            </div>
+            <div class="nexus-breakdown-bar">
+              <div class="nexus-breakdown-bar-fill"
+                   th:style="'width:' + ${reputation.punctuality * 20} + '%;background:#f59e0b'"></div>
+            </div>
+          </div>
+
+          <!-- Profissionalismo -->
+          <div th:if="${reputation.professionalism != null}">
+            <div class="d-flex justify-content-between mb-1">
+              <span style="color:#94a3b8;font-size:0.85rem">Profissionalismo</span>
+              <span class="tabular fw-semibold" style="color:#a5b4fc;font-size:0.85rem"
+                    th:text="${#numbers.formatDecimal(reputation.professionalism,1,1)}">0.0</span>
+            </div>
+            <div class="nexus-breakdown-bar">
+              <div class="nexus-breakdown-bar-fill"
+                   th:style="'width:' + ${reputation.professionalism * 20} + '%;background:#a78bfa'"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Satisfaction + Recommendation -->
+      <div class="row g-3 mb-4">
+        <div class="col-sm-6" th:if="${reputation.satisfactionAverage != null}">
+          <div class="nexus-card p-4 text-center">
+            <div class="tabular fw-bold" style="font-size:2rem;color:#6b6eff"
+                 th:text="${#numbers.formatDecimal(reputation.satisfactionAverage,1,1)}">0.0</div>
+            <div style="color:#64748b;font-size:0.8rem;margin-top:0.25rem">/ 100 satisfação média</div>
+            <div class="nexus-breakdown-bar mt-2">
+              <div class="nexus-breakdown-bar-fill"
+                   th:style="'width:' + ${reputation.satisfactionAverage} + '%;background:linear-gradient(90deg,#6b6eff,#a78bfa)'"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6" th:if="${reputation.recommendationRate != null}">
+          <div class="nexus-card p-4 text-center">
+            <div class="tabular fw-bold" style="font-size:2rem;color:#22c55e"
+                 th:text="${#numbers.formatDecimal(reputation.recommendationRate,1,0)} + '%'">0%</div>
+            <div style="color:#64748b;font-size:0.8rem;margin-top:0.25rem">recomendariam novamente</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+</body>
+</html>
