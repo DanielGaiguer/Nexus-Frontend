@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Painel Admin')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Painel do Administrador</h1>
+        <p style="color:#64748b;font-size:0.875rem">Visão geral da plataforma Nexus</p>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" th:text="${totalUsers}">0</div>
+              <div class="nexus-stat-label">Total de Usuários</div>
+            </div>
+            <div class="nexus-stat-icon primary"><i class="ti ti-users"></i></div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" th:text="${totalProjects}">0</div>
+              <div class="nexus-stat-label">Total de Projetos</div>
+            </div>
+            <div class="nexus-stat-icon secondary"><i class="ti ti-briefcase"></i></div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" th:text="${totalMatches}">0</div>
+              <div class="nexus-stat-label">Matches Confirmados</div>
+            </div>
+            <div class="nexus-stat-icon success"><i class="ti ti-heart-handshake"></i></div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="nexus-stat-card">
+            <div>
+              <div class="nexus-stat-value tabular" style="color:#f59e0b"
+                   th:text="${pendingCompanies}">0</div>
+              <div class="nexus-stat-label">Aguardando Aprovação</div>
+              <div style="color:#f59e0b;font-size:0.72rem;margin-top:2px"
+                   th:if="${pendingCompanies > 0}">empresas pendentes</div>
+            </div>
+            <div class="nexus-stat-icon warning"><i class="ti ti-clock"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+
+        <!-- Chart: matches por mês -->
+        <div class="col-lg-7">
+          <div class="nexus-card p-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div>
+                <div class="fw-semibold text-white">Matches por mês</div>
+                <div style="color:#64748b;font-size:0.8rem">Evolução dos matches confirmados</div>
+              </div>
+            </div>
+            <!-- Bar chart CSS puro -->
+            <div class="d-flex align-items-end gap-2" style="height:140px;padding-bottom:0">
+              <th:block th:each="bar,bStat : ${monthlyData}">
+                <div class="d-flex flex-column align-items-center flex-fill gap-1">
+                  <span class="tabular" style="color:#64748b;font-size:0.65rem"
+                        th:text="${bar.value}">0</span>
+                  <div style="width:100%;border-radius:6px 6px 0 0;min-height:4px;
+                              background:linear-gradient(180deg,#6b6eff,#a78bfa);
+                              transition:height 0.6s ease"
+                       th:style="'height:' + ${bar.value > 0 ? (bar.value * 100 / maxMonthly) + '%' : '4px'}"></div>
+                  <span style="color:#475569;font-size:0.62rem" th:text="${bar.label}">Jan</span>
+                </div>
+              </th:block>
+              <!-- Fallback when no data -->
+              <div th:if="${monthlyData == null or #lists.isEmpty(monthlyData)}"
+                   class="w-100 d-flex align-items-center justify-content-center"
+                   style="color:#334155;font-size:0.875rem">
+                Dados não disponíveis
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending companies -->
+        <div class="col-lg-5">
+          <div class="nexus-card p-0 h-100">
+            <div class="d-flex align-items-center justify-content-between p-3 pb-2">
+              <div>
+                <div class="fw-semibold text-white">Aguardando aprovação</div>
+                <div style="color:#64748b;font-size:0.8rem"
+                     th:text="${pendingCompanies} + ' empresa(s) pendente(s)'">0</div>
+              </div>
+              <a th:href="@{/admin/approvals}"
+                 style="color:#6b6eff;font-size:0.8rem;font-weight:600;text-decoration:none">
+                Ver todas <i class="ti ti-arrow-right"></i>
+              </a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(pendingList)}"
+                 class="d-flex align-items-center justify-content-center py-4"
+                 style="color:#334155;font-size:0.875rem">
+              Nenhuma empresa pendente
+            </div>
+
+            <div th:unless="${#lists.isEmpty(pendingList)}">
+              <div th:each="co,iStat : ${pendingList}"
+                   th:classappend="${!iStat.last} ? 'border-bottom' : ''"
+                   style="border-color:rgba(107,110,255,0.08)!important"
+                   class="d-flex align-items-center gap-3 p-3">
+                <div class="nexus-avatar-initials nexus-avatar-sm"
+                     th:with="n=${co.companyName},h=${n.hashCode()},hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.7rem'"
+                     th:text="${#strings.substring(n,0,2).toUpperCase()}">CN</div>
+                <div class="flex-fill overflow-hidden">
+                  <div class="fw-medium text-white text-truncate" style="font-size:0.875rem"
+                       th:text="${co.companyName}">Empresa</div>
+                  <div style="color:#475569;font-size:0.75rem"
+                       th:text="${(co.city!=null?co.city:'') + (co.uf!=null?', '+co.uf:'')}">Cidade</div>
+                </div>
+                <span class="nexus-status-badge warning">Pendente</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Latest companies table -->
+        <div class="col-12">
+          <div class="nexus-card p-0">
+            <div class="p-3 pb-2">
+              <div class="fw-semibold text-white">Últimas empresas cadastradas</div>
+            </div>
+            <div class="table-responsive">
+              <table class="nexus-table" style="border-spacing:0">
+                <thead>
+                  <tr>
+                    <th>Empresa</th>
+                    <th>CNPJ</th>
+                    <th>Cidade</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="co : ${latestCompanies}">
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="nexus-avatar-initials nexus-avatar-sm"
+                             th:with="n=${co.companyName},h=${n.hashCode()},hue=${(h%360)<0?(h%360)+360:h%360}"
+                             th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.7rem'"
+                             th:text="${#strings.substring(n,0,2).toUpperCase()}">CN</div>
+                        <span class="fw-medium text-white" th:text="${co.companyName}">—</span>
+                      </div>
+                    </td>
+                    <td class="tabular" style="color:#64748b;font-size:0.8rem"
+                        th:text="${co.taxId}">—</td>
+                    <td style="color:#94a3b8;font-size:0.875rem"
+                        th:text="${(co.city!=null?co.city:'') + (co.uf!=null?', '+co.uf:'')}">—</td>
+                    <td>
+                      <span th:switch="${co.status}">
+                        <span th:case="'APPROVED'" class="nexus-status success">Aprovada</span>
+                        <span th:case="'PENDING'"  class="nexus-status warning">Pendente</span>
+                        <span th:case="'REJECTED'" class="nexus-status danger">Rejeitada</span>
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+</body>
+</html>

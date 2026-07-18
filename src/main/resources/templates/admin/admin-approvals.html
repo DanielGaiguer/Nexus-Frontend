@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Aprovações')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
+      <!-- Header -->
+      <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Aprovação de Empresas</h1>
+        <p style="color:#64748b;font-size:0.875rem">Verifique e aprove ou rejeite novos cadastros de empresas</p>
+      </div>
+
+      <!-- Search + filter tabs -->
+      <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+        <div style="position:relative;flex:1;min-width:220px;max-width:340px">
+          <i class="ti ti-search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
+          <input type="text" id="searchInput" class="nexus-input" placeholder="Buscar empresa..."
+                 style="padding-left:2.2rem" oninput="filterCards()">
+        </div>
+        <div class="nexus-tabs">
+          <button class="nexus-tab active" id="tab-all"      onclick="filterStatus('all')">
+            Todas <span class="badge" th:text="${#lists.size(companies)}">0</span>
+          </button>
+          <button class="nexus-tab" id="tab-pending"   onclick="filterStatus('PENDING')">
+            Pendentes <span class="badge" th:text="${pendingCount}">0</span>
+          </button>
+          <button class="nexus-tab" id="tab-approved"  onclick="filterStatus('APPROVED')">
+            Aprovadas
+          </button>
+          <button class="nexus-tab" id="tab-rejected"  onclick="filterStatus('REJECTED')">
+            Rejeitadas
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <div th:if="${#lists.isEmpty(companies)}"
+           class="nexus-card p-5 text-center">
+        <i class="ti ti-building-off" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhuma empresa encontrada</div>
+      </div>
+
+      <!-- Company cards -->
+      <div class="d-flex flex-column gap-3" id="companyList">
+        <div th:each="co : ${companies}"
+             class="nexus-card p-4 company-card"
+             th:data-status="${co.status}"
+             th:data-name="${co.companyName}">
+          <div class="d-flex align-items-start gap-3 flex-wrap">
+
+            <!-- Avatar -->
+            <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                 th:with="n=${co.companyName},h=${n.hashCode()},hue=${(h%360)<0?(h%360)+360:h%360}"
+                 th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                 th:text="${#strings.substring(n,0,2).toUpperCase()}">CN</div>
+
+            <!-- Info -->
+            <div class="flex-fill">
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <span class="fw-semibold text-white" style="font-size:1rem"
+                      th:text="${co.companyName}">Empresa</span>
+                <span th:switch="${co.status}">
+                  <span th:case="'PENDING'"  class="nexus-status warning">Pendente</span>
+                  <span th:case="'APPROVED'" class="nexus-status success">Aprovada</span>
+                  <span th:case="'REJECTED'" class="nexus-status danger">Rejeitada</span>
+                </span>
+              </div>
+              <div style="color:#94a3b8;font-size:0.85rem;margin-bottom:0.5rem"
+                   th:if="${co.description != null}" th:text="${co.description}">—</div>
+              <div class="d-flex gap-3 flex-wrap" style="font-size:0.78rem;color:#64748b">
+                <span><i class="ti ti-id" style="color:#6b6eff"></i>
+                  <span class="tabular ms-1" th:text="${co.taxId}">—</span></span>
+                <span><i class="ti ti-map-pin" style="color:#6b6eff"></i>
+                  <span class="ms-1" th:text="${(co.city!=null?co.city:'')+(co.uf!=null?', '+co.uf:'')}">—</span></span>
+              </div>
+            </div>
+
+            <!-- Actions (only for PENDING) -->
+            <div class="d-flex gap-2 flex-shrink-0" th:if="${co.status == 'PENDING'}">
+              <button type="button"
+                      class="nexus-btn nexus-btn-danger-outline nexus-btn-sm reject-co-trigger"
+                      th:data-id="${co.id}" th:data-name="${co.companyName}">
+                <i class="ti ti-x"></i> Rejeitar
+              </button>
+              <form th:action="@{/admin/companies/{id}/approve(id=${co.id})}" method="post"
+                    style="display:inline">
+                <button type="submit" class="nexus-btn nexus-btn-success nexus-btn-sm">
+                  <i class="ti ti-check"></i> Aprovar empresa
+                </button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL REJEITAR EMPRESA ════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="rejectCoModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(239,68,68,0.15)">
+        <div style="width:4px;height:40px;background:#ef4444;border-radius:2px;margin-right:0.75rem"></div>
+        <div>
+          <h5 class="modal-title fw-semibold text-white">Rejeitar empresa</h5>
+          <div style="color:#64748b;font-size:0.8rem">Esta ação é definitiva</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="color:#94a3b8;font-size:0.875rem">
+          Deseja rejeitar o cadastro de
+          <strong class="text-white" id="rejectCoName">—</strong>?
+          A empresa não poderá acessar a plataforma. Esta ação não pode ser desfeita.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <form id="rejectCoForm" method="post">
+          <button type="submit" class="nexus-btn nexus-btn-danger-outline">
+            <i class="ti ti-x"></i> Confirmar rejeição
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script>
+var currentStatus = 'all';
+
+function filterStatus(status) {
+  currentStatus = status;
+  ['all','pending','approved','rejected'].forEach(function(s) {
+    document.getElementById('tab-' + s).classList.remove('active');
+  });
+  document.getElementById('tab-' + status.toLowerCase()).classList.add('active');
+  applyFilters();
+}
+
+function filterCards() { applyFilters(); }
+
+function applyFilters() {
+  var search = (document.getElementById('searchInput').value || '').toLowerCase();
+  document.querySelectorAll('.company-card').forEach(function(card) {
+    var statusMatch = currentStatus === 'all' || card.dataset.status === currentStatus.toUpperCase();
+    var nameMatch   = !search || (card.dataset.name || '').toLowerCase().includes(search);
+    card.style.display = (statusMatch && nameMatch) ? 'block' : 'none';
+  });
+}
+
+document.querySelectorAll('.reject-co-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.getElementById('rejectCoName').textContent = this.dataset.name;
+    document.getElementById('rejectCoForm').action = '/admin/companies/' + this.dataset.id + '/reject';
+    new bootstrap.Modal(document.getElementById('rejectCoModal')).show();
+  });
+});
+</script>
+</body>
+</html>

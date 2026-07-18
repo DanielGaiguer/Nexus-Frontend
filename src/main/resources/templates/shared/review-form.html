@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Usuários')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+
+      <!-- Header -->
+      <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Gerenciamento de Usuários</h1>
+        <p style="color:#64748b;font-size:0.875rem"
+           th:text="${#lists.size(users)} + ' usuários cadastrados na plataforma'">0</p>
+      </div>
+
+      <!-- Search + type filter -->
+      <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+        <div style="position:relative;flex:1;min-width:220px;max-width:360px">
+          <i class="ti ti-search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
+          <input type="text" id="userSearch" class="nexus-input"
+                 placeholder="Buscar por nome ou e-mail..."
+                 style="padding-left:2.2rem" oninput="filterUsers()">
+        </div>
+        <div class="nexus-tabs">
+          <button class="nexus-tab active" id="utype-all"          onclick="filterType('all')">
+            Todos <span class="badge" th:text="${#lists.size(users)}">0</span>
+          </button>
+          <button class="nexus-tab" id="utype-PROFESSIONAL" onclick="filterType('PROFESSIONAL')">
+            Professional
+          </button>
+          <button class="nexus-tab" id="utype-COMPANY"      onclick="filterType('COMPANY')">
+            Company
+          </button>
+          <button class="nexus-tab" id="utype-ADMIN"        onclick="filterType('ADMIN')">
+            Admin
+          </button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="nexus-card p-0">
+        <div class="table-responsive">
+          <table class="nexus-table" style="border-spacing:0" id="usersTable">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>E-mail</th>
+                <th>Tipo</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="u : ${users}"
+                  class="user-row"
+                  th:data-email="${u.email}"
+                  th:data-type="${u.type}">
+                <!-- Avatar + name derived from email -->
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="nexus-avatar-initials nexus-avatar-sm"
+                         th:with="initials=${#strings.substring(u.email,0,1).toUpperCase()},
+                                  h=${u.email.hashCode()},
+                                  hue=${(h%360)<0?(h%360)+360:h%360}"
+                         th:style="'background:hsl('+${hue}+',50%,38%)'"
+                         th:text="${initials}">U</div>
+                    <span class="fw-medium text-white" style="font-size:0.875rem"
+                          th:text="${u.email}">—</span>
+                  </div>
+                </td>
+                <td style="color:#64748b;font-size:0.82rem" th:text="${u.email}">—</td>
+                <td>
+                  <span th:switch="${u.type}">
+                    <span th:case="'PROFESSIONAL'" class="nexus-status-badge purple" style="font-size:0.72rem">
+                      <i class="ti ti-user me-1"></i>Professional
+                    </span>
+                    <span th:case="'COMPANY'" class="nexus-status-badge info" style="font-size:0.72rem">
+                      <i class="ti ti-building me-1"></i>Company
+                    </span>
+                    <span th:case="'ADMIN'" class="nexus-status-badge warning" style="font-size:0.72rem">
+                      <i class="ti ti-shield me-1"></i>Admin
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  <span th:if="${u.active}"  class="nexus-status success">Ativo</span>
+                  <span th:unless="${u.active}" class="nexus-status danger">Inativo</span>
+                </td>
+                <td>
+                  <button type="button"
+                          class="nexus-btn nexus-btn-ghost nexus-btn-sm toggle-trigger"
+                          th:data-id="${u.id}"
+                          th:data-active="${u.active}"
+                          th:data-email="${u.email}"
+                          th:text="${u.active ? 'Desativar' : 'Ativar'}">Toggle</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL TOGGLE USER ═════════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="toggleUserModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div id="toggleStatusBar"
+             style="width:4px;height:40px;border-radius:2px;margin-right:0.75rem;background:#f59e0b"></div>
+        <h5 class="modal-title fw-semibold text-white" id="toggleModalTitle">Alterar status</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="color:#94a3b8;font-size:0.875rem" id="toggleModalBody">
+          Deseja alterar o status deste usuário?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <form id="toggleForm" method="post">
+          <button type="submit" class="nexus-btn nexus-btn-primary" id="toggleConfirmBtn">Confirmar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script>
+var currentType = 'all';
+
+function filterType(type) {
+  currentType = type;
+  ['all','PROFESSIONAL','COMPANY','ADMIN'].forEach(function(t) {
+    document.getElementById('utype-' + t).classList.remove('active');
+  });
+  document.getElementById('utype-' + type).classList.add('active');
+  applyUserFilters();
+}
+
+function filterUsers() { applyUserFilters(); }
+
+function applyUserFilters() {
+  var search = (document.getElementById('userSearch').value || '').toLowerCase();
+  document.querySelectorAll('.user-row').forEach(function(row) {
+    var typeMatch  = currentType === 'all' || row.dataset.type === currentType;
+    var emailMatch = !search || (row.dataset.email || '').toLowerCase().includes(search);
+    row.style.display = (typeMatch && emailMatch) ? '' : 'none';
+  });
+}
+
+document.querySelectorAll('.toggle-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var id     = this.dataset.id;
+    var active = this.dataset.active === 'true';
+    var email  = this.dataset.email;
+    var action = active ? 'desativar' : 'ativar';
+
+    document.getElementById('toggleStatusBar').style.background = active ? '#ef4444' : '#22c55e';
+    document.getElementById('toggleModalTitle').textContent = (active ? 'Desativar' : 'Ativar') + ' usuário';
+    document.getElementById('toggleModalBody').textContent  =
+      'Deseja ' + action + ' a conta de ' + email + '? O usuário ' +
+      (active ? 'perderá o acesso à plataforma.' : 'voltará a ter acesso normalmente.');
+    document.getElementById('toggleConfirmBtn').textContent = active ? 'Desativar' : 'Ativar';
+    document.getElementById('toggleForm').action = '/admin/users/' + id + '/toggle';
+    new bootstrap.Modal(document.getElementById('toggleUserModal')).show();
+  });
+});
+</script>
+</body>
+</html>
