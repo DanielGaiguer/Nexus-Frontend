@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Ranking')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+
+      <!-- Back -->
+      <a th:href="@{/company/projects}"
+         class="text-decoration-none d-inline-flex align-items-center gap-1 mb-4"
+         style="color:#64748b;font-size:0.875rem">
+        <i class="ti ti-arrow-left"></i> Voltar para projetos
+      </a>
+
+      <!-- Hero header -->
+      <div class="nexus-card p-4 mb-4"
+           style="background:linear-gradient(135deg,rgba(107,110,255,0.12),rgba(13,19,41,0.9))">
+        <div style="color:#6b6eff;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem">
+          Ranking de Profissionais
+        </div>
+        <h2 class="fw-bold text-white mb-1" style="font-size:1.5rem;letter-spacing:-0.02em"
+            th:text="${project.title}">Projeto</h2>
+        <div class="d-flex gap-3 flex-wrap" style="color:#64748b;font-size:0.8rem">
+          <span>
+            <i class="ti ti-users me-1"></i>
+            <span th:text="${#lists.size(ranking)} + ' profissionais classificados'">0</span>
+          </span>
+          <span th:switch="${project.modality}">
+            <span th:case="'REMOTE'"><i class="ti ti-map-pin me-1"></i>Remoto</span>
+            <span th:case="'ONSITE'"><i class="ti ti-map-pin me-1"></i>Presencial</span>
+            <span th:case="'HYBRID'"><i class="ti ti-map-pin me-1"></i>Híbrido</span>
+          </span>
+          <span>
+            <i class="ti ti-currency-dollar me-1"></i>
+            <span class="tabular"
+                  th:text="'R$'+${#numbers.formatDecimal(project.minimumBudget,1,'COMMA',0,'POINT')}+'–'+${#numbers.formatDecimal(project.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <div th:if="${#lists.isEmpty(ranking)}"
+           class="nexus-card p-5 text-center">
+        <i class="ti ti-users-off" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhum profissional no ranking</div>
+        <div style="color:#475569;font-size:0.875rem">
+          Ainda não há profissionais elegíveis para este projeto. O ranking é gerado automaticamente quando profissionais se cadastram.
+        </div>
+      </div>
+
+      <!-- Ranking list -->
+      <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(ranking)}">
+        <div th:each="item,iStat : ${ranking}" class="nexus-card p-4">
+          <div class="d-flex align-items-start gap-3 flex-wrap">
+
+            <!-- Position number -->
+            <div class="fw-bold text-center flex-shrink-0"
+                 style="font-size:1.4rem;color:#334155;width:32px;padding-top:4px"
+                 th:text="'#' + ${iStat.count}">#1</div>
+
+            <!-- Avatar -->
+            <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                 th:with="n=${item.professional != null ? item.professional.name : 'P'},
+                          h=${n.hashCode()},
+                          hue=${(h%360)<0?(h%360)+360:h%360}"
+                 th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                 th:text="${#strings.substring(n,0,2).toUpperCase()}">P</div>
+
+            <!-- Info -->
+            <div class="flex-fill">
+              <div class="fw-semibold text-white"
+                   th:text="${item.professional != null ? item.professional.name : 'Profissional'}">Nome</div>
+              <div style="color:#64748b;font-size:0.8rem">Profissional</div>
+
+              <!-- Score breakdown (rendered dinamicamente conforme o cenário) -->
+              <div class="row g-2 mt-2" style="font-size:0.75rem">
+                <div class="col-6 col-md-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#64748b">Skills</span>
+                  </div>
+                  <div class="nexus-breakdown-bar">
+                    <div class="nexus-breakdown-bar-fill" style="width:0%"></div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#64748b">Orçamento</span>
+                  </div>
+                  <div class="nexus-breakdown-bar">
+                    <div class="nexus-breakdown-bar-fill" style="width:0%"></div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#64748b">Histórico</span>
+                  </div>
+                  <div class="nexus-breakdown-bar">
+                    <div class="nexus-breakdown-bar-fill" style="width:0%"></div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#64748b">Reputação</span>
+                  </div>
+                  <div class="nexus-breakdown-bar">
+                    <div class="nexus-breakdown-bar-fill" style="width:0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Score ring + action -->
+            <div class="d-flex flex-column align-items-center gap-2 flex-shrink-0">
+              <div th:with="s=${item.getScoreAsInt()},
+                            c=${s>=85?'high':(s>=70?'medium':'low')}">
+                <div style="position:relative;width:64px;height:64px">
+                  <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
+                    <circle cx="32" cy="32" r="27" class="nexus-score-ring-bg" stroke-width="5"/>
+                    <circle cx="32" cy="32" r="27"
+                            th:class="'nexus-score-ring-fill ' + ${c}"
+                            stroke-width="5"
+                            stroke-dasharray="169.65"
+                            th:stroke-dashoffset="${169.65 - (s/100.0)*169.65}"/>
+                  </svg>
+                  <div class="nexus-score-ring-label">
+                    <span class="nexus-score-ring-pct" th:text="${s}+'%'">0%</span>
+                    <span class="nexus-score-ring-tag"
+                          th:text="${s>=85?'Alto':(s>=70?'Médio':'Baixo')}"
+                          th:style="${s>=85?'color:#22c55e':(s>=70?'color:#f59e0b':'color:#ef4444')}">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action: interest or status badge -->
+              <th:block th:switch="${item.status}">
+                <th:block th:case="'WAITING'">
+                  <form th:action="@{/company/matches/{id}/interest(id=${item.id})}" method="post">
+                    <button type="submit" class="nexus-btn nexus-btn-primary nexus-btn-sm">
+                      <i class="ti ti-send"></i> Demonstrar interesse
+                    </button>
+                  </form>
+                </th:block>
+                <th:block th:case="'COMPANY_INTERESTED'">
+                  <span class="nexus-status-badge warning">Interesse enviado</span>
+                </th:block>
+                <th:block th:case="'PROFESSIONAL_INTERESTED'">
+                  <span class="nexus-status-badge info">Profissional interessado</span>
+                </th:block>
+                <th:block th:case="'MATCHED'">
+                  <span class="nexus-status-badge success">Match confirmado</span>
+                </th:block>
+                <th:block th:case="'REJECTED'">
+                  <span class="nexus-status-badge danger">Rejeitado</span>
+                </th:block>
+              </th:block>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+</body>
+</html>

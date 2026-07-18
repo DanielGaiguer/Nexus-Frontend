@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Meus Projetos')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
+      <!-- Header -->
+      <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
+        <div>
+          <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Meus Projetos</h1>
+          <p style="color:#64748b;font-size:0.875rem">Gerencie seus projetos e veja os rankings de profissionais</p>
+        </div>
+        <a th:href="@{/company/projects/new}" class="nexus-btn nexus-btn-primary">
+          <i class="ti ti-plus"></i> Novo projeto
+        </a>
+      </div>
+
+      <!-- Info alert -->
+      <div class="nexus-alert nexus-alert-info mb-4" style="font-size:0.82rem">
+        <i class="ti ti-info-circle"></i>
+        Ao criar um projeto, o ranking de profissionais compatíveis é gerado automaticamente. Ao editar, os scores em aberto são recalculados.
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="nexus-tabs mb-4">
+        <button class="nexus-tab active" id="tab-all" onclick="filterProjects('all')">Todos</button>
+        <button class="nexus-tab" id="tab-open" onclick="filterProjects('OPEN')">Aberto</button>
+        <button class="nexus-tab" id="tab-closed" onclick="filterProjects('CLOSED')">Encerrado</button>
+        <button class="nexus-tab" id="tab-cancelled" onclick="filterProjects('CANCELLED')">Cancelado</button>
+      </div>
+
+      <!-- Empty -->
+      <div th:if="${#lists.isEmpty(projects)}"
+           class="nexus-card p-5 text-center">
+        <i class="ti ti-folder-off" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhum projeto publicado</div>
+        <div style="color:#475569;font-size:0.875rem;margin-bottom:1.25rem">
+          Crie seu primeiro projeto e encontre os profissionais certos para ele.
+        </div>
+        <a th:href="@{/company/projects/new}" class="nexus-btn nexus-btn-primary">
+          <i class="ti ti-plus"></i> Criar meu primeiro projeto
+        </a>
+      </div>
+
+      <!-- Project cards -->
+      <div class="d-flex flex-column gap-3" id="projectList">
+        <div th:each="proj : ${projects}"
+             class="nexus-card p-4 project-card"
+             th:data-status="${proj.status}">
+          <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-2">
+            <!-- Title + status -->
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <span class="fw-semibold text-white" style="font-size:1rem"
+                      th:text="${proj.title}">Título</span>
+                <span th:switch="${proj.status}">
+                  <span th:case="'OPEN'"      class="nexus-status success">Aberto</span>
+                  <span th:case="'CLOSED'"    class="nexus-status danger">Encerrado</span>
+                  <span th:case="'CANCELLED'" class="nexus-status danger">Cancelado</span>
+                </span>
+              </div>
+              <div style="color:#475569;font-size:0.78rem"
+                   th:text="'Criado em ' + ${#temporals.format(proj.createdAt,'dd/MM/yyyy')}">—</div>
+            </div>
+            <!-- Positions indicator -->
+            <div class="text-end" th:if="${proj.maxPositions != null}">
+              <div style="color:#64748b;font-size:0.75rem">Posições</div>
+              <div class="tabular fw-semibold" style="color:#a5b4fc;font-size:0.9rem"
+                   th:text="${proj.filledPositions} + '/' + ${proj.maxPositions}">0/1</div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <p style="color:#94a3b8;font-size:0.875rem;line-height:1.6;margin-bottom:0.75rem"
+             th:text="${proj.description}">—</p>
+
+          <!-- Meta row -->
+          <div class="d-flex gap-4 flex-wrap mb-3" style="font-size:0.8rem;color:#64748b">
+            <span>
+              <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
+              <span class="tabular"
+                    th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}+'–'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+            </span>
+            <span>
+              <i class="ti ti-map-pin" style="color:#6b6eff"></i>
+              <span th:switch="${proj.modality}">
+                <span th:case="'REMOTE'">Remoto</span>
+                <span th:case="'ONSITE'">Presencial</span>
+                <span th:case="'HYBRID'">Híbrido</span>
+                <span th:case="*" th:text="${proj.modality}">—</span>
+              </span>
+            </span>
+            <span>
+              <i class="ti ti-calendar" style="color:#6b6eff"></i>
+              <span class="tabular"
+                    th:text="${#temporals.format(proj.deadline,'dd/MM/yyyy')}">—</span>
+            </span>
+          </div>
+
+          <!-- Skills -->
+          <div class="d-flex flex-wrap gap-2 mb-3"
+               th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
+            <span th:each="sk : ${proj.requiredSkills}"
+                  class="nexus-chip nexus-chip-tech" th:text="${sk}">Skill</span>
+          </div>
+
+          <!-- Actions -->
+          <div class="d-flex gap-2 flex-wrap">
+            <a th:href="@{/company/projects/{id}/ranking(id=${proj.id})}"
+               class="nexus-btn nexus-btn-primary nexus-btn-sm">
+              <i class="ti ti-chart-bar"></i> Ver ranking
+            </a>
+            <a th:href="@{/company/projects/{id}/edit(id=${proj.id})}"
+               class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+              <i class="ti ti-pencil"></i> Editar
+            </a>
+            <button th:if="${proj.status == 'OPEN'}"
+                    type="button"
+                    class="nexus-btn nexus-btn-ghost nexus-btn-sm close-trigger"
+                    th:data-id="${proj.id}" th:data-title="${proj.title}">
+              <i class="ti ti-lock"></i> Encerrar
+            </button>
+            <button type="button"
+                    class="nexus-btn nexus-btn-danger-outline nexus-btn-sm delete-proj-trigger"
+                    th:data-id="${proj.id}" th:data-title="${proj.title}">
+              <i class="ti ti-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL ENCERRAR ════════════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="closeModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div style="width:4px;height:40px;background:#f59e0b;border-radius:2px;margin-right:0.75rem"></div>
+        <h5 class="modal-title fw-semibold text-white">Encerrar projeto</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="color:#94a3b8">
+          Deseja encerrar o projeto <strong class="text-white" id="closeProjTitle">—</strong>?
+          O projeto ficará indisponível para novos matches, mas os matches existentes serão preservados.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <form id="closeForm" method="post">
+          <button type="submit" class="nexus-btn" style="background:#f59e0b;color:#000;font-weight:700">
+            <i class="ti ti-lock"></i> Encerrar projeto
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL DELETAR ═════════════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="deleteProjModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(239,68,68,0.2)">
+        <div style="width:4px;height:40px;background:#ef4444;border-radius:2px;margin-right:0.75rem"></div>
+        <h5 class="modal-title fw-semibold text-white">Excluir projeto</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="color:#94a3b8">
+          Tem certeza que deseja excluir o projeto
+          <strong class="text-white" id="deleteProjTitle">—</strong>?
+          Esta ação é permanente e não pode ser desfeita.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <form id="deleteProjForm" method="post">
+          <button type="submit" class="nexus-btn nexus-btn-danger-outline">
+            <i class="ti ti-trash"></i> Excluir permanentemente
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script>
+function filterProjects(status) {
+  document.querySelectorAll('.nexus-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('tab-' + status.toLowerCase()).classList.add('active');
+  document.querySelectorAll('.project-card').forEach(function(card) {
+    card.style.display = (status === 'all' || card.dataset.status === status) ? 'block' : 'none';
+  });
+}
+
+document.querySelectorAll('.close-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.getElementById('closeProjTitle').textContent = this.dataset.title;
+    document.getElementById('closeForm').action = '/company/projects/' + this.dataset.id + '/close';
+    new bootstrap.Modal(document.getElementById('closeModal')).show();
+  });
+});
+
+document.querySelectorAll('.delete-proj-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.getElementById('deleteProjTitle').textContent = this.dataset.title;
+    document.getElementById('deleteProjForm').action = '/company/projects/' + this.dataset.id + '/delete';
+    new bootstrap.Modal(document.getElementById('deleteProjModal')).show();
+  });
+});
+</script>
+</body>
+</html>

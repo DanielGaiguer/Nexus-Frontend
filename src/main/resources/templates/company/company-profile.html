@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Perfil da Empresa')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
+      <!-- Header -->
+      <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
+        <div>
+          <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Perfil da Empresa</h1>
+          <p style="color:#64748b;font-size:0.875rem">Informações visíveis para profissionais após o match</p>
+        </div>
+        <button type="button" class="nexus-btn nexus-btn-primary"
+                data-bs-toggle="modal" data-bs-target="#editCompanyModal">
+          <i class="ti ti-pencil"></i> Editar
+        </button>
+      </div>
+
+      <div class="row g-3">
+
+        <!-- Left col -->
+        <div class="col-lg-4">
+
+          <!-- Avatar + nome -->
+          <div class="nexus-card p-4 text-center mb-3">
+            <div class="nexus-avatar-xl mx-auto mb-3"
+                 th:with="n=${profile.companyName != null ? profile.companyName : 'C'},
+                          h=${n.hashCode()},
+                          hue=${(h%360)<0?(h%360)+360:h%360}"
+                 th:style="'background:hsl('+${hue}+',50%,40%)'">
+              <span style="font-size:1.75rem;font-weight:700;color:#fff"
+                    th:text="${#strings.substring(n,0,2).toUpperCase()}">TC</span>
+            </div>
+            <div class="fw-bold text-white" style="font-size:1.15rem" th:text="${profile.companyName}">Empresa</div>
+            <div style="color:#64748b;font-size:0.85rem;margin-top:2px">Empresa de Software</div>
+            <!-- Reputação estrelas -->
+            <div class="d-flex align-items-center justify-content-center gap-1 mt-2"
+                 th:if="${profile.reputation != null}">
+              <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                <i th:class="${i <= profile.reputation} ? 'ti ti-star-filled' : 'ti ti-star'"
+                   style="color:#f59e0b;font-size:0.9rem"></i>
+              </th:block>
+              <span class="tabular ms-1" style="color:#f59e0b;font-size:0.85rem;font-weight:600"
+                    th:text="${#numbers.formatDecimal(profile.reputation,1,1)}">0.0</span>
+            </div>
+            <div style="color:#475569;font-size:0.75rem;margin-top:2px"
+                 th:if="${profile.reputation != null}">
+              Baseado em avaliações de profissionais
+            </div>
+            <!-- Status badge -->
+            <div class="mt-3">
+              <span th:switch="${profile.status}"
+                    class="nexus-status-badge">
+                <span th:case="'APPROVED'" class="nexus-status-badge success">
+                  <i class="ti ti-shield-check me-1"></i>Empresa Verificada
+                </span>
+                <span th:case="'PENDING'" class="nexus-status-badge warning">
+                  <i class="ti ti-clock me-1"></i>Aguardando Aprovação
+                </span>
+                <span th:case="'REJECTED'" class="nexus-status-badge danger">
+                  <i class="ti ti-x me-1"></i>Cadastro Rejeitado
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Contato -->
+          <div class="nexus-card p-3 mb-3">
+            <div class="fw-semibold text-white mb-2">Contato</div>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-building" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${(profile.city!=null?profile.city:'') + (profile.uf!=null?', '+profile.uf:'')}">Cidade</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-phone" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${profile.phone}">Telefone</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-mail" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${profile.email}">Email</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-id" style="color:#6b6eff;width:16px"></i>
+                <span class="tabular" th:text="${profile.taxId}">CNPJ</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reputação link -->
+          <div class="nexus-card p-3">
+            <a th:href="@{/company/reputation}"
+               class="d-flex align-items-center gap-2 text-decoration-none"
+               style="color:#6b6eff;font-size:0.875rem;font-weight:500">
+              <i class="ti ti-chart-bar"></i>
+              Ver detalhamento completo da reputação →
+            </a>
+          </div>
+
+        </div><!-- /col-lg-4 -->
+
+        <!-- Right col -->
+        <div class="col-lg-8">
+
+          <!-- Dados da empresa -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">Dados da empresa</div>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <div class="nexus-label">Nome da Empresa</div>
+                <div class="text-white fw-medium" th:text="${profile.companyName}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">CNPJ</div>
+                <div class="text-white fw-medium tabular" th:text="${profile.taxId}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Cidade</div>
+                <div class="text-white fw-medium"
+                     th:text="${(profile.city!=null?profile.city:'') + (profile.uf!=null?', '+profile.uf:'')}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Telefone</div>
+                <div class="text-white fw-medium" th:text="${profile.phone}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">E-mail</div>
+                <div class="text-white fw-medium" th:text="${profile.email}">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Descrição -->
+          <div class="nexus-card p-4 mb-3" th:if="${profile.description != null}">
+            <div class="fw-semibold text-white mb-2">Descrição</div>
+            <p style="color:#94a3b8;font-size:0.875rem;line-height:1.7;margin:0"
+               th:text="${profile.description}">—</p>
+          </div>
+
+          <!-- Métricas -->
+          <div class="row g-3">
+            <div class="col-4">
+              <div class="nexus-card p-3 text-center">
+                <div class="nexus-stat-value tabular" th:text="${totalProjects}">0</div>
+                <div class="nexus-stat-label mt-1">Projetos postados</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="nexus-card p-3 text-center">
+                <div class="nexus-stat-value tabular" th:text="${confirmedMatches}">0</div>
+                <div class="nexus-stat-label mt-1">Matches realizados</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="nexus-card p-3 text-center">
+                <div class="nexus-stat-value tabular"
+                     th:text="${totalProjects > 0 ? #numbers.formatDecimal(confirmedMatches * 100.0 / totalProjects,1,0) + '%' : '—'}">—</div>
+                <div class="nexus-stat-label mt-1">Taxa de sucesso</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /col-lg-8 -->
+      </div><!-- /row -->
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL EDITAR ══════════════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="editCompanyModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-semibold text-white">Editar Perfil da Empresa</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form th:action="@{/company/profile}" method="post" id="editCompanyForm">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="nexus-label">Nome da empresa *</label>
+              <input type="text" class="nexus-input" name="companyName" id="editCompanyName"
+                     th:value="${profile.companyName}" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">CNPJ (não editável)</label>
+              <input type="text" class="nexus-input" readonly
+                     th:value="${profile.taxId}"
+                     style="opacity:0.5;cursor:not-allowed">
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">Telefone</label>
+              <input type="text" class="nexus-input" name="phone" id="editCompanyPhone"
+                     th:value="${profile.phone}">
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">CEP</label>
+              <input type="text" class="nexus-input" name="cep" id="editCompanyCep"
+                     th:value="${profile.cep}" maxlength="9" placeholder="00000-000">
+              <div style="color:#475569;font-size:0.75rem;margin-top:4px">
+                Cidade e estado são preenchidos automaticamente
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="nexus-label">Descrição</label>
+              <textarea class="nexus-input nexus-textarea" name="description"
+                        placeholder="Fale sobre sua empresa e os projetos que costuma contratar..."
+                        th:text="${profile.description}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="nexus-btn nexus-btn-primary" id="editCompanySubmit">Salvar alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('editCompanyForm');
+  if (!form) return;
+  attachSubmitGuard(form, function() {
+    var name = document.getElementById('editCompanyName').value.trim();
+    var cep  = document.getElementById('editCompanyCep').value;
+    return name.length >= 2 && validateCEP(cep);
+  });
+});
+</script>
+</body>
+</html>
