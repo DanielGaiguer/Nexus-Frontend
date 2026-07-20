@@ -65,7 +65,7 @@
     var skills = (p.skills || []).join(', ') || 'Sem skills';
     var popup = '<div style="min-width:160px">' +
       '<div style="font-weight:600;font-size:0.9rem;margin-bottom:4px">' + (p.name || 'Profissional') + '</div>' +
-      '<div style="color:#64748b;font-size:0.78rem;margin-bottom:4px">' + (p.city || '') + (p.uf ? ', ' + p.uf : '') + '</div>' +
+      '<div style="color:#64748b;font-size:0.78rem;margin-bottom:4px">' + (p.city || '') + (p.state ? ', ' + p.state : '') + '</div>' +
       '<div style="color:#6b6eff;font-size:0.75rem;margin-bottom:4px">' + expLabel(p.experienceLevel) + '</div>' +
       '<div style="color:#94a3b8;font-size:0.75rem">' + skills + '</div>' +
       (p.reputation ? '<div style="color:#f59e0b;font-size:0.75rem;margin-top:4px">★ ' + p.reputation.toFixed(1) + '</div>' : '') +
@@ -90,8 +90,8 @@
 
     var popup = '<div style="min-width:160px">' +
       '<div style="font-weight:600;font-size:0.9rem;margin-bottom:4px">' + (c.companyName || 'Empresa') + '</div>' +
-      '<div style="color:#64748b;font-size:0.78rem;margin-bottom:4px">' + (c.city || '') + (c.uf ? ', ' + c.uf : '') + '</div>' +
-      (c.description ? '<div style="color:#94a3b8;font-size:0.75rem">' + c.description.substring(0, 80) + '</div>' : '') +
+      '<div style="color:#64748b;font-size:0.78rem;margin-bottom:4px">' + (c.city || '') + (c.state ? ', ' + c.state : '') + '</div>' +
+      (c.openProjects > 0 ? '<div style="color:#94a3b8;font-size:0.75rem">' + c.openProjects + ' projeto(s) aberto(s)</div>' : '') +
       (c.reputation ? '<div style="color:#f59e0b;font-size:0.75rem;margin-top:4px">★ ' + c.reputation.toFixed(1) + '</div>' : '') +
       '</div>';
 

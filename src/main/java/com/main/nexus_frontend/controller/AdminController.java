@@ -2,6 +2,7 @@ package com.main.nexus_frontend.controller;
 
 import com.main.nexus_frontend.model.*;
 import com.main.nexus_frontend.service.AdminService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,42 +20,47 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         try {
             AdminDashboardDTO dash = adminService.getDashboard(token);
-            model.addAttribute("totalUsers", dash.getTotalUsers() != null ? dash.getTotalUsers() : 0);
-            model.addAttribute("totalProjects", dash.getTotalProjects() != null ? dash.getTotalProjects() : 0);
-            model.addAttribute("totalMatches", dash.getTotalMatches() != null ? dash.getTotalMatches() : 0);
-            model.addAttribute("pendingCompanies", dash.getPendingCompanies() != null ? dash.getPendingCompanies() : 0);
+            if (dash == null) dash = new AdminDashboardDTO();
+            model.addAttribute("dashboard", dash);
 
             List<CompanyProfileDTO> pendingCompaniesList = adminService.getPendingCompanies(token);
             model.addAttribute("pendingList", pendingCompaniesList.stream().limit(5).collect(Collectors.toList()));
             model.addAttribute("latestCompanies", pendingCompaniesList);
+
+            Integer totalMatches = dash.getTotalMatches();
+            List<MonthlyDataDTO> monthlyData = List.of(
+                    new MonthlyDataDTO("Jan", 0),
+                    new MonthlyDataDTO("Fev", 0),
+                    new MonthlyDataDTO("Mar", 0),
+                    new MonthlyDataDTO("Abr", 0),
+                    new MonthlyDataDTO("Mai", 0),
+                    new MonthlyDataDTO("Jun", totalMatches != null ? totalMatches : 0)
+            );
+            model.addAttribute("monthlyDataJson", objectMapper.writeValueAsString(monthlyData));
         } catch (Exception e) {
-            model.addAttribute("totalUsers", 0);
-            model.addAttribute("totalProjects", 0);
-            model.addAttribute("totalMatches", 0);
-            model.addAttribute("pendingCompanies", 0);
+            AdminDashboardDTO empty = new AdminDashboardDTO();
+            empty.setTotalUsers(0);
+            empty.setTotalProfessionals(0);
+            empty.setTotalCompanies(0);
+            empty.setTotalProjects(0);
+            empty.setTotalOpenProjects(0);
+            empty.setTotalMatches(0);
+            empty.setTotalConfirmedMatches(0);
+            empty.setAverageMatchScore(0.0);
+            empty.setPendingCompanies(0);
+            model.addAttribute("dashboard", empty);
             model.addAttribute("pendingList", List.of());
             model.addAttribute("latestCompanies", List.of());
+            model.addAttribute("monthlyDataJson", "[]");
         }
-
-        // TODO: Dados mockados — plugar dados reais quando existir rota GET /api/admin/dashboard/monthly
-        Integer totalMatches = (Integer) model.getAttribute("totalMatches");
-        List<MonthlyDataDTO> monthlyData = List.of(
-                new MonthlyDataDTO("Jan", 0),
-                new MonthlyDataDTO("Fev", 0),
-                new MonthlyDataDTO("Mar", 0),
-                new MonthlyDataDTO("Abr", 0),
-                new MonthlyDataDTO("Mai", 0),
-                new MonthlyDataDTO("Jun", totalMatches != null ? totalMatches : 0)
-        );
-        int maxMonthly = monthlyData.stream().mapToInt(MonthlyDataDTO::getValue).max().orElse(1);
-        model.addAttribute("monthlyData", monthlyData);
-        model.addAttribute("maxMonthly", maxMonthly > 0 ? maxMonthly : 1);
         model.addAttribute("activePage", "dashboard");
         return "admin/admin-dashboard";
     }

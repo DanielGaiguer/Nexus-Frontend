@@ -2,10 +2,15 @@ package com.main.nexus_frontend.service;
 
 import com.main.nexus_frontend.model.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
@@ -172,5 +177,44 @@ public class ProfessionalService {
                 })
                 .body(SkillDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public void uploadResume(String token, MultipartFile file) {
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        try {
+            body.add("file", new ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            });
+        } catch (java.io.IOException e) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(500), "Failed to read file");
+        }
+        restClient.post()
+                .uri("/professional/resume")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(body)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to upload resume");
+                })
+                .toBodilessEntity();
+    }
+
+    public byte[] downloadResume(String token, Long professionalId) {
+        return restClient.get()
+                .uri("/professional/{professionalId}/resume", professionalId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to download resume");
+                })
+                .body(byte[].class);
     }
 }

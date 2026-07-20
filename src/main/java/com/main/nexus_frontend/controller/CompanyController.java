@@ -3,8 +3,10 @@ package com.main.nexus_frontend.controller;
 import com.main.nexus_frontend.model.*;
 import com.main.nexus_frontend.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,8 @@ public class CompanyController {
     private AdminService adminService;
     @Autowired
     private MapService mapService;
+    @Autowired
+    private ProfessionalService professionalService;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -384,5 +388,23 @@ public class CompanyController {
         }
         model.addAttribute("activePage", "map");
         return "company/company-map";
+    }
+
+    @GetMapping("/{professionalId}/resume")
+    public void downloadResume(
+            @PathVariable Long professionalId,
+            HttpSession session,
+            HttpServletResponse response) {
+        String token = (String) session.getAttribute("token");
+        try {
+            byte[] content = professionalService.downloadResume(token, professionalId);
+            response.setContentType("application/pdf");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+                    "inline; filename=\"curriculo.pdf\"");
+            response.getOutputStream().write(content);
+            response.getOutputStream().flush();
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 }

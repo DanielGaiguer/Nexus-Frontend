@@ -19,6 +19,7 @@ public class ProfessionalProfileDTO {
     private List<String> skills;
     private List<String> preferredTypes;
     private String experienceLevel;
+    private String resume;
 
     public ProfessionalProfileDTO() {}
 
@@ -54,4 +55,6 @@ public class ProfessionalProfileDTO {
     public void setPreferredTypes(List<String> preferredTypes) { this.preferredTypes = preferredTypes; }
     public String getExperienceLevel() { return experienceLevel; }
     public void setExperienceLevel(String experienceLevel) { this.experienceLevel = experienceLevel; }
+    public String getResume() { return resume; }
+    public void setResume(String resume) { this.resume = resume; }
 }

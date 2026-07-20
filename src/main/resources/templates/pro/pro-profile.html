@@ -87,6 +87,34 @@
             </form>
           </div>
 
+          <!-- Currículo -->
+          <div class="nexus-card p-3 mb-3">
+            <div class="fw-semibold text-white mb-2">Currículo</div>
+            <div th:if="${profile.resume != null}" class="d-flex align-items-center gap-2 mb-2">
+              <i class="ti ti-file-text" style="color:#22c55e;font-size:1.1rem"></i>
+              <span style="color:#94a3b8;font-size:0.85rem">PDF enviado</span>
+            </div>
+            <div th:unless="${profile.resume != null}" class="d-flex align-items-center gap-2 mb-2">
+              <i class="ti ti-file-off" style="color:#475569;font-size:1.1rem"></i>
+              <span style="color:#475569;font-size:0.85rem">Nenhum currículo enviado</span>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <form th:action="@{/pro/resume}" method="post" enctype="multipart/form-data" class="d-inline">
+                <label class="nexus-btn nexus-btn-primary nexus-btn-sm" style="cursor:pointer">
+                  <i class="ti ti-upload"></i>
+                  <span th:text="${profile.resume != null} ? 'Substituir' : 'Enviar currículo'">Enviar</span>
+                  <input type="file" name="file" accept=".pdf" style="display:none" onchange="this.form.submit()">
+                </label>
+              </form>
+              <a th:if="${profile.resume != null}"
+                 th:href="@{/pro/{id}/resume(id=${profile.id})}"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                 target="_blank">
+                <i class="ti ti-download"></i> Baixar
+              </a>
+            </div>
+          </div>
+
           <!-- Score médio -->
           <div class="nexus-card p-3 mb-3" th:if="${avgScore != null and avgScore > 0}">
             <div class="nexus-section-title">Score Médio</div>

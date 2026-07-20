@@ -9,6 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
   <link th:href="@{/css/style.css}" rel="stylesheet">
   <link th:href="@{/css/nexus-app.css}" rel="stylesheet">
 </head>
@@ -32,7 +33,7 @@
     <div class="navbar-brand">
       <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none">
         <div class="nexus-logo-icon">
-          <img th:src="@{/img/nexus-icon.png}" alt="N" width="24" height="24">
+          <img th:src="@{/img/nexus-icon.png}" alt="N">
         </div>
         <span class="fw-bold text-white">Nexus</span>
       </a>
@@ -236,6 +237,7 @@
 <!-- ══ SCRIPTS ══════════════════════════════════════════════ -->
 <th:block th:fragment="scripts">
   <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/js/tabler.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
   <script th:src="@{/js/nexus-validation.js}"></script>
   <script th:src="@{/js/nexus-common.js}"></script>
 </th:block>

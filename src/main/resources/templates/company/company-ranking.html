@@ -145,20 +145,44 @@
               <!-- Action: interest or status badge -->
               <th:block th:switch="${item.status}">
                 <th:block th:case="'WAITING'">
-                  <form th:action="@{/company/matches/{id}/interest(id=${item.id})}" method="post">
-                    <button type="submit" class="nexus-btn nexus-btn-primary nexus-btn-sm">
-                      <i class="ti ti-send"></i> Demonstrar interesse
-                    </button>
-                  </form>
+                  <div class="d-flex flex-column gap-2 align-items-center">
+                    <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
+                       class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                      <i class="ti ti-file-text"></i> Currículo
+                    </a>
+                    <form th:action="@{/company/matches/{id}/interest(id=${item.id})}" method="post">
+                      <button type="submit" class="nexus-btn nexus-btn-primary nexus-btn-sm">
+                        <i class="ti ti-send"></i> Demonstrar interesse
+                      </button>
+                    </form>
+                  </div>
                 </th:block>
                 <th:block th:case="'COMPANY_INTERESTED'">
-                  <span class="nexus-status-badge warning">Interesse enviado</span>
+                  <div class="d-flex flex-column gap-2 align-items-center">
+                    <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
+                       class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                      <i class="ti ti-file-text"></i> Currículo
+                    </a>
+                    <span class="nexus-status-badge warning">Interesse enviado</span>
+                  </div>
                 </th:block>
                 <th:block th:case="'PROFESSIONAL_INTERESTED'">
-                  <span class="nexus-status-badge info">Profissional interessado</span>
+                  <div class="d-flex flex-column gap-2 align-items-center">
+                    <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
+                       class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                      <i class="ti ti-file-text"></i> Currículo
+                    </a>
+                    <span class="nexus-status-badge info">Profissional interessado</span>
+                  </div>
                 </th:block>
                 <th:block th:case="'MATCHED'">
-                  <span class="nexus-status-badge success">Match confirmado</span>
+                  <div class="d-flex flex-column gap-2 align-items-center">
+                    <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
+                       class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                      <i class="ti ti-file-text"></i> Currículo
+                    </a>
+                    <span class="nexus-status-badge success">Match confirmado</span>
+                  </div>
                 </th:block>
                 <th:block th:case="'REJECTED'">
                   <span class="nexus-status-badge danger">Rejeitado</span>
