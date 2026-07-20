@@ -25,8 +25,17 @@ public class MapService {
     }
 
     public List<MapProfessionalDTO> getProfessionals(String token) {
+        return getProfessionals(token, null, null);
+    }
+
+    public List<MapProfessionalDTO> getProfessionals(String token, String city, String uf) {
+        var uri = new StringBuilder("/map/professionals");
+        boolean hasParams = false;
+        if (city != null && !city.isBlank()) { uri.append(hasParams ? "&" : "?").append("city=").append(city); hasParams = true; }
+        if (uf   != null && !uf.isBlank())   { uri.append(hasParams ? "&" : "?").append("uf=").append(uf);     hasParams = true; }
+
         MapProfessionalDTO[] response = restClient.get()
-                .uri("/map/professionals")
+                .uri(uri.toString())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
@@ -39,8 +48,17 @@ public class MapService {
     }
 
     public List<MapCompanyDTO> getCompanies(String token) {
+        return getCompanies(token, null, null);
+    }
+
+    public List<MapCompanyDTO> getCompanies(String token, String city, String uf) {
+        var uri = new StringBuilder("/map/companies");
+        boolean hasParams = false;
+        if (city != null && !city.isBlank()) { uri.append(hasParams ? "&" : "?").append("city=").append(city); hasParams = true; }
+        if (uf   != null && !uf.isBlank())   { uri.append(hasParams ? "&" : "?").append("uf=").append(uf);     hasParams = true; }
+
         MapCompanyDTO[] response = restClient.get()
-                .uri("/map/companies")
+                .uri(uri.toString())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {

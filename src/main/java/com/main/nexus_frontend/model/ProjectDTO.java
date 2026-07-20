@@ -2,6 +2,7 @@ package com.main.nexus_frontend.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ProjectDTO {
     private Long id;
@@ -17,6 +18,9 @@ public class ProjectDTO {
     private Integer maxPositions;
     private Integer filledPositions;
     private String experienceLevel;
+    private List<String> requiredSkills;
+    private Long companyId;
+    private String companyName;
     private CompanyDTO company;
 
     public ProjectDTO() {}
@@ -59,6 +63,15 @@ public class ProjectDTO {
 
     public String getExperienceLevel() { return experienceLevel; }
     public void setExperienceLevel(String experienceLevel) { this.experienceLevel = experienceLevel; }
+
+    public List<String> getRequiredSkills() { return requiredSkills; }
+    public void setRequiredSkills(List<String> requiredSkills) { this.requiredSkills = requiredSkills; }
+
+    public Long getCompanyId() { return companyId; }
+    public void setCompanyId(Long companyId) { this.companyId = companyId; }
+
+    public String getCompanyName() { return companyName; }
+    public void setCompanyName(String companyName) { this.companyName = companyName; }
 
     public CompanyDTO getCompany() { return company; }
     public void setCompany(CompanyDTO company) { this.company = company; }

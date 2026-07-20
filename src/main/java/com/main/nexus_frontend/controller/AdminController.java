@@ -2,6 +2,7 @@ package com.main.nexus_frontend.controller;
 
 import com.main.nexus_frontend.model.*;
 import com.main.nexus_frontend.service.AdminService;
+import com.main.nexus_frontend.service.MapService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private MapService mapService;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -178,5 +181,48 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao alterar status: " + e.getMessage());
         }
         return "redirect:/admin/users";
+    }
+
+    @GetMapping("/map")
+    public String map(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String uf,
+            HttpSession session,
+            Model model) {
+        String token = (String) session.getAttribute("token");
+
+        List<MapProfessionalDTO> pros = mapService.getProfessionals(token, city, uf);
+        List<MapCompanyDTO> cos       = mapService.getCompanies(token, city, uf);
+
+        try {
+            model.addAttribute("professionalsJson", objectMapper.writeValueAsString(pros));
+            model.addAttribute("companiesJson",     objectMapper.writeValueAsString(cos));
+        } catch (Exception e) {
+            model.addAttribute("professionalsJson", "[]");
+            model.addAttribute("companiesJson",     "[]");
+        }
+
+        model.addAttribute("centerLat", -23.5505);
+        model.addAttribute("centerLng", -46.6333);
+        model.addAttribute("cityFilter", city != null ? city : "");
+        model.addAttribute("ufFilter",   uf   != null ? uf   : "");
+        model.addAttribute("activePage", "map");
+        return "admin/admin-map";
+    }
+
+    @GetMapping("/projects")
+    public String allProjects(HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        List<ProjectDTO> projects = adminService.getAllProjects(token);
+
+        long openCount   = projects.stream().filter(p -> "OPEN".equals(p.getStatus())).count();
+        long closedCount = projects.stream()
+                .filter(p -> "CLOSED".equals(p.getStatus()) || "CANCELLED".equals(p.getStatus())).count();
+
+        model.addAttribute("projects",   projects);
+        model.addAttribute("openCount",  openCount);
+        model.addAttribute("closedCount", closedCount);
+        model.addAttribute("activePage", "projects");
+        return "admin/admin-projects";
     }
 }

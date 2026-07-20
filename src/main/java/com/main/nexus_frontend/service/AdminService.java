@@ -146,4 +146,18 @@ public class AdminService {
                 })
                 .toBodilessEntity();
     }
+
+    public List<ProjectDTO> getAllProjects(String token) {
+        ProjectDTO[] response = restClient.get()
+                .uri("/admin/projects")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Erro ao buscar projetos");
+                })
+                .body(ProjectDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
 }

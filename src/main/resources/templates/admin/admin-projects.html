@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Oportunidades')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Header -->
+      <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
+        <div>
+          <h1 class="fw-bold mb-1"
+              style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">
+            Todas as Oportunidades
+          </h1>
+          <p style="color:#64748b;font-size:0.875rem"
+             th:text="${#lists.size(projects)} + ' projetos publicados na plataforma'">0 projetos</p>
+        </div>
+        <!-- Stat pills rápidas -->
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="nexus-status-badge success" style="font-size:0.8rem;padding:0.35rem 0.85rem">
+            <i class="ti ti-circle-filled me-1" style="font-size:0.55rem"></i>
+            <span th:text="${openCount}">0</span> abertos
+          </span>
+          <span class="nexus-status-badge danger" style="font-size:0.8rem;padding:0.35rem 0.85rem">
+            <i class="ti ti-lock me-1" style="font-size:0.85rem"></i>
+            <span th:text="${closedCount}">0</span> encerrados
+          </span>
+        </div>
+      </div>
+
+      <!-- ── Filtros ── -->
+      <div class="nexus-card p-3 mb-4">
+        <div class="row g-3 align-items-end">
+
+          <!-- Busca por título / empresa -->
+          <div class="col-12 col-md-4">
+            <label class="nexus-label">Buscar</label>
+            <div style="position:relative">
+              <i class="ti ti-search"
+                 style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
+              <input type="text" id="searchInput" class="nexus-input"
+                     placeholder="Título ou empresa..."
+                     style="padding-left:2.2rem" oninput="applyFilters()">
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="col-6 col-md-2">
+            <label class="nexus-label">Status</label>
+            <select class="nexus-select" id="filterStatus" onchange="applyFilters()">
+              <option value="">Todos</option>
+              <option value="OPEN">Aberto</option>
+              <option value="CLOSED">Encerrado</option>
+              <option value="CANCELLED">Cancelado</option>
+            </select>
+          </div>
+
+          <!-- Modalidade -->
+          <div class="col-6 col-md-2">
+            <label class="nexus-label">Modalidade</label>
+            <select class="nexus-select" id="filterModality" onchange="applyFilters()">
+              <option value="">Todas</option>
+              <option value="REMOTE">Remoto</option>
+              <option value="ONSITE">Presencial</option>
+              <option value="HYBRID">Híbrido</option>
+            </select>
+          </div>
+
+          <!-- Tipo -->
+          <div class="col-6 col-md-2">
+            <label class="nexus-label">Tipo</label>
+            <select class="nexus-select" id="filterType" onchange="applyFilters()">
+              <option value="">Todos</option>
+              <option value="FREELANCE">Freelance</option>
+              <option value="FULL_TIME">Integral</option>
+              <option value="PART_TIME">Meio período</option>
+            </select>
+          </div>
+
+          <!-- Limpar -->
+          <div class="col-6 col-md-2">
+            <button type="button" class="nexus-btn nexus-btn-ghost w-100"
+                    onclick="clearFilters()">
+              <i class="ti ti-x"></i> Limpar
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Contagem visível -->
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div style="color:#64748b;font-size:0.82rem">
+          Exibindo <span id="visibleCount" class="fw-semibold text-white">0</span>
+          de <span th:text="${#lists.size(projects)}">0</span> projetos
+        </div>
+      </div>
+
+      <!-- ── Empty state ── -->
+      <div th:if="${#lists.isEmpty(projects)}"
+           class="nexus-card p-5 text-center">
+        <i class="ti ti-folder-off"
+           style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhum projeto na plataforma</div>
+        <div style="color:#475569;font-size:0.875rem">
+          Os projetos publicados pelas empresas aparecerão aqui.
+        </div>
+      </div>
+
+      <!-- ── Feed de projetos ── -->
+      <div class="d-flex flex-column gap-3" id="projectFeed"
+           th:unless="${#lists.isEmpty(projects)}">
+
+        <div th:each="proj : ${projects}"
+             class="nexus-card p-4 project-item"
+             th:data-title="${proj.title}"
+             th:data-company="${proj.company != null ? proj.company.companyName : ''}"
+             th:data-status="${proj.status}"
+             th:data-modality="${proj.modality}"
+             th:data-type="${proj.type}">
+
+          <!-- Top row: título + status -->
+          <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
+            <div class="flex-fill">
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <span class="fw-semibold text-white" style="font-size:1rem"
+                      th:text="${proj.title}">Título</span>
+                <span th:switch="${proj.status}">
+                  <span th:case="'OPEN'"      class="nexus-status success">Aberto</span>
+                  <span th:case="'CLOSED'"    class="nexus-status danger">Encerrado</span>
+                  <span th:case="'CANCELLED'" class="nexus-status danger">Cancelado</span>
+                </span>
+              </div>
+
+              <!-- Empresa (admin vê isso) -->
+              <div class="d-flex align-items-center gap-2">
+                <div th:if="${proj.company != null}"
+                     class="nexus-avatar-initials"
+                     style="width:22px;height:22px;font-size:0.6rem;flex-shrink:0"
+                     th:with="n=${proj.company.companyName},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,38%)'"
+                     th:text="${#strings.substring(n,0,2).toUpperCase()}">TC</div>
+                <span style="color:#64748b;font-size:0.82rem"
+                      th:text="${proj.company != null ? proj.company.companyName : 'Empresa desconhecida'}">Empresa</span>
+                <span style="color:#334155;font-size:0.75rem">·</span>
+                <span style="color:#475569;font-size:0.78rem"
+                      th:text="'Criado em ' + ${#temporals.format(proj.createdAt,'dd/MM/yyyy')}">—</span>
+              </div>
+            </div>
+
+            <!-- Posições (admin também vê) -->
+            <div class="text-end flex-shrink-0"
+                 th:if="${proj.maxPositions != null}">
+              <div style="color:#64748b;font-size:0.72rem">Posições</div>
+              <div class="tabular fw-semibold"
+                   style="color:#a5b4fc;font-size:0.9rem"
+                   th:text="${proj.filledPositions} + '/' + ${proj.maxPositions}">0/1</div>
+            </div>
+          </div>
+
+          <!-- Descrição -->
+          <p style="color:#94a3b8;font-size:0.875rem;line-height:1.6;margin-bottom:0.75rem"
+             th:text="${proj.description}">—</p>
+
+          <!-- Meta row -->
+          <div class="d-flex gap-4 flex-wrap mb-3" style="font-size:0.8rem;color:#64748b">
+            <span>
+              <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
+              <span class="tabular"
+                    th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}
+                             +'–'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+            </span>
+            <span>
+              <i class="ti ti-map-pin" style="color:#6b6eff"></i>
+              <span th:switch="${proj.modality}">
+                <span th:case="'REMOTE'">Remoto</span>
+                <span th:case="'ONSITE'">Presencial</span>
+                <span th:case="'HYBRID'">Híbrido</span>
+                <span th:case="*" th:text="${proj.modality}">—</span>
+              </span>
+            </span>
+            <span>
+              <i class="ti ti-briefcase" style="color:#6b6eff"></i>
+              <span th:switch="${proj.type}">
+                <span th:case="'FREELANCE'">Freelance</span>
+                <span th:case="'FULL_TIME'">Tempo integral</span>
+                <span th:case="'PART_TIME'">Meio período</span>
+                <span th:case="*" th:text="${proj.type}">—</span>
+              </span>
+            </span>
+            <span>
+              <i class="ti ti-calendar" style="color:#6b6eff"></i>
+              <span class="tabular"
+                    th:text="${#temporals.format(proj.deadline,'dd/MM/yyyy')}">—</span>
+            </span>
+            <span th:if="${proj.experienceLevel != null}">
+              <i class="ti ti-award" style="color:#a78bfa"></i>
+              <span th:switch="${proj.experienceLevel}">
+                <span th:case="'INTERNSHIP'">Estágio</span>
+                <span th:case="'TRAINEE'">Trainee</span>
+                <span th:case="'JUNIOR'">Júnior</span>
+                <span th:case="'PLENO'">Pleno</span>
+                <span th:case="'SENIOR'">Sênior</span>
+                <span th:case="*" th:text="${proj.experienceLevel}">—</span>
+              </span>
+            </span>
+          </div>
+
+          <!-- Skills -->
+          <div class="d-flex flex-wrap gap-2"
+               th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
+            <span th:each="sk : ${proj.requiredSkills}"
+                  class="nexus-chip nexus-chip-tech" th:text="${sk}">Skill</span>
+          </div>
+
+        </div><!-- /.project-item -->
+      </div><!-- /#projectFeed -->
+
+      <!-- Sem resultados após filtro -->
+      <div id="noResults"
+           class="nexus-card p-5 text-center"
+           style="display:none">
+        <i class="ti ti-search-off"
+           style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhum projeto encontrado</div>
+        <div style="color:#475569;font-size:0.875rem">Tente ajustar os filtros.</div>
+        <button type="button" class="nexus-btn nexus-btn-ghost mt-3"
+                onclick="clearFilters()">
+          <i class="ti ti-x"></i> Limpar filtros
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script>
+function applyFilters() {
+  var search   = (document.getElementById('searchInput').value  || '').toLowerCase();
+  var status   =  document.getElementById('filterStatus').value;
+  var modality =  document.getElementById('filterModality').value;
+  var type     =  document.getElementById('filterType').value;
+
+  var items   = document.querySelectorAll('.project-item');
+  var visible = 0;
+
+  items.forEach(function(item) {
+    var title   = (item.dataset.title   || '').toLowerCase();
+    var company = (item.dataset.company || '').toLowerCase();
+    var matchSearch   = !search   || title.includes(search) || company.includes(search);
+    var matchStatus   = !status   || item.dataset.status   === status;
+    var matchModality = !modality || item.dataset.modality === modality;
+    var matchType     = !type     || item.dataset.type     === type;
+
+    var show = matchSearch && matchStatus && matchModality && matchType;
+    item.style.display = show ? 'block' : 'none';
+    if (show) visible++;
+  });
+
+  document.getElementById('visibleCount').textContent = visible;
+  document.getElementById('noResults').style.display =
+    (visible === 0 && items.length > 0) ? 'block' : 'none';
+  document.getElementById('projectFeed').style.display =
+    visible > 0 ? 'flex' : 'none';
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('filterStatus').value   = '';
+  document.getElementById('filterModality').value = '';
+  document.getElementById('filterType').value     = '';
+  applyFilters();
+}
+
+// Inicializa contagem
+document.addEventListener('DOMContentLoaded', function() {
+  applyFilters();
+});
+</script>
+</body>
+</html>

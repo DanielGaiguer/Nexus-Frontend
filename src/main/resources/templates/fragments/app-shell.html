@@ -165,6 +165,20 @@
           <span>Usuários</span>
         </a>
       </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/admin/projects}"
+             th:classappend="${activePage == 'projects'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-folder-open"></i></span>
+            <span>Oportunidades</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/admin/map}"
+             th:classappend="${activePage == 'map'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>
+            <span>Mapa</span>
+          </a>
+        </li>
     </ul>
 
     <!-- Sidebar footer -->
