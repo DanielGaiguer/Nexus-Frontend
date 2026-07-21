@@ -193,6 +193,11 @@
               </div>
               <div class="d-flex flex-column align-items-end gap-2">
                 <span class="nexus-status success">Match Confirmado</span>
+                <button type="button"
+                        class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger"
+                        th:data-id="${m.id}">
+                  <i class="ti ti-clock-history"></i> Ver histórico
+                </button>
                 <!-- Avaliar -->
                 <a th:href="@{/pro/matches/{id}/review(id=${m.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm">
@@ -334,6 +339,32 @@
   </div>
 </div>
 
+<!-- ══ MODAL HISTÓRICO ══════════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="historyModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(107,110,255,0.15)">
+        <div style="width:4px;height:40px;background:#6b6eff;border-radius:2px;margin-right:0.75rem"></div>
+        <div>
+          <h5 class="modal-title fw-semibold text-white">Histórico do match</h5>
+          <div style="color:#64748b;font-size:0.8rem">Timeline de alterações de status</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="historyLoading" class="text-center py-4" style="display:none">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+        <div id="historyEmpty" class="text-center py-4" style="display:none">
+          <i class="ti ti-clock-off" style="font-size:2rem;color:#334155;display:block;margin-bottom:0.5rem"></i>
+          <div style="color:#64748b;font-size:0.85rem">Nenhum registro encontrado.</div>
+        </div>
+        <div id="historyTimeline" class="d-flex flex-column gap-0" style="position:relative;padding-left:24px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
 // Tab switch
@@ -363,6 +394,62 @@ document.querySelectorAll('#rejectForm input[type=checkbox]').forEach(function(c
   cb.addEventListener('change', function() {
     var any = Array.from(document.querySelectorAll('#rejectForm input[type=checkbox]:checked')).length > 0;
     document.getElementById('confirmRejectBtn').disabled = !any;
+  });
+});
+
+document.querySelectorAll('.history-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var matchId = this.dataset.id;
+    var loading = document.getElementById('historyLoading');
+    var empty = document.getElementById('historyEmpty');
+    var timeline = document.getElementById('historyTimeline');
+    loading.style.display = 'block';
+    empty.style.display = 'none';
+    timeline.innerHTML = '';
+    new bootstrap.Modal(document.getElementById('historyModal')).show();
+    fetch('/pro/matches/' + matchId + '/history')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        loading.style.display = 'none';
+        if (!data || data.length === 0) {
+          empty.style.display = 'block';
+          return;
+        }
+        var statusColors = {
+          'WAITING': '#64748b',
+          'COMPANY_INTERESTED': '#f59e0b',
+          'PROFESSIONAL_INTERESTED': '#3b82f6',
+          'MATCHED': '#22c55e',
+          'REJECTED': '#ef4444'
+        };
+        var labels = {
+          'WAITING': 'Aguardando',
+          'COMPANY_INTERESTED': 'Empresa interessada',
+          'PROFESSIONAL_INTERESTED': 'Profissional interessado',
+          'MATCHED': 'Match confirmado',
+          'REJECTED': 'Rejeitado'
+        };
+        var actors = { 'COMPANY': 'Empresa', 'PROFESSIONAL': 'Profissional', 'SYSTEM': 'Sistema' };
+        data.forEach(function(h) {
+          var color = statusColors[h.toStatus] || '#64748b';
+          var fromLabel = labels[h.fromStatus] || h.fromStatus;
+          var toLabel = labels[h.toStatus] || h.toStatus;
+          var actor = actors[h.changedBy] || h.changedBy;
+          var date = new Date(h.changedAt);
+          var dateStr = date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+          var html = '<div style="position:relative;padding-bottom:1.25rem;border-left:1px dashed rgba(107,110,255,0.2);margin-left:4px">'
+            + '<div style="position:absolute;left:-6px;top:2px;width:10px;height:10px;border-radius:50%;background:' + color + ';border:2px solid rgba(13,19,41,0.9)"></div>'
+            + '<div style="padding-left:16px">'
+            + '<div style="color:#e2e8f0;font-size:0.82rem;font-weight:500">' + fromLabel + ' &rarr; ' + toLabel + '</div>'
+            + '<div style="color:#64748b;font-size:0.75rem">' + actor + ' &middot; ' + dateStr + '</div>'
+            + '</div></div>';
+          timeline.innerHTML += html;
+        });
+      })
+      .catch(function() {
+        loading.style.display = 'none';
+        empty.style.display = 'block';
+      });
   });
 });
 </script>

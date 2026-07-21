@@ -357,6 +357,17 @@ public class CompanyController {
         return "shared/review-form";
     }
 
+    @GetMapping("/matches/{id}/history")
+    @ResponseBody
+    public ResponseEntity<?> getMatchHistory(@PathVariable Long id, HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        try {
+            return ResponseEntity.ok(matchService.getHistory(token, id));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao carregar histórico: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/matches/{matchId}/review")
     public String submitReview(
             @PathVariable Long matchId,

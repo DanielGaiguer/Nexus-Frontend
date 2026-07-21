@@ -1,6 +1,7 @@
 package com.main.nexus_frontend.service;
 
 import com.main.nexus_frontend.model.MatchDTO;
+import com.main.nexus_frontend.model.MatchHistoryDTO;
 import com.main.nexus_frontend.model.ProjectDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +11,8 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -121,5 +124,19 @@ public class MatchService {
                             "Failed to reject match");
                 })
                 .toBodilessEntity();
+    }
+
+    public List<MatchHistoryDTO> getHistory(String token, Long matchId) {
+        MatchHistoryDTO[] response = restClient.get()
+                .uri("/matches/{matchId}/history", matchId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load match history");
+                })
+                .body(MatchHistoryDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
     }
 }
