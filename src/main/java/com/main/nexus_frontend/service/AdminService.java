@@ -295,4 +295,17 @@ public class AdminService {
                 .body(MatchDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
     }
+
+    public CompanyDashboardAnalyticsDTO getCompanyAnalytics(String token, Long companyId) {
+        return restClient.get()
+                .uri("/analytics/company/{companyId}/dashboard", companyId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load company analytics");
+                })
+                .body(CompanyDashboardAnalyticsDTO.class);
+    }
 }

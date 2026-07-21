@@ -334,6 +334,34 @@ public class AdminController {
         return "admin/admin-company-reputation";
     }
 
+    @GetMapping("/company/{id}/analytics")
+    public String companyAnalytics(@PathVariable Long id, HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        try {
+            CompanyDashboardAnalyticsDTO analytics = adminService.getCompanyAnalytics(token, id);
+            model.addAttribute("analytics", analytics);
+
+            model.addAttribute("monthlyMatchesJson",
+                    objectMapper.writeValueAsString(analytics.getMatchesPerMonth()));
+            model.addAttribute("scoreDistributionJson",
+                    objectMapper.writeValueAsString(analytics.getScoreDistribution()));
+            model.addAttribute("projectRatesJson",
+                    objectMapper.writeValueAsString(analytics.getAcceptanceRatePerProject()));
+            model.addAttribute("skillDemandJson",
+                    objectMapper.writeValueAsString(analytics.getMostRequiredSkills()));
+        } catch (Exception e) {
+            model.addAttribute("analytics", null);
+            model.addAttribute("monthlyMatchesJson", "[]");
+            model.addAttribute("scoreDistributionJson", "[]");
+            model.addAttribute("projectRatesJson", "[]");
+            model.addAttribute("skillDemandJson", "[]");
+            model.addAttribute("errorMsg", "Não foi possível carregar os dados analíticos.");
+        }
+        model.addAttribute("companyId", id);
+        model.addAttribute("activePage", "users");
+        return "company/company-analytics";
+    }
+
     @GetMapping("/company/{companyId}/project/{projectId}")
     public String viewCompanyProject(
             @PathVariable Long companyId,
