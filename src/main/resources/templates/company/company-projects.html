@@ -107,8 +107,7 @@
             </span>
             <span>
               <i class="ti ti-calendar" style="color:#6b6eff"></i>
-              <span class="tabular"
-                    th:text="${#temporals.format(proj.deadline,'dd/MM/yyyy')}">—</span>
+              <span class="nexus-deadline" th:data-deadline="${proj.deadline}"></span>
             </span>
           </div>
 

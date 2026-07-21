@@ -134,3 +134,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 });
+
+/**
+ * Inicializa contagens regressivas de prazo em todos os elementos
+ * com o atributo data-deadline="yyyy-MM-dd"
+ * Uso no HTML: <span data-deadline="2026-09-30" class="nexus-deadline"></span>
+ */
+function initDeadlines() {
+  document.querySelectorAll('[data-deadline]').forEach(function(el) {
+    var raw      = el.dataset.deadline; // "yyyy-MM-dd"
+    var deadline = new Date(raw + 'T23:59:59');
+    var now      = new Date();
+    var diffMs   = deadline - now;
+    var diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    el.innerHTML = '';
+
+    if (diffMs < 0) {
+      // Prazo encerrado
+      el.innerHTML =
+        '<span style="color:#ef4444;font-size:0.75rem;font-weight:600">' +
+        '<i class="ti ti-clock-x" style="font-size:0.7rem;margin-right:2px"></i>' +
+        'Prazo encerrado</span>';
+    } else if (diffDays <= 3) {
+      // Urgente
+      el.innerHTML =
+        '<span style="color:#ef4444;font-size:0.75rem;font-weight:600;' +
+        'animation:urgentPulse 1.5s ease-in-out infinite">' +
+        '<i class="ti ti-flame" style="font-size:0.7rem;margin-right:2px"></i>' +
+        'Encerra em ' + diffDays + ' dia' + (diffDays !== 1 ? 's' : '') + '</span>';
+    } else if (diffDays <= 7) {
+      // Atenção
+      el.innerHTML =
+        '<span style="color:#f59e0b;font-size:0.75rem;font-weight:600">' +
+        '<i class="ti ti-clock-hour-4" style="font-size:0.7rem;margin-right:2px"></i>' +
+        'Encerra em ' + diffDays + ' dias</span>';
+    } else if (diffDays <= 30) {
+      // Normal
+      el.innerHTML =
+        '<span style="color:#64748b;font-size:0.75rem">' +
+        '<i class="ti ti-calendar" style="font-size:0.7rem;margin-right:2px"></i>' +
+        'Encerra em ' + diffDays + ' dias</span>';
+    } else {
+      // Distante
+      var opts = { day:'2-digit', month:'short', year:'numeric' };
+      el.innerHTML =
+        '<span style="color:#64748b;font-size:0.75rem">' +
+        '<i class="ti ti-calendar" style="font-size:0.7rem;margin-right:2px"></i>' +
+        deadline.toLocaleDateString('pt-BR', opts) + '</span>';
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initDeadlines);

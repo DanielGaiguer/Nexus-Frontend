@@ -1476,3 +1476,8 @@ body.nexus-app {
 /* Remove a linha azul quadrada da caixa de crop */
 .cropper-dashed { display: none !important; }
 .cropper-point  { border-radius: 50%; }
+
+@keyframes urgentPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
