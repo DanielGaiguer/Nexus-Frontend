@@ -411,6 +411,19 @@ public class ProfessionalController {
         return "pro/pro-stats";
     }
 
+    @GetMapping("/profile/export")
+    @ResponseBody
+    public ResponseEntity<byte[]> exportPdf(
+            @RequestParam(required = false) Long professionalId,
+            HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        byte[] pdf = professionalService.exportPdf(token, professionalId);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"perfil-nexus.pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
     @PostMapping("/profile/photo")
     @ResponseBody
     public ResponseEntity<String> uploadProPhoto(

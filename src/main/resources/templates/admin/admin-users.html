@@ -97,12 +97,26 @@
                   <span th:unless="${u.active}" class="nexus-status danger">Inativo</span>
                 </td>
                 <td>
-                  <button type="button"
-                          class="nexus-btn nexus-btn-ghost nexus-btn-sm toggle-trigger"
-                          th:data-id="${u.id}"
-                          th:data-active="${u.active}"
-                          th:data-email="${u.email}"
-                          th:text="${u.active ? 'Desativar' : 'Ativar'}">Toggle</button>
+                  <div class="d-flex align-items-center gap-2">
+                    <a th:if="${u.type == 'PROFESSIONAL'}"
+                       th:href="@{/admin/professional/{id}(id=${u.id})}"
+                       class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                       style="font-size:0.78rem">
+                      <i class="ti ti-eye me-1"></i>Ver perfil
+                    </a>
+                    <a th:if="${u.type == 'COMPANY'}"
+                       th:href="@{/admin/company/{id}(id=${u.id})}"
+                       class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                       style="font-size:0.78rem">
+                      <i class="ti ti-eye me-1"></i>Ver perfil
+                    </a>
+                    <button type="button"
+                            class="nexus-btn nexus-btn-ghost nexus-btn-sm toggle-trigger"
+                            th:data-id="${u.id}"
+                            th:data-active="${u.active}"
+                            th:data-email="${u.email}"
+                            th:text="${u.active ? 'Desativar' : 'Ativar'}">Toggle</button>
+                  </div>
                 </td>
               </tr>
             </tbody>

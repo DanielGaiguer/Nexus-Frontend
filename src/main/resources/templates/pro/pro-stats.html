@@ -13,8 +13,16 @@
 
       <!-- Header -->
       <div class="mb-4">
+        <a th:if="${professionalId != null}"
+           th:href="@{/admin/professional/{id}(id=${professionalId})}"
+           class="text-decoration-none d-inline-flex align-items-center gap-1 mb-2"
+           style="color:#64748b;font-size:0.82rem">
+          <i class="ti ti-arrow-left"></i> Voltar para o perfil
+        </a>
         <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Estatísticas</h1>
-        <p style="color:#64748b;font-size:0.875rem">Acompanhe seu desempenho na plataforma</p>
+        <p style="color:#64748b;font-size:0.875rem"
+           th:text="${professionalId != null} ? 'Desempenho do profissional na plataforma' : 'Acompanhe seu desempenho na plataforma'">
+          Acompanhe seu desempenho na plataforma</p>
       </div>
 
       <!-- 4 stat cards -->

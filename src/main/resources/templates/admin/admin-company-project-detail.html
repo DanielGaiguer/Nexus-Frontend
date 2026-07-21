@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Detalhes do Projeto')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Header -->
+      <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
+        <div>
+          <a th:href="@{/admin/company/{id}(id=${companyId})}"
+             class="text-decoration-none d-inline-flex align-items-center gap-1 mb-2"
+             style="color:#64748b;font-size:0.82rem">
+            <i class="ti ti-arrow-left"></i> Voltar para Perfil da Empresa
+          </a>
+          <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff"
+              th:text="${project.title}">Projeto</h1>
+          <p style="color:#64748b;font-size:0.875rem">Detalhes do projeto · Visualização somente leitura</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span th:switch="${project.status}">
+            <span th:case="'OPEN'" class="nexus-status success" style="font-size:0.85rem;padding:0.4rem 0.9rem">Aberto</span>
+            <span th:case="'CLOSED'" class="nexus-status danger" style="font-size:0.85rem;padding:0.4rem 0.9rem">Encerrado</span>
+            <span th:case="'CANCELLED'" class="nexus-status danger" style="font-size:0.85rem;padding:0.4rem 0.9rem">Cancelado</span>
+            <span th:case="*" class="nexus-status warning" style="font-size:0.85rem;padding:0.4rem 0.9rem" th:text="${project.status}">—</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="row g-3">
+
+        <!-- Left column -->
+        <div class="col-lg-4">
+
+          <!-- Empresa -->
+          <div class="nexus-card p-4 text-center mb-3">
+            <div class="mx-auto mb-3" style="width:72px;height:72px">
+              <div class="nexus-avatar-xl"
+                   th:with="n=${profile.companyName != null ? profile.companyName : 'E'},
+                            h=${n.hashCode()},
+                            hue=${(h%360)<0?(h%360)+360:h%360}"
+                   th:style="'background:hsl('+${hue}+',50%,40%);width:72px;height:72px;display:flex;align-items:center;justify-content:center;border-radius:50%'">
+                <span style="font-size:1.35rem;font-weight:700;color:#fff"
+                      th:text="${#strings.substring(n,0,2).toUpperCase()}">EM</span>
+              </div>
+            </div>
+            <div class="fw-bold text-white" style="font-size:1.05rem" th:text="${profile.companyName}">Empresa</div>
+            <div style="color:#64748b;font-size:0.82rem;margin-top:2px">Empresa contratante</div>
+          </div>
+
+          <!-- Informações do projeto -->
+          <div class="nexus-card p-3 mb-3">
+            <div class="fw-semibold text-white mb-2">Informações</div>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-currency-dollar" style="color:#6b6eff;width:16px"></i>
+                <span class="tabular fw-semibold" style="color:#6b6eff"
+                      th:if="${project.minimumBudget != null}"
+                      th:text="'R$ ' + ${#numbers.formatDecimal(project.minimumBudget,1,'COMMA',0,'POINT')} + ' – R$ ' + ${#numbers.formatDecimal(project.maximumBudget,1,'COMMA',0,'POINT')}">—</span>
+                <span th:unless="${project.minimumBudget != null}" style="color:#475569">Não informado</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-calendar" style="color:#6b6eff;width:16px"></i>
+                <span th:if="${project.deadline != null}"
+                      th:text="'Prazo: ' + ${#temporals.format(project.deadline,'dd/MM/yyyy')}">—</span>
+                <span th:unless="${project.deadline != null}" style="color:#475569">Prazo não informado</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-map-pin" style="color:#6b6eff;width:16px"></i>
+                <span th:switch="${project.modality}">
+                  <span th:case="'REMOTE'">Remoto</span>
+                  <span th:case="'ONSITE'">Presencial</span>
+                  <span th:case="'HYBRID'">Híbrido</span>
+                  <span th:case="*" th:text="${project.modality}">—</span>
+                </span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-briefcase" style="color:#6b6eff;width:16px"></i>
+                <span th:switch="${project.type}">
+                  <span th:case="'FREELANCE'">Freelance</span>
+                  <span th:case="'FULL_TIME'">Tempo integral</span>
+                  <span th:case="'PART_TIME'">Meio período</span>
+                  <span th:case="*" th:text="${project.type}">—</span>
+                </span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-award" style="color:#a78bfa;width:16px"></i>
+                <span th:switch="${project.experienceLevel}">
+                  <span th:case="'INTERNSHIP'">Estágio</span>
+                  <span th:case="'TRAINEE'">Trainee</span>
+                  <span th:case="'JUNIOR'">Júnior</span>
+                  <span th:case="'PLENO'">Pleno</span>
+                  <span th:case="'SENIOR'">Sênior</span>
+                  <span th:case="*" th:text="${project.experienceLevel}">—</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Posições -->
+          <div class="nexus-card p-3" th:if="${project.maxPositions != null}">
+            <div class="fw-semibold text-white mb-2">Posições</div>
+            <div class="d-flex align-items-center gap-3">
+              <div>
+                <div class="tabular fw-bold" style="color:#a5b4fc;font-size:1.5rem"
+                     th:text="${project.filledPositions != null ? project.filledPositions : 0} + '/' + ${project.maxPositions}">0/1</div>
+                <div style="color:#475569;font-size:0.75rem">Preenchidas</div>
+              </div>
+              <div class="flex-fill">
+                <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden">
+                  <div th:with="pct=${project.maxPositions > 0 and project.filledPositions != null ? (project.filledPositions * 100 / project.maxPositions) : 0}"
+                       th:style="'width:' + ${pct} + '%;height:100%;background:#6b6eff;border-radius:3px;transition:width .3s'"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /col-lg-4 -->
+
+        <!-- Right column -->
+        <div class="col-lg-8">
+
+          <!-- Descrição -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">Descrição do projeto</div>
+            <p style="color:#94a3b8;font-size:0.875rem;line-height:1.7;margin-bottom:0"
+               th:text="${project.description != null ? project.description : 'Nenhuma descrição cadastrada.'}">—</p>
+          </div>
+
+          <!-- Skills exigidas -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">Skills exigidas</div>
+            <div class="d-flex flex-wrap gap-2" th:if="${project.requiredSkills != null and !#lists.isEmpty(project.requiredSkills)}">
+              <span th:each="sk : ${project.requiredSkills}" class="nexus-chip nexus-chip-tech" th:text="${sk}">Skill</span>
+            </div>
+            <div th:unless="${project.requiredSkills != null and !#lists.isEmpty(project.requiredSkills)}"
+                 style="color:#475569;font-size:0.875rem">
+              Nenhuma skill exigida.
+            </div>
+          </div>
+
+          <!-- Dados da empresa -->
+          <div class="nexus-card p-4">
+            <div class="fw-semibold text-white mb-3">Dados da empresa</div>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <div class="nexus-label">Nome</div>
+                <div class="text-white fw-medium" th:text="${profile.companyName}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">CNPJ</div>
+                <div class="text-white fw-medium tabular" th:text="${profile.taxId}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Cidade</div>
+                <div class="text-white fw-medium"
+                     th:text="${(profile.city != null ? profile.city : '') + (profile.uf != null ? ', ' + profile.uf : '')}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Telefone</div>
+                <div class="text-white fw-medium" th:text="${profile.phone}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">E-mail</div>
+                <div class="text-white fw-medium" th:text="${profile.email}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Criado em</div>
+                <div class="text-white fw-medium"
+                     th:if="${project.createdAt != null}"
+                     th:text="${#temporals.format(project.createdAt,'dd/MM/yyyy')}">—</div>
+                <div class="text-white fw-medium" th:unless="${project.createdAt != null}">—</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /col-lg-8 -->
+      </div><!-- /row -->
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+</body>
+</html>

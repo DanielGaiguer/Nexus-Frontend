@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Perfil do Profissional')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Header -->
+      <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
+        <div>
+          <a href="/admin/users"
+             class="text-decoration-none d-inline-flex align-items-center gap-1 mb-2"
+             style="color:#64748b;font-size:0.82rem">
+            <i class="ti ti-arrow-left"></i> Voltar para Usuários
+          </a>
+          <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Perfil do Profissional</h1>
+          <p style="color:#64748b;font-size:0.875rem">Visualização somente leitura</p>
+        </div>
+        <div class="d-flex gap-2">
+          <a th:href="@{/admin/professional/{id}/stats(id=${professionalId})}"
+             class="nexus-btn nexus-btn-primary">
+            <i class="ti ti-chart-line"></i> Ver estatísticas
+          </a>
+          <a th:href="@{/admin/professional/{id}/export(id=${professionalId})}"
+             target="_blank"
+             class="nexus-btn nexus-btn-ghost">
+            <i class="ti ti-file-download"></i> Exportar PDF
+          </a>
+        </div>
+      </div>
+
+      <div class="row g-3">
+
+        <!-- Left column -->
+        <div class="col-lg-4">
+
+          <!-- Avatar + name card -->
+          <div class="nexus-card p-4 text-center mb-3">
+            <div class="mx-auto mb-3" style="width:96px;height:96px">
+              <th:block th:if="${profile.profilePhotoUrl != null and !#strings.isEmpty(profile.profilePhotoUrl)}">
+                <img th:src="${profile.profilePhotoUrl}"
+                     style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid rgba(107,110,255,0.25)"
+                     alt="Foto de perfil">
+              </th:block>
+              <th:block th:unless="${profile.profilePhotoUrl != null and !#strings.isEmpty(profile.profilePhotoUrl)}">
+                <div class="nexus-avatar-xl"
+                     th:with="n=${profile.name != null ? profile.name : 'U'},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,40%);width:96px;height:96px;display:flex;align-items:center;justify-content:center;border-radius:50%'">
+                  <span style="font-size:1.75rem;font-weight:700;color:#fff"
+                        th:text="${#strings.substring(n,0,2).toUpperCase()}">LF</span>
+                </div>
+              </th:block>
+            </div>
+            <div class="fw-bold text-white" style="font-size:1.15rem" th:text="${profile.name}">Nome</div>
+            <div style="color:#64748b;font-size:0.85rem;margin-top:2px">
+              <span th:switch="${profile.experienceLevel}">
+                <span th:case="'INTERNSHIP'">Estágio</span>
+                <span th:case="'TRAINEE'">Trainee</span>
+                <span th:case="'JUNIOR'">Júnior</span>
+                <span th:case="'PLENO'">Pleno</span>
+                <span th:case="'SENIOR'">Sênior</span>
+                <span th:case="*">Profissional</span>
+              </span>
+            </div>
+            <!-- Estrelas reputação -->
+            <div class="d-flex align-items-center justify-content-center gap-1 mt-2" th:if="${profile.reputation != null}">
+              <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                <i th:class="${i <= profile.reputation} ? 'ti ti-star-filled' : 'ti ti-star'"
+                   style="color:#f59e0b;font-size:0.9rem"></i>
+              </th:block>
+              <span class="tabular ms-1" style="color:#f59e0b;font-size:0.85rem;font-weight:600"
+                    th:text="${#numbers.formatDecimal(profile.reputation,1,1)}">0.0</span>
+            </div>
+          </div>
+
+          <!-- Disponibilidade (read-only) -->
+          <div class="nexus-card p-3 mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ti ti-circle-check" th:style="${profile.available} ? 'color:#22c55e' : 'color:#64748b'"></i>
+              <div>
+                <div class="fw-semibold"
+                     th:style="${profile.available} ? 'color:#22c55e' : 'color:#64748b'"
+                     th:text="${profile.available} ? 'Disponível' : 'Indisponível'">Status</div>
+                <div style="color:#475569;font-size:0.75rem">Disponibilidade atual</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contato -->
+          <div class="nexus-card p-3">
+            <div class="fw-semibold text-white mb-2">Contato</div>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-map-pin" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${(profile.city != null ? profile.city : '') + (profile.uf != null ? ', ' + profile.uf : '')}">Cidade, UF</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-phone" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${profile.phone}">Telefone</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-mail" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${profile.email}">email</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
+                <i class="ti ti-hash" style="color:#6b6eff;width:16px"></i>
+                <span class="tabular" th:text="${profile.cep}">CEP</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /col-lg-4 -->
+
+        <!-- Right column -->
+        <div class="col-lg-8">
+
+          <!-- Dados pessoais -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">Dados pessoais</div>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <div class="nexus-label">Nome Completo</div>
+                <div class="text-white fw-medium" th:text="${profile.name}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Cidade</div>
+                <div class="text-white fw-medium"
+                     th:text="${(profile.city != null ? profile.city : '') + (profile.uf != null ? ', ' + profile.uf : '')}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Telefone</div>
+                <div class="text-white fw-medium" th:text="${profile.phone}">—</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">E-mail</div>
+                <div class="text-white fw-medium" th:text="${profile.email}">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pretensão salarial -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">Pretensão salarial</div>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <div class="nexus-label">Mínimo</div>
+                <div class="tabular fw-bold" style="color:#6b6eff;font-size:1.1rem"
+                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.minimumSalary,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="nexus-label">Máximo</div>
+                <div class="tabular fw-bold" style="color:#6b6eff;font-size:1.1rem"
+                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.maximumSalary,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">Skills</div>
+            <div class="d-flex flex-wrap gap-2" th:if="${profile.skills != null and !#lists.isEmpty(profile.skills)}">
+              <span th:each="sk : ${profile.skills}" class="nexus-chip" th:text="${sk}">Skill</span>
+            </div>
+            <div th:unless="${profile.skills != null and !#lists.isEmpty(profile.skills)}"
+                 style="color:#475569;font-size:0.875rem">
+              Nenhuma skill cadastrada.
+            </div>
+          </div>
+
+          <!-- Projetos anteriores -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">
+              <i class="ti ti-folder me-2" style="color:#6b6eff"></i>Projetos anteriores
+              <span class="badge ms-2" th:text="${#lists.size(previousProjects)}" style="font-size:0.7rem;background:rgba(107,110,255,0.15);color:#a5b4fc">0</span>
+            </div>
+            <div th:if="${#lists.isEmpty(previousProjects)}" style="color:#475569;font-size:0.875rem">
+              Nenhum projeto cadastrado.
+            </div>
+            <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(previousProjects)}">
+              <div th:each="proj : ${previousProjects}"
+                   class="p-3" style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04)">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <div class="fw-semibold text-white" th:text="${proj.title}">Título</div>
+                  <span th:if="${proj.yearOfCompletion != null}"
+                        style="color:#64748b;font-size:0.78rem;flex-shrink:0"
+                        th:text="${proj.yearOfCompletion}">2024</span>
+                </div>
+                <div th:if="${proj.description != null}"
+                     style="color:#94a3b8;font-size:0.82rem;margin-bottom:4px"
+                     th:text="${proj.description}">Descrição</div>
+                <div th:if="${proj.technologies != null}"
+                     style="color:#64748b;font-size:0.78rem">
+                  <i class="ti ti-code me-1"></i><span th:text="${proj.technologies}">Tecnologias</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Matches confirmados -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">
+              <i class="ti ti-heart-handshake me-2" style="color:#22c55e"></i>Matches confirmados
+              <span class="badge ms-2" th:text="${#lists.size(matches)}" style="font-size:0.7rem;background:rgba(34,197,94,0.15);color:#22c55e">0</span>
+            </div>
+            <div th:if="${#lists.isEmpty(matches)}" style="color:#475569;font-size:0.875rem">
+              Nenhum match confirmado.
+            </div>
+            <div class="d-flex flex-column gap-2" th:unless="${#lists.isEmpty(matches)}">
+              <div th:each="m : ${matches}"
+                   class="d-flex align-items-center justify-content-between p-3"
+                   style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04)">
+                <div>
+                  <div class="fw-semibold text-white" style="font-size:0.9rem" th:text="${m.project.title}">Projeto</div>
+                  <div style="color:#64748b;font-size:0.78rem" th:text="${m.project.companyName}">Empresa</div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span style="color:#22c55e;font-size:0.78rem;font-weight:600">
+                    <i class="ti ti-check-circle"></i> Match
+                  </span>
+                  <span th:if="${m.matchScore != null}"
+                        class="tabular" style="color:#6b6eff;font-size:0.82rem;font-weight:600"
+                        th:text="${m.getScoreAsInt()} + '%'">0%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Convites pendentes -->
+          <div class="nexus-card p-4">
+            <div class="fw-semibold text-white mb-3">
+              <i class="ti ti-mail me-2" style="color:#f59e0b"></i>Convites recebidos
+              <span class="badge ms-2" th:text="${#lists.size(invites)}" style="font-size:0.7rem;background:rgba(245,158,11,0.15);color:#f59e0b">0</span>
+            </div>
+            <div th:if="${#lists.isEmpty(invites)}" style="color:#475569;font-size:0.875rem">
+              Nenhum convite pendente.
+            </div>
+            <div class="d-flex flex-column gap-2" th:unless="${#lists.isEmpty(invites)}">
+              <div th:each="inv : ${invites}"
+                   class="d-flex align-items-center justify-content-between p-3"
+                   style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04)">
+                <div>
+                  <div class="fw-semibold text-white" style="font-size:0.9rem" th:text="${inv.project.title}">Projeto</div>
+                  <div style="color:#64748b;font-size:0.78rem" th:text="${inv.project.companyName}">Empresa</div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span style="color:#f59e0b;font-size:0.78rem;font-weight:600">
+                    <i class="ti ti-clock"></i> Pendente
+                  </span>
+                  <span th:if="${inv.matchScore != null}"
+                        class="tabular" style="color:#6b6eff;font-size:0.82rem;font-weight:600"
+                        th:text="${inv.getScoreAsInt()} + '%'">0%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /col-lg-8 -->
+      </div><!-- /row -->
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+</body>
+</html>

@@ -264,4 +264,16 @@ public class ProfessionalService {
                 })
                 .body(ProfessionalStatsDTO.class);
     }
+
+    public byte[] exportPdf(String token, Long professionalId) {
+        String uri = "/professional/profile/export";
+        if (professionalId != null) {
+            uri += "?professionalId=" + professionalId;
+        }
+        return restClient.get()
+                .uri(uri)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .body(byte[].class);
+    }
 }

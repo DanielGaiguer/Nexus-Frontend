@@ -6,6 +6,9 @@ import com.main.nexus_frontend.service.MapService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -224,5 +227,106 @@ public class AdminController {
         model.addAttribute("closedCount", closedCount);
         model.addAttribute("activePage", "projects");
         return "admin/admin-projects";
+    }
+
+    @GetMapping("/professional/{id}")
+    public String viewProfessional(@PathVariable Long id, HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        ProfessionalProfileDTO profile = adminService.getProfessionalProfile(token, id);
+        List<MatchDTO> matches = adminService.getProfessionalMatches(token, id);
+        List<MatchDTO> invites = matches.stream()
+                .filter(m -> "COMPANY_INTERESTED".equals(m.getStatus()))
+                .collect(Collectors.toList());
+        List<MatchDTO> confirmed = matches.stream()
+                .filter(m -> "MATCHED".equals(m.getStatus()))
+                .collect(Collectors.toList());
+        List<PreviousProjectDTO> projects = adminService.getProfessionalProjects(token, id);
+        model.addAttribute("profile", profile);
+        model.addAttribute("professionalId", id);
+        model.addAttribute("matches", confirmed);
+        model.addAttribute("invites", invites);
+        model.addAttribute("previousProjects", projects);
+        model.addAttribute("activePage", "users");
+        return "admin/admin-professional-profile";
+    }
+
+    @GetMapping("/professional/{id}/stats")
+    public String professionalStats(@PathVariable Long id, HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        ProfessionalStatsDTO stats = adminService.getProfessionalStats(token, id);
+        model.addAttribute("stats", stats);
+        model.addAttribute("professionalId", id);
+        model.addAttribute("activePage", "users");
+        return "pro/pro-stats";
+    }
+
+    @GetMapping("/professional/{id}/export")
+    @ResponseBody
+    public ResponseEntity<byte[]> exportProfessionalPdf(
+            @PathVariable Long id, HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        byte[] pdf = adminService.exportProfessionalPdf(token, id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"perfil-nexus.pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
+    @GetMapping("/company/{id}")
+    public String viewCompany(@PathVariable Long id, HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        CompanyProfileDTO profile = adminService.getCompanyProfile(token, id);
+        CompanyDashboardDTO dashboard = adminService.getCompanyDashboard(token, id);
+        List<ProjectDTO> projects = adminService.getCompanyProjects(token, id);
+        List<MatchDTO> matches = adminService.getCompanyMatches(token, id);
+        List<MatchDTO> confirmed = matches.stream()
+                .filter(m -> "MATCHED".equals(m.getStatus()))
+                .collect(Collectors.toList());
+        List<MatchDTO> pending = matches.stream()
+                .filter(m -> "COMPANY_INTERESTED".equals(m.getStatus()) || "PROFESSIONAL_INTERESTED".equals(m.getStatus()))
+                .collect(Collectors.toList());
+
+        long totalProjects = projects.size();
+        long openProjects = projects.stream()
+                .filter(p -> "OPEN".equals(p.getStatus()))
+                .count();
+        long confirmedMatches = confirmed.size();
+        double successRate = totalProjects > 0 ? confirmedMatches * 100.0 / totalProjects : 0;
+
+        model.addAttribute("profile", profile);
+        model.addAttribute("companyId", id);
+        model.addAttribute("dashboard", dashboard);
+        model.addAttribute("projects", projects);
+        model.addAttribute("confirmed", confirmed);
+        model.addAttribute("pending", pending);
+        model.addAttribute("totalProjects", totalProjects);
+        model.addAttribute("openProjects", openProjects);
+        model.addAttribute("confirmedMatches", confirmedMatches);
+        model.addAttribute("successRate", Math.round(successRate));
+        model.addAttribute("activePage", "users");
+        return "admin/admin-company-profile";
+    }
+
+    @GetMapping("/company/{companyId}/project/{projectId}")
+    public String viewCompanyProject(
+            @PathVariable Long companyId,
+            @PathVariable Long projectId,
+            HttpSession session,
+            Model model) {
+        String token = (String) session.getAttribute("token");
+        CompanyProfileDTO profile = adminService.getCompanyProfile(token, companyId);
+        List<ProjectDTO> projects = adminService.getCompanyProjects(token, companyId);
+        ProjectDTO project = projects.stream()
+                .filter(p -> projectId.equals(p.getId()))
+                .findFirst()
+                .orElse(null);
+        if (project == null) {
+            return "redirect:/admin/company/" + companyId;
+        }
+        model.addAttribute("profile", profile);
+        model.addAttribute("companyId", companyId);
+        model.addAttribute("project", project);
+        model.addAttribute("activePage", "users");
+        return "admin/admin-company-project-detail";
     }
 }

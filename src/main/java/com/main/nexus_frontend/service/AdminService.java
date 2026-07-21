@@ -160,4 +160,126 @@ public class AdminService {
                 .body(ProjectDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
     }
+
+    public ProfessionalProfileDTO getProfessionalProfile(String token, Long professionalId) {
+        return restClient.get()
+                .uri("/professional/{id}/admin-profile", professionalId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load professional profile");
+                })
+                .body(ProfessionalProfileDTO.class);
+    }
+
+    public ProfessionalStatsDTO getProfessionalStats(String token, Long professionalId) {
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/professional/stats")
+                        .queryParam("professionalId", professionalId)
+                        .build())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load stats");
+                })
+                .body(ProfessionalStatsDTO.class);
+    }
+
+    public byte[] exportProfessionalPdf(String token, Long professionalId) {
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/professional/profile/export")
+                        .queryParam("professionalId", professionalId)
+                        .build())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .body(byte[].class);
+    }
+
+    public List<MatchDTO> getProfessionalMatches(String token, Long professionalId) {
+        MatchDTO[] response = restClient.get()
+                .uri("/admin/professionals/{id}/matches", professionalId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load matches");
+                })
+                .body(MatchDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public List<PreviousProjectDTO> getProfessionalProjects(String token, Long professionalId) {
+        PreviousProjectDTO[] response = restClient.get()
+                .uri("/admin/professionals/{id}/projects", professionalId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load projects");
+                })
+                .body(PreviousProjectDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public CompanyProfileDTO getCompanyProfile(String token, Long companyId) {
+        return restClient.get()
+                .uri("/admin/companies/{id}/profile", companyId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load company profile");
+                })
+                .body(CompanyProfileDTO.class);
+    }
+
+    public CompanyDashboardDTO getCompanyDashboard(String token, Long companyId) {
+        return restClient.get()
+                .uri("/admin/companies/{id}/dashboard", companyId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load company dashboard");
+                })
+                .body(CompanyDashboardDTO.class);
+    }
+
+    public List<ProjectDTO> getCompanyProjects(String token, Long companyId) {
+        ProjectDTO[] response = restClient.get()
+                .uri("/admin/companies/{id}/projects", companyId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load company projects");
+                })
+                .body(ProjectDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public List<MatchDTO> getCompanyMatches(String token, Long companyId) {
+        MatchDTO[] response = restClient.get()
+                .uri("/admin/companies/{id}/matches", companyId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load company matches");
+                })
+                .body(MatchDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
 }
