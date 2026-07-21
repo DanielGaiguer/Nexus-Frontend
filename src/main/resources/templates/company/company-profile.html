@@ -38,13 +38,48 @@
 
           <!-- Avatar + nome -->
           <div class="nexus-card p-4 text-center mb-3">
-            <div class="nexus-avatar-xl mx-auto mb-3"
-                 th:with="n=${profile.companyName != null ? profile.companyName : 'C'},
-                          h=${n.hashCode()},
-                          hue=${(h%360)<0?(h%360)+360:h%360}"
-                 th:style="'background:hsl('+${hue}+',50%,40%)'">
-              <span style="font-size:1.75rem;font-weight:700;color:#fff"
-                    th:text="${#strings.substring(n,0,2).toUpperCase()}">TC</span>
+            <div class="nexus-avatar-wrapper mx-auto mb-3"
+                 style="width:96px;height:96px"
+                 onclick="document.getElementById('photoInputCo').click()"
+                 title="Alterar foto da empresa">
+
+              <th:block th:if="${profile.profilePhotoUrl != null and !#strings.isEmpty(profile.profilePhotoUrl)}">
+                <img id="currentCompanyPhoto"
+                     th:src="${profile.profilePhotoUrl}"
+                     class="nexus-profile-photo-xl"
+                     style="width:96px;height:96px"
+                     alt="Logo da empresa">
+              </th:block>
+
+              <th:block th:unless="${profile.profilePhotoUrl != null and !#strings.isEmpty(profile.profilePhotoUrl)}">
+                <div id="currentCompanyPhoto"
+                     class="nexus-avatar-xl"
+                     th:with="n=${profile.companyName != null ? profile.companyName : 'C'},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,40%)'"
+                     style="width:96px;height:96px;display:flex;align-items:center;justify-content:center">
+                  <span style="font-size:1.75rem;font-weight:700;color:#fff"
+                        th:text="${#strings.substring(n,0,2).toUpperCase()}">TC</span>
+                </div>
+              </th:block>
+
+              <div class="nexus-avatar-photo-overlay"><i class="ti ti-camera"></i></div>
+              <div class="nexus-avatar-edit-btn"><i class="ti ti-pencil"></i></div>
+            </div>
+
+            <input type="file" id="photoInputCo"
+                   accept="image/jpeg,image/png,image/webp"
+                   style="display:none">
+
+            <div th:if="${profile.profilePhotoUrl != null and !#strings.isEmpty(profile.profilePhotoUrl)}"
+                 class="mb-2">
+              <button type="button"
+                      class="nexus-btn nexus-btn-danger-outline nexus-btn-sm"
+                      onclick="removeCompanyPhoto()"
+                      id="removeCompanyPhotoBtn">
+                <i class="ti ti-trash"></i> Remover foto
+              </button>
             </div>
             <div class="fw-bold text-white" style="font-size:1.15rem" th:text="${profile.companyName}">Empresa</div>
             <div style="color:#64748b;font-size:0.85rem;margin-top:2px">Empresa de Software</div>
@@ -245,6 +280,145 @@ document.addEventListener('DOMContentLoaded', function() {
     return name.length >= 2 && validateCEP(cep);
   });
 });
+</script>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
+<div class="nexus-crop-modal" id="cropModal">
+  <div class="nexus-crop-container">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <div class="fw-semibold text-white">Ajustar foto de perfil</div>
+        <div style="color:#64748b;font-size:0.8rem">Arraste e redimensione para enquadrar</div>
+      </div>
+      <button type="button"
+              class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+              onclick="closeCropModal()">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <div class="nexus-crop-image-area mb-3">
+      <img id="cropImage" alt="Imagem para recorte" style="max-width:100%">
+    </div>
+
+    <div class="d-flex gap-2 justify-content-end">
+      <button type="button"
+              class="nexus-btn nexus-btn-ghost"
+              onclick="closeCropModal()">Cancelar</button>
+      <button type="button"
+              class="nexus-btn nexus-btn-primary"
+              id="confirmCropBtn">
+        <i class="ti ti-check"></i> Confirmar e enviar
+      </button>
+    </div>
+
+    <!-- Status do upload -->
+    <div id="uploadStatus" style="display:none;margin-top:0.75rem"
+         class="nexus-alert nexus-alert-info">
+      <i class="ti ti-loader" style="animation:spin 1s linear infinite"></i>
+      <span>Enviando foto...</span>
+    </div>
+    <div id="uploadError" style="display:none;margin-top:0.75rem"
+         class="nexus-alert nexus-alert-danger">
+      <i class="ti ti-alert-circle"></i>
+      <span id="uploadErrorMsg">Erro no upload.</span>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<script>
+var nexusCropper = null;
+
+document.getElementById('photoInputCo').addEventListener('change', function(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var image = document.getElementById('cropImage');
+    image.src = e.target.result;
+    document.getElementById('cropModal').classList.add('active');
+    document.getElementById('uploadStatus').style.display = 'none';
+    document.getElementById('uploadError').style.display  = 'none';
+    if (nexusCropper) nexusCropper.destroy();
+    nexusCropper = new Cropper(image, {
+      aspectRatio: 1, viewMode: 1, autoCropArea: 0.85,
+      responsive: true, scalable: false, zoomable: true
+    });
+  };
+  reader.readAsDataURL(file);
+  this.value = '';
+});
+
+function closeCropModal() {
+  document.getElementById('cropModal').classList.remove('active');
+  if (nexusCropper) { nexusCropper.destroy(); nexusCropper = null; }
+}
+
+document.getElementById('confirmCropBtn').addEventListener('click', function() {
+  if (!nexusCropper) return;
+  var statusEl = document.getElementById('uploadStatus');
+  var errorEl  = document.getElementById('uploadError');
+  var btn      = document.getElementById('confirmCropBtn');
+  statusEl.style.display = 'flex';
+  errorEl.style.display  = 'none';
+  btn.disabled = true;
+
+  nexusCropper.getCroppedCanvas({ width:400, height:400,
+    imageSmoothingEnabled:true, imageSmoothingQuality:'high' })
+  .toBlob(function(blob) {
+    var formData = new FormData();
+    formData.append('file', blob, 'profile.jpg');
+
+    // Rota diferente — empresa
+    fetch('/company/profile/photo', { method: 'POST', body: formData })
+    .then(function(res) {
+      if (!res.ok) return res.text().then(function(t) { throw new Error(t); });
+      return res.text();
+    })
+    .then(function(photoUrl) {
+      var current = document.getElementById('currentCompanyPhoto');
+      if (current.tagName === 'IMG') {
+        current.src = photoUrl;
+      } else {
+        var img = document.createElement('img');
+        img.id = 'currentCompanyPhoto';
+        img.src = photoUrl;
+        img.className = 'nexus-profile-photo-xl';
+        img.style.cssText = 'width:96px;height:96px';
+        img.alt = 'Logo da empresa';
+        current.parentNode.replaceChild(img, current);
+      }
+      var removeBtn = document.getElementById('removeCompanyPhotoBtn');
+      if (removeBtn) removeBtn.style.display = '';
+      closeCropModal();
+      nexusToast('Foto atualizada com sucesso!', 'success');
+    })
+    .catch(function(err) {
+      statusEl.style.display = 'none';
+      errorEl.style.display  = 'flex';
+      document.getElementById('uploadErrorMsg').textContent =
+        err.message || 'Erro ao enviar. Tente novamente.';
+      btn.disabled = false;
+    });
+  }, 'image/jpeg', 0.9);
+});
+
+function removeCompanyPhoto() {
+  if (!confirm('Remover foto da empresa?')) return;
+  fetch('/company/profile/photo', { method: 'DELETE' })
+  .then(function(res) {
+    if (!res.ok) throw new Error();
+    window.location.reload();
+  })
+  .catch(function() { nexusToast('Erro ao remover a foto.', 'error'); });
+}
 </script>
 </body>
 </html>

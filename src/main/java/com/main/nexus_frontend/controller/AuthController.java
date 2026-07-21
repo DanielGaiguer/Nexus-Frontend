@@ -5,6 +5,10 @@ import com.main.nexus_frontend.model.LoginResponseDTO;
 import com.main.nexus_frontend.model.RegisterCompanyRequestDTO;
 import com.main.nexus_frontend.model.RegisterProfessionalRequestDTO;
 import com.main.nexus_frontend.service.AuthService;
+import com.main.nexus_frontend.service.CompanyService;
+import com.main.nexus_frontend.service.ProfessionalService;
+import com.main.nexus_frontend.model.CompanyProfileDTO;
+import com.main.nexus_frontend.model.ProfessionalProfileDTO;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +24,10 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+    @Autowired
+    private ProfessionalService professionalService;
+    @Autowired
+    private CompanyService companyService;
 
     @GetMapping("/login")
     public String loginPage(Model model) {
@@ -35,6 +43,21 @@ public class AuthController {
             session.setAttribute("userName", response.getName());
             session.setAttribute("userRole", response.getRole());
             session.setAttribute("userId", response.getUserId());
+
+            try {
+                if ("PROFESSIONAL".equals(response.getRole())) {
+                    ProfessionalProfileDTO profile = professionalService.getProfile(response.getToken());
+                    if (profile.getProfilePhotoUrl() != null && !profile.getProfilePhotoUrl().isBlank()) {
+                        session.setAttribute("profilePhotoUrl", profile.getProfilePhotoUrl());
+                    }
+                } else if ("COMPANY".equals(response.getRole())) {
+                    CompanyProfileDTO profile = companyService.getProfile(response.getToken());
+                    if (profile.getProfilePhotoUrl() != null && !profile.getProfilePhotoUrl().isBlank()) {
+                        session.setAttribute("profilePhotoUrl", profile.getProfilePhotoUrl());
+                    }
+                }
+            } catch (Exception ignored) {
+            }
 
             if ("ADMIN".equals(response.getRole())) {
                 return "redirect:/admin/dashboard";

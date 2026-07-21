@@ -1363,3 +1363,116 @@ body.nexus-app {
   font-size: 1.2rem;
   flex-shrink: 0;
 }
+
+/* ── Foto de perfil circular ── */
+.nexus-profile-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(107,110,255,0.3);
+  display: block;
+}
+
+.nexus-profile-photo-xl {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(107,110,255,0.3);
+}
+
+/* Wrapper do avatar no perfil — posiciona o botão de editar em cima */
+.nexus-avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.nexus-avatar-edit-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #6b6eff;
+  border: 2px solid rgba(13,19,41,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nexus-avatar-edit-btn:hover { background: #8b8eff; }
+.nexus-avatar-edit-btn i { color: #fff; font-size: 0.7rem; }
+
+/* Remove overlay ao hover no avatar wrapper */
+.nexus-avatar-wrapper:hover .nexus-avatar-photo-overlay {
+  opacity: 1;
+}
+
+.nexus-avatar-photo-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.nexus-avatar-photo-overlay i {
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+/* ── Modal de crop ── */
+.nexus-crop-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.nexus-crop-modal.active { display: flex; }
+
+.nexus-crop-container {
+  background: rgba(9,14,31,0.98);
+  border: 1px solid rgba(107,110,255,0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 520px;
+}
+
+.nexus-crop-image-area {
+  width: 100%;
+  max-height: 380px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #000;
+}
+
+.nexus-crop-image-area img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Máscara circular na caixa de crop */
+.cropper-view-box,
+.cropper-face {
+  border-radius: 50% !important;
+}
+
+/* Remove a linha azul quadrada da caixa de crop */
+.cropper-dashed { display: none !important; }
+.cropper-point  { border-radius: 50%; }

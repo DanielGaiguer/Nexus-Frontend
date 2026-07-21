@@ -217,4 +217,38 @@ public class ProfessionalService {
                 })
                 .body(byte[].class);
     }
+
+    public String uploadPhoto(String token, MultipartFile file) {
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        try {
+            body.add("file", new ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            });
+        } catch (java.io.IOException e) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(500), "Failed to read file");
+        }
+        return restClient.post()
+                .uri("/professional/profile/photo")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(body)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to upload photo");
+                })
+                .body(String.class);
+    }
+
+    public void removePhoto(String token) {
+        restClient.method(org.springframework.http.HttpMethod.DELETE)
+                .uri("/professional/profile/photo")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .body(String.class);
+    }
 }

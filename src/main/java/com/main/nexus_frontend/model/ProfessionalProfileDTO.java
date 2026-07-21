@@ -20,6 +20,7 @@ public class ProfessionalProfileDTO {
     private List<String> preferredTypes;
     private String experienceLevel;
     private String resume;
+    private String profilePhotoUrl;
 
     public ProfessionalProfileDTO() {}
 
@@ -57,4 +58,14 @@ public class ProfessionalProfileDTO {
     public void setExperienceLevel(String experienceLevel) { this.experienceLevel = experienceLevel; }
     public String getResume() { return resume; }
     public void setResume(String resume) { this.resume = resume; }
+
+    public String getProfilePhotoUrl() {
+        return profilePhotoUrl;
+    }
+
+    public void setProfilePhotoUrl(String profilePhotoUrl) {
+        this.profilePhotoUrl = profilePhotoUrl;
+    }
+    
+    
 }

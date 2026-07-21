@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -387,6 +388,34 @@ public class ProfessionalController {
             response.getOutputStream().flush();
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/profile/photo")
+    @ResponseBody
+    public ResponseEntity<String> uploadProPhoto(
+            @RequestParam("file") MultipartFile file,
+            HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        try {
+            String url = professionalService.uploadPhoto(token, file);
+            session.setAttribute("profilePhotoUrl", url);
+            return ResponseEntity.ok(url);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao fazer upload: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/profile/photo")
+    @ResponseBody
+    public ResponseEntity<String> removeProPhoto(HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        try {
+            professionalService.removePhoto(token);
+            session.removeAttribute("profilePhotoUrl");
+            return ResponseEntity.ok("Foto removida.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao remover: " + e.getMessage());
         }
     }
 }

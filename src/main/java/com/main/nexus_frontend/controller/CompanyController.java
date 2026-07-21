@@ -7,9 +7,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -405,6 +407,34 @@ public class CompanyController {
             response.getOutputStream().flush();
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/profile/photo")
+    @ResponseBody
+    public ResponseEntity<String> uploadCompanyPhoto(
+            @RequestParam("file") MultipartFile file,
+            HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        try {
+            String url = companyService.uploadPhoto(token, file);
+            session.setAttribute("profilePhotoUrl", url);
+            return ResponseEntity.ok(url);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao fazer upload: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/profile/photo")
+    @ResponseBody
+    public ResponseEntity<String> removeCompanyPhoto(HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        try {
+            companyService.removePhoto(token);
+            session.removeAttribute("profilePhotoUrl");
+            return ResponseEntity.ok("Foto removida.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao remover: " + e.getMessage());
         }
     }
 }

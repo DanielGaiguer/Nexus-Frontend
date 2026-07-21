@@ -183,12 +183,20 @@
 
     <!-- Sidebar footer -->
     <div class="nexus-sidebar-footer">
-      <div class="nexus-avatar-initials"
-           th:with="n=${session.userName != null ? session.userName : 'U'},
-                    h=${n.hashCode()},
-                    hue=${(h % 360) < 0 ? (h % 360) + 360 : h % 360}"
-           th:style="'background:hsl(' + ${hue} + ',50%,40%)'"
-           th:text="${#strings.substring(n,0,1)}">U</div>
+        <th:block th:if="${session.profilePhotoUrl != null and !#strings.isEmpty(session.profilePhotoUrl)}">
+          <img th:src="${session.profilePhotoUrl}"
+               style="width:36px;height:36px;border-radius:50%;object-fit:cover;
+                      border:2px solid rgba(107,110,255,0.25);flex-shrink:0"
+               alt="Foto">
+        </th:block>
+        <th:block th:unless="${session.profilePhotoUrl != null and !#strings.isEmpty(session.profilePhotoUrl)}">
+          <div class="nexus-avatar-initials"
+               th:with="n=${session.userName != null ? session.userName : 'U'},
+                        h=${n.hashCode()},
+                        hue=${(h % 360) < 0 ? (h % 360) + 360 : h % 360}"
+               th:style="'background:hsl(' + ${hue} + ',50%,40%)'"
+               th:text="${#strings.substring(n,0,1)}">U</div>
+        </th:block>
       <div class="nexus-sidebar-footer-info">
         <div class="fw-semibold text-white" style="font-size:0.82rem" th:text="${session.userName}">Usuário</div>
         <div class="nexus-role-text" th:switch="${session.userRole}">
@@ -218,12 +226,23 @@
     <div class="dropdown">
       <a href="#" class="d-flex align-items-center gap-2 text-decoration-none"
          data-bs-toggle="dropdown">
-        <div class="nexus-avatar-initials nexus-avatar-sm"
-             th:with="n=${session.userName != null ? session.userName : 'U'},
-                      h=${n.hashCode()},
-                      hue=${(h % 360) < 0 ? (h % 360) + 360 : h % 360}"
-             th:style="'background:hsl(' + ${hue} + ',50%,40%)'"
-             th:text="${#strings.substring(n,0,1)}">U</div>
+
+        <!-- Avatar: foto real se existir, iniciais se não -->
+        <th:block th:if="${session.profilePhotoUrl != null and !#strings.isEmpty(session.profilePhotoUrl)}">
+          <img th:src="${session.profilePhotoUrl}"
+               style="width:32px;height:32px;border-radius:50%;object-fit:cover;
+                      border:2px solid rgba(107,110,255,0.3)"
+               alt="Foto de perfil">
+        </th:block>
+        <th:block th:unless="${session.profilePhotoUrl != null and !#strings.isEmpty(session.profilePhotoUrl)}">
+          <div class="nexus-avatar-initials nexus-avatar-sm"
+               th:with="n=${session.userName != null ? session.userName : 'U'},
+                        h=${n.hashCode()},
+                        hue=${(h % 360) < 0 ? (h % 360) + 360 : h % 360}"
+               th:style="'background:hsl(' + ${hue} + ',50%,40%)'"
+               th:text="${#strings.substring(n,0,1)}">U</div>
+        </th:block>
+
         <span class="fw-medium text-white d-none d-md-inline"
               th:text="${session.userName}">Usuário</span>
         <i class="ti ti-chevron-down text-muted" style="font-size:0.75rem"></i>
@@ -231,7 +250,8 @@
       <ul class="dropdown-menu dropdown-menu-end nexus-dropdown">
         <li>
           <a class="dropdown-item"
-             th:href="${session.userRole == 'PROFESSIONAL'} ? '/pro/profile' : (${session.userRole == 'COMPANY'} ? '/company/profile' : '#')">
+             th:href="${session.userRole == 'PROFESSIONAL'} ? '/pro/profile' :
+                      (${session.userRole == 'COMPANY'} ? '/company/profile' : '#')">
             <i class="ti ti-user me-2"></i>Meu perfil
           </a>
         </li>

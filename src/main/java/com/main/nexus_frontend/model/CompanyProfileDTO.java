@@ -14,6 +14,7 @@ public class CompanyProfileDTO {
     private Double reputation;
     private Double latitude;
     private Double longitude;
+    private String profilePhotoUrl;
 
     public CompanyProfileDTO() {}
 
@@ -43,4 +44,14 @@ public class CompanyProfileDTO {
     public void setLatitude(Double latitude) { this.latitude = latitude; }
     public Double getLongitude() { return longitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public String getProfilePhotoUrl() {
+        return profilePhotoUrl;
+    }
+
+    public void setProfilePhotoUrl(String profilePhotoUrl) {
+        this.profilePhotoUrl = profilePhotoUrl;
+    }
+    
+    
 }
