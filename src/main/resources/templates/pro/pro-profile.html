@@ -134,6 +134,8 @@
               </div>
             </form>
           </div>
+          
+          <div id="completenessWidget" class="mb-3"></div>
 
           <!-- Currículo -->
           <div class="nexus-card p-3 mb-3">
@@ -348,6 +350,9 @@
                   <span style="color:#e2e8f0;font-size:0.875rem">Meio período</span>
                 </label>
               </div>
+            </div>
+            <div class="col-12">
+              <div id="scoreSimContainer"></div>
             </div>
           </div>
         </div>
@@ -604,6 +609,80 @@ function removePhoto() {
     nexusToast('Erro ao remover a foto.', 'error');
   });
 }
+</script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var PROFILE_DATA = {
+  name:             /*[[${profile.name}]]*/ '',
+  phone:            /*[[${profile.phone}]]*/ '',
+  cep:              /*[[${profile.cep}]]*/ '',
+  profilePhotoUrl:  /*[[${profile.profilePhotoUrl}]]*/ '',
+  skills:           /*[[${profile.skills}]]*/ [],
+  projects:         /*[[${portfolioCount != null ? portfolioCount : 0}]]*/ 0,
+  experienceLevel:  /*[[${profile.experienceLevel}]]*/ '',
+  minimumSalary:    /*[[${profile.minimumSalary}]]*/ 0,
+  preferredTypes:   /*[[${profile.preferredTypes}]]*/ []
+};
+// Adapta projects para array compatível com o critério de minLength
+if (typeof PROFILE_DATA.projects === 'number') {
+  PROFILE_DATA.projects = new Array(PROFILE_DATA.projects);
+}
+NexusCompleteness.render(PROFILE_DATA, document.getElementById('completenessWidget'), false);
+/*]]>*/
+</script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+// Dados fixos do perfil (não mudam sem salvar)
+var INITIAL_SKILLS_COUNT  = /*[[${profile.skills != null ? #lists.size(profile.skills) : 0}]]*/ 0;
+var INITIAL_PROJECTS_COUNT = /*[[${portfolioCount != null ? portfolioCount : 0}]]*/ 0;
+var INITIAL_REPUTATION     = /*[[${profile.reputation != null ? profile.reputation : 0}]]*/ 0;
+var INITIAL_AVAILABLE      = /*[[${profile.available != null ? profile.available : true}]]*/ true;
+var AVG_PROJECT_BUDGET     = /*[[${avgProjectBudget != null ? avgProjectBudget : 10000}]]*/ 10000;
+// avgProjectBudget deve vir do controller: média dos minimumBudget das vagas abertas
+
+// Estado local do modal (atualiza conforme usuário edita)
+var simSkills    = INITIAL_SKILLS_COUNT;
+var simAvailable = INITIAL_AVAILABLE;
+
+NexusScoreSimulator.init({
+  containerEl:     document.getElementById('scoreSimContainer'),
+  getSkills:       function() { return simSkills; },
+  getMinSalary:    function() {
+    var el = document.getElementById('editMinSalary');
+    return el ? (parseFloat(el.value) || 0) : 0;
+  },
+  getMaxSalary:    function() {
+    var el = document.getElementById('editMaxSalary');
+    return el ? (parseFloat(el.value) || 0) : 0;
+  },
+  getHistory:      function() { return INITIAL_PROJECTS_COUNT; },
+  getReputation:   function() { return INITIAL_REPUTATION; },
+  getAvailable:    function() {
+    var el = document.querySelector('[name="available"]');
+    return el ? el.checked : INITIAL_AVAILABLE;
+  },
+  avgProjectBudget: AVG_PROJECT_BUDGET
+});
+
+// Roda o simulador ao mudar campos no modal
+['editMinSalary','editMaxSalary'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('input', function() { NexusScoreSimulator.simulate(); });
+});
+
+// Toggle de disponibilidade (fora do modal também recalcula)
+var availToggle = document.querySelector('[name="available"]');
+if (availToggle) {
+  availToggle.addEventListener('change', function() { NexusScoreSimulator.simulate(); });
+}
+
+// Quando o modal de skills fecha após salvar, atualiza o count
+document.getElementById('editModal').addEventListener('shown.bs.modal', function() {
+  NexusScoreSimulator.simulate();
+});
+
+/*]]>*/
 </script>
 </body>
 </html>

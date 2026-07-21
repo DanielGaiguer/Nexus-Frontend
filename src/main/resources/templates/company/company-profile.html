@@ -208,6 +208,8 @@
                 <div class="nexus-stat-label mt-1">Taxa de sucesso</div>
               </div>
             </div>
+              
+            <div id="completenessWidgetCo" class="mb-3"></div>
           </div>
 
         </div><!-- /col-lg-8 -->
@@ -419,6 +421,21 @@ function removeCompanyPhoto() {
   })
   .catch(function() { nexusToast('Erro ao remover a foto.', 'error'); });
 }
+</script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var CO_DATA = {
+  companyName:     /*[[${profile.companyName}]]*/ '',
+  phone:           /*[[${profile.phone}]]*/ '',
+  cep:             /*[[${profile.cep}]]*/ '',
+  profilePhotoUrl: /*[[${profile.profilePhotoUrl}]]*/ '',
+  description:     /*[[${profile.description}]]*/ '',
+  taxId:           /*[[${profile.taxId}]]*/ '',
+  email:           /*[[${profile.email}]]*/ '',
+  city:            /*[[${profile.city}]]*/ ''
+};
+NexusCompleteness.render(CO_DATA, document.getElementById('completenessWidgetCo'), true);
+/*]]>*/
 </script>
 </body>
 </html>

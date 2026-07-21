@@ -137,6 +137,10 @@
               </div>
               <div class="d-flex flex-column align-items-end gap-2">
                 <span class="nexus-status success">Match Confirmado</span>
+                <a th:href="@{/public/professional/{id}(id=${m.professional.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                  <i class="ti ti-user"></i> Ver perfil completo
+                </a>
                 <a th:href="@{/company/matches/{id}/review(id=${m.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                   <i class="ti ti-star"></i> Avaliar

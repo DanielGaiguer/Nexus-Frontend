@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${professional.name} + ' — Perfil')}"></head>
+<body>
+
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main>
+        <section class="py-5">
+            <div class="container" style="max-width:720px;">
+
+                <!-- Back -->
+                <a href="javascript:history.back()"
+                   class="text-decoration-none d-inline-flex align-items-center gap-1 mb-4"
+                   style="color:var(--text-muted);font-size:0.875rem">
+                    <i class="ti ti-arrow-left"></i> Voltar
+                </a>
+
+                <!-- Profile card -->
+                <div class="card card-bg border-0 p-4 mb-4">
+                    <div class="d-flex align-items-start gap-4 flex-wrap">
+
+                        <!-- Avatar with initials -->
+                        <div class="flex-shrink-0"
+                             th:with="n=${professional.name},
+                                      h=${n.hashCode()},
+                                      hue=${(h%360)<0?(h%360)+360:h%360}"
+                             th:style="'width:80px;height:80px;border-radius:50%;background:hsl('+${hue}+',50%,38%);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:700;color:#fff'"
+                             th:text="${#strings.substring(n,0,2).toUpperCase()}">P</div>
+
+                        <div class="flex-fill">
+                            <h2 class="fw-bold text-light mb-1" style="letter-spacing:-0.02em"
+                                th:text="${professional.name}">Nome</h2>
+                            <div class="d-flex align-items-center gap-2 flex-wrap mb-3" style="color:var(--text-secondary);font-size:0.9rem">
+                                <span th:if="${professional.city != null}">
+                                    <i class="ti ti-map-pin me-1"></i>
+                                    <span th:text="${professional.city} + (${professional.uf != null} ? ' / ' + ${professional.uf} : '')">Cidade</span>
+                                </span>
+                                <span th:if="${professional.experienceLevel != null}" class="d-inline-flex align-items-center gap-1">
+                                    <i class="ti ti-briefcase me-1"></i>
+                                    <span th:switch="${professional.experienceLevel}">
+                                        <span th:case="'JUNIOR'">Júnior</span>
+                                        <span th:case="'MID_LEVEL'">Pleno</span>
+                                        <span th:case="'SENIOR'">Sênior</span>
+                                        <span th:case="'LEAD'">Lead</span>
+                                        <span th:case="'PRINCIPAL'">Principal</span>
+                                        <span th:case="*" th:text="${professional.experienceLevel}">—</span>
+                                    </span>
+                                </span>
+                            </div>
+
+                            <!-- Availability badge + Reputation -->
+                            <div class="d-flex align-items-center gap-3 flex-wrap">
+                                <span th:if="${professional.available != null and professional.available}"
+                                      class="badge d-inline-flex align-items-center gap-1"
+                                      style="background:rgba(34,197,94,0.12);color:#22c55e;font-size:0.78rem;font-weight:600">
+                                    <i class="ti ti-circle-check"></i> Disponível
+                                </span>
+                                <span th:if="${professional.available == null or !professional.available}"
+                                      class="badge d-inline-flex align-items-center gap-1"
+                                      style="background:rgba(148,163,184,0.12);color:#94a3b8;font-size:0.78rem;font-weight:600">
+                                    <i class="ti ti-clock"></i> Indisponível
+                                </span>
+
+                                <!-- Reputation stars -->
+                                <span th:if="${professional.reputation != null and professional.reputation > 0}"
+                                      class="d-inline-flex align-items-center gap-1" style="font-size:0.85rem">
+                                    <template th:each="i : ${#numbers.sequence(1,5)}">
+                                        <i th:if="${i <= professional.reputation}"
+                                           class="ti ti-star-filled" style="color:var(--warning);font-size:0.9rem"></i>
+                                        <i th:if="${i > professional.reputation and (i - 1) < professional.reputation}"
+                                           class="ti ti-star-filled" style="color:var(--warning);font-size:0.9rem;opacity:0.5"></i>
+                                        <i th:if="${i > professional.reputation}"
+                                           class="ti ti-star" style="color:var(--text-muted);font-size:0.9rem"></i>
+                                    </template>
+                                    <span class="fw-semibold text-light ms-1" th:text="${#numbers.formatDecimal(professional.reputation,1,'COMMA',1,'POINT')}">0.0</span>
+                                </span>
+
+                                <!-- Overall score -->
+                                <span th:if="${professional.overallScore != null}"
+                                      class="badge d-inline-flex align-items-center gap-1"
+                                      style="background:rgba(107,110,255,0.12);color:#6b6eff;font-size:0.78rem;font-weight:600">
+                                    <i class="ti ti-trending-up"></i>
+                                    Score: <span th:text="${#numbers.formatDecimal(professional.overallScore,1,'COMMA',1,'POINT')}">0.0</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div th:if="${professional.skills != null and !professional.skills.isEmpty()}" class="card card-bg border-0 p-4 mb-4">
+                    <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
+                        <i class="ti ti-code me-2" style="color:var(--primary)"></i>Skills
+                    </h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span th:each="skill : ${professional.skills}"
+                              class="badge"
+                              style="background:rgba(107,110,255,0.1);color:#a5b4fc;font-size:0.8rem;font-weight:500;padding:0.4rem 0.75rem;border-radius:6px"
+                              th:text="${skill}">Skill</span>
+                    </div>
+                </div>
+
+                <!-- Previous projects -->
+                <div th:if="${professional.previousProjects != null and !professional.previousProjects.isEmpty()}" class="card card-bg border-0 p-4 mb-4">
+                    <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
+                        <i class="ti ti-folder me-2" style="color:var(--primary)"></i>Projetos anteriores
+                    </h5>
+                    <div class="d-flex flex-column gap-3">
+                        <div th:each="proj : ${professional.previousProjects}"
+                             class="p-3" style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04)">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <div class="fw-semibold text-light" th:text="${proj.title}">Título</div>
+                                <span th:if="${proj.yearOfCompletion != null}"
+                                      style="color:var(--text-muted);font-size:0.78rem;flex-shrink:0"
+                                      th:text="${proj.yearOfCompletion}">2024</span>
+                            </div>
+                            <div th:if="${proj.technologies != null}"
+                                 style="color:var(--text-secondary);font-size:0.82rem"
+                                 th:text="${proj.technologies}">Tecnologias</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

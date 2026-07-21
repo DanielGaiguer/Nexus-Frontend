@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProjectService {
@@ -106,9 +107,21 @@ public class ProjectService {
                 .toBodilessEntity();
     }
 
-    public List<MatchDTO> getRanking(String token, Long id) {
+    public List<MatchDTO> getRanking(String token, Long id, Map<String, String> filters) {
+        var uriBuilder = new StringBuilder("/projects/{id}/ranking");
+        StringBuilder query = new StringBuilder();
+        if (filters != null) {
+            for (var entry : filters.entrySet()) {
+                if (entry.getValue() != null && !entry.getValue().isBlank()) {
+                    query.append(query.isEmpty() ? "?" : "&");
+                    query.append(entry.getKey()).append("=").append(entry.getValue());
+                }
+            }
+        }
+        uriBuilder.append(query);
+
         MatchDTO[] response = restClient.get()
-                .uri("/projects/{id}/ranking", id)
+                .uri(uriBuilder.toString(), id)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
