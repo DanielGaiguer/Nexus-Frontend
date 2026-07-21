@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -244,14 +245,41 @@ public class CompanyController {
     @GetMapping("/projects/{id}/ranking")
     public String ranking(
             @PathVariable Long id,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String uf,
+            @RequestParam(required = false) String experienceLevel,
+            @RequestParam(required = false) String available,
+            @RequestParam(required = false) Double minSalary,
+            @RequestParam(required = false) Double maxSalary,
+            @RequestParam(required = false) String skill,
             HttpSession session,
             Model model) {
         String token = (String) session.getAttribute("token");
         ProjectDTO project = projectService.getProject(token, id);
-        List<MatchDTO> ranking = projectService.getRanking(token, id);
+
+        Map<String, String> filters = new java.util.LinkedHashMap<>();
+        if (city != null && !city.isBlank()) filters.put("city", city);
+        if (uf != null && !uf.isBlank()) filters.put("uf", uf);
+        if (experienceLevel != null && !experienceLevel.isBlank()) filters.put("experienceLevel", experienceLevel);
+        if (available != null && !available.isBlank()) filters.put("available", available);
+        if (minSalary != null) filters.put("minSalary", String.valueOf(minSalary));
+        if (maxSalary != null) filters.put("maxSalary", String.valueOf(maxSalary));
+        if (skill != null && !skill.isBlank()) filters.put("skill", skill);
+
+        List<MatchDTO> ranking = projectService.getRanking(token, id, filters);
+
         model.addAttribute("project", project);
         model.addAttribute("ranking", ranking);
         model.addAttribute("activePage", "projects");
+
+        model.addAttribute("filterCity", city != null ? city : "");
+        model.addAttribute("filterUf", uf != null ? uf : "");
+        model.addAttribute("filterExperienceLevel", experienceLevel != null ? experienceLevel : "");
+        model.addAttribute("filterAvailable", available != null ? available : "");
+        model.addAttribute("filterMinSalary", minSalary != null ? minSalary : "");
+        model.addAttribute("filterMaxSalary", maxSalary != null ? maxSalary : "");
+        model.addAttribute("filterSkill", skill != null ? skill : "");
+
         return "company/company-ranking";
     }
 

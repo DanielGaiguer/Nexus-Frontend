@@ -107,6 +107,10 @@ public class ProjectService {
                 .toBodilessEntity();
     }
 
+    public List<MatchDTO> getRanking(String token, Long id) {
+        return getRanking(token, id, null);
+    }
+
     public List<MatchDTO> getRanking(String token, Long id, Map<String, String> filters) {
         var uriBuilder = new StringBuilder("/projects/{id}/ranking");
         StringBuilder query = new StringBuilder();

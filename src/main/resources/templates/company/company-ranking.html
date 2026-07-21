@@ -49,6 +49,110 @@
         </div>
       </div>
 
+      <!-- ══ FILTROS ═══════════════════════════════════════════ -->
+      <div class="nexus-card p-3 mb-4">
+        <form method="get" th:action="@{/company/projects/{id}/ranking(id=${project.id})}">
+          <div class="row g-3 align-items-end">
+
+            <!-- Cidade -->
+            <div class="col-6 col-md-3 col-lg-2">
+              <label class="nexus-label">Cidade</label>
+              <input type="text" name="city" class="nexus-input" placeholder="Ex: São Paulo"
+                     th:value="${filterCity}">
+            </div>
+
+            <!-- UF -->
+            <div class="col-6 col-md-2 col-lg-2">
+              <label class="nexus-label">UF</label>
+              <select name="uf" class="nexus-select">
+                <option value="">Todos</option>
+                <option value="AC" th:selected="${filterUf == 'AC'}">AC</option>
+                <option value="AL" th:selected="${filterUf == 'AL'}">AL</option>
+                <option value="AP" th:selected="${filterUf == 'AP'}">AP</option>
+                <option value="AM" th:selected="${filterUf == 'AM'}">AM</option>
+                <option value="BA" th:selected="${filterUf == 'BA'}">BA</option>
+                <option value="CE" th:selected="${filterUf == 'CE'}">CE</option>
+                <option value="DF" th:selected="${filterUf == 'DF'}">DF</option>
+                <option value="ES" th:selected="${filterUf == 'ES'}">ES</option>
+                <option value="GO" th:selected="${filterUf == 'GO'}">GO</option>
+                <option value="MA" th:selected="${filterUf == 'MA'}">MA</option>
+                <option value="MT" th:selected="${filterUf == 'MT'}">MT</option>
+                <option value="MS" th:selected="${filterUf == 'MS'}">MS</option>
+                <option value="MG" th:selected="${filterUf == 'MG'}">MG</option>
+                <option value="PA" th:selected="${filterUf == 'PA'}">PA</option>
+                <option value="PB" th:selected="${filterUf == 'PB'}">PB</option>
+                <option value="PR" th:selected="${filterUf == 'PR'}">PR</option>
+                <option value="PE" th:selected="${filterUf == 'PE'}">PE</option>
+                <option value="PI" th:selected="${filterUf == 'PI'}">PI</option>
+                <option value="RJ" th:selected="${filterUf == 'RJ'}">RJ</option>
+                <option value="RN" th:selected="${filterUf == 'RN'}">RN</option>
+                <option value="RS" th:selected="${filterUf == 'RS'}">RS</option>
+                <option value="RO" th:selected="${filterUf == 'RO'}">RO</option>
+                <option value="RR" th:selected="${filterUf == 'RR'}">RR</option>
+                <option value="SC" th:selected="${filterUf == 'SC'}">SC</option>
+                <option value="SP" th:selected="${filterUf == 'SP'}">SP</option>
+                <option value="SE" th:selected="${filterUf == 'SE'}">SE</option>
+                <option value="TO" th:selected="${filterUf == 'TO'}">TO</option>
+              </select>
+            </div>
+
+            <!-- Nível de experiência -->
+            <div class="col-6 col-md-3 col-lg-2">
+              <label class="nexus-label">Experiência</label>
+              <select name="experienceLevel" class="nexus-select">
+                <option value="">Todos</option>
+                <option value="INTERNSHIP" th:selected="${filterExperienceLevel == 'INTERNSHIP'}">Estágio</option>
+                <option value="TRAINEE" th:selected="${filterExperienceLevel == 'TRAINEE'}">Trainee</option>
+                <option value="JUNIOR" th:selected="${filterExperienceLevel == 'JUNIOR'}">Júnior</option>
+                <option value="PLENO" th:selected="${filterExperienceLevel == 'PLENO'}">Pleno</option>
+                <option value="SENIOR" th:selected="${filterExperienceLevel == 'SENIOR'}">Sênior</option>
+              </select>
+            </div>
+
+            <!-- Disponibilidade -->
+            <div class="col-6 col-md-2 col-lg-2">
+              <label class="nexus-label">Disponibilidade</label>
+              <select name="available" class="nexus-select">
+                <option value="">Todos</option>
+                <option value="true" th:selected="${filterAvailable == 'true'}">Disponível</option>
+                <option value="false" th:selected="${filterAvailable == 'false'}">Indisponível</option>
+              </select>
+            </div>
+
+            <!-- Faixa salarial -->
+            <div class="col-6 col-md-3 col-lg-2">
+              <label class="nexus-label">Salário mín.</label>
+              <input type="number" name="minSalary" class="nexus-input" placeholder="R$ 0"
+                     th:value="${filterMinSalary}">
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+              <label class="nexus-label">Salário máx.</label>
+              <input type="number" name="maxSalary" class="nexus-input" placeholder="R$ 20.000"
+                     th:value="${filterMaxSalary}">
+            </div>
+
+            <!-- Skill -->
+            <div class="col-6 col-md-3 col-lg-2">
+              <label class="nexus-label">Skill</label>
+              <input type="text" name="skill" class="nexus-input" placeholder="Ex: Java"
+                     th:value="${filterSkill}">
+            </div>
+
+            <!-- Botões -->
+            <div class="col-12 col-md-3 col-lg-2 d-flex gap-2">
+              <button type="submit" class="nexus-btn nexus-btn-primary flex-fill">
+                <i class="ti ti-search"></i> Filtrar
+              </button>
+              <a th:href="@{/company/projects/{id}/ranking(id=${project.id})}"
+                 class="nexus-btn nexus-btn-ghost flex-fill">
+                <i class="ti ti-x"></i> Limpar
+              </a>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
       <!-- Empty -->
       <div th:if="${#lists.isEmpty(ranking)}"
            class="nexus-card p-5 text-center">
