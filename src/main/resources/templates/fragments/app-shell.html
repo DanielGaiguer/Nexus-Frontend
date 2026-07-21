@@ -229,11 +229,59 @@
   <div class="container-xl h-100 d-flex align-items-center justify-content-end gap-3">
 
     <!-- Notifications -->
-    <div class="nexus-icon-btn position-relative">
-      <i class="ti ti-bell fs-5"></i>
-      <span class="nexus-notif-badge"
-            th:if="${invitesCount != null and invitesCount > 0}"
-            th:text="${invitesCount}">0</span>
+    <div class="position-relative" id="notifBtnWrapper">
+      <button class="nexus-icon-btn"
+              id="notifToggleBtn"
+              onclick="toggleNotifPanel()"
+              aria-label="Notificações">
+        <i class="ti ti-bell fs-5"></i>
+        <span class="nexus-notif-badge"
+              id="notifBadge"
+              style="display:none">0</span>
+      </button>
+
+      <!-- Painel de notificações -->
+      <div id="notifPanel"
+           style="display:none;position:absolute;top:calc(100% + 8px);right:0;
+                  width:340px;background:rgba(9,14,31,0.98);
+                  border:1px solid rgba(107,110,255,0.18);
+                  border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,0.5);
+                  z-index:9000;overflow:hidden">
+
+        <!-- Header do painel -->
+        <div style="display:flex;align-items:center;justify-content:space-between;
+                    padding:0.85rem 1rem 0.6rem;
+                    border-bottom:1px solid rgba(255,255,255,0.05)">
+          <div style="font-weight:600;color:#fff;font-size:0.9rem">Notificações</div>
+          <button onclick="markAllRead()"
+                  style="background:none;border:none;color:#6b6eff;
+                         font-size:0.75rem;font-weight:600;cursor:pointer;padding:0">
+            Marcar todas como lidas
+          </button>
+        </div>
+
+        <!-- Lista de notificações -->
+        <div id="notifList"
+             style="max-height:380px;overflow-y:auto">
+          <!-- Preenchido por JS -->
+          <div id="notifLoading"
+               style="padding:2rem;text-align:center;color:#334155;font-size:0.875rem">
+            <i class="ti ti-loader"
+               style="animation:spin 1s linear infinite;display:block;
+                      font-size:1.5rem;margin-bottom:0.5rem"></i>
+            Carregando...
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="padding:0.6rem 1rem;border-top:1px solid rgba(255,255,255,0.05);
+                    text-align:center">
+          <span style="color:#334155;font-size:0.75rem">
+            Notificações antigas são removidas automaticamente
+          </span>
+        </div>
+
+      </div>
     </div>
 
     <!-- User dropdown -->

@@ -187,3 +187,180 @@ function initDeadlines() {
 }
 
 document.addEventListener('DOMContentLoaded', initDeadlines);
+
+// ── Notificações ─────────────────────────────────────────────
+
+var notifPanelOpen = false;
+
+// Ícones por tipo de notificação
+var NOTIF_ICONS = {
+  NEW_INVITE:                'ti-mail',
+  NEW_PROFESSIONAL_INTEREST: 'ti-send',
+  MATCH_CONFIRMED:           'ti-heart-handshake',
+  MATCH_REJECTED:            'ti-x',
+  NEW_REVIEW_RECEIVED:       'ti-star',
+  HIGH_SCORE_MATCH:          'ti-sparkles',
+  COMPANY_APPROVED:          'ti-shield-check',
+  COMPANY_REJECTED:          'ti-shield-x',
+  PROJECT_CLOSED:            'ti-lock'
+};
+
+var NOTIF_COLORS = {
+  NEW_INVITE:                '#6b6eff',
+  NEW_PROFESSIONAL_INTEREST: '#a78bfa',
+  MATCH_CONFIRMED:           '#22c55e',
+  MATCH_REJECTED:            '#ef4444',
+  NEW_REVIEW_RECEIVED:       '#f59e0b',
+  HIGH_SCORE_MATCH:          '#67e8f9',
+  COMPANY_APPROVED:          '#22c55e',
+  COMPANY_REJECTED:          '#ef4444',
+  PROJECT_CLOSED:            '#f59e0b'
+};
+
+function toggleNotifPanel() {
+  var panel = document.getElementById('notifPanel');
+  notifPanelOpen = !notifPanelOpen;
+  panel.style.display = notifPanelOpen ? 'block' : 'none';
+  if (notifPanelOpen) loadNotifications();
+}
+
+// Fecha o painel ao clicar fora
+document.addEventListener('click', function(e) {
+  var wrapper = document.getElementById('notifBtnWrapper');
+  if (notifPanelOpen && wrapper && !wrapper.contains(e.target)) {
+    document.getElementById('notifPanel').style.display = 'none';
+    notifPanelOpen = false;
+  }
+});
+
+function loadNotifications() {
+  fetch('/notifications')
+  .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+  .then(function(data) {
+    renderNotifications(data.notifications || []);
+    updateBadge(data.unreadCount || 0);
+  })
+  .catch(function() {
+    document.getElementById('notifList').innerHTML =
+      '<div style="padding:1.5rem;text-align:center;color:#334155;font-size:0.875rem">' +
+      'Não foi possível carregar as notificações.</div>';
+  });
+}
+
+function renderNotifications(notifications) {
+  var list = document.getElementById('notifList');
+  if (!notifications.length) {
+    list.innerHTML =
+      '<div style="padding:2rem;text-align:center">' +
+      '<i class="ti ti-bell-off" style="font-size:2rem;color:#334155;display:block;margin-bottom:0.5rem"></i>' +
+      '<span style="color:#334155;font-size:0.875rem">Nenhuma notificação</span></div>';
+    return;
+  }
+
+  list.innerHTML = notifications.map(function(n) {
+    var icon  = NOTIF_ICONS[n.type]  || 'ti-bell';
+    var color = NOTIF_COLORS[n.type] || '#6b6eff';
+    var bg    = n.read ? 'transparent' : 'rgba(107,110,255,0.05)';
+    var dot   = n.read ? '' :
+      '<span style="width:7px;height:7px;border-radius:50%;background:#6b6eff;' +
+      'flex-shrink:0;margin-top:4px"></span>';
+
+    var timeAgo = formatTimeAgo(n.createdAt);
+
+    return '<div class="notif-item" data-id="' + n.id + '" data-url="' + (n.actionUrl||'') + '"' +
+      'onclick="handleNotifClick(this)"' +
+      'style="display:flex;gap:0.75rem;padding:0.85rem 1rem;cursor:pointer;' +
+      'background:' + bg + ';transition:background 0.2s;border-bottom:1px solid rgba(255,255,255,0.04)"' +
+      'onmouseenter="this.style.background=\'rgba(107,110,255,0.06)\'"' +
+      'onmouseleave="this.style.background=\'' + bg + '\'">' +
+
+      '<div style="width:34px;height:34px;border-radius:9px;flex-shrink:0;' +
+      'background:' + color + '18;display:flex;align-items:center;justify-content:center">' +
+      '<i class="ti ' + icon + '" style="color:' + color + ';font-size:0.9rem"></i></div>' +
+
+      '<div style="flex:1;overflow:hidden">' +
+        '<div style="font-weight:600;color:#e2e8f0;font-size:0.82rem;' +
+        'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + n.title + '</div>' +
+        '<div style="color:#64748b;font-size:0.75rem;margin-top:1px;' +
+        'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + n.message + '</div>' +
+        '<div style="color:#334155;font-size:0.7rem;margin-top:3px">' + timeAgo + '</div>' +
+      '</div>' +
+
+      dot +
+      '</div>';
+  }).join('');
+}
+
+function handleNotifClick(el) {
+  var id  = el.dataset.id;
+  var url = el.dataset.url;
+  // Marca como lida
+  if (id) {
+    fetch('/notifications/' + id + '/read', { method:'POST' })
+    .then(function() { loadBadgeCount(); })
+    .catch(function() {});
+    // Atualiza visual imediatamente
+    el.style.background = 'transparent';
+    var dot = el.querySelector('[style*="border-radius:50%"]');
+    if (dot) dot.remove();
+  }
+  // Navega se tiver URL
+  if (url && url !== 'null' && url !== '') {
+    document.getElementById('notifPanel').style.display = 'none';
+    notifPanelOpen = false;
+    window.location.href = url;
+  }
+}
+
+function markAllRead() {
+  fetch('/notifications/read-all', { method:'POST' })
+  .then(function() {
+    updateBadge(0);
+    loadNotifications();
+  })
+  .catch(function() {});
+}
+
+function updateBadge(count) {
+  var badge = document.getElementById('notifBadge');
+  if (!badge) return;
+  if (count > 0) {
+    badge.textContent = count > 99 ? '99+' : count;
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function loadBadgeCount() {
+  fetch('/notifications')
+  .then(function(r) { return r.ok ? r.json() : null; })
+  .then(function(data) {
+    if (data) updateBadge(data.unreadCount || 0);
+  })
+  .catch(function() {});
+}
+
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return '';
+  var now  = new Date();
+  var date = new Date(dateStr);
+  var diff = Math.floor((now - date) / 1000); // segundos
+  if (diff < 60)   return 'agora mesmo';
+  if (diff < 3600) return Math.floor(diff/60) + ' min atrás';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h atrás';
+  var days = Math.floor(diff/86400);
+  return days === 1 ? 'ontem' : days + ' dias atrás';
+}
+
+// Carrega o badge ao abrir qualquer página autenticada
+document.addEventListener('DOMContentLoaded', function() {
+  var badge = document.getElementById('notifBadge');
+  if (badge) loadBadgeCount();
+});
+
+// Polling a cada 60s para manter o badge atualizado sem precisar recarregar
+setInterval(function() {
+  var badge = document.getElementById('notifBadge');
+  if (badge) loadBadgeCount();
+}, 60000);

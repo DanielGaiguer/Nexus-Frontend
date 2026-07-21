@@ -1,13 +1,19 @@
 package com.main.nexus_frontend.config;
 
+import com.main.nexus_frontend.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -38,5 +44,21 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         return true;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        if (modelAndView == null) return;
+
+        HttpSession session = request.getSession(false);
+        String token = (session != null) ? (String) session.getAttribute("token") : null;
+        if (token == null) return;
+
+        try {
+            Integer unreadCount = notificationService.getUnreadCount(token);
+            modelAndView.addObject("unreadCount", unreadCount);
+        } catch (Exception e) {
+            modelAndView.addObject("unreadCount", 0);
+        }
     }
 }
