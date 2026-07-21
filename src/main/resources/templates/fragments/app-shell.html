@@ -134,6 +134,13 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" th:href="@{/company/analytics}"
+           th:classappend="${activePage == 'analytics'} ? ' active'">
+          <span class="nav-link-icon"><i class="ti ti-chart-dots"></i></span>
+          <span>Analytics</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" th:href="@{/company/map}"
            th:classappend="${activePage == 'map'} ? ' active'">
           <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>

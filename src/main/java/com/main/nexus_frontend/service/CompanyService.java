@@ -1,5 +1,6 @@
 package com.main.nexus_frontend.service;
 
+import com.main.nexus_frontend.model.CompanyDashboardAnalyticsDTO;
 import com.main.nexus_frontend.model.CompanyDashboardDTO;
 import com.main.nexus_frontend.model.CompanyProfileDTO;
 import com.main.nexus_frontend.model.UpdateCompanyDTO;
@@ -37,6 +38,19 @@ public class CompanyService {
                             "Failed to load dashboard");
                 })
                 .body(CompanyDashboardDTO.class);
+    }
+
+    public CompanyDashboardAnalyticsDTO getAnalytics(String token) {
+        return restClient.get()
+                .uri("/company/analytics/dashboard")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Erro ao buscar analytics");
+                })
+                .body(CompanyDashboardAnalyticsDTO.class);
     }
 
     public CompanyProfileDTO getProfile(String token) {

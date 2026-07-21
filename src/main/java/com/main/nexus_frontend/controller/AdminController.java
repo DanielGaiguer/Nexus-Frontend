@@ -3,6 +3,7 @@ package com.main.nexus_frontend.controller;
 import com.main.nexus_frontend.model.*;
 import com.main.nexus_frontend.service.AdminService;
 import com.main.nexus_frontend.service.MapService;
+import com.main.nexus_frontend.service.ReputationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class AdminController {
     private AdminService adminService;
     @Autowired
     private MapService mapService;
+    @Autowired
+    private ReputationService reputationService;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -233,6 +236,7 @@ public class AdminController {
     public String viewProfessional(@PathVariable Long id, HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         ProfessionalProfileDTO profile = adminService.getProfessionalProfile(token, id);
+        ProfessionalDashboardDTO dashboard = adminService.getProfessionalDashboard(token, id);
         List<MatchDTO> matches = adminService.getProfessionalMatches(token, id);
         List<MatchDTO> invites = matches.stream()
                 .filter(m -> "COMPANY_INTERESTED".equals(m.getStatus()))
@@ -241,11 +245,20 @@ public class AdminController {
                 .filter(m -> "MATCHED".equals(m.getStatus()))
                 .collect(Collectors.toList());
         List<PreviousProjectDTO> projects = adminService.getProfessionalProjects(token, id);
+
+        long totalProjects = projects.size();
+        long confirmedMatches = confirmed.size();
+        double successRate = totalProjects > 0 ? confirmedMatches * 100.0 / totalProjects : 0;
+
         model.addAttribute("profile", profile);
         model.addAttribute("professionalId", id);
+        model.addAttribute("dashboard", dashboard);
         model.addAttribute("matches", confirmed);
         model.addAttribute("invites", invites);
         model.addAttribute("previousProjects", projects);
+        model.addAttribute("totalProjects", totalProjects);
+        model.addAttribute("confirmedMatches", confirmedMatches);
+        model.addAttribute("successRate", Math.round(successRate));
         model.addAttribute("activePage", "users");
         return "admin/admin-professional-profile";
     }
@@ -305,6 +318,20 @@ public class AdminController {
         model.addAttribute("successRate", Math.round(successRate));
         model.addAttribute("activePage", "users");
         return "admin/admin-company-profile";
+    }
+
+    @GetMapping("/company/{id}/reputation")
+    public String viewCompanyReputation(@PathVariable Long id, HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        try {
+            ReputationDTO reputation = reputationService.getCompany(token, id);
+            model.addAttribute("reputation", reputation);
+        } catch (Exception e) {
+            model.addAttribute("reputation", new ReputationDTO());
+        }
+        model.addAttribute("companyId", id);
+        model.addAttribute("activePage", "users");
+        return "admin/admin-company-reputation";
     }
 
     @GetMapping("/company/{companyId}/project/{projectId}")

@@ -163,7 +163,7 @@ public class AdminService {
 
     public ProfessionalProfileDTO getProfessionalProfile(String token, Long professionalId) {
         return restClient.get()
-                .uri("/professional/{id}/admin-profile", professionalId)
+                .uri("/admin/professionals/{id}/profile", professionalId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
@@ -227,6 +227,19 @@ public class AdminService {
                 })
                 .body(PreviousProjectDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public ProfessionalDashboardDTO getProfessionalDashboard(String token, Long professionalId) {
+        return restClient.get()
+                .uri("/admin/professionals/{id}/dashboard", professionalId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load professional dashboard");
+                })
+                .body(ProfessionalDashboardDTO.class);
     }
 
     public CompanyProfileDTO getCompanyProfile(String token, Long companyId) {

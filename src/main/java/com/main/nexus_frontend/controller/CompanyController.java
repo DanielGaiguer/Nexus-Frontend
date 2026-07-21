@@ -393,6 +393,35 @@ public class CompanyController {
         return "redirect:/company/matches";
     }
 
+    @GetMapping("/analytics")
+    public String analytics(HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+
+        try {
+            CompanyDashboardAnalyticsDTO analytics = companyService.getAnalytics(token);
+            model.addAttribute("analytics", analytics);
+
+            model.addAttribute("monthlyMatchesJson",
+                    objectMapper.writeValueAsString(analytics.getMatchesPerMonth()));
+            model.addAttribute("scoreDistributionJson",
+                    objectMapper.writeValueAsString(analytics.getScoreDistribution()));
+            model.addAttribute("projectRatesJson",
+                    objectMapper.writeValueAsString(analytics.getAcceptanceRatePerProject()));
+            model.addAttribute("skillDemandJson",
+                    objectMapper.writeValueAsString(analytics.getMostRequiredSkills()));
+        } catch (Exception e) {
+            model.addAttribute("analytics", null);
+            model.addAttribute("monthlyMatchesJson", "[]");
+            model.addAttribute("scoreDistributionJson", "[]");
+            model.addAttribute("projectRatesJson", "[]");
+            model.addAttribute("skillDemandJson", "[]");
+            model.addAttribute("errorMsg", "Não foi possível carregar os dados analíticos.");
+        }
+
+        model.addAttribute("activePage", "analytics");
+        return "company/company-analytics";
+    }
+
     @GetMapping("/reputation")
     public String reputation(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
