@@ -251,4 +251,17 @@ public class ProfessionalService {
                 .retrieve()
                 .body(String.class);
     }
+
+    public ProfessionalStatsDTO getStats(String token) {
+        return restClient.get()
+                .uri("/professional/stats")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load stats");
+                })
+                .body(ProfessionalStatsDTO.class);
+    }
 }

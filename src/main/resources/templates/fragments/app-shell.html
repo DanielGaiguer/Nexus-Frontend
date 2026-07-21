@@ -81,6 +81,13 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" th:href="@{/pro/stats}"
+           th:classappend="${activePage == 'stats'} ? ' active'">
+          <span class="nav-link-icon"><i class="ti ti-chart-line"></i></span>
+          <span>Estatísticas</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" th:href="@{/pro/opportunities}"
            th:classappend="${activePage == 'opportunities'} ? ' active'">
           <span class="nav-link-icon"><i class="ti ti-sparkles"></i></span>

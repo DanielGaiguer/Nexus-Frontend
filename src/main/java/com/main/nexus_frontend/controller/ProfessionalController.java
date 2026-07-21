@@ -402,6 +402,15 @@ public class ProfessionalController {
         }
     }
 
+    @GetMapping("/stats")
+    public String stats(HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        ProfessionalStatsDTO stats = professionalService.getStats(token);
+        model.addAttribute("stats", stats);
+        model.addAttribute("activePage", "stats");
+        return "pro/pro-stats";
+    }
+
     @PostMapping("/profile/photo")
     @ResponseBody
     public ResponseEntity<String> uploadProPhoto(
