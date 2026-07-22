@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Comparar Candidatos')}"></head>
+<style>
+/* ── Layout da tabela comparativa ── */
+.comparison-table {
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  table-layout:fixed;
+}
+
+/* Coluna de atributos */
+.comparison-table .col-attr {
+  width:200px;
+  min-width:160px;
+  padding:0.7rem 1rem;
+  color:#64748b;
+  font-size:0.8rem;
+  font-weight:500;
+  background:rgba(9,14,31,0.6);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  white-space:nowrap;
+}
+
+.comparison-table .col-attr.group-header {
+  color:#6b6eff;
+  font-size:0.72rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+  background:rgba(107,110,255,0.06);
+  padding-top:0.9rem;
+}
+
+.comparison-table .col-attr.sub {
+  padding-left:1.75rem;
+  color:#475569;
+  font-size:0.78rem;
+}
+
+/* Colunas de candidatos */
+.comparison-table .col-candidate {
+  padding:0.7rem 1rem;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  border-left:1px solid rgba(255,255,255,0.04);
+  text-align:center;
+  font-size:0.85rem;
+  color:#e2e8f0;
+  background:rgba(13,19,41,0.7);
+  transition:background 0.2s;
+}
+
+.comparison-table tbody tr:hover .col-candidate {
+  background:rgba(107,110,255,0.04);
+}
+
+/* Header da coluna de candidato */
+.candidate-col-header {
+  padding:1.25rem 1rem 1rem;
+  text-align:center;
+  border-left:1px solid rgba(255,255,255,0.04);
+  background:rgba(13,19,41,0.85);
+  position:sticky;
+  top:56px;
+  z-index:10;
+}
+
+/* Destaque: melhor candidato */
+.best-candidate .col-candidate,
+.best-candidate .candidate-col-header {
+  background:rgba(107,110,255,0.08) !important;
+  border-left:1px solid rgba(107,110,255,0.2) !important;
+}
+
+/* Mini barra de score */
+.score-mini-bar {
+  height:4px;
+  background:rgba(255,255,255,0.05);
+  border-radius:4px;
+  overflow:hidden;
+  margin-top:4px;
+}
+.score-mini-bar-fill {
+  height:100%;
+  border-radius:4px;
+  transition:width 0.6s ease;
+}
+
+/* Chip de skill */
+.skill-chip-match   { background:rgba(34,197,94,0.12); color:#22c55e;
+                       border:1px solid rgba(34,197,94,0.25); }
+.skill-chip-missing { background:rgba(239,68,68,0.12); color:#ef4444;
+                       border:1px solid rgba(239,68,68,0.25); }
+
+/* Score grande */
+.score-big {
+  font-size:1.5rem;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  line-height:1;
+}
+
+/* Status badge do match */
+.match-status-waiting  { color:#f59e0b; }
+.match-status-matched  { color:#22c55e; }
+.match-status-rejected { color:#ef4444; }
+.match-status-interested { color:#6b6eff; }
+</style>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <!-- Flash -->
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
+      <!-- Back + header -->
+      <div class="mb-4">
+        <a th:href="@{/company/projects/{id}/ranking(id=${comparison != null ? comparison.projectId : 0})}"
+           class="text-decoration-none d-inline-flex align-items-center gap-1 mb-3"
+           style="color:#64748b;font-size:0.875rem">
+          <i class="ti ti-arrow-left"></i> Voltar ao ranking
+        </a>
+        <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+          <div>
+            <h1 class="fw-bold mb-1"
+                style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">
+              Comparação de Candidatos
+            </h1>
+            <p style="color:#64748b;font-size:0.875rem"
+               th:if="${comparison != null}"
+               th:text="'Projeto: ' + ${comparison.projectTitle}">—</p>
+          </div>
+          <!-- Info do projeto -->
+          <div class="d-flex gap-2 flex-wrap" th:if="${comparison != null}">
+            <span class="nexus-status-badge info" style="font-size:0.78rem">
+              <i class="ti ti-map-pin me-1"></i>
+              <span th:switch="${comparison.workMode}">
+                <span th:case="'REMOTE'">Remoto</span>
+                <span th:case="'ONSITE'">Presencial</span>
+                <span th:case="'HYBRID'">Híbrido</span>
+                <span th:case="*" th:text="${comparison.workMode}">—</span>
+              </span>
+            </span>
+            <span class="nexus-status-badge purple" style="font-size:0.78rem"
+                  th:if="${comparison.experienceLevelRequired != null}">
+              <i class="ti ti-award me-1"></i>
+              <span th:switch="${comparison.experienceLevelRequired}">
+                <span th:case="'INTERNSHIP'">Estágio</span>
+                <span th:case="'TRAINEE'">Trainee</span>
+                <span th:case="'JUNIOR'">Júnior</span>
+                <span th:case="'PLENO'">Pleno</span>
+                <span th:case="'SENIOR'">Sênior</span>
+                <span th:case="*" th:text="${comparison.experienceLevelRequired}">—</span>
+              </span>
+            </span>
+            <span class="nexus-status-badge success" style="font-size:0.78rem">
+              <i class="ti ti-currency-dollar me-1"></i>
+              <span class="tabular"
+                    th:text="'R$'+${#numbers.formatDecimal(comparison.minimumBudget,1,'COMMA',0,'POINT')}
+                             +'–'+${#numbers.formatDecimal(comparison.maximumBudget,1,'COMMA',0,'POINT')}">—</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div th:if="${comparison == null or #lists.isEmpty(comparison.candidates)}"
+           class="nexus-card p-5 text-center">
+        <i class="ti ti-scale-off"
+           style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhum candidato para comparar</div>
+        <div style="color:#475569;font-size:0.875rem">
+          Selecione ao menos 2 candidatos no ranking do projeto.
+        </div>
+      </div>
+
+      <th:block th:unless="${comparison == null or #lists.isEmpty(comparison.candidates)}">
+
+      <!-- ── Skills exigidas pelo projeto ── -->
+      <div class="nexus-card p-3 mb-4">
+        <div style="color:#64748b;font-size:0.72rem;font-weight:700;
+                    text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem">
+          Skills exigidas pelo projeto
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <span th:each="sk : ${comparison.requiredSkills}"
+                class="nexus-chip nexus-chip-tech" th:text="${sk}">Skill</span>
+        </div>
+      </div>
+
+      <!-- ── Tabela comparativa ── -->
+      <div class="nexus-card p-0"
+           style="overflow:hidden;overflow-x:auto">
+        <table class="comparison-table">
+
+          <!-- HEADER: foto + nome de cada candidato -->
+          <thead>
+            <tr>
+              <th class="col-attr"
+                  style="position:sticky;top:56px;z-index:11;
+                         background:rgba(9,14,31,0.95);
+                         border-bottom:1px solid rgba(255,255,255,0.06)">
+                Atributo
+              </th>
+              <th th:each="c,cStat : ${comparison.candidates}"
+                  th:class="${cStat.index == 0} ? 'candidate-col-header best-candidate' : 'candidate-col-header'"
+                  style="border-bottom:1px solid rgba(255,255,255,0.06)">
+
+                <!-- Avatar -->
+                <div class="d-flex justify-content-center mb-2">
+                  <th:block th:if="${c.profilePhotoUrl != null and !#strings.isEmpty(c.profilePhotoUrl)}">
+                    <img th:src="${c.profilePhotoUrl}"
+                         style="width:52px;height:52px;border-radius:50%;object-fit:cover;
+                                border:2px solid rgba(107,110,255,0.3)">
+                  </th:block>
+                  <th:block th:unless="${c.profilePhotoUrl != null and !#strings.isEmpty(c.profilePhotoUrl)}">
+                    <div th:with="n=${c.name != null ? c.name : 'P'},
+                                  h=${n.hashCode()},
+                                  hue=${(h%360)<0?(h%360)+360:h%360}"
+                         th:style="'background:hsl('+${hue}+',50%,38%);width:52px;height:52px;' +
+                                   'border-radius:50%;display:flex;align-items:center;' +
+                                   'justify-content:center;font-size:1.1rem;font-weight:700;color:#fff'"
+                         th:text="${#strings.substring(n,0,2).toUpperCase()}">P</div>
+                  </th:block>
+                </div>
+
+                <!-- Nome -->
+                <div class="fw-semibold text-white" style="font-size:0.9rem"
+                     th:text="${c.name}">—</div>
+                <div style="color:#64748b;font-size:0.75rem"
+                     th:text="${(c.city != null ? c.city : '') + (c.state != null ? ', ' + c.state : '')}">—</div>
+
+                <!-- Badge "melhor score" -->
+                <div th:if="${cStat.index == 0}"
+                     style="margin-top:0.4rem">
+                  <span class="nexus-status-badge success" style="font-size:0.68rem">
+                    <i class="ti ti-trophy me-1" style="font-size:0.65rem"></i>Melhor score
+                  </span>
+                </div>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <!-- ── BLOCO: SCORE FINAL ── -->
+            <tr>
+              <td class="col-attr group-header">Score Final</td>
+              <td th:each="c : ${comparison.candidates}"
+                  class="col-candidate"
+                  style="padding-top:1rem;padding-bottom:1rem">
+                <th:block th:with="s=${c.scoreBreakdown != null ? c.scoreBreakdown.finalScore : 0},
+                                   col=${s >= 85 ? '#22c55e' : (s >= 70 ? '#6b6eff' : (s >= 50 ? '#f59e0b' : '#ef4444'))}">
+                  <div class="score-big" th:style="'color:'+${col}"
+                       th:text="${#numbers.formatDecimal(s,1,1)+'%'}">—</div>
+                  <div class="score-mini-bar mt-1" style="max-width:80px;margin:4px auto 0">
+                    <div class="score-mini-bar-fill"
+                         th:style="'width:'+${s}+'%;background:'+${col}"></div>
+                  </div>
+                </th:block>
+              </td>
+            </tr>
+
+            <!-- ── Sub-scores ── -->
+            <!-- Skills -->
+            <tr>
+              <td class="col-attr sub">↳ Skills</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <th:block th:if="${c.scoreBreakdown != null}">
+                  <th:block th:with="v=${c.scoreBreakdown.skills ?: 0},
+                                     col=${v >= 80 ? '#22c55e' : (v >= 60 ? '#6b6eff' : (v >= 40 ? '#f59e0b' : '#ef4444'))}">
+                    <span class="tabular fw-semibold" th:style="'color:'+${col}"
+                          th:text="${#numbers.formatDecimal(v,1,1)}">—</span>
+                    <div class="score-mini-bar" style="max-width:60px;margin:3px auto 0">
+                      <div class="score-mini-bar-fill"
+                           th:style="'width:'+${v}+'%;background:'+${col}"></div>
+                    </div>
+                  </th:block>
+                </th:block>
+                <span th:unless="${c.scoreBreakdown != null}" style="color:#334155">—</span>
+              </td>
+            </tr>
+
+            <!-- Orçamento -->
+            <tr>
+              <td class="col-attr sub">↳ Orçamento</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <th:block th:if="${c.scoreBreakdown != null}">
+                  <th:block th:with="v=${c.scoreBreakdown.budget ?: 0},
+                                     col=${v >= 80 ? '#22c55e' : (v >= 60 ? '#6b6eff' : (v >= 40 ? '#f59e0b' : '#ef4444'))}">
+                    <span class="tabular fw-semibold" th:style="'color:'+${col}"
+                          th:text="${#numbers.formatDecimal(v,1,1)}">—</span>
+                    <div class="score-mini-bar" style="max-width:60px;margin:3px auto 0">
+                      <div class="score-mini-bar-fill"
+                           th:style="'width:'+${v}+'%;background:'+${col}"></div>
+                    </div>
+                  </th:block>
+                </th:block>
+                <span th:unless="${c.scoreBreakdown != null}" style="color:#334155">—</span>
+              </td>
+            </tr>
+
+            <!-- Histórico -->
+            <tr>
+              <td class="col-attr sub">↳ Histórico</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <th:block th:if="${c.scoreBreakdown != null}">
+                  <th:block th:with="v=${c.scoreBreakdown.history ?: 0},
+                                     col=${v >= 80 ? '#22c55e' : (v >= 60 ? '#6b6eff' : (v >= 40 ? '#f59e0b' : '#ef4444'))}">
+                    <span class="tabular fw-semibold" th:style="'color:'+${col}"
+                          th:text="${#numbers.formatDecimal(v,1,1)}">—</span>
+                    <div class="score-mini-bar" style="max-width:60px;margin:3px auto 0">
+                      <div class="score-mini-bar-fill"
+                           th:style="'width:'+${v}+'%;background:'+${col}"></div>
+                    </div>
+                  </th:block>
+                </th:block>
+                <span th:unless="${c.scoreBreakdown != null}" style="color:#334155">—</span>
+              </td>
+            </tr>
+
+            <!-- Reputação -->
+            <tr>
+              <td class="col-attr sub">↳ Reputação</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <th:block th:if="${c.scoreBreakdown != null}">
+                  <th:block th:with="v=${c.scoreBreakdown.reputation ?: 0},
+                                     col=${v >= 80 ? '#22c55e' : (v >= 60 ? '#6b6eff' : (v >= 40 ? '#f59e0b' : '#ef4444'))}">
+                    <span class="tabular fw-semibold" th:style="'color:'+${col}"
+                          th:text="${#numbers.formatDecimal(v,1,1)}">—</span>
+                    <div class="score-mini-bar" style="max-width:60px;margin:3px auto 0">
+                      <div class="score-mini-bar-fill"
+                           th:style="'width:'+${v}+'%;background:'+${col}"></div>
+                    </div>
+                  </th:block>
+                </th:block>
+                <span th:unless="${c.scoreBreakdown != null}" style="color:#334155">—</span>
+              </td>
+            </tr>
+
+            <!-- Disponibilidade -->
+            <tr>
+              <td class="col-attr sub">↳ Disponibilidade</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <th:block th:if="${c.scoreBreakdown != null}">
+                  <span th:if="${c.scoreBreakdown.availability == 100}"
+                        style="color:#22c55e;font-weight:600">100 ✓</span>
+                  <span th:unless="${c.scoreBreakdown.availability == 100}"
+                        style="color:#ef4444;font-weight:600">0 ✗</span>
+                </th:block>
+                <span th:unless="${c.scoreBreakdown != null}" style="color:#334155">—</span>
+              </td>
+            </tr>
+
+            <!-- Experiência -->
+            <tr>
+              <td class="col-attr sub">↳ Experiência</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <th:block th:if="${c.scoreBreakdown != null and c.scoreBreakdown.experience != null}">
+                  <th:block th:with="v=${c.scoreBreakdown.experience},
+                                     col=${v >= 90 ? '#22c55e' : (v >= 70 ? '#f59e0b' : '#ef4444')}">
+                    <span class="tabular fw-semibold" th:style="'color:'+${col}"
+                          th:text="${#numbers.formatDecimal(v,1,1)}">—</span>
+                  </th:block>
+                </th:block>
+                <span th:unless="${c.scoreBreakdown != null and c.scoreBreakdown.experience != null}"
+                      style="color:#334155">—</span>
+              </td>
+            </tr>
+
+            <!-- Distância (só se não for null em pelo menos um) -->
+            <tr th:if="${comparison.workMode != 'REMOTE'}">
+              <td class="col-attr sub">↳ Distância</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <th:block th:if="${c.scoreBreakdown != null and c.scoreBreakdown.distance != null}">
+                  <th:block th:with="v=${c.scoreBreakdown.distance},
+                                     col=${v >= 70 ? '#22c55e' : (v >= 50 ? '#f59e0b' : '#ef4444')}">
+                    <span class="tabular fw-semibold" th:style="'color:'+${col}"
+                          th:text="${#numbers.formatDecimal(v,1,1)}">—</span>
+                  </th:block>
+                </th:block>
+                <span th:unless="${c.scoreBreakdown != null and c.scoreBreakdown.distance != null}"
+                      style="color:#334155">—</span>
+              </td>
+            </tr>
+
+            <!-- Ajuste de Reputação -->
+            <tr>
+              <td class="col-attr sub">↳ Ajuste Reputação</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <th:block th:if="${c.scoreBreakdown != null and c.scoreBreakdown.reputationAdjustment != null}">
+                  <th:block th:with="v=${c.scoreBreakdown.reputationAdjustment}">
+                    <span class="tabular fw-semibold"
+                          th:style="${v >= 0} ? 'color:#22c55e' : 'color:#ef4444'"
+                          th:text="${(v >= 0 ? '+' : '') + #numbers.formatDecimal(v,1,1)}">—</span>
+                  </th:block>
+                </th:block>
+                <span th:unless="${c.scoreBreakdown != null and c.scoreBreakdown.reputationAdjustment != null}"
+                      style="color:#334155">—</span>
+              </td>
+            </tr>
+
+            <!-- ── BLOCO: SKILLS ── -->
+            <tr>
+              <td class="col-attr group-header">Skills Compatíveis</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <span th:with="total=${#lists.size(comparison.requiredSkills)},
+                               match=${c.matchingSkills != null ? #lists.size(c.matchingSkills) : 0}">
+                  <span class="tabular fw-bold"
+                        th:style="${match == total} ? 'color:#22c55e' :
+                                  (${match >= total / 2} ? 'color:#f59e0b' : 'color:#ef4444')"
+                        th:text="${match + '/' + total}">0/0</span>
+                  <span th:if="${match == total}" style="margin-left:2px">✅</span>
+                  <span th:if="${match > 0 and match < total}" style="margin-left:2px">⚠️</span>
+                  <span th:if="${match == 0}" style="margin-left:2px">❌</span>
+                </span>
+              </td>
+            </tr>
+
+            <!-- Skills presentes -->
+            <tr>
+              <td class="col-attr sub">Skills que possui</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate"
+                  style="padding-top:0.5rem;padding-bottom:0.5rem">
+                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                  <span th:if="${c.matchingSkills == null or #lists.isEmpty(c.matchingSkills)}"
+                        style="color:#334155;font-size:0.75rem">Nenhuma</span>
+                  <span th:each="sk : ${c.matchingSkills}"
+                        class="nexus-chip skill-chip-match"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk}">Skill</span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Skills faltantes -->
+            <tr>
+              <td class="col-attr sub">Skills faltantes</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate"
+                  style="padding-top:0.5rem;padding-bottom:0.5rem">
+                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                  <span th:if="${c.missingSkills == null or #lists.isEmpty(c.missingSkills)}"
+                        style="color:#22c55e;font-size:0.75rem">Nenhuma ✓</span>
+                  <span th:each="sk : ${c.missingSkills}"
+                        class="nexus-chip skill-chip-missing"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk}">Skill</span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- ── BLOCO: PERFIL ── -->
+            <tr>
+              <td class="col-attr group-header">Perfil</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate"></td>
+            </tr>
+
+            <!-- Nível de experiência -->
+            <tr>
+              <td class="col-attr sub">Nível de experiência</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <th:block th:with="
+                  lvl=${c.experienceLevel},
+                  req=${comparison.experienceLevelRequired},
+                  match=${lvl == req}">
+                  <span th:switch="${lvl}">
+                    <span th:case="'INTERNSHIP'">Estágio</span>
+                    <span th:case="'TRAINEE'">Trainee</span>
+                    <span th:case="'JUNIOR'">Júnior</span>
+                    <span th:case="'PLENO'">Pleno</span>
+                    <span th:case="'SENIOR'">Sênior</span>
+                    <span th:case="*" th:text="${lvl ?: '—'}">—</span>
+                  </span>
+                  <span th:if="${match and req != null}" style="margin-left:3px">✅</span>
+                  <span th:if="${!match and req != null and lvl != null}" style="margin-left:3px">⚠️</span>
+                </th:block>
+              </td>
+            </tr>
+
+            <!-- Pretensão salarial -->
+            <tr>
+              <td class="col-attr sub">Pretensão salarial</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <span class="tabular"
+                      th:text="'R$'+${#numbers.formatDecimal(c.minimumSalary/1000,1,0)}
+                               +'k–R$'+${#numbers.formatDecimal(c.maximumSalary/1000,1,0)}+'k'">—</span>
+                <!-- Indicador se está dentro do orçamento do projeto -->
+                <div style="font-size:0.7rem;margin-top:2px"
+                     th:if="${c.minimumSalary != null and comparison.maximumBudget != null}">
+                  <span th:if="${c.minimumSalary <= comparison.maximumBudget}"
+                        style="color:#22c55e">dentro do orçamento</span>
+                  <span th:unless="${c.minimumSalary <= comparison.maximumBudget}"
+                        style="color:#ef4444">acima do orçamento</span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Projetos anteriores -->
+            <tr>
+              <td class="col-attr sub">Projetos anteriores</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <span class="tabular fw-semibold text-white"
+                      th:text="${c.previousProjectsCount ?: 0}">0</span>
+                <span style="color:#475569;font-size:0.75rem"> projeto(s)</span>
+                <!-- Barra proporcional (10 = máximo no score) -->
+                <div class="score-mini-bar" style="max-width:60px;margin:4px auto 0">
+                  <div class="score-mini-bar-fill"
+                       th:style="'width:'+${#numbers.formatDecimal(
+                                   [0].min([10].max(c.previousProjectsCount ?: 0)) * 10, 1, 0)
+                                 }+'%;background:#6b6eff'"></div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- ── BLOCO: REPUTAÇÃO ── -->
+            <tr>
+              <td class="col-attr group-header">Reputação</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate"></td>
+            </tr>
+
+            <!-- Estrelas de reputação -->
+            <tr>
+              <td class="col-attr sub">Avaliação média</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <div class="d-flex align-items-center justify-content-center gap-1">
+                  <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                    <i th:class="${c.reputation != null and i <= c.reputation}
+                                  ? 'ti ti-star-filled' : 'ti ti-star'"
+                       style="color:#f59e0b;font-size:0.8rem"></i>
+                  </th:block>
+                  <span class="tabular ms-1" style="color:#f59e0b;font-weight:600;font-size:0.85rem"
+                        th:text="${c.reputation != null ? #numbers.formatDecimal(c.reputation,1,1) : '—'}">—</span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Total de avaliações + confiança -->
+            <tr>
+              <td class="col-attr sub">Avaliações (confiança)</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <span class="tabular text-white fw-semibold"
+                      th:text="${c.totalReviews ?: 0}">0</span>
+                <span style="color:#475569;font-size:0.75rem"> avaliações</span>
+                <div style="font-size:0.72rem;margin-top:2px"
+                     th:if="${c.confidenceScore != null}">
+                  <span th:with="conf=${c.confidenceScore}"
+                        th:style="${conf >= 60} ? 'color:#22c55e' : (${conf >= 30} ? 'color:#f59e0b' : 'color:#ef4444')"
+                        th:text="${#numbers.formatDecimal(conf,1,0)+'% de confiança'}">—</span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Disponibilidade -->
+            <tr>
+              <td class="col-attr sub">Disponível agora</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <span th:if="${c.available}"
+                      style="color:#22c55e;font-weight:600;font-size:0.875rem">
+                  <i class="ti ti-circle-check me-1" style="font-size:0.8rem"></i>Disponível
+                </span>
+                <span th:unless="${c.available}"
+                      style="color:#ef4444;font-weight:600;font-size:0.875rem">
+                  <i class="ti ti-circle-x me-1" style="font-size:0.8rem"></i>Indisponível
+                </span>
+              </td>
+            </tr>
+
+            <!-- ── BLOCO: STATUS E AÇÃO ── -->
+            <tr>
+              <td class="col-attr group-header">Status &amp; Ação</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate"></td>
+            </tr>
+
+            <!-- Status do match -->
+            <tr>
+              <td class="col-attr sub">Status do match</td>
+              <td th:each="c : ${comparison.candidates}" class="col-candidate">
+                <span th:switch="${c.matchStatus}">
+                  <span th:case="'WAITING'"
+                        class="nexus-status-badge warning" style="font-size:0.72rem">
+                    <i class="ti ti-clock me-1" style="font-size:0.65rem"></i>Aguardando
+                  </span>
+                  <span th:case="'MATCHED'"
+                        class="nexus-status-badge success" style="font-size:0.72rem">
+                    <i class="ti ti-check me-1" style="font-size:0.65rem"></i>Match Confirmado
+                  </span>
+                  <span th:case="'COMPANY_INTERESTED'"
+                        class="nexus-status-badge info" style="font-size:0.72rem">
+                    <i class="ti ti-send me-1" style="font-size:0.65rem"></i>Interesse enviado
+                  </span>
+                  <span th:case="'PROFESSIONAL_INTERESTED'"
+                        class="nexus-status-badge purple" style="font-size:0.72rem">
+                    <i class="ti ti-user-check me-1" style="font-size:0.65rem"></i>Prof. interessado
+                  </span>
+                  <span th:case="'REJECTED'"
+                        class="nexus-status-badge danger" style="font-size:0.72rem">
+                    <i class="ti ti-x me-1" style="font-size:0.65rem"></i>Rejeitado
+                  </span>
+                  <span th:case="*"
+                        class="nexus-status-badge" style="font-size:0.72rem;color:#64748b"
+                        th:text="${c.matchStatus ?: '—'}">—</span>
+                </span>
+              </td>
+            </tr>
+
+            <!-- Botão de ação -->
+            <tr>
+              <td class="col-attr sub">Ação</td>
+              <td th:each="c : ${comparison.candidates}"
+                  class="col-candidate"
+                  style="padding-top:0.85rem;padding-bottom:0.85rem">
+
+                <!-- Demonstrar interesse (WAITING) -->
+                <form th:if="${c.matchStatus == 'WAITING'}"
+                      th:action="@{/company/matches/{id}/interest(id=${c.matchId})}"
+                      method="post">
+                  <button type="submit"
+                          class="nexus-btn nexus-btn-primary nexus-btn-sm">
+                    <i class="ti ti-send"></i> Demonstrar interesse
+                  </button>
+                </form>
+
+                <!-- Aceitar (PROFESSIONAL_INTERESTED) -->
+                <form th:if="${c.matchStatus == 'PROFESSIONAL_INTERESTED'}"
+                      th:action="@{/company/matches/{id}/accept(id=${c.matchId})}"
+                      method="post">
+                  <button type="submit"
+                          class="nexus-btn nexus-btn-success nexus-btn-sm">
+                    <i class="ti ti-check"></i> Aceitar interesse
+                  </button>
+                </form>
+
+                <!-- Já confirmado -->
+                <span th:if="${c.matchStatus == 'MATCHED'}"
+                      style="color:#22c55e;font-size:0.8rem;font-weight:600">
+                  <i class="ti ti-heart-handshake me-1"></i>Match ativo
+                </span>
+
+                <!-- Rejeitado -->
+                <span th:if="${c.matchStatus == 'REJECTED'}"
+                      style="color:#334155;font-size:0.8rem">
+                  Finalizado
+                </span>
+
+                <!-- Interesse já enviado -->
+                <span th:if="${c.matchStatus == 'COMPANY_INTERESTED'}"
+                      style="color:#6b6eff;font-size:0.8rem;font-weight:600">
+                  <i class="ti ti-clock me-1"></i>Aguardando resposta
+                </span>
+
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div><!-- /card tabela -->
+
+      </th:block>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+</body>
+</html>

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,6 +39,8 @@ public class CompanyController {
     private MapService mapService;
     @Autowired
     private ProfessionalService professionalService;
+    @Autowired
+    private ComparisonService comparisonService;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -283,6 +286,57 @@ public class CompanyController {
         return "company/company-ranking";
     }
 
+    @GetMapping("/comparison")
+    public String comparison(
+            @RequestParam Long projectId,
+            @RequestParam String matchIds,
+            HttpSession session,
+            Model model) {
+        String token = (String) session.getAttribute("token");
+
+        try {
+            List<Long> ids = Arrays.stream(matchIds.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(Long::parseLong)
+                    .collect(Collectors.toList());
+
+            if (ids.size() < 2) {
+                model.addAttribute("errorMsg", "Selecione ao menos 2 candidatos para comparar.");
+                model.addAttribute("comparison", null);
+                model.addAttribute("activePage", "projects");
+                return "company/company-comparison";
+            }
+
+            if (ids.size() > 5) {
+                ids = ids.subList(0, 5);
+            }
+
+            CandidateComparisonResponseDTO comparison = comparisonService.compare(token, projectId, ids);
+
+            if (comparison != null && comparison.getCandidates() != null) {
+                comparison.getCandidates().sort((a, b) -> {
+                    double sa = a.getScoreBreakdown() != null && a.getScoreBreakdown().getFinalScore() != null
+                            ? a.getScoreBreakdown().getFinalScore() : 0;
+                    double sb = b.getScoreBreakdown() != null && b.getScoreBreakdown().getFinalScore() != null
+                            ? b.getScoreBreakdown().getFinalScore() : 0;
+                    return Double.compare(sb, sa);
+                });
+            }
+
+            model.addAttribute("comparison", comparison);
+        } catch (NumberFormatException e) {
+            model.addAttribute("errorMsg", "IDs de match inválidos.");
+            model.addAttribute("comparison", null);
+        } catch (Exception e) {
+            model.addAttribute("errorMsg", "Não foi possível carregar a comparação. Tente novamente.");
+            model.addAttribute("comparison", null);
+        }
+
+        model.addAttribute("activePage", "projects");
+        return "company/company-comparison";
+    }
+
     @PostMapping("/matches/{matchId}/interest")
     public String companyInterest(
             @PathVariable Long matchId,
@@ -295,7 +349,7 @@ public class CompanyController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao demonstrar interesse: " + e.getMessage());
         }
-        return "redirect:/company/projects";
+        return "redirect:/company/matches";
     }
 
     @GetMapping("/matches")
