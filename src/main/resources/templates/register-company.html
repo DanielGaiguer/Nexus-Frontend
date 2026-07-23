@@ -33,9 +33,26 @@
                                 </div>
                             </div>
 
-                            <div th:if="${error}" class="alert alert-danger d-flex align-items-center gap-2 py-2" role="alert">
-                                <i class="ti ti-alert-circle"></i>
-                                <span th:text="${error}">Erro</span>
+                            <div th:if="${error}"
+                                 class="auth-error-block"
+                                 style="background:rgba(239,68,68,0.08);
+                                        border:1px solid rgba(239,68,68,0.25);
+                                        border-left:3px solid #ef4444;
+                                        border-radius:10px;
+                                        padding:0.85rem 1rem;
+                                        margin-bottom:1.25rem;
+                                        display:flex;
+                                        align-items:flex-start;
+                                        gap:0.65rem">
+                              <i class="ti ti-alert-circle"
+                                 style="color:#ef4444;font-size:1.1rem;flex-shrink:0;margin-top:1px"></i>
+                              <div>
+                                <div style="color:#fca5a5;font-size:0.875rem;font-weight:600;line-height:1.4"
+                                     th:text="${error}">Erro</div>
+                                <div style="color:#64748b;font-size:0.78rem;margin-top:3px">
+                                  Se o problema persistir, entre em contato com o suporte.
+                                </div>
+                              </div>
                             </div>
 
                             <form th:action="@{/auth/register/company}" method="post">
@@ -92,6 +109,11 @@
     </main>
 
     <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initFormValidation(document.querySelector('form'));
+        });
+    </script>
 
 </body>
 </html>
