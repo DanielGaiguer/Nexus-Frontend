@@ -193,11 +193,12 @@ public class AdminController {
     public String map(
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String uf,
+            @RequestParam(required = false) String type,
             HttpSession session,
             Model model) {
         String token = (String) session.getAttribute("token");
 
-        List<MapProfessionalDTO> pros = mapService.getProfessionals(token, city, uf);
+        List<MapProfessionalDTO> pros = mapService.getProfessionals(token, city, uf, type);
         List<MapCompanyDTO> cos       = mapService.getCompanies(token, city, uf);
 
         try {
@@ -217,7 +218,10 @@ public class AdminController {
     }
 
     @GetMapping("/projects")
-    public String allProjects(HttpSession session, Model model) {
+    public String allProjects(
+            @RequestParam(required = false) String opportunityType,
+            HttpSession session,
+            Model model) {
         String token = (String) session.getAttribute("token");
         List<ProjectDTO> projects = adminService.getAllProjects(token);
 
@@ -228,6 +232,7 @@ public class AdminController {
         model.addAttribute("projects",   projects);
         model.addAttribute("openCount",  openCount);
         model.addAttribute("closedCount", closedCount);
+        model.addAttribute("filterOpportunityType", opportunityType != null ? opportunityType : "");
         model.addAttribute("activePage", "projects");
         return "admin/admin-projects";
     }

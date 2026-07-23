@@ -22,6 +22,13 @@ public class ProjectDTO {
     private Long companyId;
     private String companyName;
     private CompanyDTO company;
+    private String opportunityType;
+    private String contractType;
+    private String benefits;
+    private LocalDate startDate;
+    private Integer workloadHoursPerWeek;
+    private Double monthlySalaryMin;
+    private Double monthlySalaryMax;
 
     public ProjectDTO() {}
 
@@ -75,4 +82,25 @@ public class ProjectDTO {
 
     public CompanyDTO getCompany() { return company; }
     public void setCompany(CompanyDTO company) { this.company = company; }
+
+    public String getOpportunityType() { return opportunityType; }
+    public void setOpportunityType(String opportunityType) { this.opportunityType = opportunityType; }
+
+    public String getContractType() { return contractType; }
+    public void setContractType(String contractType) { this.contractType = contractType; }
+
+    public String getBenefits() { return benefits; }
+    public void setBenefits(String benefits) { this.benefits = benefits; }
+
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
+
+    public Integer getWorkloadHoursPerWeek() { return workloadHoursPerWeek; }
+    public void setWorkloadHoursPerWeek(Integer workloadHoursPerWeek) { this.workloadHoursPerWeek = workloadHoursPerWeek; }
+
+    public Double getMonthlySalaryMin() { return monthlySalaryMin; }
+    public void setMonthlySalaryMin(Double monthlySalaryMin) { this.monthlySalaryMin = monthlySalaryMin; }
+
+    public Double getMonthlySalaryMax() { return monthlySalaryMax; }
+    public void setMonthlySalaryMax(Double monthlySalaryMax) { this.monthlySalaryMax = monthlySalaryMax; }
 }

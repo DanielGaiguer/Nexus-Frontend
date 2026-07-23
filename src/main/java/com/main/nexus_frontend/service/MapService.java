@@ -25,14 +25,19 @@ public class MapService {
     }
 
     public List<MapProfessionalDTO> getProfessionals(String token) {
-        return getProfessionals(token, null, null);
+        return getProfessionals(token, null, null, null);
     }
 
     public List<MapProfessionalDTO> getProfessionals(String token, String city, String uf) {
+        return getProfessionals(token, city, uf, null);
+    }
+
+    public List<MapProfessionalDTO> getProfessionals(String token, String city, String uf, String opportunityType) {
         var uri = new StringBuilder("/map/professionals");
         boolean hasParams = false;
-        if (city != null && !city.isBlank()) { uri.append(hasParams ? "&" : "?").append("city=").append(city); hasParams = true; }
-        if (uf   != null && !uf.isBlank())   { uri.append(hasParams ? "&" : "?").append("uf=").append(uf);     hasParams = true; }
+        if (city != null && !city.isBlank())           { uri.append(hasParams ? "&" : "?").append("city=").append(city);           hasParams = true; }
+        if (uf   != null && !uf.isBlank())             { uri.append(hasParams ? "&" : "?").append("uf=").append(uf);               hasParams = true; }
+        if (opportunityType != null && !opportunityType.isBlank()) { uri.append(hasParams ? "&" : "?").append("type=").append(opportunityType); hasParams = true; }
 
         MapProfessionalDTO[] response = restClient.get()
                 .uri(uri.toString())

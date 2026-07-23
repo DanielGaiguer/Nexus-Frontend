@@ -338,7 +338,10 @@ public class ProfessionalController {
     }
 
     @GetMapping("/map")
-    public String map(HttpSession session, Model model) {
+    public String map(
+            @RequestParam(required = false) String type,
+            HttpSession session,
+            Model model) {
         String token = (String) session.getAttribute("token");
         try {
             ProfessionalProfileDTO profile = professionalService.getProfile(token);
@@ -349,7 +352,7 @@ public class ProfessionalController {
             model.addAttribute("userLng", -46.63);
         }
         try {
-            List<MapProfessionalDTO> professionals = mapService.getProfessionals(token);
+            List<MapProfessionalDTO> professionals = mapService.getProfessionals(token, null, null, type);
             List<MapCompanyDTO> companies = mapService.getCompanies(token);
             model.addAttribute("professionalsJson", objectMapper.writeValueAsString(professionals));
             model.addAttribute("companiesJson", objectMapper.writeValueAsString(companies));

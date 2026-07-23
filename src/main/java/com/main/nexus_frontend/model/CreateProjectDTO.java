@@ -13,6 +13,13 @@ public class CreateProjectDTO {
     private String deadline;
     private Integer maxPositions;
     private List<Long> skillIds;
+    private String opportunityType;
+    private String contractType;
+    private String benefits;
+    private String startDate;
+    private Integer workloadHoursPerWeek;
+    private Double monthlySalaryMin;
+    private Double monthlySalaryMax;
 
     public CreateProjectDTO() {}
 
@@ -36,4 +43,25 @@ public class CreateProjectDTO {
     public void setMaxPositions(Integer maxPositions) { this.maxPositions = maxPositions; }
     public List<Long> getSkillIds() { return skillIds; }
     public void setSkillIds(List<Long> skillIds) { this.skillIds = skillIds; }
+
+    public String getOpportunityType() { return opportunityType; }
+    public void setOpportunityType(String opportunityType) { this.opportunityType = opportunityType; }
+
+    public String getContractType() { return contractType; }
+    public void setContractType(String contractType) { this.contractType = contractType; }
+
+    public String getBenefits() { return benefits; }
+    public void setBenefits(String benefits) { this.benefits = benefits; }
+
+    public String getStartDate() { return startDate; }
+    public void setStartDate(String startDate) { this.startDate = startDate; }
+
+    public Integer getWorkloadHoursPerWeek() { return workloadHoursPerWeek; }
+    public void setWorkloadHoursPerWeek(Integer workloadHoursPerWeek) { this.workloadHoursPerWeek = workloadHoursPerWeek; }
+
+    public Double getMonthlySalaryMin() { return monthlySalaryMin; }
+    public void setMonthlySalaryMin(Double monthlySalaryMin) { this.monthlySalaryMin = monthlySalaryMin; }
+
+    public Double getMonthlySalaryMax() { return monthlySalaryMax; }
+    public void setMonthlySalaryMax(Double monthlySalaryMax) { this.monthlySalaryMax = monthlySalaryMax; }
 }

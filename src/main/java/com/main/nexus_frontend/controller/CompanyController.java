@@ -141,6 +141,13 @@ public class CompanyController {
             @RequestParam(required = false) String experienceLevel,
             @RequestParam(required = false, defaultValue = "1") Integer maxPositions,
             @RequestParam(value = "skillIds", required = false) List<Long> skillIds,
+            @RequestParam(required = false) String opportunityType,
+            @RequestParam(required = false) String contractType,
+            @RequestParam(required = false) String benefits,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) Integer workloadHoursPerWeek,
+            @RequestParam(required = false) Double monthlySalaryMin,
+            @RequestParam(required = false) Double monthlySalaryMax,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
@@ -156,6 +163,13 @@ public class CompanyController {
             dto.setExperienceLevel(experienceLevel);
             dto.setMaxPositions(maxPositions);
             dto.setSkillIds(skillIds);
+            dto.setOpportunityType(opportunityType != null ? opportunityType : "PROJECT");
+            dto.setContractType(contractType);
+            dto.setBenefits(benefits);
+            dto.setStartDate(startDate);
+            dto.setWorkloadHoursPerWeek(workloadHoursPerWeek);
+            dto.setMonthlySalaryMin(monthlySalaryMin);
+            dto.setMonthlySalaryMax(monthlySalaryMax);
             projectService.createProject(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto criado com sucesso!");
         } catch (Exception e) {
@@ -192,6 +206,13 @@ public class CompanyController {
             @RequestParam(required = false) String experienceLevel,
             @RequestParam(required = false, defaultValue = "1") Integer maxPositions,
             @RequestParam(value = "skillIds", required = false) List<Long> skillIds,
+            @RequestParam(required = false) String opportunityType,
+            @RequestParam(required = false) String contractType,
+            @RequestParam(required = false) String benefits,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) Integer workloadHoursPerWeek,
+            @RequestParam(required = false) Double monthlySalaryMin,
+            @RequestParam(required = false) Double monthlySalaryMax,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
@@ -207,6 +228,13 @@ public class CompanyController {
             dto.setExperienceLevel(experienceLevel);
             dto.setMaxPositions(maxPositions);
             dto.setSkillIds(skillIds);
+            dto.setOpportunityType(opportunityType != null ? opportunityType : "PROJECT");
+            dto.setContractType(contractType);
+            dto.setBenefits(benefits);
+            dto.setStartDate(startDate);
+            dto.setWorkloadHoursPerWeek(workloadHoursPerWeek);
+            dto.setMonthlySalaryMin(monthlySalaryMin);
+            dto.setMonthlySalaryMax(monthlySalaryMax);
             projectService.updateProject(token, id, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto atualizado com sucesso!");
         } catch (Exception e) {
@@ -491,7 +519,10 @@ public class CompanyController {
     }
 
     @GetMapping("/map")
-    public String map(HttpSession session, Model model) {
+    public String map(
+            @RequestParam(required = false) String type,
+            HttpSession session,
+            Model model) {
         String token = (String) session.getAttribute("token");
         try {
             CompanyProfileDTO profile = companyService.getProfile(token);
@@ -502,7 +533,7 @@ public class CompanyController {
             model.addAttribute("userLng", -46.63);
         }
         try {
-            List<MapProfessionalDTO> professionals = mapService.getProfessionals(token);
+            List<MapProfessionalDTO> professionals = mapService.getProfessionals(token, null, null, type);
             List<MapCompanyDTO> companies = mapService.getCompanies(token);
             model.addAttribute("professionalsJson", objectMapper.writeValueAsString(professionals));
             model.addAttribute("companiesJson", objectMapper.writeValueAsString(companies));

@@ -79,13 +79,40 @@
             <div class="flex-fill">
               <div class="fw-semibold text-white" style="font-size:1rem"
                    th:text="${opp.project != null ? opp.project.title : 'Projeto'}">Projeto</div>
+              <span th:if="${opp.project?.opportunityType == 'JOB'}"
+                    class="nexus-badge-job">
+                <i class="ti ti-building" style="font-size:0.65rem;margin-right:2px"></i>Vaga
+              </span>
+              <span th:unless="${opp.project?.opportunityType == 'JOB'}"
+                    class="nexus-badge-project">
+                <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
+              </span>
               <div style="color:#64748b;font-size:0.85rem"
                    th:text="${opp.project != null and opp.project.company != null ? opp.project.company.companyName : 'Empresa'}">Empresa</div>
               <div class="d-flex gap-3 mt-1 flex-wrap">
-                <span style="color:#94a3b8;font-size:0.8rem">
+                <span th:if="${opp.project?.opportunityType != 'JOB'}"
+                      style="color:#94a3b8;font-size:0.8rem">
                   <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
                   <span class="tabular"
-                        th:text="${opp.project != null ? 'R$ ' + ${#numbers.formatDecimal(opp.project.minimumBudget,1,'COMMA',0,'POINT')} + '–' + ${#numbers.formatDecimal(opp.project.maximumBudget,1,'COMMA',0,'POINT')} : '—'}">R$</span>
+                        th:text="'R$'+${#numbers.formatDecimal(opp.project.minimumBudget,1,'COMMA',0,'POINT')}
+                                 +'–'+${#numbers.formatDecimal(opp.project.maximumBudget,1,'COMMA',0,'POINT')}">—</span>
+                </span>
+                <span th:if="${opp.project?.opportunityType == 'JOB' and opp.project?.monthlySalaryMin != null}"
+                      style="color:#94a3b8;font-size:0.8rem">
+                  <i class="ti ti-currency-dollar" style="color:#22c55e"></i>
+                  <span class="tabular"
+                        th:text="'R$'+${#numbers.formatDecimal(opp.project.monthlySalaryMin,1,'COMMA',0,'POINT')}+'/mês'">—</span>
+                </span>
+                <span th:if="${opp.project?.opportunityType == 'JOB' and opp.project?.contractType != null}"
+                      style="color:#94a3b8;font-size:0.8rem">
+                  <i class="ti ti-file-text" style="color:#a78bfa"></i>
+                  <span th:switch="${opp.project.contractType}">
+                    <span th:case="'CLT'">CLT</span>
+                    <span th:case="'PJ'">PJ</span>
+                    <span th:case="'INTERSHIP'">Estágio</span>
+                    <span th:case="'TEMPORARY'">Temporário</span>
+                    <span th:case="'FREELANCER'">Freelancer</span>
+                  </span>
                 </span>
                 <span style="color:#94a3b8;font-size:0.8rem">
                   <i class="ti ti-map-pin" style="color:#6b6eff"></i>
@@ -96,6 +123,15 @@
                     <span th:case="*" th:text="${opp.project.modality}">—</span>
                   </span>
                 </span>
+              </div>
+              <div th:if="${opp.project?.opportunityType == 'JOB'
+                           and opp.project?.benefits != null
+                           and !#strings.isEmpty(opp.project.benefits)}"
+                   class="d-flex flex-wrap gap-1 mt-1">
+                <span th:each="b : ${#strings.listSplit(opp.project.benefits, ',')}"
+                      class="benefit-chip"
+                      style="font-size:0.68rem;padding:0.15em 0.5em"
+                      th:text="${#strings.trim(b)}">Benefício</span>
               </div>
             </div>
             <!-- Score ring -->

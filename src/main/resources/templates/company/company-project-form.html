@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
-<head th:replace="~{fragments/app-shell :: head(${editMode ? 'Editar Projeto' : 'Novo Projeto'})}"></head>
+<head th:replace="~{fragments/app-shell :: head(${editMode ? 'Editar Oportunidade' : 'Nova Oportunidade'})}"></head>
 <body class="nexus-app">
 
 <div th:replace="~{fragments/app-shell :: shell}"></div>
@@ -9,202 +9,434 @@
   <div th:replace="~{fragments/app-shell :: topbar}"></div>
 
   <div class="page-body">
-    <div class="container-xl py-4" style="max-width:760px">
+    <div class="container-xl py-4" style="max-width:800px">
 
       <!-- Flash -->
       <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Header -->
+      <!-- Back + header -->
       <div class="mb-4">
         <a th:href="@{/company/projects}"
            class="text-decoration-none d-inline-flex align-items-center gap-1 mb-3"
            style="color:#64748b;font-size:0.875rem">
           <i class="ti ti-arrow-left"></i> Voltar para projetos
         </a>
-        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff"
-            th:text="${editMode ? 'Editar Projeto' : 'Novo Projeto'}">Projeto</h1>
-        <p style="color:#64748b;font-size:0.875rem"
-           th:text="${editMode ? 'Atualize as informações do projeto. Scores de matches em aberto serão recalculados.' : 'Preencha as informações do projeto. O ranking de profissionais será gerado automaticamente.'}">—</p>
+        <h1 class="fw-bold mb-1"
+            style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff"
+            th:text="${editMode ? 'Editar Oportunidade' : 'Nova Oportunidade'}">Oportunidade</h1>
+        <p style="color:#64748b;font-size:0.875rem">
+          Escolha o tipo de oportunidade e preencha os dados correspondentes
+        </p>
       </div>
 
       <!-- Info alert -->
       <div class="nexus-alert nexus-alert-info mb-4" style="font-size:0.82rem">
         <i class="ti ti-robot"></i>
-        <span th:text="${editMode} ? 'Ao salvar, o sistema recalculará os scores dos matches ainda aguardando resposta (status Waiting).' : 'Ao criar, o sistema gera automaticamente um ranking de compatibilidade com todos os profissionais elegíveis.'">—</span>
+        <span th:text="${editMode}
+          ? 'Ao salvar, os scores dos matches em aberto serão recalculados automaticamente.'
+          : 'Ao criar, o ranking de profissionais compatíveis será gerado automaticamente.'">—</span>
       </div>
 
-      <!-- Form -->
       <div class="nexus-card p-4">
-        <form th:action="${editMode ? '/company/projects/' + project.id + '/edit' : '/company/projects/new'}"
+        <form th:action="${editMode
+                ? '/company/projects/' + project.id + '/edit'
+                : '/company/projects/new'}"
               method="post" id="projectForm">
 
+          <!-- ══ TOGGLE DE TIPO ════════════════════════════════ -->
+          <div class="mb-4">
+            <label class="nexus-label mb-2">Tipo de oportunidade *</label>
+            <div class="opportunity-type-toggle" id="typeToggle">
+              <button type="button"
+                      class="opportunity-type-btn"
+                      id="btnProject"
+                      onclick="setOpportunityType('PROJECT')">
+                <i class="ti ti-briefcase"></i> Projeto
+              </button>
+              <button type="button"
+                      class="opportunity-type-btn"
+                      id="btnJob"
+                      onclick="setOpportunityType('JOB')">
+                <i class="ti ti-building"></i> Vaga de Emprego
+              </button>
+            </div>
+            <input type="hidden" name="opportunityType" id="opportunityType"
+                   th:value="${project != null and project.opportunityType != null
+                     ? project.opportunityType : 'PROJECT'}">
+            <div style="color:#475569;font-size:0.75rem;margin-top:6px" id="typeHint">
+              <span id="hintProject">
+                <b style="color:#a5b4fc">Projeto:</b> freelance, consultoria ou entrega pontual — remuneração por orçamento fechado
+              </span>
+              <span id="hintJob" style="display:none">
+                <b style="color:#86efac">Vaga:</b> contratação recorrente — remuneração mensal com regime de contrato
+              </span>
+            </div>
+          </div>
+
+          <hr style="border-color:rgba(255,255,255,0.06);margin:1.25rem 0">
+
+          <!-- ══ CAMPOS COMUNS ════════════════════════════════ -->
           <div class="row g-3">
 
-            <!-- Title -->
+            <!-- Título -->
             <div class="col-12">
-              <label class="nexus-label">Título do projeto *</label>
+              <label class="nexus-label">Título *</label>
               <input type="text" class="nexus-input" name="title" id="projTitle" required
-                     th:value="${project != null ? project.title : ''}"
-                     placeholder="Ex: Plataforma de Pagamentos PIX">
+                     th:value="${project?.title ?: ''}"
+                     placeholder="Ex: Desenvolvedor Backend Sênior">
             </div>
 
-            <!-- Description -->
+            <!-- Descrição -->
             <div class="col-12">
               <label class="nexus-label">Descrição *</label>
               <textarea class="nexus-input nexus-textarea" name="description"
                         id="projDesc" required style="min-height:100px"
-                        placeholder="Descreva o projeto, objetivos, entregas esperadas..."
-                        th:text="${project != null ? project.description : ''}"></textarea>
+                        placeholder="Descreva a oportunidade, responsabilidades e entregas esperadas..."
+                        th:text="${project?.description ?: ''}"></textarea>
             </div>
 
-            <!-- Budget -->
+            <!-- Tipo de projeto (FREELANCE / FULL_TIME / PART_TIME) -->
             <div class="col-sm-6">
-              <label class="nexus-label">Orçamento mínimo (R$) *</label>
-              <input type="number" class="nexus-input tabular" name="minimumBudget"
-                     id="projMinBudget" min="0" step="100" required
-                     th:value="${project != null ? project.minimumBudget : ''}">
-            </div>
-            <div class="col-sm-6">
-              <label class="nexus-label">Orçamento máximo (R$) *</label>
-              <input type="number" class="nexus-input tabular" name="maximumBudget"
-                     id="projMaxBudget" min="0" step="100" required
-                     th:value="${project != null ? project.maximumBudget : ''}">
-            </div>
-
-            <!-- Deadline -->
-            <div class="col-sm-6">
-              <label class="nexus-label">Prazo *</label>
-              <input type="date" class="nexus-input tabular" name="deadline"
-                     id="projDeadline" required
-                     th:value="${project != null and project.deadline != null ? project.deadline : ''}">
+              <label class="nexus-label">Regime de trabalho *</label>
+              <select class="nexus-select" name="type" id="projType" required>
+                <option value="">Selecione...</option>
+                <option value="FREELANCE"
+                        th:selected="${project?.type == 'FREELANCE'}">Freelance</option>
+                <option value="FULL_TIME"
+                        th:selected="${project?.type == 'FULL_TIME'}">Tempo integral</option>
+                <option value="PART_TIME"
+                        th:selected="${project?.type == 'PART_TIME'}">Meio período</option>
+              </select>
             </div>
 
-            <!-- Max positions -->
+            <!-- Modalidade de trabalho -->
+            <div class="col-sm-6">
+              <label class="nexus-label">Modalidade *</label>
+              <select class="nexus-select" name="workMode" id="projWorkMode" required>
+                <option value="">Selecione...</option>
+                <option value="REMOTE"
+                        th:selected="${project?.modality == 'REMOTE'}">Remoto</option>
+                <option value="ONSITE"
+                        th:selected="${project?.modality == 'ONSITE'}">Presencial</option>
+                <option value="HYBRID"
+                        th:selected="${project?.modality == 'HYBRID'}">Híbrido</option>
+              </select>
+            </div>
+
+            <!-- Nível de experiência -->
+            <div class="col-sm-6">
+              <label class="nexus-label">Nível de experiência</label>
+              <select class="nexus-select" name="experienceLevel">
+                <option value="">Não especificar</option>
+                <option value="INTERNSHIP"
+                        th:selected="${project?.experienceLevel == 'INTERNSHIP'}">Estágio</option>
+                <option value="TRAINEE"
+                        th:selected="${project?.experienceLevel == 'TRAINEE'}">Trainee</option>
+                <option value="JUNIOR"
+                        th:selected="${project?.experienceLevel == 'JUNIOR'}">Júnior</option>
+                <option value="PLENO"
+                        th:selected="${project?.experienceLevel == 'PLENO'}">Pleno</option>
+                <option value="SENIOR"
+                        th:selected="${project?.experienceLevel == 'SENIOR'}">Sênior</option>
+              </select>
+              <div style="color:#475569;font-size:0.72rem;margin-top:4px">
+                Opcional — se não informado, o componente de experiência não entra no score
+              </div>
+            </div>
+
+            <!-- Vagas disponíveis -->
             <div class="col-sm-6">
               <label class="nexus-label">Vagas disponíveis</label>
               <input type="number" class="nexus-input tabular" name="maxPositions"
                      min="1" value="1"
-                     th:value="${project != null and project.maxPositions != null ? project.maxPositions : 1}">
-              <div style="color:#475569;font-size:0.75rem;margin-top:4px">
+                     th:value="${project?.maxPositions ?: 1}">
+              <div style="color:#475569;font-size:0.72rem;margin-top:4px">
                 Puramente informativo — não bloqueia novos matches
               </div>
             </div>
 
-            <!-- Work mode -->
-            <div class="col-sm-6">
-              <label class="nexus-label">Modalidade *</label>
-              <select class="nexus-select" name="workMode" required>
-                <option value="">Selecione...</option>
-                <option value="REMOTE"  th:selected="${project != null and project.modality == 'REMOTE'}">Remoto</option>
-                <option value="ONSITE"  th:selected="${project != null and project.modality == 'ONSITE'}">Presencial</option>
-                <option value="HYBRID"  th:selected="${project != null and project.modality == 'HYBRID'}">Híbrido</option>
-              </select>
-            </div>
+          </div><!-- /campos comuns -->
 
-            <!-- Type -->
-            <div class="col-sm-6">
-              <label class="nexus-label">Tipo de oportunidade *</label>
-              <select class="nexus-select" name="type" required>
-                <option value="">Selecione...</option>
-                <option value="FREELANCE"  th:selected="${project != null and project.type == 'FREELANCE'}">Freelance</option>
-                <option value="FULL_TIME"  th:selected="${project != null and project.type == 'FULL_TIME'}">Tempo integral</option>
-                <option value="PART_TIME"  th:selected="${project != null and project.type == 'PART_TIME'}">Meio período</option>
-              </select>
-            </div>
+          <hr style="border-color:rgba(255,255,255,0.06);margin:1.25rem 0">
 
-            <!-- Experience level -->
-            <div class="col-sm-6">
-              <label class="nexus-label">Nível de experiência desejado</label>
-              <select class="nexus-select" name="experienceLevel">
-                <option value="">Não especificar</option>
-                <option value="INTERNSHIP" th:selected="${project != null and project.experienceLevel == 'INTERNSHIP'}">Estágio</option>
-                <option value="TRAINEE"    th:selected="${project != null and project.experienceLevel == 'TRAINEE'}">Trainee</option>
-                <option value="JUNIOR"     th:selected="${project != null and project.experienceLevel == 'JUNIOR'}">Júnior</option>
-                <option value="PLENO"      th:selected="${project != null and project.experienceLevel == 'PLENO'}">Pleno</option>
-                <option value="SENIOR"     th:selected="${project != null and project.experienceLevel == 'SENIOR'}">Sênior</option>
-              </select>
-              <div style="color:#475569;font-size:0.75rem;margin-top:4px">
-                Se não informado, o componente de experiência não entra no cálculo do score
-              </div>
-            </div>
+          <!-- ══ CAMPOS DE PROJETO ═══════════════════════════ -->
+          <div id="fieldsProject" class="fields-project row g-3">
 
-            <!-- Skills -->
             <div class="col-12">
-              <label class="nexus-label">Skills exigidas *</label>
-              <div class="d-flex flex-wrap gap-2 mb-2"
-                   th:if="${allSkills != null and !#lists.isEmpty(allSkills)}">
-                <label th:each="sk : ${allSkills}" style="cursor:pointer;margin:0">
-                  <input type="checkbox" name="skillIds" th:value="${sk.id}"
-                         style="display:none" class="skill-cb"
-                         th:checked="${project != null and project.requiredSkills != null and project.requiredSkills.contains(sk.name)}">
-                  <span class="nexus-chip skill-chip-toggle"
-                        th:classappend="${project != null and project.requiredSkills != null and project.requiredSkills.contains(sk.name)} ? ' skill-chip-active' : ''"
-                        th:text="${sk.name}">Skill</span>
-                </label>
-              </div>
-              <div th:unless="${allSkills != null and !#lists.isEmpty(allSkills)}"
-                   style="color:#475569;font-size:0.875rem">
-                Catálogo de skills não disponível.
-              </div>
-              <div id="skillError" style="color:#ef4444;font-size:0.78rem;display:none;margin-top:4px">
-                Selecione ao menos uma skill
+              <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;
+                          letter-spacing:0.08em;color:#6b6eff;margin-bottom:0.75rem">
+                <i class="ti ti-briefcase me-1"></i>Dados do Projeto
               </div>
             </div>
 
-          </div><!-- /row -->
+            <!-- Orçamento min/max -->
+            <div class="col-sm-6">
+              <label class="nexus-label">Orçamento mínimo (R$) *</label>
+              <input type="number" class="nexus-input tabular"
+                     name="minimumBudget" id="projMinBudget"
+                     min="0" step="100"
+                     th:value="${project?.minimumBudget ?: ''}">
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">Orçamento máximo (R$) *</label>
+              <input type="number" class="nexus-input tabular"
+                     name="maximumBudget" id="projMaxBudget"
+                     min="0" step="100"
+                     th:value="${project?.maximumBudget ?: ''}">
+            </div>
 
-          <!-- Footer -->
+            <!-- Prazo -->
+            <div class="col-sm-6">
+              <label class="nexus-label">Prazo de entrega *</label>
+              <input type="date" class="nexus-input tabular"
+                     name="deadline" id="projDeadline"
+                     th:value="${project?.deadline ?: ''}">
+            </div>
+
+          </div><!-- /fieldsProject -->
+
+          <!-- ══ CAMPOS DE VAGA (JOB) ════════════════════════ -->
+          <div id="fieldsJob" class="fields-job fields-hidden row g-3">
+
+            <div class="col-12">
+              <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;
+                          letter-spacing:0.08em;color:#22c55e;margin-bottom:0.75rem">
+                <i class="ti ti-building me-1"></i>Dados da Vaga de Emprego
+              </div>
+            </div>
+
+            <!-- Tipo de contrato -->
+            <div class="col-sm-6">
+              <label class="nexus-label">Tipo de contrato *</label>
+              <select class="nexus-select" name="contractType" id="projContractType">
+                <option value="">Selecione...</option>
+                <option value="CLT"
+                        th:selected="${project?.contractType == 'CLT'}">CLT</option>
+                <option value="PJ"
+                        th:selected="${project?.contractType == 'PJ'}">PJ (Pessoa Jurídica)</option>
+                <option value="INTERSHIP"
+                        th:selected="${project?.contractType == 'INTERSHIP'}">Estágio</option>
+                <option value="TEMPORARY"
+                        th:selected="${project?.contractType == 'TEMPORARY'}">Temporário</option>
+                <option value="FREELANCER"
+                        th:selected="${project?.contractType == 'FREELANCER'}">Freelancer</option>
+              </select>
+            </div>
+
+            <!-- Carga horária -->
+            <div class="col-sm-6">
+              <label class="nexus-label">Carga horária semanal</label>
+              <div style="position:relative">
+                <input type="number" class="nexus-input tabular"
+                       name="workloadHoursPerWeek" id="projWorkload"
+                       min="1" max="60" placeholder="40"
+                       th:value="${project?.workloadHoursPerWeek ?: ''}">
+                <span style="position:absolute;right:0.9rem;top:50%;
+                             transform:translateY(-50%);
+                             color:#475569;font-size:0.8rem">h/sem</span>
+              </div>
+            </div>
+
+            <!-- Salário min -->
+            <div class="col-sm-6">
+              <label class="nexus-label">Salário mínimo (R$/mês) *</label>
+              <input type="number" class="nexus-input tabular"
+                     name="monthlySalaryMin" id="projSalaryMin"
+                     min="0" step="100"
+                     th:value="${project?.monthlySalaryMin ?: ''}">
+            </div>
+
+            <!-- Salário max -->
+            <div class="col-sm-6">
+              <label class="nexus-label">Salário máximo (R$/mês) *</label>
+              <input type="number" class="nexus-input tabular"
+                     name="monthlySalaryMax" id="projSalaryMax"
+                     min="0" step="100"
+                     th:value="${project?.monthlySalaryMax ?: ''}">
+            </div>
+
+            <!-- Data de início -->
+            <div class="col-sm-6">
+              <label class="nexus-label">Data de início prevista</label>
+              <input type="date" class="nexus-input tabular"
+                     name="startDate" id="projStartDate"
+                     th:value="${project?.startDate ?: ''}">
+            </div>
+
+            <!-- Benefícios -->
+            <div class="col-12">
+              <label class="nexus-label">Benefícios</label>
+              <input type="text" class="nexus-input" name="benefits" id="projBenefits"
+                     th:value="${project?.benefits ?: ''}"
+                     placeholder="Ex: Vale-refeição, Plano de saúde, Home office, PLR...">
+              <div style="color:#475569;font-size:0.72rem;margin-top:4px">
+                Separe por vírgula. Exibido como chips para os candidatos.
+              </div>
+            </div>
+
+          </div><!-- /fieldsJob -->
+
+          <hr style="border-color:rgba(255,255,255,0.06);margin:1.25rem 0">
+
+          <!-- ══ SKILLS ════════════════════════════════════════ -->
+          <div class="col-12">
+            <label class="nexus-label mb-2">Skills exigidas *</label>
+            <div class="d-flex flex-wrap gap-2 mb-1"
+                 th:if="${allSkills != null and !#lists.isEmpty(allSkills)}">
+              <label th:each="sk : ${allSkills}" style="cursor:pointer;margin:0">
+                <input type="checkbox" name="skillIds" th:value="${sk.id}"
+                       style="display:none" class="skill-cb"
+                       th:checked="${project?.requiredSkills != null
+                                    and project.requiredSkills.contains(sk.name)}">
+                <span class="nexus-chip skill-chip-toggle"
+                      th:classappend="${project?.requiredSkills != null
+                                       and project.requiredSkills.contains(sk.name)}
+                                      ? ' skill-chip-active' : ''"
+                      th:text="${sk.name}">Skill</span>
+              </label>
+            </div>
+            <div th:unless="${allSkills != null and !#lists.isEmpty(allSkills)}"
+                 style="color:#475569;font-size:0.875rem">
+              Catálogo de skills não disponível — contate o administrador.
+            </div>
+            <div id="skillError"
+                 style="color:#ef4444;font-size:0.78rem;margin-top:4px;display:none">
+              Selecione ao menos uma skill
+            </div>
+          </div>
+
+          <!-- ══ FOOTER ════════════════════════════════════════ -->
           <div class="d-flex gap-2 justify-content-end mt-4">
-            <a th:href="@{/company/projects}" class="nexus-btn nexus-btn-ghost">Cancelar</a>
-            <button type="submit" class="nexus-btn nexus-btn-primary" id="projSubmitBtn">
+            <a th:href="@{/company/projects}"
+               class="nexus-btn nexus-btn-ghost">Cancelar</a>
+            <button type="submit" class="nexus-btn nexus-btn-primary"
+                    id="projSubmitBtn">
               <i th:class="${editMode ? 'ti ti-device-floppy' : 'ti ti-plus'}"></i>
-              <span th:text="${editMode ? 'Salvar alterações' : 'Criar projeto'}">Salvar</span>
+              <span th:text="${editMode ? 'Salvar alterações' : 'Publicar oportunidade'}">Salvar</span>
             </button>
           </div>
 
         </form>
       </div><!-- /.nexus-card -->
-
     </div>
   </div>
 </div>
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
-<script>
-// Skill chip toggle
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+// Tipo inicial (vem do model no modo editar)
+var INITIAL_TYPE = /*[[${project != null and project.opportunityType != null
+                         ? project.opportunityType : 'PROJECT'}]]*/ 'PROJECT';
+var IS_EDIT = /*[[${editMode}]]*/ false;
+
+// ── Toggle de tipo ───────────────────────────────────────────
+function setOpportunityType(type) {
+  document.getElementById('opportunityType').value = type;
+
+  var btnProject = document.getElementById('btnProject');
+  var btnJob     = document.getElementById('btnJob');
+  var fProject   = document.getElementById('fieldsProject');
+  var fJob       = document.getElementById('fieldsJob');
+  var hintP      = document.getElementById('hintProject');
+  var hintJ      = document.getElementById('hintJob');
+
+  if (type === 'PROJECT') {
+    btnProject.classList.add('active');
+    btnJob.classList.remove('active');
+    fProject.classList.remove('fields-hidden');
+    fJob.classList.add('fields-hidden');
+    hintP.style.display = '';
+    hintJ.style.display = 'none';
+    // Campos de projeto: requeridos; campos de job: não requeridos
+    setRequired(['projMinBudget','projMaxBudget','projDeadline'], true);
+    setRequired(['projContractType','projSalaryMin','projSalaryMax'], false);
+  } else {
+    btnJob.classList.add('active');
+    btnProject.classList.remove('active');
+    fJob.classList.remove('fields-hidden');
+    fProject.classList.add('fields-hidden');
+    hintJ.style.display = '';
+    hintP.style.display = 'none';
+    setRequired(['projMinBudget','projMaxBudget','projDeadline'], false);
+    setRequired(['projContractType','projSalaryMin','projSalaryMax'], true);
+  }
+
+  revalidate();
+}
+
+function setRequired(ids, required) {
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.required = required;
+  });
+}
+
+// ── Validação ────────────────────────────────────────────────
+var TODAY = new Date().toISOString().split('T')[0];
+
+function revalidate() {
+  var type     = document.getElementById('opportunityType').value;
+  var title    = (document.getElementById('projTitle').value || '').trim();
+  var desc     = (document.getElementById('projDesc').value  || '').trim();
+  var anySkill = document.querySelectorAll('.skill-cb:checked').length > 0;
+  var wm       = document.getElementById('projWorkMode').value;
+  var tp       = document.getElementById('projType').value;
+  var valid    = title.length >= 2 && desc.length >= 5 && anySkill && wm && tp;
+
+  if (type === 'PROJECT') {
+    var minB = parseFloat(document.getElementById('projMinBudget').value) || 0;
+    var maxB = parseFloat(document.getElementById('projMaxBudget').value) || 0;
+    var dl   = document.getElementById('projDeadline').value;
+    valid = valid && minB >= 0 && maxB >= minB && dl >= TODAY;
+  } else {
+    var minS = parseFloat(document.getElementById('projSalaryMin').value) || 0;
+    var maxS = parseFloat(document.getElementById('projSalaryMax').value) || 0;
+    var ct   = document.getElementById('projContractType').value;
+    valid = valid && minS >= 0 && maxS >= minS && ct;
+  }
+
+  document.getElementById('skillError').style.display = anySkill ? 'none' : 'block';
+  var btn = document.getElementById('projSubmitBtn');
+  if (btn) btn.disabled = !valid;
+}
+
+// ── Skill chip toggle ────────────────────────────────────────
 document.querySelectorAll('.skill-chip-toggle').forEach(function(chip) {
   chip.addEventListener('click', function() {
     var cb = this.previousElementSibling;
     cb.checked = !cb.checked;
     this.classList.toggle('skill-chip-active', cb.checked);
+    revalidate();
   });
 });
 
-// Validation
+// ── Listeners para revalidação ────────────────────────────────
+['projTitle','projDesc','projMinBudget','projMaxBudget','projDeadline',
+ 'projSalaryMin','projSalaryMax','projContractType','projWorkMode','projType']
+.forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('input', revalidate);
+  if (el) el.addEventListener('change', revalidate);
+});
+
+// ── Inicialização ────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('projDeadline').min = today;
-
-  var form = document.getElementById('projectForm');
-  attachSubmitGuard(form, function() {
-    var title    = (document.getElementById('projTitle').value || '').trim();
-    var desc     = (document.getElementById('projDesc').value || '').trim();
-    var minB     = parseFloat(document.getElementById('projMinBudget').value) || 0;
-    var maxB     = parseFloat(document.getElementById('projMaxBudget').value) || 0;
-    var deadline = document.getElementById('projDeadline').value;
-    var anySkill = Array.from(document.querySelectorAll('.skill-cb:checked')).length > 0;
-    document.getElementById('skillError').style.display = anySkill ? 'none' : 'block';
-    return title.length >= 2 && desc.length >= 5 && minB <= maxB && deadline >= today && anySkill;
-  });
+  document.getElementById('projDeadline').min = TODAY;
+  setOpportunityType(INITIAL_TYPE);
+  revalidate();
 });
+
+/*]]>*/
 </script>
 <style>
 .skill-chip-active {
-  border-color: rgba(107,110,255,0.5) !important;
-  background: rgba(107,110,255,0.18) !important;
-  color: #a5b4fc !important;
+  border-color:rgba(107,110,255,0.5) !important;
+  background:rgba(107,110,255,0.18) !important;
+  color:#a5b4fc !important;
 }
 </style>
 </body>

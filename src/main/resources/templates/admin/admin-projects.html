@@ -61,6 +61,16 @@
             </select>
           </div>
 
+          <!-- Tipo de oportunidade -->
+          <div class="col-6 col-md-2">
+            <label class="nexus-label">Oportunidade</label>
+            <select class="nexus-select" id="filterOpportunityType" onchange="applyFilters()">
+              <option value="">Todas</option>
+              <option value="PROJECT">Projetos</option>
+              <option value="JOB">Vagas</option>
+            </select>
+          </div>
+
           <!-- Modalidade -->
           <div class="col-6 col-md-2">
             <label class="nexus-label">Modalidade</label>
@@ -123,7 +133,8 @@
              th:data-company="${proj.company != null ? proj.company.companyName : ''}"
              th:data-status="${proj.status}"
              th:data-modality="${proj.modality}"
-             th:data-type="${proj.type}">
+             th:data-type="${proj.type}"
+             th:data-opportunitytype="${proj.opportunityType}">
 
           <!-- Top row: título + status -->
           <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
@@ -246,6 +257,7 @@
 function applyFilters() {
   var search   = (document.getElementById('searchInput').value  || '').toLowerCase();
   var status   =  document.getElementById('filterStatus').value;
+  var oppType  =  document.getElementById('filterOpportunityType').value;
   var modality =  document.getElementById('filterModality').value;
   var type     =  document.getElementById('filterType').value;
 
@@ -255,12 +267,13 @@ function applyFilters() {
   items.forEach(function(item) {
     var title   = (item.dataset.title   || '').toLowerCase();
     var company = (item.dataset.company || '').toLowerCase();
-    var matchSearch   = !search   || title.includes(search) || company.includes(search);
-    var matchStatus   = !status   || item.dataset.status   === status;
-    var matchModality = !modality || item.dataset.modality === modality;
-    var matchType     = !type     || item.dataset.type     === type;
+    var matchSearch    = !search   || title.includes(search) || company.includes(search);
+    var matchStatus    = !status   || item.dataset.status   === status;
+    var matchOppType   = !oppType  || item.dataset.opportunitytype === oppType;
+    var matchModality  = !modality || item.dataset.modality === modality;
+    var matchType      = !type     || item.dataset.type     === type;
 
-    var show = matchSearch && matchStatus && matchModality && matchType;
+    var show = matchSearch && matchStatus && matchOppType && matchModality && matchType;
     item.style.display = show ? 'block' : 'none';
     if (show) visible++;
   });
@@ -275,6 +288,7 @@ function applyFilters() {
 function clearFilters() {
   document.getElementById('searchInput').value = '';
   document.getElementById('filterStatus').value   = '';
+  document.getElementById('filterOpportunityType').value = '';
   document.getElementById('filterModality').value = '';
   document.getElementById('filterType').value     = '';
   applyFilters();

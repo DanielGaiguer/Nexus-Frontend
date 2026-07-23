@@ -62,84 +62,117 @@
         <div th:each="proj : ${projects}"
              class="nexus-card p-4 project-card"
              th:data-status="${proj.status}">
-          <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-2">
-            <!-- Title + status -->
-            <div>
-              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                <span class="fw-semibold text-white" style="font-size:1rem"
-                      th:text="${proj.title}">Título</span>
-                <span th:switch="${proj.status}">
-                  <span th:case="'OPEN'"      class="nexus-status success">Aberto</span>
-                  <span th:case="'CLOSED'"    class="nexus-status danger">Encerrado</span>
-                  <span th:case="'CANCELLED'" class="nexus-status danger">Cancelado</span>
-                </span>
+            <!-- Cabeçalho do card com tipo de oportunidade -->
+            <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
+              <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                  <!-- Badge de tipo de oportunidade (NOVO) -->
+                  <span th:if="${proj.opportunityType == 'JOB'}"
+                        class="nexus-badge-job">
+                    <i class="ti ti-building" style="font-size:0.65rem;margin-right:2px"></i>Vaga
+                  </span>
+                  <span th:unless="${proj.opportunityType == 'JOB'}"
+                        class="nexus-badge-project">
+                    <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
+                  </span>
+                  <span class="fw-semibold text-white" style="font-size:1rem"
+                        th:text="${proj.title}">Título</span>
+                  <span th:switch="${proj.status}">
+                    <span th:case="'OPEN'"      class="nexus-status success">Aberto</span>
+                    <span th:case="'CLOSED'"    class="nexus-status danger">Encerrado</span>
+                    <span th:case="'CANCELLED'" class="nexus-status danger">Cancelado</span>
+                  </span>
+                </div>
+                <div style="color:#475569;font-size:0.78rem"
+                     th:text="'Criado em ' + ${#temporals.format(proj.createdAt,'dd/MM/yyyy')}">—</div>
               </div>
-              <div style="color:#475569;font-size:0.78rem"
-                   th:text="'Criado em ' + ${#temporals.format(proj.createdAt,'dd/MM/yyyy')}">—</div>
+              <!-- Posições -->
+              <div class="text-end flex-shrink-0" th:if="${proj.maxPositions != null}">
+                <div style="color:#64748b;font-size:0.72rem">Vagas</div>
+                <div class="tabular fw-semibold" style="color:#a5b4fc;font-size:0.9rem"
+                     th:text="${proj.filledPositions} + '/' + ${proj.maxPositions}">0/1</div>
+              </div>
             </div>
-            <!-- Positions indicator -->
-            <div class="text-end" th:if="${proj.maxPositions != null}">
-              <div style="color:#64748b;font-size:0.75rem">Posições</div>
-              <div class="tabular fw-semibold" style="color:#a5b4fc;font-size:0.9rem"
-                   th:text="${proj.filledPositions} + '/' + ${proj.maxPositions}">0/1</div>
-            </div>
-          </div>
 
-          <!-- Description -->
-          <p style="color:#94a3b8;font-size:0.875rem;line-height:1.6;margin-bottom:0.75rem"
-             th:text="${proj.description}">—</p>
+            <p style="color:#94a3b8;font-size:0.875rem;line-height:1.6;margin-bottom:0.75rem"
+               th:text="${proj.description}">—</p>
 
-          <!-- Meta row -->
-          <div class="d-flex gap-4 flex-wrap mb-3" style="font-size:0.8rem;color:#64748b">
-            <span>
-              <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
-              <span class="tabular"
-                    th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}+'–'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
-            </span>
-            <span>
-              <i class="ti ti-map-pin" style="color:#6b6eff"></i>
-              <span th:switch="${proj.modality}">
-                <span th:case="'REMOTE'">Remoto</span>
-                <span th:case="'ONSITE'">Presencial</span>
-                <span th:case="'HYBRID'">Híbrido</span>
-                <span th:case="*" th:text="${proj.modality}">—</span>
+            <!-- Meta row — muda conforme o tipo -->
+            <div class="d-flex gap-4 flex-wrap mb-2" style="font-size:0.8rem;color:#64748b">
+
+              <!-- Remuneração: PROJECT usa orçamento, JOB usa salário mensal -->
+              <span th:if="${proj.opportunityType != 'JOB'}">
+                <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
+                <span class="tabular"
+                      th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}
+                               +'–'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">—</span>
               </span>
-            </span>
-            <span>
-              <i class="ti ti-calendar" style="color:#6b6eff"></i>
-              <span class="nexus-deadline" th:data-deadline="${proj.deadline}"></span>
-            </span>
-          </div>
+              <span th:if="${proj.opportunityType == 'JOB' and proj.monthlySalaryMin != null}">
+                <i class="ti ti-currency-dollar" style="color:#22c55e"></i>
+                <span class="tabular"
+                      th:text="'R$'+${#numbers.formatDecimal(proj.monthlySalaryMin,1,'COMMA',0,'POINT')}
+                               +'/mês'">—</span>
+                <span th:if="${proj.monthlySalaryMax != null}"
+                      class="tabular"
+                      th:text="'–R$'+${#numbers.formatDecimal(proj.monthlySalaryMax,1,'COMMA',0,'POINT')}">—</span>
+              </span>
 
-          <!-- Skills -->
-          <div class="d-flex flex-wrap gap-2 mb-3"
-               th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
-            <span th:each="sk : ${proj.requiredSkills}"
-                  class="nexus-chip nexus-chip-tech" th:text="${sk}">Skill</span>
-          </div>
+              <!-- Modalidade -->
+              <span>
+                <i class="ti ti-map-pin" style="color:#6b6eff"></i>
+                <span th:switch="${proj.modality}">
+                  <span th:case="'REMOTE'">Remoto</span>
+                  <span th:case="'ONSITE'">Presencial</span>
+                  <span th:case="'HYBRID'">Híbrido</span>
+                  <span th:case="*" th:text="${proj.modality}">—</span>
+                </span>
+              </span>
 
-          <!-- Actions -->
-          <div class="d-flex gap-2 flex-wrap">
-            <a th:href="@{/company/projects/{id}/ranking(id=${proj.id})}"
-               class="nexus-btn nexus-btn-primary nexus-btn-sm">
-              <i class="ti ti-chart-bar"></i> Ver ranking
-            </a>
-            <a th:href="@{/company/projects/{id}/edit(id=${proj.id})}"
-               class="nexus-btn nexus-btn-ghost nexus-btn-sm">
-              <i class="ti ti-pencil"></i> Editar
-            </a>
-            <button th:if="${proj.status == 'OPEN'}"
-                    type="button"
-                    class="nexus-btn nexus-btn-ghost nexus-btn-sm close-trigger"
-                    th:data-id="${proj.id}" th:data-title="${proj.title}">
-              <i class="ti ti-lock"></i> Encerrar
-            </button>
-            <button type="button"
-                    class="nexus-btn nexus-btn-danger-outline nexus-btn-sm delete-proj-trigger"
-                    th:data-id="${proj.id}" th:data-title="${proj.title}">
-              <i class="ti ti-trash"></i>
-            </button>
-          </div>
+              <!-- Prazo (PROJECT) ou Data de início (JOB) -->
+              <span th:if="${proj.opportunityType != 'JOB' and proj.deadline != null}">
+                <i class="ti ti-calendar" style="color:#6b6eff"></i>
+                <span class="nexus-deadline" th:data-deadline="${proj.deadline}"></span>
+              </span>
+              <span th:if="${proj.opportunityType == 'JOB' and proj.startDate != null}">
+                <i class="ti ti-calendar-plus" style="color:#22c55e"></i>
+                <span class="tabular"
+                      th:text="'Início: ' + ${#temporals.format(proj.startDate,'dd/MM/yyyy')}">—</span>
+              </span>
+
+              <!-- Tipo de contrato (JOB) -->
+              <span th:if="${proj.opportunityType == 'JOB' and proj.contractType != null}">
+                <i class="ti ti-file-text" style="color:#a78bfa"></i>
+                <span th:switch="${proj.contractType}">
+                  <span th:case="'CLT'">CLT</span>
+                  <span th:case="'PJ'">PJ</span>
+                  <span th:case="'INTERSHIP'">Estágio</span>
+                  <span th:case="'TEMPORARY'">Temporário</span>
+                  <span th:case="'FREELANCER'">Freelancer</span>
+                  <span th:case="*" th:text="${proj.contractType}">—</span>
+                </span>
+              </span>
+
+              <!-- Carga horária (JOB) -->
+              <span th:if="${proj.opportunityType == 'JOB' and proj.workloadHoursPerWeek != null}">
+                <i class="ti ti-clock" style="color:#a78bfa"></i>
+                <span class="tabular" th:text="${proj.workloadHoursPerWeek}+'h/sem'">—</span>
+              </span>
+            </div>
+
+            <!-- Benefícios (JOB) -->
+            <div th:if="${proj.opportunityType == 'JOB' and proj.benefits != null and !#strings.isEmpty(proj.benefits)}"
+                 class="d-flex flex-wrap gap-1 mb-2">
+              <span th:each="b : ${#strings.listSplit(proj.benefits, ',')}"
+                    class="benefit-chip"
+                    th:text="${#strings.trim(b)}">Benefício</span>
+            </div>
+
+            <!-- Skills -->
+            <div class="d-flex flex-wrap gap-2 mb-3"
+                 th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
+              <span th:each="sk : ${proj.requiredSkills}"
+                    class="nexus-chip nexus-chip-tech" th:text="${sk}">Skill</span>
+            </div>
         </div>
       </div>
 
