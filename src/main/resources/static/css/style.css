@@ -966,6 +966,15 @@ body.nexus-app {
 }
 
 /* ── Tom Select dark theme ── */
+.ts-wrapper select.nexus-select {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+}
 .ts-wrapper.nexus-select {
   background: rgba(255,255,255,0.04) !important;
   border: 1px solid rgba(107,110,255,0.15) !important;
