@@ -352,6 +352,8 @@ public class ProfessionalController {
 
     @GetMapping("/map")
     public String map(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String uf,
             @RequestParam(required = false) String type,
             HttpSession session,
             Model model) {
@@ -365,14 +367,19 @@ public class ProfessionalController {
             model.addAttribute("userLng", -46.63);
         }
         try {
-            List<MapProfessionalDTO> professionals = mapService.getProfessionals(token, null, null, type);
-            List<MapCompanyDTO> companies = mapService.getCompanies(token);
-            model.addAttribute("professionalsJson", objectMapper.writeValueAsString(professionals));
-            model.addAttribute("companiesJson", objectMapper.writeValueAsString(companies));
+            List<MapProfessionalDTO> professionals = mapService.getProfessionals(token, city, uf, type);
+            List<MapCompanyDTO> companies = mapService.getCompanies(token, city, uf);
+            List<MapOpportunityDTO> opportunities = mapService.getOpportunities(token, city, uf, null);
+            model.addAttribute("professionalsJson", professionals);
+            model.addAttribute("companiesJson", companies);
+            model.addAttribute("opportunitiesJson", opportunities);
         } catch (Exception e) {
-            model.addAttribute("professionalsJson", "[]");
-            model.addAttribute("companiesJson", "[]");
+            model.addAttribute("professionalsJson", List.of());
+            model.addAttribute("companiesJson", List.of());
+            model.addAttribute("opportunitiesJson", List.of());
         }
+        model.addAttribute("cityFilter", city != null ? city : "");
+        model.addAttribute("ufFilter",   uf   != null ? uf   : "");
         model.addAttribute("activePage", "map");
         return "pro/pro-map";
     }

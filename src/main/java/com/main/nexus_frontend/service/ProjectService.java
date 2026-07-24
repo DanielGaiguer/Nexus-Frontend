@@ -54,15 +54,41 @@ public class ProjectService {
     }
 
     public ProjectDTO createProject(String token, CreateProjectDTO dto) {
+
+        System.out.println("========== ENVIANDO PROJETO ==========");
+        System.out.println("Title: " + dto.getTitle());
+        System.out.println("Description: " + dto.getDescription());
+        System.out.println("WorkMode: " + dto.getWorkMode());
+        System.out.println("Type: " + dto.getType());
+        System.out.println("ExperienceLevel: " + dto.getExperienceLevel());
+        System.out.println("MinimumBudget: " + dto.getMinimumBudget());
+        System.out.println("MaximumBudget: " + dto.getMaximumBudget());
+        System.out.println("Deadline: " + dto.getDeadline());
+        System.out.println("MaxPositions: " + dto.getMaxPositions());
+        System.out.println("SkillIds: " + dto.getSkillIds());
+        System.out.println("OpportunityType: " + dto.getOpportunityType());
+        System.out.println("ContractType: " + dto.getContractType());
+        System.out.println("Benefits: " + dto.getBenefits());
+        System.out.println("StartDate: " + dto.getStartDate());
+        System.out.println("WorkloadHoursPerWeek: " + dto.getWorkloadHoursPerWeek());
+        System.out.println("MonthlySalaryMin: " + dto.getMonthlySalaryMin());
+        System.out.println("MonthlySalaryMax: " + dto.getMonthlySalaryMax());
+        System.out.println("======================================");
+
         return restClient.post()
                 .uri("/projects")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .body(dto)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+
+                    System.out.println("========== ERRO DA API ==========");
+                    System.out.println("Status: " + res.getStatusCode());
+
                     throw new ResponseStatusException(
                             HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to create project");
+                            "Failed to create project"
+                    );
                 })
                 .body(ProjectDTO.class);
     }

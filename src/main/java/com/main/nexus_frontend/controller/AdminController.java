@@ -200,14 +200,11 @@ public class AdminController {
 
         List<MapProfessionalDTO> pros = mapService.getProfessionals(token, city, uf, type);
         List<MapCompanyDTO> cos       = mapService.getCompanies(token, city, uf);
+        List<MapOpportunityDTO> opps  = mapService.getOpportunities(token, city, uf, null);
 
-        try {
-            model.addAttribute("professionalsJson", objectMapper.writeValueAsString(pros));
-            model.addAttribute("companiesJson",     objectMapper.writeValueAsString(cos));
-        } catch (Exception e) {
-            model.addAttribute("professionalsJson", "[]");
-            model.addAttribute("companiesJson",     "[]");
-        }
+        model.addAttribute("professionalsJson", pros);
+        model.addAttribute("companiesJson",     cos);
+        model.addAttribute("opportunitiesJson", opps);
 
         model.addAttribute("centerLat", -23.3045);
         model.addAttribute("centerLng", -51.1696);

@@ -14,120 +14,202 @@
     <div class="d-flex" style="height:calc(100vh - 56px)">
 
       <!-- ── Sidebar de filtros ── -->
-      <div style="width:300px;flex-shrink:0;background:rgba(4,6,19,0.95);
-                  border-right:1px solid rgba(255,255,255,0.06);
-                  overflow-y:auto;display:flex;flex-direction:column;padding:1.25rem">
+        <div style="width:300px;flex-shrink:0;background:rgba(4,6,19,0.95);
+                    border-right:1px solid rgba(255,255,255,0.06);
+                    overflow-y:auto;display:flex;flex-direction:column;padding:1.25rem">
 
-        <div class="mb-3">
-          <div class="fw-semibold text-white" style="font-size:1rem">Mapa de Talentos</div>
-          <div style="color:#64748b;font-size:0.8rem;margin-top:2px">
-            Visão administrativa — todos os usuários
+          <!-- Título (muda por papel) -->
+          <div class="mb-3">
+            <div class="fw-semibold text-white" style="font-size:1rem">
+              <!-- pro-map:     Mapa de Talentos -->
+              <!-- company-map: Mapa de Profissionais -->
+              <!-- admin-map:   Mapa Geral -->
+              Mapa de Talentos
+            </div>
+            <div style="color:#64748b;font-size:0.8rem;margin-top:2px">
+              Explore profissionais, empresas e oportunidades
+            </div>
           </div>
+
+          <!-- Busca por cidade -->
+          <form method="get" class="mb-3"
+                th:action="${session.userRole == 'PROFESSIONAL'} ? '/pro/map' :
+                           (${session.userRole == 'COMPANY'} ? '/company/map' : '/admin/map')">
+            <div style="position:relative">
+              <i class="ti ti-search"
+                 style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);
+                        color:#475569;font-size:0.9rem"></i>
+              <input type="text" name="city" class="nexus-input"
+                     th:value="${cityFilter}"
+                     placeholder="Buscar por cidade..."
+                     style="padding-left:2.2rem;font-size:0.85rem">
+            </div>
+            <select name="uf" class="nexus-select mt-2" style="font-size:0.85rem; display: none;">
+              <option value="">Todos os estados</option>
+              <option th:each="uf : ${ {'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA',
+                                        'MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN',
+                                        'RO','RR','RS','SC','SE','SP','TO'} }"
+                      th:value="${uf}" th:text="${uf}"
+                      th:selected="${uf == ufFilter}">UF</option>
+            </select>
+            <button type="submit" class="nexus-btn nexus-btn-primary w-100 mt-2"
+                    style="font-size:0.82rem">
+              <i class="ti ti-filter"></i> Filtrar por cidade
+            </button>
+          </form>
+
+          <!-- Tipo -->
+          <div class="mb-3">
+            <div class="nexus-section-title">Tipo</div>
+            <div class="d-flex flex-column gap-1">
+
+              <!-- Ambos -->
+              <label class="type-filter-option d-flex align-items-center gap-2"
+                     data-type="all"
+                     onclick="setTypeFilter('all', this)"
+                     style="cursor:pointer;padding:0.45rem 0.6rem;border-radius:8px;
+                            transition:background 0.2s">
+                <span style="width:10px;height:10px;border-radius:50%;
+                             background:linear-gradient(135deg,#6b6eff,#67e8f9);
+                             flex-shrink:0"></span>
+                <span style="color:#e2e8f0;font-size:0.875rem;font-weight:500">Todos</span>
+                <span id="count-all" class="nexus-badge-count ms-auto">0</span>
+              </label>
+
+              <!-- Profissionais -->
+              <label class="type-filter-option d-flex align-items-center gap-2"
+                     data-type="professionals"
+                     onclick="setTypeFilter('professionals', this)"
+                     style="cursor:pointer;padding:0.45rem 0.6rem;border-radius:8px;
+                            transition:background 0.2s">
+                <span style="width:10px;height:10px;border-radius:50%;
+                             background:#6b6eff;flex-shrink:0"></span>
+                <span style="color:#94a3b8;font-size:0.875rem">Profissionais</span>
+                <span id="count-pros" class="nexus-badge-count ms-auto">0</span>
+              </label>
+
+              <!-- Empresas -->
+              <label class="type-filter-option d-flex align-items-center gap-2"
+                     data-type="companies"
+                     onclick="setTypeFilter('companies', this)"
+                     style="cursor:pointer;padding:0.45rem 0.6rem;border-radius:8px;
+                            transition:background 0.2s">
+                <span style="width:10px;height:10px;border-radius:50%;
+                             background:#f59e0b;flex-shrink:0"></span>
+                <span style="color:#94a3b8;font-size:0.875rem">Empresas</span>
+                <span id="count-cos" class="nexus-badge-count ms-auto">0</span>
+              </label>
+
+              <!-- Oportunidades -->
+              <label class="type-filter-option d-flex align-items-center gap-2"
+                     data-type="opportunities"
+                     onclick="setTypeFilter('opportunities', this)"
+                     style="cursor:pointer;padding:0.45rem 0.6rem;border-radius:8px;
+                            transition:background 0.2s">
+                <span style="width:10px;height:10px;border-radius:50%;
+                             background:linear-gradient(135deg,#a78bfa,#22c55e);
+                             flex-shrink:0"></span>
+                <span style="color:#94a3b8;font-size:0.875rem">Oportunidades</span>
+                <span id="count-opps" class="nexus-badge-count ms-auto">0</span>
+              </label>
+
+              <!-- Sub-select de tipo de oportunidade (só aparece ao selecionar Oportunidades) -->
+              <div id="oppTypeSubSelect"
+                   style="display:none;margin-left:1.25rem;margin-top:0.3rem;
+                          padding:0.6rem;background:rgba(107,110,255,0.06);
+                          border-radius:8px;border:1px solid rgba(107,110,255,0.12)">
+                <div style="color:#6b6eff;font-size:0.7rem;font-weight:700;
+                            text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem">
+                  Tipo de oportunidade
+                </div>
+                <div class="d-flex flex-column gap-1">
+
+                  <label onclick="setOppTypeFilter('')"
+                         class="opp-type-opt d-flex align-items-center gap-2"
+                         style="cursor:pointer;padding:0.3rem 0.4rem;border-radius:6px;
+                                transition:background 0.15s;background:rgba(107,110,255,0.1)">
+                    <i class="ti ti-circle-filled" style="font-size:0.5rem;color:#a78bfa"></i>
+                    <span style="color:#e2e8f0;font-size:0.82rem;font-weight:500">Todos</span>
+                  </label>
+
+                  <label onclick="setOppTypeFilter('PROJECT'); highlightOppType(this)"
+                         class="opp-type-opt d-flex align-items-center gap-2"
+                         style="cursor:pointer;padding:0.3rem 0.4rem;border-radius:6px;
+                                transition:background 0.15s">
+                    <i class="ti ti-briefcase" style="font-size:0.8rem;color:#a78bfa"></i>
+                    <span style="color:#94a3b8;font-size:0.82rem">Projetos</span>
+                  </label>
+
+                  <label onclick="setOppTypeFilter('JOB'); highlightOppType(this)"
+                         class="opp-type-opt d-flex align-items-center gap-2"
+                         style="cursor:pointer;padding:0.3rem 0.4rem;border-radius:6px;
+                                transition:background 0.15s">
+                    <i class="ti ti-file-text" style="font-size:0.8rem;color:#22c55e"></i>
+                    <span style="color:#94a3b8;font-size:0.82rem">Vagas de emprego</span>
+                  </label>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Distância -->
+          <div class="mb-3">
+            <div class="nexus-section-title">Distância (km)</div>
+            <div class="row g-2">
+              <div class="col-6">
+                <button class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 radius-btn"
+                        data-radius="5" onclick="setRadius(5, this)">5 km</button>
+              </div>
+              <div class="col-6">
+                <button class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 radius-btn"
+                        data-radius="10" onclick="setRadius(10, this)">10 km</button>
+              </div>
+              <div class="col-6">
+                <button class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 radius-btn"
+                        data-radius="20" onclick="setRadius(20, this)">20 km</button>
+              </div>
+              <div class="col-6">
+                <button class="nexus-btn nexus-btn-primary nexus-btn-sm w-100 radius-btn active-radius"
+                        data-radius="50" onclick="setRadius(50, this)">50 km</button>
+              </div>
+            </div>
+            <div style="color:#475569;font-size:0.72rem;margin-top:6px;text-align:center"
+                 id="radius-label">Mostrando raio de 50 km</div>
+          </div>
+
+          <!-- Legenda -->
+          <div class="mt-auto pt-3" style="border-top:1px solid rgba(255,255,255,0.06)">
+            <div class="nexus-section-title mb-2">Legenda</div>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <span style="width:12px;height:12px;border-radius:50%;
+                             background:#6b6eff;flex-shrink:0"></span>
+                <span style="color:#94a3b8;font-size:0.82rem">Profissional</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span style="width:12px;height:12px;border-radius:50%;
+                             background:#f59e0b;flex-shrink:0"></span>
+                <span style="color:#94a3b8;font-size:0.82rem">Empresa</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span style="width:12px;height:12px;border-radius:50%;
+                             background:#a78bfa;flex-shrink:0"></span>
+                <span style="color:#94a3b8;font-size:0.82rem">Projeto</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span style="width:12px;height:12px;border-radius:50%;
+                             background:#22c55e;flex-shrink:0"></span>
+                <span style="color:#94a3b8;font-size:0.82rem">Vaga de emprego</span>
+              </div>
+            </div>
+            <div style="color:#475569;font-size:0.75rem;margin-top:0.75rem">
+              <span id="visible-count">0</span> resultado(s) visível(is)
+            </div>
+          </div>
+
         </div>
-
-        <!-- Busca por cidade -->
-        <form method="get" th:action="@{/admin/map}" class="mb-3">
-          <div style="position:relative">
-            <i class="ti ti-search"
-               style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);
-                      color:#475569;font-size:0.9rem"></i>
-            <input type="text" name="city" class="nexus-input"
-                   th:value="${cityFilter}"
-                   placeholder="Buscar por cidade..."
-                   style="padding-left:2.2rem;font-size:0.85rem">
-          </div>
-          <!-- UF filter -->
-          <select name="uf" class="nexus-select mt-2"
-                  style="font-size:0.85rem;display:none">
-            <option value="">Todos os estados</option>
-            <option th:each="uf : ${ {'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'} }"
-                    th:value="${uf}" th:text="${uf}"
-                    th:selected="${uf == ufFilter}">UF</option>
-          </select>
-          <button type="submit" class="nexus-btn nexus-btn-primary w-100 mt-2" style="font-size:0.82rem">
-            <i class="ti ti-filter"></i> Filtrar
-          </button>
-        </form>
-
-        <!-- Tipo -->
-        <div class="mb-3">
-          <div class="nexus-section-title">Tipo</div>
-          <div class="d-flex flex-column gap-1">
-            <label class="d-flex align-items-center gap-2"
-                   style="cursor:pointer;padding:0.45rem 0.6rem;border-radius:8px;
-                          transition:background 0.2s" id="type-ambos"
-                   onclick="setTypeFilter('all', this)">
-              <span style="width:10px;height:10px;border-radius:50%;
-                           background:linear-gradient(135deg,#6b6eff,#67e8f9);
-                           flex-shrink:0"></span>
-              <span style="color:#e2e8f0;font-size:0.875rem;font-weight:500">Ambos</span>
-              <span id="count-all" class="nexus-badge-count ms-auto">0</span>
-            </label>
-            <label class="d-flex align-items-center gap-2"
-                   style="cursor:pointer;padding:0.45rem 0.6rem;border-radius:8px;
-                          transition:background 0.2s"
-                   onclick="setTypeFilter('professionals', this)">
-              <span style="width:10px;height:10px;border-radius:50%;
-                           background:#6b6eff;flex-shrink:0"></span>
-              <span style="color:#94a3b8;font-size:0.875rem">Profissionais</span>
-              <span id="count-pros" class="nexus-badge-count ms-auto">0</span>
-            </label>
-            <label class="d-flex align-items-center gap-2"
-                   style="cursor:pointer;padding:0.45rem 0.6rem;border-radius:8px;
-                          transition:background 0.2s"
-                   onclick="setTypeFilter('companies', this)">
-              <span style="width:10px;height:10px;border-radius:50%;
-                           background:#f59e0b;flex-shrink:0"></span>
-              <span style="color:#94a3b8;font-size:0.875rem">Empresas</span>
-              <span id="count-cos" class="nexus-badge-count ms-auto">0</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Distância -->
-        <div class="mb-3">
-          <div class="nexus-section-title">Distância (km)</div>
-          <div class="row g-2">
-            <div class="col-6">
-              <button class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 radius-btn"
-                      data-radius="5" onclick="setRadius(5, this)">5 km</button>
-            </div>
-            <div class="col-6">
-              <button class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 radius-btn"
-                      data-radius="10" onclick="setRadius(10, this)">10 km</button>
-            </div>
-            <div class="col-6">
-              <button class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 radius-btn"
-                      data-radius="20" onclick="setRadius(20, this)">20 km</button>
-            </div>
-            <div class="col-6">
-              <button class="nexus-btn nexus-btn-primary nexus-btn-sm w-100 radius-btn active-radius"
-                      data-radius="50" onclick="setRadius(50, this)">50 km</button>
-            </div>
-          </div>
-          <div style="color:#475569;font-size:0.72rem;margin-top:6px;text-align:center"
-               id="radius-label">Mostrando raio de 50 km</div>
-        </div>
-
-        <!-- Legenda -->
-        <div class="mt-auto pt-3" style="border-top:1px solid rgba(255,255,255,0.06)">
-          <div class="nexus-section-title mb-2">Legenda</div>
-          <div class="d-flex flex-column gap-2">
-            <div class="d-flex align-items-center gap-2">
-              <span style="width:12px;height:12px;border-radius:50%;background:#6b6eff;flex-shrink:0"></span>
-              <span style="color:#94a3b8;font-size:0.82rem">Profissional</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <span style="width:12px;height:12px;border-radius:50%;background:#f59e0b;flex-shrink:0"></span>
-              <span style="color:#94a3b8;font-size:0.82rem">Empresa</span>
-            </div>
-          </div>
-          <div style="color:#475569;font-size:0.75rem;margin-top:0.75rem">
-            <span id="visible-count">0</span> resultado(s) visível(is)
-          </div>
-        </div>
-
-      </div><!-- /sidebar -->
 
       <!-- ── Mapa ── -->
       <div style="flex:1;position:relative">
@@ -151,10 +233,18 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 
-var PROFESSIONALS = JSON.parse(/*[[${professionalsJson}]]*/ '[]');
-var COMPANIES     = JSON.parse(/*[[${companiesJson}]]*/ '[]');
-var CENTER_LAT    = /*[[${centerLat != null ? centerLat : -23.3045}]]*/ -23.3045;
-var CENTER_LNG    = /*[[${centerLng != null ? centerLng : -51.1696}]]*/ -51.1696;
+var PROFESSIONALS = /*[[${professionalsJson}]]*/ [];
+var COMPANIES = /*[[${companiesJson}]]*/ [];
+var OPPORTUNITIES  = /*[[${opportunitiesJson}]]*/ [];
+var CENTER_LAT = /*[[${centerLat}]]*/ -23.3045;
+var CENTER_LNG = /*[[${centerLng}]]*/ -51.1696;
+
+function highlightOppType(el) {
+  document.querySelectorAll('.opp-type-opt').forEach(function(o) {
+    o.style.background = '';
+  });
+  if (el) el.style.background = 'rgba(107,110,255,0.1)';
+}
 
 // ── Init Leaflet ─────────────────────────────────────────────
 var map = L.map('map', { zoomControl: true }).setView([CENTER_LAT, CENTER_LNG], 10);

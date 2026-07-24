@@ -1567,3 +1567,9 @@ body.nexus-app {
   padding: 0.25em 0.65em;
   border-radius: 20px;
 }
+
+.nexus-map-pin-opportunity {
+  background: #a78bfa;
+  box-shadow: 0 0 12px rgba(167,139,250,0.55);
+}
+

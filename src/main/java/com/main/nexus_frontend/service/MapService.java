@@ -1,6 +1,7 @@
 package com.main.nexus_frontend.service;
 
 import com.main.nexus_frontend.model.MapCompanyDTO;
+import com.main.nexus_frontend.model.MapOpportunityDTO;
 import com.main.nexus_frontend.model.MapProfessionalDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -73,5 +74,24 @@ public class MapService {
                 })
                 .body(MapCompanyDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public List<MapOpportunityDTO> getOpportunities(String token, String city, String uf, String type) {
+        var uri = new StringBuilder("/map/opportunities");
+        boolean hasParams = false;
+        if (city != null && !city.isBlank()) { uri.append(hasParams ? "&" : "?").append("city=").append(city); hasParams = true; }
+        if (uf   != null && !uf.isBlank())   { uri.append(hasParams ? "&" : "?").append("uf=").append(uf);     hasParams = true; }
+        if (type != null && !type.isBlank()) { uri.append(hasParams ? "&" : "?").append("type=").append(type); hasParams = true; }
+
+        try {
+            MapOpportunityDTO[] response = restClient.get()
+                    .uri(uri.toString())
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .retrieve()
+                    .body(MapOpportunityDTO[].class);
+            return response != null ? Arrays.asList(response) : Collections.emptyList();
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 }
