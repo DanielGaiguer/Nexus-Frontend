@@ -184,7 +184,7 @@
             <div class="d-flex flex-column gap-2">
               <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
                 <i class="ti ti-map-pin" style="color:#6b6eff;width:16px"></i>
-                <span th:text="${(profile.city != null ? profile.city : '') + (profile.uf != null ? ', ' + profile.uf : '')}">Cidade, UF</span>
+                <span th:text="${(profile.city != null ? profile.city : '') + (profile.state != null ? ', ' + profile.state : '')}">Cidade, UF</span>
               </div>
               <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
                 <i class="ti ti-phone" style="color:#6b6eff;width:16px"></i>
@@ -213,7 +213,7 @@
               <div class="col-sm-6">
                 <div class="nexus-label">Cidade</div>
                 <div class="text-white fw-medium"
-                     th:text="${(profile.city != null ? profile.city : '') + (profile.uf != null ? ', ' + profile.uf : '')}">—</div>
+                     th:text="${(profile.city != null ? profile.city : '') + (profile.state != null ? ', ' + profile.state : '')}">—</div>
               </div>
               <div class="col-sm-6">
                 <div class="nexus-label">Telefone</div>
@@ -229,17 +229,29 @@
           <!-- Pretensão salarial -->
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">Pretensão salarial</div>
-            <div class="row g-3">
-              <div class="col-sm-6">
-                <div class="nexus-label">Mínimo</div>
+            <div class="row g-3" th:if="${profile.expectedSalaryCLT != null or profile.expectedSalaryPJ != null
+                                          or profile.freelanceMinExpectation != null or profile.freelanceMaxExpectation != null}">
+              <div class="col-sm-6" th:if="${profile.expectedSalaryCLT != null}">
+                <div class="nexus-label">CLT</div>
                 <div class="tabular fw-bold" style="color:#6b6eff;font-size:1.1rem"
-                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.minimumSalary,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
+                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.expectedSalaryCLT,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
               </div>
-              <div class="col-sm-6">
-                <div class="nexus-label">Máximo</div>
+              <div class="col-sm-6" th:if="${profile.expectedSalaryPJ != null}">
+                <div class="nexus-label">PJ</div>
                 <div class="tabular fw-bold" style="color:#6b6eff;font-size:1.1rem"
-                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.maximumSalary,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
+                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.expectedSalaryPJ,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
               </div>
+              <div class="col-sm-6" th:if="${profile.freelanceMinExpectation != null or profile.freelanceMaxExpectation != null}">
+                <div class="nexus-label">Por projeto</div>
+                <div class="tabular fw-bold" style="color:#6b6eff;font-size:1.1rem"
+                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.freelanceMinExpectation,1,'COMMA',0,'POINT')}
+                              + ' — R$ ' + ${#numbers.formatDecimal(profile.freelanceMaxExpectation,1,'COMMA',0,'POINT')}">R$ 0</div>
+              </div>
+            </div>
+            <div th:unless="${profile.expectedSalaryCLT != null or profile.expectedSalaryPJ != null
+                             or profile.freelanceMinExpectation != null or profile.freelanceMaxExpectation != null}"
+                 style="color:#475569;font-size:0.875rem">
+              Nenhuma pretensão salarial informada.
             </div>
           </div>
 
@@ -309,16 +321,6 @@
                 Cidade e estado são preenchidos automaticamente
               </div>
             </div>
-            <div class="col-sm-3">
-              <label class="nexus-label">Pretensão mín. (R$)</label>
-              <input type="number" class="nexus-input tabular" name="minimumSalary" id="editMinSalary"
-                     th:value="${profile.minimumSalary}" min="0" step="100">
-            </div>
-            <div class="col-sm-3">
-              <label class="nexus-label">Pretensão máx. (R$)</label>
-              <input type="number" class="nexus-input tabular" name="maximumSalary" id="editMaxSalary"
-                     th:value="${profile.maximumSalary}" min="0" step="100">
-            </div>
             <div class="col-sm-6">
               <label class="nexus-label">Nível de experiência</label>
               <select class="nexus-select" name="experienceLevel">
@@ -354,6 +356,46 @@
                 </label>
               </div>
             </div>
+
+            <!-- Regime de contratação e pretensões -->
+            <div class="col-12">
+              <label class="nexus-label">Quero receber oportunidades de</label>
+              <div class="d-flex gap-3 flex-wrap">
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer">
+                  <input type="checkbox" name="preferredOpportunityTypes" value="JOB" class="form-check-input"
+                         style="width:1rem;height:1rem"
+                         th:checked="${profile.preferredOpportunityTypes != null and profile.preferredOpportunityTypes.contains('JOB')}">
+                  <span style="color:#e2e8f0;font-size:0.875rem">Vaga (CLT/PJ)</span>
+                </label>
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer">
+                  <input type="checkbox" name="preferredOpportunityTypes" value="PROJECT" class="form-check-input"
+                         style="width:1rem;height:1rem"
+                         th:checked="${profile.preferredOpportunityTypes != null and profile.preferredOpportunityTypes.contains('PROJECT')}">
+                  <span style="color:#e2e8f0;font-size:0.875rem">Projeto (freelance)</span>
+                </label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">Pretensão CLT (R$/mês)</label>
+              <input type="number" class="nexus-input tabular" name="expectedSalaryCLT" id="editSalaryCLT"
+                     th:value="${profile.expectedSalaryCLT}" min="0" step="100">
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">Pretensão PJ (R$/mês)</label>
+              <input type="number" class="nexus-input tabular" name="expectedSalaryPJ" id="editSalaryPJ"
+                     th:value="${profile.expectedSalaryPJ}" min="0" step="100">
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">Pretensão por projeto — mín. (R$)</label>
+              <input type="number" class="nexus-input tabular" name="freelanceMinExpectation" id="editMinSalary"
+                     th:value="${profile.freelanceMinExpectation}" min="0" step="100">
+            </div>
+            <div class="col-sm-6">
+              <label class="nexus-label">Pretensão por projeto — máx. (R$)</label>
+              <input type="number" class="nexus-input tabular" name="freelanceMaxExpectation" id="editMaxSalary"
+                     th:value="${profile.freelanceMaxExpectation}" min="0" step="100">
+            </div>
+
             <div class="col-12">
               <div id="scoreSimContainer"></div>
             </div>
@@ -623,7 +665,8 @@ var PROFILE_DATA = {
   skills:           /*[[${profile.skills}]]*/ [],
   projects:         /*[[${portfolioCount != null ? portfolioCount : 0}]]*/ 0,
   experienceLevel:  /*[[${profile.experienceLevel}]]*/ '',
-  minimumSalary:    /*[[${profile.minimumSalary}]]*/ 0,
+  preferredOpportunityTypes: /*[[${profile.preferredOpportunityTypes}]]*/ [],
+  salaryFilled:     /*[[${profile.expectedSalaryCLT != null or profile.expectedSalaryPJ != null or profile.freelanceMinExpectation != null}]]*/ false,
   preferredTypes:   /*[[${profile.preferredTypes}]]*/ []
 };
 // Adapta projects para array compatível com o critério de minLength

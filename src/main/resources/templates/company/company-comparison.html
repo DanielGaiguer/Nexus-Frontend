@@ -490,9 +490,9 @@
             <tr>
               <td class="col-attr sub">Pretensão salarial</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
-                <span class="tabular"
-                      th:text="'R$'+${#numbers.formatDecimal(c.minimumSalary/1000,1,0)}
-                               +'k–R$'+${#numbers.formatDecimal(c.maximumSalary/1000,1,0)}+'k'">—</span>
+                <span class="tabular" th:if="${c.minimumSalary != null}"
+                      th:text="'R$'+${#numbers.formatDecimal(c.minimumSalary/1000,1,1)}+'k'">—</span>
+                <span th:unless="${c.minimumSalary != null}" style="color:#334155">—</span>
                 <!-- Indicador se está dentro do orçamento do projeto -->
                 <div style="font-size:0.7rem;margin-top:2px"
                      th:if="${c.minimumSalary != null and comparison.maximumBudget != null}">

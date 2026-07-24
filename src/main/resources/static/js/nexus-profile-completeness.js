@@ -15,8 +15,9 @@ var NexusCompleteness = ( function() {
     { key: 'skills',         label: 'Skills (mín. 3)',         weight: 18, minLength: 3 },
     { key: 'projects',       label: 'Projetos anteriores (mín. 1)', weight: 15, minLength: 1 },
     { key: 'experienceLevel',label: 'Nível de experiência',   weight: 10 },
-    { key: 'minimumSalary',  label: 'Pretensão salarial',      weight: 10 },
+    { key: 'salaryFilled',   label: 'Pretensão salarial',      weight: 10 },
     { key: 'preferredTypes', label: 'Tipos de oportunidade',   weight: 7,  minLength: 1 },
+    { key: 'preferredOpportunityTypes', label: 'Regime desejado (Vaga/Projeto)', weight: 5, minLength: 1 },
   ];
 
   var CRITERIA_CO = [

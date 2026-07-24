@@ -93,22 +93,32 @@ public class ProfessionalController {
             @RequestParam String name,
             @RequestParam(required = false) String phone,
             @RequestParam(required = false) String cep,
-            @RequestParam(required = false) Double minimumSalary,
-            @RequestParam(required = false) Double maximumSalary,
             @RequestParam(value = "preferredTypes", required = false) List<String> preferredTypes,
             @RequestParam(required = false) String experienceLevel,
+            @RequestParam(value = "preferredOpportunityTypes", required = false) List<String> preferredOpportunityTypes,
+            @RequestParam(required = false) Double expectedSalaryCLT,
+            @RequestParam(required = false) Double expectedSalaryPJ,
+            @RequestParam(required = false) Double freelanceMinExpectation,
+            @RequestParam(required = false) Double freelanceMaxExpectation,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
         try {
-            UpdateProfessionalDTO dto = new UpdateProfessionalDTO();
+            // available não faz parte deste form (tem endpoint próprio) — preserva o valor atual
+            ProfessionalProfileDTO currentProfile = professionalService.getProfile(token);
+
+            ProfessionalProfileDTO dto = new ProfessionalProfileDTO();
             dto.setName(name);
             dto.setPhone(phone);
             dto.setCep(cep);
-            dto.setMinimumSalary(minimumSalary);
-            dto.setMaximumSalary(maximumSalary);
+            dto.setAvailable(currentProfile.getAvailable());
             dto.setPreferredTypes(preferredTypes);
             dto.setExperienceLevel(experienceLevel);
+            dto.setPreferredOpportunityTypes(preferredOpportunityTypes);
+            dto.setExpectedSalaryCLT(expectedSalaryCLT);
+            dto.setExpectedSalaryPJ(expectedSalaryPJ);
+            dto.setFreelanceMinExpectation(freelanceMinExpectation);
+            dto.setFreelanceMaxExpectation(freelanceMaxExpectation);
             professionalService.updateProfile(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Perfil atualizado com sucesso!");
         } catch (Exception e) {
@@ -140,14 +150,17 @@ public class ProfessionalController {
         String token = (String) session.getAttribute("token");
         try {
             ProfessionalProfileDTO currentProfile = professionalService.getProfile(token);
-            UpdateProfessionalDTO dto = new UpdateProfessionalDTO();
+            ProfessionalProfileDTO dto = new ProfessionalProfileDTO();
             dto.setName(currentProfile.getName());
             dto.setPhone(currentProfile.getPhone());
             dto.setCep(currentProfile.getCep());
-            dto.setMinimumSalary(currentProfile.getMinimumSalary());
-            dto.setMaximumSalary(currentProfile.getMaximumSalary());
             dto.setPreferredTypes(currentProfile.getPreferredTypes());
             dto.setExperienceLevel(currentProfile.getExperienceLevel());
+            dto.setPreferredOpportunityTypes(currentProfile.getPreferredOpportunityTypes());
+            dto.setExpectedSalaryCLT(currentProfile.getExpectedSalaryCLT());
+            dto.setExpectedSalaryPJ(currentProfile.getExpectedSalaryPJ());
+            dto.setFreelanceMinExpectation(currentProfile.getFreelanceMinExpectation());
+            dto.setFreelanceMaxExpectation(currentProfile.getFreelanceMaxExpectation());
             dto.setAvailable("on".equals(available));
             professionalService.updateProfile(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Disponibilidade atualizada!");

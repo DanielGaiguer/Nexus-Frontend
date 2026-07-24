@@ -100,7 +100,7 @@
             <div class="d-flex flex-column gap-2">
               <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
                 <i class="ti ti-map-pin" style="color:#6b6eff;width:16px"></i>
-                <span th:text="${(profile.city != null ? profile.city : '') + (profile.uf != null ? ', ' + profile.uf : '')}">Cidade, UF</span>
+                <span th:text="${(profile.city != null ? profile.city : '') + (profile.state != null ? ', ' + profile.state : '')}">Cidade, UF</span>
               </div>
               <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
                 <i class="ti ti-phone" style="color:#6b6eff;width:16px"></i>
@@ -133,7 +133,7 @@
               <div class="col-sm-6">
                 <div class="nexus-label">Cidade</div>
                 <div class="text-white fw-medium"
-                     th:text="${(profile.city != null ? profile.city : '') + (profile.uf != null ? ', ' + profile.uf : '')}">—</div>
+                     th:text="${(profile.city != null ? profile.city : '') + (profile.state != null ? ', ' + profile.state : '')}">—</div>
               </div>
               <div class="col-sm-6">
                 <div class="nexus-label">Telefone</div>
@@ -149,17 +149,29 @@
           <!-- Pretensão salarial -->
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">Pretensão salarial</div>
-            <div class="row g-3">
-              <div class="col-sm-6">
-                <div class="nexus-label">Mínimo</div>
+            <div class="row g-3" th:if="${profile.expectedSalaryCLT != null or profile.expectedSalaryPJ != null
+                                          or profile.freelanceMinExpectation != null or profile.freelanceMaxExpectation != null}">
+              <div class="col-sm-6" th:if="${profile.expectedSalaryCLT != null}">
+                <div class="nexus-label">CLT</div>
                 <div class="tabular fw-bold" style="color:#6b6eff;font-size:1.1rem"
-                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.minimumSalary,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
+                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.expectedSalaryCLT,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
               </div>
-              <div class="col-sm-6">
-                <div class="nexus-label">Máximo</div>
+              <div class="col-sm-6" th:if="${profile.expectedSalaryPJ != null}">
+                <div class="nexus-label">PJ</div>
                 <div class="tabular fw-bold" style="color:#6b6eff;font-size:1.1rem"
-                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.maximumSalary,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
+                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.expectedSalaryPJ,1,'COMMA',0,'POINT')} + '/mês'">R$ 0</div>
               </div>
+              <div class="col-sm-6" th:if="${profile.freelanceMinExpectation != null or profile.freelanceMaxExpectation != null}">
+                <div class="nexus-label">Por projeto</div>
+                <div class="tabular fw-bold" style="color:#6b6eff;font-size:1.1rem"
+                     th:text="'R$ ' + ${#numbers.formatDecimal(profile.freelanceMinExpectation,1,'COMMA',0,'POINT')}
+                              + ' — R$ ' + ${#numbers.formatDecimal(profile.freelanceMaxExpectation,1,'COMMA',0,'POINT')}">R$ 0</div>
+              </div>
+            </div>
+            <div th:unless="${profile.expectedSalaryCLT != null or profile.expectedSalaryPJ != null
+                             or profile.freelanceMinExpectation != null or profile.freelanceMaxExpectation != null}"
+                 style="color:#475569;font-size:0.875rem">
+              Nenhuma pretensão salarial informada.
             </div>
           </div>
 

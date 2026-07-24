@@ -6,20 +6,20 @@ public class RegisterProfessionalRequestDTO{
     private String name;
     private String phone;
     private String cep;
-    private Double minimumSalary;
-    private Double maximumSalary;
+    private Double expectedSalaryCLT;
+    private Double expectedSalaryPJ;
 
     public RegisterProfessionalRequestDTO() {
     }
 
-    public RegisterProfessionalRequestDTO(String email, String password, String name, String phone, String cep, Double minimumSalary, Double maximumSalary) {
+    public RegisterProfessionalRequestDTO(String email, String password, String name, String phone, String cep, Double expectedSalaryCLT, Double expectedSalaryPJ) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.phone = phone;
         this.cep = cep;
-        this.minimumSalary = minimumSalary;
-        this.maximumSalary = maximumSalary;
+        this.expectedSalaryCLT = expectedSalaryCLT;
+        this.expectedSalaryPJ = expectedSalaryPJ;
     }
 
     public String getEmail() {
@@ -62,22 +62,22 @@ public class RegisterProfessionalRequestDTO{
         this.cep = cep;
     }
 
-    public Double getMinimumSalary() {
-        return minimumSalary;
+    public Double getExpectedSalaryCLT() {
+        return expectedSalaryCLT;
     }
 
-    public void setMinimumSalary(Double minimumSalary) {
-        this.minimumSalary = minimumSalary;
+    public void setExpectedSalaryCLT(Double expectedSalaryCLT) {
+        this.expectedSalaryCLT = expectedSalaryCLT;
     }
 
-    public Double getMaximumSalary() {
-        return maximumSalary;
+    public Double getExpectedSalaryPJ() {
+        return expectedSalaryPJ;
     }
 
-    public void setMaximumSalary(Double maximumSalary) {
-        this.maximumSalary = maximumSalary;
+    public void setExpectedSalaryPJ(Double expectedSalaryPJ) {
+        this.expectedSalaryPJ = expectedSalaryPJ;
     }
-    
-    
+
+
 }
 

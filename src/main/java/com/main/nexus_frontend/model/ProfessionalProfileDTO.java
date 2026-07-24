@@ -8,10 +8,8 @@ public class ProfessionalProfileDTO {
     private String email;
     private String phone;
     private String city;
-    private String uf;
+    private String state;
     private String cep;
-    private Double minimumSalary;
-    private Double maximumSalary;
     private Boolean available;
     private Double reputation;
     private Double latitude;
@@ -19,8 +17,15 @@ public class ProfessionalProfileDTO {
     private List<String> skills;
     private List<String> preferredTypes;
     private String experienceLevel;
-    private String resume;
     private String profilePhotoUrl;
+    private List<String> preferredOpportunityTypes;
+    private Double expectedSalaryCLT;
+    private Double expectedSalaryPJ;
+    private Double freelanceMinExpectation;
+    private Double freelanceMaxExpectation;
+    private boolean profileComplete;
+    private List<String> missingFields;
+    private String resume;
 
     public ProfessionalProfileDTO() {}
 
@@ -34,14 +39,10 @@ public class ProfessionalProfileDTO {
     public void setPhone(String phone) { this.phone = phone; }
     public String getCity() { return city; }
     public void setCity(String city) { this.city = city; }
-    public String getUf() { return uf; }
-    public void setUf(String uf) { this.uf = uf; }
+    public String getState() { return state; }
+    public void setState(String state) { this.state = state; }
     public String getCep() { return cep; }
     public void setCep(String cep) { this.cep = cep; }
-    public Double getMinimumSalary() { return minimumSalary; }
-    public void setMinimumSalary(Double minimumSalary) { this.minimumSalary = minimumSalary; }
-    public Double getMaximumSalary() { return maximumSalary; }
-    public void setMaximumSalary(Double maximumSalary) { this.maximumSalary = maximumSalary; }
     public Boolean getAvailable() { return available; }
     public void setAvailable(Boolean available) { this.available = available; }
     public Double getReputation() { return reputation; }
@@ -56,16 +57,22 @@ public class ProfessionalProfileDTO {
     public void setPreferredTypes(List<String> preferredTypes) { this.preferredTypes = preferredTypes; }
     public String getExperienceLevel() { return experienceLevel; }
     public void setExperienceLevel(String experienceLevel) { this.experienceLevel = experienceLevel; }
+    public String getProfilePhotoUrl() { return profilePhotoUrl; }
+    public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
+    public List<String> getPreferredOpportunityTypes() { return preferredOpportunityTypes; }
+    public void setPreferredOpportunityTypes(List<String> preferredOpportunityTypes) { this.preferredOpportunityTypes = preferredOpportunityTypes; }
+    public Double getExpectedSalaryCLT() { return expectedSalaryCLT; }
+    public void setExpectedSalaryCLT(Double expectedSalaryCLT) { this.expectedSalaryCLT = expectedSalaryCLT; }
+    public Double getExpectedSalaryPJ() { return expectedSalaryPJ; }
+    public void setExpectedSalaryPJ(Double expectedSalaryPJ) { this.expectedSalaryPJ = expectedSalaryPJ; }
+    public Double getFreelanceMinExpectation() { return freelanceMinExpectation; }
+    public void setFreelanceMinExpectation(Double freelanceMinExpectation) { this.freelanceMinExpectation = freelanceMinExpectation; }
+    public Double getFreelanceMaxExpectation() { return freelanceMaxExpectation; }
+    public void setFreelanceMaxExpectation(Double freelanceMaxExpectation) { this.freelanceMaxExpectation = freelanceMaxExpectation; }
+    public boolean isProfileComplete() { return profileComplete; }
+    public void setProfileComplete(boolean profileComplete) { this.profileComplete = profileComplete; }
+    public List<String> getMissingFields() { return missingFields; }
+    public void setMissingFields(List<String> missingFields) { this.missingFields = missingFields; }
     public String getResume() { return resume; }
     public void setResume(String resume) { this.resume = resume; }
-
-    public String getProfilePhotoUrl() {
-        return profilePhotoUrl;
-    }
-
-    public void setProfilePhotoUrl(String profilePhotoUrl) {
-        this.profilePhotoUrl = profilePhotoUrl;
-    }
-    
-    
 }

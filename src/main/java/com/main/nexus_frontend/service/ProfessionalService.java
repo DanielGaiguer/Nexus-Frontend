@@ -41,7 +41,7 @@ public class ProfessionalService {
                 .body(ProfessionalProfileDTO.class);
     }
 
-    public void updateProfile(String token, UpdateProfessionalDTO dto) {
+    public void updateProfile(String token, ProfessionalProfileDTO dto) {
         restClient.put()
                 .uri("/professional/profile")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
