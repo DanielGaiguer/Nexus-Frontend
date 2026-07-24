@@ -26,19 +26,12 @@
       </div>
 
       <!-- Filters (client-side) -->
-      <div class="d-flex gap-3 flex-wrap mb-4" style="align-items:flex-start">
-        <div class="nexus-tabs">
+      <div class="d-flex gap-3 flex-wrap mb-3" style="align-items:flex-start">
+        <div class="nexus-tabs modality-tabs">
           <button class="nexus-tab active" onclick="filterOpp('all')">Todas</button>
           <button class="nexus-tab" onclick="filterOpp('REMOTE')">Remoto</button>
           <button class="nexus-tab" onclick="filterOpp('ONSITE')">Presencial</button>
           <button class="nexus-tab" onclick="filterOpp('HYBRID')">Híbrido</button>
-        </div>
-        <div class="d-flex gap-2 align-items-center">
-          <input type="number" class="nexus-input tabular" id="filterMinBudget"
-                 placeholder="Orç. min" min="0" style="width:110px;font-size:0.82rem" oninput="applyOppFilters()">
-          <span style="color:#475569">–</span>
-          <input type="number" class="nexus-input tabular" id="filterMaxBudget"
-                 placeholder="Orç. max" min="0" style="width:110px;font-size:0.82rem" oninput="applyOppFilters()">
         </div>
         <select class="nexus-select" id="filterExpLevel" multiple style="font-size:0.82rem" onchange="applyOppFilters()">
           <option value="INTERNSHIP">Estágio</option>
@@ -47,6 +40,41 @@
           <option value="PLENO">Pleno</option>
           <option value="SENIOR">Sênior</option>
         </select>
+      </div>
+
+      <!-- Filtro por tipo de oportunidade — revela a faixa de valores certa -->
+      <div class="d-flex gap-3 flex-wrap mb-4" style="align-items:flex-start">
+        <div class="nexus-tabs opptype-tabs">
+          <button class="nexus-tab active" onclick="filterOppType('')">Todas</button>
+          <button class="nexus-tab" onclick="filterOppType('PROJECT')">Projetos</button>
+          <button class="nexus-tab" onclick="filterOppType('JOB')">Vagas</button>
+        </div>
+
+        <select class="nexus-select" id="filterContractType" style="font-size:0.82rem;display:none"
+                onchange="onContractTypeChange()">
+          <option value="">Todos os contratos</option>
+          <option value="CLT">CLT</option>
+          <option value="PJ">PJ</option>
+          <option value="FREELANCER">Freelancer</option>
+          <option value="INTERNSHIP">Estágio</option>
+          <option value="TEMPORARY">Temporário</option>
+        </select>
+
+        <div class="d-flex gap-2 align-items-center" id="budgetRangeFields" style="display:none">
+          <input type="number" class="nexus-input tabular" id="filterMinBudget"
+                 placeholder="Orç. min" min="0" style="width:110px;font-size:0.82rem" oninput="applyOppFilters()">
+          <span style="color:#475569">–</span>
+          <input type="number" class="nexus-input tabular" id="filterMaxBudget"
+                 placeholder="Orç. max" min="0" style="width:110px;font-size:0.82rem" oninput="applyOppFilters()">
+        </div>
+
+        <div class="d-flex gap-2 align-items-center" id="salaryRangeFields" style="display:none">
+          <input type="number" class="nexus-input tabular" id="filterMinSalary"
+                 placeholder="Sal. min" min="0" style="width:110px;font-size:0.82rem" oninput="applyOppFilters()">
+          <span style="color:#475569">–</span>
+          <input type="number" class="nexus-input tabular" id="filterMaxSalary"
+                 placeholder="Sal. max" min="0" style="width:110px;font-size:0.82rem" oninput="applyOppFilters()">
+        </div>
       </div>
 
       <!-- Empty state -->
@@ -59,13 +87,25 @@
         </div>
       </div>
 
+      <!-- Sem resultados após filtro -->
+      <div th:unless="${#lists.isEmpty(opportunities)}"
+           id="noOppResults"
+           class="nexus-card p-5 text-center" style="display:none">
+        <i class="ti ti-search-off" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Lamentamos, não encontramos nenhuma oportunidade com esses filtros</div>
+      </div>
+
       <!-- Opportunity cards -->
       <div class="d-flex flex-column gap-3" id="opportunityList">
         <div th:each="opp : ${opportunities}"
              class="nexus-match-card"
              th:data-modality="${opp.project != null ? opp.project.modality : ''}"
+             th:data-opportunity-type="${opp.project != null ? opp.project.opportunityType : ''}"
+             th:data-contract-type="${opp.project != null ? opp.project.contractType : ''}"
              th:data-min-budget="${opp.project != null ? opp.project.minimumBudget : ''}"
              th:data-max-budget="${opp.project != null ? opp.project.maximumBudget : ''}"
+             th:data-min-salary="${opp.project != null ? opp.project.monthlySalaryMin : ''}"
+             th:data-max-salary="${opp.project != null ? opp.project.monthlySalaryMax : ''}"
              th:data-exp-level="${opp.project != null ? opp.project.experienceLevel : ''}">
           <div class="d-flex align-items-start gap-3 flex-wrap">
             <!-- Avatar empresa -->
@@ -109,7 +149,7 @@
                   <span th:switch="${opp.project.contractType}">
                     <span th:case="'CLT'">CLT</span>
                     <span th:case="'PJ'">PJ</span>
-                    <span th:case="'INTERSHIP'">Estágio</span>
+                    <span th:case="'INTERNSHIP'">Estágio</span>
                     <span th:case="'TEMPORARY'">Temporário</span>
                     <span th:case="'FREELANCER'">Freelancer</span>
                   </span>
@@ -183,32 +223,91 @@
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
 var currentModality = 'all';
+var currentOppType  = '';
 
 function filterOpp(modality) {
   currentModality = modality;
-  document.querySelectorAll('.nexus-tabs .nexus-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.modality-tabs .nexus-tab').forEach(function(t) { t.classList.remove('active'); });
   event.target.classList.add('active');
+  applyOppFilters();
+}
+
+// Alterna Projetos/Vagas — revela a faixa de valores certa para cada tipo
+function filterOppType(oppType) {
+  currentOppType = oppType;
+  document.querySelectorAll('.opptype-tabs .nexus-tab').forEach(function(t) { t.classList.remove('active'); });
+  event.target.classList.add('active');
+
+  var contractSelect = document.getElementById('filterContractType');
+  contractSelect.style.display = oppType === 'JOB' ? 'inline-block' : 'none';
+  if (oppType !== 'JOB') contractSelect.value = '';
+
+  document.getElementById('budgetRangeFields').style.display = oppType === 'PROJECT' ? 'flex' : 'none';
+  if (oppType !== 'PROJECT') {
+    document.getElementById('filterMinBudget').value = '';
+    document.getElementById('filterMaxBudget').value = '';
+  }
+
+  onContractTypeChange();
+}
+
+// Salário só faz sentido para vagas CLT ou PJ
+function onContractTypeChange() {
+  var ct = document.getElementById('filterContractType').value;
+  var showSalary = currentOppType === 'JOB' && (ct === 'CLT' || ct === 'PJ');
+  document.getElementById('salaryRangeFields').style.display = showSalary ? 'flex' : 'none';
+  if (!showSalary) {
+    document.getElementById('filterMinSalary').value = '';
+    document.getElementById('filterMaxSalary').value = '';
+  }
   applyOppFilters();
 }
 
 function applyOppFilters() {
   var minB = parseFloat(document.getElementById('filterMinBudget').value) || 0;
   var maxB = parseFloat(document.getElementById('filterMaxBudget').value) || Infinity;
+  var minS = parseFloat(document.getElementById('filterMinSalary').value) || 0;
+  var maxS = parseFloat(document.getElementById('filterMaxSalary').value) || Infinity;
   var expEl = document.getElementById('filterExpLevel');
   var selectedLevels = Array.from(expEl.selectedOptions).map(function(o) { return o.value; });
+  var contractType = document.getElementById('filterContractType').value;
 
-  document.querySelectorAll('#opportunityList .nexus-match-card').forEach(function(card) {
-    var mod = card.dataset.modality;
+  var cards = document.querySelectorAll('#opportunityList .nexus-match-card');
+  var visible = 0;
+
+  cards.forEach(function(card) {
+    var mod     = card.dataset.modality;
+    var oppType = card.dataset.opportunityType || '';
+    var ct      = card.dataset.contractType || '';
     var cardMin = parseFloat(card.dataset.minBudget) || 0;
     var cardMax = parseFloat(card.dataset.maxBudget) || Infinity;
+    var cardMinSalary = parseFloat(card.dataset.minSalary) || 0;
+    var cardMaxSalary = parseFloat(card.dataset.maxSalary) || Infinity;
     var cardExp = card.dataset.expLevel || '';
 
-    var modMatch = currentModality === 'all' || mod === currentModality;
-    var budgetMatch = cardMax >= minB && cardMin <= maxB;
-    var expMatch = selectedLevels.length === 0 || selectedLevels.indexOf(cardExp) !== -1;
+    var modMatch      = currentModality === 'all' || mod === currentModality;
+    var oppTypeMatch  = !currentOppType || oppType === currentOppType;
+    var contractMatch = !contractType || ct === contractType;
+    var expMatch      = selectedLevels.length === 0 || selectedLevels.indexOf(cardExp) !== -1;
 
-    card.style.display = (modMatch && budgetMatch && expMatch) ? 'block' : 'none';
+    var budgetMatch = true;
+    if (currentOppType === 'PROJECT') {
+      budgetMatch = cardMax >= minB && cardMin <= maxB;
+    }
+
+    var salaryMatch = true;
+    if (currentOppType === 'JOB' && (contractType === 'CLT' || contractType === 'PJ')) {
+      salaryMatch = cardMaxSalary >= minS && cardMinSalary <= maxS;
+    }
+
+    var show = modMatch && oppTypeMatch && contractMatch && expMatch && budgetMatch && salaryMatch;
+    card.style.display = show ? 'block' : 'none';
+    if (show) visible++;
   });
+
+  var noResults = document.getElementById('noOppResults');
+  if (noResults) noResults.style.display = (visible === 0 && cards.length > 0) ? 'block' : 'none';
+  document.getElementById('opportunityList').style.display = visible > 0 ? 'flex' : 'none';
 }
 </script>
 </body>

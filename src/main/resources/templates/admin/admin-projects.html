@@ -64,7 +64,7 @@
           <!-- Tipo de oportunidade -->
           <div class="col-6 col-md-2">
             <label class="nexus-label">Oportunidade</label>
-            <select class="nexus-select" id="filterOpportunityType" onchange="applyFilters()">
+            <select class="nexus-select" id="filterOpportunityType" onchange="onOpportunityTypeChange()">
               <option value="">Todas</option>
               <option value="PROJECT">Projetos</option>
               <option value="JOB">Vagas</option>
@@ -82,17 +82,6 @@
             </select>
           </div>
 
-          <!-- Tipo -->
-          <div class="col-6 col-md-2">
-            <label class="nexus-label">Tipo</label>
-            <select class="nexus-select" id="filterType" onchange="applyFilters()">
-              <option value="">Todos</option>
-              <option value="FREELANCE">Freelance</option>
-              <option value="FULL_TIME">Integral</option>
-              <option value="PART_TIME">Meio período</option>
-            </select>
-          </div>
-
           <!-- Limpar -->
           <div class="col-6 col-md-2">
             <button type="button" class="nexus-btn nexus-btn-ghost w-100"
@@ -101,6 +90,45 @@
             </button>
           </div>
 
+        </div>
+
+        <!-- Linha condicional: tipo de contrato — só para Vagas -->
+        <div class="row g-3 align-items-end mt-1" id="jobContractRow" style="display:none">
+          <div class="col-6 col-md-3">
+            <label class="nexus-label">Tipo de contrato</label>
+            <select class="nexus-select" id="filterContractType" onchange="onContractTypeChange()">
+              <option value="">Todos</option>
+              <option value="CLT">CLT</option>
+              <option value="PJ">PJ</option>
+              <option value="FREELANCER">Freelancer</option>
+              <option value="INTERNSHIP">Estágio</option>
+              <option value="TEMPORARY">Temporário</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3" id="salaryMinField" style="display:none">
+            <label class="nexus-label">Salário mín. (R$/mês)</label>
+            <input type="number" class="nexus-input tabular" id="filterMinSalary"
+                   min="0" step="100" oninput="applyFilters()">
+          </div>
+          <div class="col-6 col-md-3" id="salaryMaxField" style="display:none">
+            <label class="nexus-label">Salário máx. (R$/mês)</label>
+            <input type="number" class="nexus-input tabular" id="filterMaxSalary"
+                   min="0" step="100" oninput="applyFilters()">
+          </div>
+        </div>
+
+        <!-- Linha condicional: orçamento — só para Projetos -->
+        <div class="row g-3 align-items-end mt-1" id="projectBudgetRow" style="display:none">
+          <div class="col-6 col-md-3">
+            <label class="nexus-label">Orçamento mín. (R$)</label>
+            <input type="number" class="nexus-input tabular" id="filterMinBudget"
+                   min="0" step="100" oninput="applyFilters()">
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="nexus-label">Orçamento máx. (R$)</label>
+            <input type="number" class="nexus-input tabular" id="filterMaxBudget"
+                   min="0" step="100" oninput="applyFilters()">
+          </div>
         </div>
       </div>
 
@@ -133,8 +161,12 @@
              th:data-company="${proj.company != null ? proj.company.companyName : ''}"
              th:data-status="${proj.status}"
              th:data-modality="${proj.modality}"
-             th:data-type="${proj.type}"
-             th:data-opportunitytype="${proj.opportunityType}">
+             th:data-opportunitytype="${proj.opportunityType}"
+             th:data-contracttype="${proj.contractType}"
+             th:data-minbudget="${proj.minimumBudget}"
+             th:data-maxbudget="${proj.maximumBudget}"
+             th:data-minsalary="${proj.monthlySalaryMin}"
+             th:data-maxsalary="${proj.monthlySalaryMax}">
 
           <!-- Top row: título + status -->
           <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
@@ -240,8 +272,7 @@
            style="display:none">
         <i class="ti ti-search-off"
            style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
-        <div class="fw-semibold text-white mb-1">Nenhum projeto encontrado</div>
-        <div style="color:#475569;font-size:0.875rem">Tente ajustar os filtros.</div>
+        <div class="fw-semibold text-white mb-1">Lamentamos, não encontramos nenhuma oportunidade com esses filtros</div>
         <button type="button" class="nexus-btn nexus-btn-ghost mt-3"
                 onclick="clearFilters()">
           <i class="ti ti-x"></i> Limpar filtros
@@ -254,12 +285,46 @@
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
+// Alterna Projetos/Vagas — revela a linha de filtro certa (contrato+salário ou orçamento)
+function onOpportunityTypeChange() {
+  var oppType = document.getElementById('filterOpportunityType').value;
+
+  document.getElementById('jobContractRow').style.display    = oppType === 'JOB'     ? 'flex' : 'none';
+  document.getElementById('projectBudgetRow').style.display  = oppType === 'PROJECT' ? 'flex' : 'none';
+
+  if (oppType !== 'JOB') {
+    document.getElementById('filterContractType').value = '';
+  }
+  if (oppType !== 'PROJECT') {
+    document.getElementById('filterMinBudget').value = '';
+    document.getElementById('filterMaxBudget').value = '';
+  }
+  onContractTypeChange();
+}
+
+// Salário só faz sentido para vagas CLT ou PJ
+function onContractTypeChange() {
+  var ct = document.getElementById('filterContractType').value;
+  var showSalary = (ct === 'CLT' || ct === 'PJ');
+  document.getElementById('salaryMinField').style.display = showSalary ? 'block' : 'none';
+  document.getElementById('salaryMaxField').style.display = showSalary ? 'block' : 'none';
+  if (!showSalary) {
+    document.getElementById('filterMinSalary').value = '';
+    document.getElementById('filterMaxSalary').value = '';
+  }
+  applyFilters();
+}
+
 function applyFilters() {
   var search   = (document.getElementById('searchInput').value  || '').toLowerCase();
   var status   =  document.getElementById('filterStatus').value;
   var oppType  =  document.getElementById('filterOpportunityType').value;
   var modality =  document.getElementById('filterModality').value;
-  var type     =  document.getElementById('filterType').value;
+  var contractType = document.getElementById('filterContractType').value;
+  var minBudget = parseFloat(document.getElementById('filterMinBudget').value) || 0;
+  var maxBudget = parseFloat(document.getElementById('filterMaxBudget').value) || Infinity;
+  var minSalary = parseFloat(document.getElementById('filterMinSalary').value) || 0;
+  var maxSalary = parseFloat(document.getElementById('filterMaxSalary').value) || Infinity;
 
   var items   = document.querySelectorAll('.project-item');
   var visible = 0;
@@ -267,13 +332,29 @@ function applyFilters() {
   items.forEach(function(item) {
     var title   = (item.dataset.title   || '').toLowerCase();
     var company = (item.dataset.company || '').toLowerCase();
-    var matchSearch    = !search   || title.includes(search) || company.includes(search);
-    var matchStatus    = !status   || item.dataset.status   === status;
-    var matchOppType   = !oppType  || item.dataset.opportunitytype === oppType;
-    var matchModality  = !modality || item.dataset.modality === modality;
-    var matchType      = !type     || item.dataset.type     === type;
+    var itemMinBudget = parseFloat(item.dataset.minbudget) || 0;
+    var itemMaxBudget = parseFloat(item.dataset.maxbudget) || Infinity;
+    var itemMinSalary = parseFloat(item.dataset.minsalary) || 0;
+    var itemMaxSalary = parseFloat(item.dataset.maxsalary) || Infinity;
 
-    var show = matchSearch && matchStatus && matchOppType && matchModality && matchType;
+    var matchSearch      = !search   || title.includes(search) || company.includes(search);
+    var matchStatus      = !status   || item.dataset.status   === status;
+    var matchOppType     = !oppType  || item.dataset.opportunitytype === oppType;
+    var matchModality    = !modality || item.dataset.modality === modality;
+    var matchContractType = !contractType || item.dataset.contracttype === contractType;
+
+    var matchBudget = true;
+    if (oppType === 'PROJECT') {
+      matchBudget = itemMaxBudget >= minBudget && itemMinBudget <= maxBudget;
+    }
+
+    var matchSalary = true;
+    if (oppType === 'JOB' && (contractType === 'CLT' || contractType === 'PJ')) {
+      matchSalary = itemMaxSalary >= minSalary && itemMinSalary <= maxSalary;
+    }
+
+    var show = matchSearch && matchStatus && matchOppType && matchModality
+             && matchContractType && matchBudget && matchSalary;
     item.style.display = show ? 'block' : 'none';
     if (show) visible++;
   });
@@ -290,7 +371,15 @@ function clearFilters() {
   document.getElementById('filterStatus').value   = '';
   document.getElementById('filterOpportunityType').value = '';
   document.getElementById('filterModality').value = '';
-  document.getElementById('filterType').value     = '';
+  document.getElementById('filterContractType').value = '';
+  document.getElementById('filterMinBudget').value = '';
+  document.getElementById('filterMaxBudget').value = '';
+  document.getElementById('filterMinSalary').value = '';
+  document.getElementById('filterMaxSalary').value = '';
+  document.getElementById('jobContractRow').style.display = 'none';
+  document.getElementById('projectBudgetRow').style.display = 'none';
+  document.getElementById('salaryMinField').style.display = 'none';
+  document.getElementById('salaryMaxField').style.display = 'none';
   applyFilters();
 }
 
