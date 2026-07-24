@@ -3,7 +3,11 @@ package com.main.nexus_frontend.service;
 import com.main.nexus_frontend.model.CompanyDashboardAnalyticsDTO;
 import com.main.nexus_frontend.model.CompanyDashboardDTO;
 import com.main.nexus_frontend.model.CompanyProfileDTO;
+import com.main.nexus_frontend.model.SkillDTO;
 import com.main.nexus_frontend.model.UpdateCompanyDTO;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +29,20 @@ public class CompanyService {
         this.restClient = RestClient.builder()
                 .baseUrl(baseUrl)
                 .build();
+    }
+
+    public List<SkillDTO> getSkills(String token) {
+        SkillDTO[] response = restClient.get()
+                .uri("/projects/skills")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load skills");
+                })
+                .body(SkillDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
     }
 
     public CompanyDashboardDTO getDashboard(String token) {

@@ -121,7 +121,7 @@ public class CompanyController {
     @GetMapping("/projects/new")
     public String newProjectForm(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
-        List<SkillDTO> allSkills = adminService.getSkills(token);
+        List<SkillDTO> allSkills = companyService.getSkills(token);
         model.addAttribute("editMode", false);
         model.addAttribute("project", null);
         model.addAttribute("allSkills", allSkills);
@@ -185,7 +185,7 @@ public class CompanyController {
             Model model) {
         String token = (String) session.getAttribute("token");
         ProjectDTO project = projectService.getProject(token, id);
-        List<SkillDTO> allSkills = adminService.getSkills(token);
+        List<SkillDTO> allSkills = companyService.getSkills(token);
         model.addAttribute("editMode", true);
         model.addAttribute("project", project);
         model.addAttribute("allSkills", allSkills);
