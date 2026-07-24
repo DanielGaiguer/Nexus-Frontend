@@ -150,10 +150,26 @@
             <div class="col-sm-6">
               <label class="nexus-label">Vagas disponíveis</label>
               <input type="number" class="nexus-input tabular" name="maxPositions"
+                     id="projMaxPositions"
                      min="1" value="1"
                      th:value="${project?.maxPositions ?: 1}">
               <div style="color:#475569;font-size:0.72rem;margin-top:4px">
                 Puramente informativo — não bloqueia novos matches
+              </div>
+            </div>
+
+            <!-- CEP específico da vaga/projeto -->
+            <div class="col-sm-6">
+              <label class="nexus-label">CEP do local (opcional)</label>
+              <input type="text" class="nexus-input tabular" name="cep" id="projCep"
+                     maxlength="9" placeholder="00000-000"
+                     th:value="${project?.cep ?: ''}">
+              <div style="color:#475569;font-size:0.72rem;margin-top:4px">
+                Deixe em branco para usar o CEP cadastrado da empresa. Preencha apenas se esta oportunidade for em outro endereço (ex: filial).
+              </div>
+              <div id="cepError"
+                   style="color:#ef4444;font-size:0.72rem;margin-top:4px;display:none">
+                CEP inválido. Informe somente 8 números (ex: 86010100).
               </div>
             </div>
 
@@ -185,6 +201,10 @@
                      name="maximumBudget" id="projMaxBudget"
                      min="0" step="100"
                      th:value="${project?.maximumBudget ?: ''}">
+              <div id="budgetError"
+                   style="color:#ef4444;font-size:0.72rem;margin-top:4px;display:none">
+                O orçamento máximo deve ser maior ou igual ao mínimo
+              </div>
             </div>
 
             <!-- Prazo -->
@@ -193,6 +213,10 @@
               <input type="date" class="nexus-input tabular"
                      name="deadline" id="projDeadline"
                      th:value="${project?.deadline ?: ''}">
+              <div id="deadlineError"
+                   style="color:#ef4444;font-size:0.72rem;margin-top:4px;display:none">
+                O prazo deve ser uma data futura
+              </div>
             </div>
 
           </div><!-- /fieldsProject -->
@@ -255,6 +279,10 @@
                      name="monthlySalaryMax" id="projSalaryMax"
                      min="0" step="100"
                      th:value="${project?.monthlySalaryMax ?: ''}">
+              <div id="salaryError"
+                   style="color:#ef4444;font-size:0.72rem;margin-top:4px;display:none">
+                O salário máximo deve ser maior ou igual ao mínimo
+              </div>
             </div>
 
             <!-- Data de início -->
@@ -283,23 +311,21 @@
           <!-- ══ SKILLS ════════════════════════════════════════ -->
           <div class="col-12">
             <label class="nexus-label mb-2">Skills exigidas *</label>
-            <div class="d-flex flex-wrap gap-2 mb-1"
-                 th:if="${allSkills != null and !#lists.isEmpty(allSkills)}">
-              <label th:each="sk : ${allSkills}" style="cursor:pointer;margin:0">
-                <input type="checkbox" name="skillIds" th:value="${sk.id}"
-                       style="display:none" class="skill-cb"
-                       th:checked="${project?.requiredSkills != null
-                                    and project.requiredSkills.contains(sk.name)}">
-                <span class="nexus-chip skill-chip-toggle"
-                      th:classappend="${project?.requiredSkills != null
-                                       and project.requiredSkills.contains(sk.name)}
-                                      ? ' skill-chip-active' : ''"
-                      th:text="${sk.name}">Skill</span>
-              </label>
-            </div>
+            <select class="nexus-select" name="skillIds" id="projSkills" multiple required
+                    data-placeholder="Buscar e selecionar skills..."
+                    th:if="${allSkills != null and !#lists.isEmpty(allSkills)}">
+              <option th:each="sk : ${allSkills}"
+                      th:value="${sk.id}"
+                      th:text="${sk.name}"
+                      th:selected="${project != null and project.requiredSkills != null
+                                     and project.requiredSkills.![name].contains(sk.name)}">Skill</option>
+            </select>
             <div th:unless="${allSkills != null and !#lists.isEmpty(allSkills)}"
                  style="color:#475569;font-size:0.875rem">
               Catálogo de skills não disponível — contate o administrador.
+            </div>
+            <div style="color:#475569;font-size:0.72rem;margin-top:4px">
+              Digite para filtrar o catálogo e clique (ou pressione Enter) para adicionar. Selecione ao menos uma.
             </div>
             <div id="skillError"
                  style="color:#ef4444;font-size:0.78rem;margin-top:4px;display:none">
@@ -351,9 +377,12 @@ function setOpportunityType(type) {
     fJob.classList.add('fields-hidden');
     hintP.style.display = '';
     hintJ.style.display = 'none';
-    // Campos de projeto: requeridos; campos de job: não requeridos
-    setRequired(['projMinBudget','projMaxBudget','projDeadline'], true);
-    setRequired(['projContractType','projSalaryMin','projSalaryMax'], false);
+    // Campos de projeto: requeridos e habilitados; campos de vaga: limpos e desabilitados
+    // (desabilitar evita que valores de campos ocultos sejam enviados ao backend,
+    //  que rejeita a requisição inteira se um campo do outro tipo vier preenchido)
+    setFieldState(['projMinBudget','projMaxBudget','projDeadline'], true);
+    setFieldState(['projContractType','projSalaryMin','projSalaryMax'], false);
+    setFieldState(['projWorkload','projStartDate','projBenefits'], false);
   } else {
     btnJob.classList.add('active');
     btnProject.classList.remove('active');
@@ -361,17 +390,33 @@ function setOpportunityType(type) {
     fProject.classList.add('fields-hidden');
     hintJ.style.display = '';
     hintP.style.display = 'none';
-    setRequired(['projMinBudget','projMaxBudget','projDeadline'], false);
-    setRequired(['projContractType','projSalaryMin','projSalaryMax'], true);
+    setFieldState(['projMinBudget','projMaxBudget','projDeadline'], false);
+    setFieldState(['projContractType','projSalaryMin','projSalaryMax'], true);
+    setFieldState(['projWorkload','projStartDate','projBenefits'], true);
   }
 
   revalidate();
 }
 
-function setRequired(ids, required) {
+// active=true  -> campo obrigatório-visível: habilitado, limpo apenas se estava desabilitado
+// active=false -> campo do outro tipo: limpo e desabilitado (não é enviado no submit)
+function setFieldState(ids, active) {
   ids.forEach(function(id) {
     var el = document.getElementById(id);
-    if (el) el.required = required;
+    if (!el) return;
+    el.required = active;
+    if (!active) {
+      if (el.tomselect) {
+        el.tomselect.clear(true);
+        el.tomselect.disable();
+      } else {
+        el.value = '';
+      }
+      el.disabled = true;
+    } else {
+      el.disabled = false;
+      if (el.tomselect) el.tomselect.enable();
+    }
   });
 }
 
@@ -382,41 +427,46 @@ function revalidate() {
   var type     = document.getElementById('opportunityType').value;
   var title    = (document.getElementById('projTitle').value || '').trim();
   var desc     = (document.getElementById('projDesc').value  || '').trim();
-  var anySkill = document.querySelectorAll('.skill-cb:checked').length > 0;
+  var skillsEl = document.getElementById('projSkills');
+  var anySkill = !!skillsEl && skillsEl.selectedOptions.length > 0;
   var wm       = document.getElementById('projWorkMode').value;
   var tp       = document.getElementById('projType').value;
-  var valid    = title.length >= 2 && desc.length >= 5 && anySkill && wm && tp;
+  var maxPos   = parseInt(document.getElementById('projMaxPositions').value, 10) || 0;
+  var cep      = (document.getElementById('projCep').value || '').trim();
+  var cepOk    = !cep || validateCEP(cep);
+  var valid    = title.length >= 2 && desc.length >= 5 && anySkill && wm && tp && maxPos >= 1 && cepOk;
+
+  var minB = 0, maxB = 0, dl = '', budgetOk = true, deadlineOk = true;
+  var minS = 0, maxS = 0, ct = '', salaryOk = true;
 
   if (type === 'PROJECT') {
-    var minB = parseFloat(document.getElementById('projMinBudget').value) || 0;
-    var maxB = parseFloat(document.getElementById('projMaxBudget').value) || 0;
-    var dl   = document.getElementById('projDeadline').value;
-    valid = valid && minB >= 0 && maxB >= minB && dl >= TODAY;
+    minB = parseFloat(document.getElementById('projMinBudget').value) || 0;
+    maxB = parseFloat(document.getElementById('projMaxBudget').value) || 0;
+    dl   = document.getElementById('projDeadline').value;
+    budgetOk   = minB >= 0 && maxB >= minB;
+    deadlineOk = !!dl && dl >= TODAY;
+    valid = valid && budgetOk && deadlineOk;
   } else {
-    var minS = parseFloat(document.getElementById('projSalaryMin').value) || 0;
-    var maxS = parseFloat(document.getElementById('projSalaryMax').value) || 0;
-    var ct   = document.getElementById('projContractType').value;
-    valid = valid && minS >= 0 && maxS >= minS && ct;
+    minS = parseFloat(document.getElementById('projSalaryMin').value) || 0;
+    maxS = parseFloat(document.getElementById('projSalaryMax').value) || 0;
+    ct   = document.getElementById('projContractType').value;
+    salaryOk = minS >= 0 && maxS >= minS;
+    valid = valid && salaryOk && !!ct;
   }
 
-  document.getElementById('skillError').style.display = anySkill ? 'none' : 'block';
+  document.getElementById('skillError').style.display   = anySkill ? 'none' : 'block';
+  document.getElementById('cepError').style.display      = cepOk ? 'none' : 'block';
+  document.getElementById('budgetError').style.display   = (type === 'PROJECT' && !budgetOk) ? 'block' : 'none';
+  document.getElementById('deadlineError').style.display = (type === 'PROJECT' && !deadlineOk) ? 'block' : 'none';
+  document.getElementById('salaryError').style.display    = (type === 'JOB' && !salaryOk) ? 'block' : 'none';
+
   var btn = document.getElementById('projSubmitBtn');
   if (btn) btn.disabled = !valid;
 }
 
-// ── Skill chip toggle ────────────────────────────────────────
-document.querySelectorAll('.skill-chip-toggle').forEach(function(chip) {
-  chip.addEventListener('click', function() {
-    var cb = this.previousElementSibling;
-    cb.checked = !cb.checked;
-    this.classList.toggle('skill-chip-active', cb.checked);
-    revalidate();
-  });
-});
-
 // ── Listeners para revalidação ────────────────────────────────
-['projTitle','projDesc','projMinBudget','projMaxBudget','projDeadline',
- 'projSalaryMin','projSalaryMax','projContractType','projWorkMode','projType']
+['projTitle','projDesc','projMinBudget','projMaxBudget','projDeadline','projMaxPositions','projCep',
+ 'projSalaryMin','projSalaryMax','projContractType','projWorkMode','projType','projSkills']
 .forEach(function(id) {
   var el = document.getElementById(id);
   if (el) el.addEventListener('input', revalidate);
@@ -432,12 +482,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /*]]>*/
 </script>
-<style>
-.skill-chip-active {
-  border-color:rgba(107,110,255,0.5) !important;
-  background:rgba(107,110,255,0.18) !important;
-  color:#a5b4fc !important;
-}
-</style>
 </body>
 </html>

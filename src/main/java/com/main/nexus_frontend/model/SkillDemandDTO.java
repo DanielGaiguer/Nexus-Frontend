@@ -7,10 +7,29 @@ public class SkillDemandDTO {
 
     public SkillDemandDTO() {}
 
-    public String getSkillName() { return skillName; }
-    public void setSkillName(String skillName) { this.skillName = skillName; }
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
-    public Integer getProjectCount() { return projectCount; }
-    public void setProjectCount(Integer projectCount) { this.projectCount = projectCount; }
+    public String getSkillName() {
+        return skillName;
+    }
+
+    public void setSkillName(String skillName) {
+        this.skillName = skillName;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Integer getProjectCount() {
+        return projectCount;
+    }
+
+    public void setProjectCount(Integer projectCount) {
+        this.projectCount = projectCount;
+    }
+
+ 
 }

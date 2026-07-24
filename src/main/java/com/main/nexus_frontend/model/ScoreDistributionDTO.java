@@ -7,10 +7,29 @@ public class ScoreDistributionDTO {
 
     public ScoreDistributionDTO() {}
 
-    public String getRange() { return range; }
-    public void setRange(String range) { this.range = range; }
-    public Integer getCount() { return count; }
-    public void setCount(Integer count) { this.count = count; }
-    public Double getPercentage() { return percentage; }
-    public void setPercentage(Double percentage) { this.percentage = percentage; }
+    public String getRange() {
+        return range;
+    }
+
+    public void setRange(String range) {
+        this.range = range;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
+    public Double getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(Double percentage) {
+        this.percentage = percentage;
+    }
+
+   
 }

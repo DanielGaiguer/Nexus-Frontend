@@ -93,7 +93,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.querySelectorAll('select.nexus-select').forEach(function(el) {
     var isMulti = el.hasAttribute('multiple');
-    var placeholderText = isMulti ? 'Todos os níveis' : (el.getAttribute('data-placeholder') || '');
+    var placeholderText = isMulti
+      ? (el.getAttribute('data-placeholder') || 'Todos os níveis')
+      : (el.getAttribute('data-placeholder') || '');
     var ts = new TomSelect(el, {
       maxOptions: null,
       openOnFocus: true,

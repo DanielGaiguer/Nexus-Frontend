@@ -141,6 +141,7 @@ public class CompanyController {
             @RequestParam(required = false) String experienceLevel,
             @RequestParam(required = false, defaultValue = "1") Integer maxPositions,
             @RequestParam(value = "skillIds", required = false) List<Long> skillIds,
+            @RequestParam(required = false) String cep,
             @RequestParam(required = false) String opportunityType,
             @RequestParam(required = false) String contractType,
             @RequestParam(required = false) String benefits,
@@ -163,6 +164,7 @@ public class CompanyController {
             dto.setExperienceLevel(experienceLevel);
             dto.setMaxPositions(maxPositions);
             dto.setSkillIds(skillIds);
+            dto.setCep(cep != null && !cep.isBlank() ? cep : null);
             dto.setOpportunityType(opportunityType != null ? opportunityType : "PROJECT");
             dto.setContractType(
                 contractType != null && !contractType.isBlank()
@@ -220,6 +222,7 @@ public class CompanyController {
             @RequestParam(required = false) String experienceLevel,
             @RequestParam(required = false, defaultValue = "1") Integer maxPositions,
             @RequestParam(value = "skillIds", required = false) List<Long> skillIds,
+            @RequestParam(required = false) String cep,
             @RequestParam(required = false) String opportunityType,
             @RequestParam(required = false) String contractType,
             @RequestParam(required = false) String benefits,
@@ -242,6 +245,7 @@ public class CompanyController {
             dto.setExperienceLevel(experienceLevel);
             dto.setMaxPositions(maxPositions);
             dto.setSkillIds(skillIds);
+            dto.setCep(cep != null && !cep.isBlank() ? cep : null);
             dto.setOpportunityType(opportunityType != null ? opportunityType : "PROJECT");
             dto.setContractType(contractType);
             dto.setBenefits(benefits);

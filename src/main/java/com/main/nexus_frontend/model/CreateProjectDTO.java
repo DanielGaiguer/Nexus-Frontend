@@ -13,6 +13,7 @@ public class CreateProjectDTO {
     private String deadline;
     private Integer maxPositions;
     private List<Long> skillIds;
+    private String cep;
     private String opportunityType;
     private String contractType;
     private String benefits;
@@ -43,6 +44,8 @@ public class CreateProjectDTO {
     public void setMaxPositions(Integer maxPositions) { this.maxPositions = maxPositions; }
     public List<Long> getSkillIds() { return skillIds; }
     public void setSkillIds(List<Long> skillIds) { this.skillIds = skillIds; }
+    public String getCep() { return cep; }
+    public void setCep(String cep) { this.cep = cep; }
 
     public String getOpportunityType() { return opportunityType; }
     public void setOpportunityType(String opportunityType) { this.opportunityType = opportunityType; }

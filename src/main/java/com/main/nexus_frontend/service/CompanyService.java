@@ -60,7 +60,7 @@ public class CompanyService {
 
     public CompanyDashboardAnalyticsDTO getAnalytics(String token) {
         return restClient.get()
-                .uri("/company/analytics/dashboard")
+                .uri("/analytics/company/dashboard") 
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
