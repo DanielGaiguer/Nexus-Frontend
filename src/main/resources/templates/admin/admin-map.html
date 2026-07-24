@@ -151,11 +151,10 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 
-var PROFESSIONALS = /*[[${professionalsJson}]]*/ [];
-var COMPANIES     = /*[[${companiesJson}]]*/ [];
-// Centro padrão = Londrina, PR (sede do SENAI onde Daniel estagia)
-var CENTER_LAT = /*[[${centerLat != null ? centerLat : -23.3045}]]*/ -23.3045;
-var CENTER_LNG = /*[[${centerLng != null ? centerLng : -51.1696}]]*/ -51.1696;
+var PROFESSIONALS = JSON.parse(/*[[${professionalsJson}]]*/ '[]');
+var COMPANIES     = JSON.parse(/*[[${companiesJson}]]*/ '[]');
+var CENTER_LAT    = /*[[${centerLat != null ? centerLat : -23.3045}]]*/ -23.3045;
+var CENTER_LNG    = /*[[${centerLng != null ? centerLng : -51.1696}]]*/ -51.1696;
 
 // ── Init Leaflet ─────────────────────────────────────────────
 var map = L.map('map', { zoomControl: true }).setView([CENTER_LAT, CENTER_LNG], 10);

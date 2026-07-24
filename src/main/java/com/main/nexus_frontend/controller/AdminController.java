@@ -209,8 +209,8 @@ public class AdminController {
             model.addAttribute("companiesJson",     "[]");
         }
 
-        model.addAttribute("centerLat", -23.5505);
-        model.addAttribute("centerLng", -46.6333);
+        model.addAttribute("centerLat", -23.3045);
+        model.addAttribute("centerLng", -51.1696);
         model.addAttribute("cityFilter", city != null ? city : "");
         model.addAttribute("ufFilter",   uf   != null ? uf   : "");
         model.addAttribute("activePage", "map");
