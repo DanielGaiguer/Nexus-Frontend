@@ -194,6 +194,22 @@
                 <i class="ti ti-mail" style="color:#6b6eff;width:16px"></i>
                 <span th:text="${profile.email}">email</span>
               </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem"
+                   th:if="${profile.linkedinUrl != null and !#strings.isEmpty(profile.linkedinUrl)}">
+                <i class="ti ti-brand-linkedin" style="color:#0A66C2;width:16px"></i>
+                <a th:href="${profile.linkedinUrl}" target="_blank" rel="noopener"
+                   style="color:#94a3b8;text-decoration:none" class="text-truncate">
+                  <span th:text="${profile.linkedinUrl}">LinkedIn</span>
+                </a>
+              </div>
+              <div th:unless="${profile.linkedinUrl != null and !#strings.isEmpty(profile.linkedinUrl)}">
+                <a th:href="@{/auth/linkedin/link}"
+                   class="d-flex align-items-center gap-2 text-decoration-none"
+                   style="color:#0A66C2;font-size:0.85rem;font-weight:500">
+                  <i class="ti ti-brand-linkedin" style="width:16px"></i>
+                  Adicionar LinkedIn
+                </a>
+              </div>
             </div>
           </div>
 
@@ -394,6 +410,15 @@
               <label class="nexus-label">Pretensão por projeto — máx. (R$)</label>
               <input type="number" class="nexus-input tabular" name="freelanceMaxExpectation" id="editMaxSalary"
                      th:value="${profile.freelanceMaxExpectation}" min="0" step="100">
+            </div>
+            <div class="col-12">
+              <label class="nexus-label">LinkedIn</label>
+              <input type="url" class="nexus-input" name="linkedinUrl" id="editLinkedin"
+                     th:value="${profile.linkedinUrl}"
+                     placeholder="https://www.linkedin.com/in/seu-usuario">
+              <div style="color:#475569;font-size:0.75rem;margin-top:4px">
+                Cole aqui o link do seu perfil no LinkedIn
+              </div>
             </div>
 
             <div class="col-12">
@@ -667,7 +692,8 @@ var PROFILE_DATA = {
   experienceLevel:  /*[[${profile.experienceLevel}]]*/ '',
   preferredOpportunityTypes: /*[[${profile.preferredOpportunityTypes}]]*/ [],
   salaryFilled:     /*[[${profile.expectedSalaryCLT != null or profile.expectedSalaryPJ != null or profile.freelanceMinExpectation != null}]]*/ false,
-  preferredTypes:   /*[[${profile.preferredTypes}]]*/ []
+  preferredTypes:   /*[[${profile.preferredTypes}]]*/ [],
+  linkedinUrl:      /*[[${profile.linkedinUrl}]]*/ ''
 };
 // Adapta projects para array compatível com o critério de minLength
 if (typeof PROFILE_DATA.projects === 'number') {

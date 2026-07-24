@@ -38,6 +38,32 @@
                               </div>
                             </div>
 
+                            <div th:if="${linkedinError}"
+                                 class="auth-error-block"
+                                 style="background:rgba(239,68,68,0.08);
+                                        border:1px solid rgba(239,68,68,0.25);
+                                        border-left:3px solid #ef4444;
+                                        border-radius:10px;
+                                        padding:0.85rem 1rem;
+                                        margin-bottom:1.25rem;
+                                        display:flex;
+                                        align-items:flex-start;
+                                        gap:0.65rem">
+                              <i class="ti ti-alert-circle"
+                                 style="color:#ef4444;font-size:1.1rem;flex-shrink:0;margin-top:1px"></i>
+                              <div style="color:#fca5a5;font-size:0.875rem;font-weight:600;line-height:1.3"
+                                   th:with="msg=${
+                                       linkedinError == 'no_account' ? 'Nenhuma conta encontrada com o e-mail do seu LinkedIn. Cadastre-se primeiro.' :
+                                       (linkedinError == 'denied' ? 'Login com LinkedIn cancelado.' :
+                                       (linkedinError == 'pending_approval' ? 'Cadastro de empresa aguardando aprovação do administrador.' :
+                                       (linkedinError == 'rejected' ? 'Cadastro de empresa foi rejeitado.' :
+                                       (linkedinError == 'inactive' ? 'Esta conta está inativa.' :
+                                       (linkedinError == 'session_expired' ? 'Sua sessão expirou. Faça login novamente.' :
+                                       (linkedinError == 'no_email' ? 'Seu LinkedIn não retornou um e-mail verificado. Tente com outra conta ou cadastre-se manualmente.' :
+                                       'Não foi possível entrar com o LinkedIn. Tente novamente.'))))))}"
+                                   th:text="${msg}">Erro</div>
+                            </div>
+
                             <div th:if="${success}"
                                  style="background:rgba(34,197,94,0.08);
                                         border:1px solid rgba(34,197,94,0.25);
@@ -73,6 +99,18 @@
                                     <i class="ti ti-login me-2"></i>Entrar
                                 </button>
                             </form>
+
+                            <div class="d-flex align-items-center gap-2 my-3">
+                                <hr class="flex-fill m-0" style="border-color:var(--border-color);">
+                                <small style="color:var(--text-muted);">ou</small>
+                                <hr class="flex-fill m-0" style="border-color:var(--border-color);">
+                            </div>
+
+                            <a th:href="@{/auth/linkedin/login}"
+                               class="btn w-100 py-2 d-flex align-items-center justify-content-center gap-2"
+                               style="background:#0A66C2;border:none;color:#fff;">
+                                <i class="ti ti-brand-linkedin" style="font-size:1.1rem"></i>Entrar com LinkedIn
+                            </a>
 
                             <div class="mt-4 text-center">
                                 <p class="small mb-2" style="color:var(--text-secondary);">Ainda n&atilde;o tem conta?</p>

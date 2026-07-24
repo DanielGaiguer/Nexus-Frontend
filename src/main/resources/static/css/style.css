@@ -1189,6 +1189,23 @@ body.nexus-app {
   padding: 1rem 1.5rem;
 }
 
+/* Garante que modais longos (ex: editar perfil) nunca ultrapassem a tela —
+   o cabeçalho e o rodapé ficam fixos e só o corpo rola. */
+.nexus-modal .modal-dialog {
+  max-height: calc(100vh - 3.5rem);
+  margin-top: 1.75rem;
+  margin-bottom: 1.75rem;
+}
+.nexus-modal .modal-content {
+  max-height: calc(100vh - 3.5rem);
+  display: flex;
+  flex-direction: column;
+}
+.nexus-modal .modal-body {
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
 /* ── Rejection options (checkbox cards) ── */
 .rejection-grid {
   display: grid;

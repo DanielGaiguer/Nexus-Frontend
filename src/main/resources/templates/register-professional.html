@@ -103,6 +103,18 @@
                                 </button>
                             </form>
 
+                            <div class="d-flex align-items-center gap-2 my-3">
+                                <hr class="flex-fill m-0" style="border-color:var(--border-color);">
+                                <small style="color:var(--text-muted);">ou</small>
+                                <hr class="flex-fill m-0" style="border-color:var(--border-color);">
+                            </div>
+
+                            <a th:href="@{/auth/linkedin/register(role='PROFESSIONAL')}"
+                               class="btn w-100 py-2 d-flex align-items-center justify-content-center gap-2"
+                               style="background:#0A66C2;border:none;color:#fff;">
+                                <i class="ti ti-brand-linkedin" style="font-size:1.1rem"></i>Cadastre-se com LinkedIn
+                            </a>
+
                             <div class="mt-4 text-center">
                                 <p class="small mb-0" style="color:var(--text-secondary);">
                                     J&aacute; tem conta? <a th:href="@{/auth/login}" style="color:var(--primary-light);">Fa&ccedil;a login</a>

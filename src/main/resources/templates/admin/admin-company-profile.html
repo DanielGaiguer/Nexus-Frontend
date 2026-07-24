@@ -120,6 +120,14 @@
                 <i class="ti ti-hash" style="color:#6b6eff;width:16px"></i>
                 <span class="tabular" th:text="${profile.cep}">CEP</span>
               </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem"
+                   th:if="${profile.linkedinUrl != null and !#strings.isEmpty(profile.linkedinUrl)}">
+                <i class="ti ti-brand-linkedin" style="color:#0A66C2;width:16px"></i>
+                <a th:href="${profile.linkedinUrl}" target="_blank" rel="noopener"
+                   style="color:#94a3b8;text-decoration:none" class="text-truncate">
+                  <span th:text="${profile.linkedinUrl}">LinkedIn</span>
+                </a>
+              </div>
             </div>
           </div>
 

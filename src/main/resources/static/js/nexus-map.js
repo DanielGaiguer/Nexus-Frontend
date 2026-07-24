@@ -190,10 +190,13 @@
       var el = document.getElementById(id);
       if (el && els[id] !== null) el.textContent = els[id];
     });
+    var radiusText = isFinite(currentRadius) ? currentRadius + ' km' : 'sem limite de distância';
     var badge = document.getElementById('filter-badge');
-    if (badge) badge.textContent = 'Filtro: ' + currentRadius + ' km';
+    if (badge) badge.textContent = 'Filtro: ' + radiusText;
     var rlabel = document.getElementById('radius-label');
-    if (rlabel) rlabel.textContent = 'Mostrando raio de ' + currentRadius + ' km';
+    if (rlabel) rlabel.textContent = isFinite(currentRadius)
+      ? 'Mostrando raio de ' + radiusText
+      : 'Mostrando todos, sem limite de distância';
   }
 
   // ── API pública: chamada pelos botões do HTML ─────────────

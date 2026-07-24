@@ -134,6 +134,22 @@
                 <i class="ti ti-id" style="color:#6b6eff;width:16px"></i>
                 <span class="tabular" th:text="${profile.taxId}">CNPJ</span>
               </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem"
+                   th:if="${profile.linkedinUrl != null and !#strings.isEmpty(profile.linkedinUrl)}">
+                <i class="ti ti-brand-linkedin" style="color:#0A66C2;width:16px"></i>
+                <a th:href="${profile.linkedinUrl}" target="_blank" rel="noopener"
+                   style="color:#94a3b8;text-decoration:none" class="text-truncate">
+                  <span th:text="${profile.linkedinUrl}">LinkedIn</span>
+                </a>
+              </div>
+              <div th:unless="${profile.linkedinUrl != null and !#strings.isEmpty(profile.linkedinUrl)}">
+                <a th:href="@{/auth/linkedin/link}"
+                   class="d-flex align-items-center gap-2 text-decoration-none"
+                   style="color:#0A66C2;font-size:0.85rem;font-weight:500">
+                  <i class="ti ti-brand-linkedin" style="width:16px"></i>
+                  Adicionar LinkedIn
+                </a>
+              </div>
             </div>
           </div>
 
@@ -259,6 +275,15 @@
               <textarea class="nexus-input nexus-textarea" name="description"
                         placeholder="Fale sobre sua empresa e os projetos que costuma contratar..."
                         th:text="${profile.description}"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="nexus-label">LinkedIn</label>
+              <input type="url" class="nexus-input" name="linkedinUrl" id="editCompanyLinkedin"
+                     th:value="${profile.linkedinUrl}"
+                     placeholder="https://www.linkedin.com/company/sua-empresa">
+              <div style="color:#475569;font-size:0.75rem;margin-top:4px">
+                Cole aqui o link do perfil da empresa no LinkedIn
+              </div>
             </div>
           </div>
         </div>
@@ -432,7 +457,8 @@ var CO_DATA = {
   description:     /*[[${profile.description}]]*/ '',
   taxId:           /*[[${profile.taxId}]]*/ '',
   email:           /*[[${profile.email}]]*/ '',
-  city:            /*[[${profile.city}]]*/ ''
+  city:            /*[[${profile.city}]]*/ '',
+  linkedinUrl:     /*[[${profile.linkedinUrl}]]*/ ''
 };
 NexusCompleteness.render(CO_DATA, document.getElementById('completenessWidgetCo'), true);
 /*]]>*/

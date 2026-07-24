@@ -69,7 +69,10 @@ public class CompanyController {
     }
 
     @GetMapping("/profile")
-    public String profile(HttpSession session, Model model) {
+    public String profile(
+            @RequestParam(required = false) String linkedinLinked,
+            @RequestParam(required = false) String linkedinError,
+            HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         try {
             CompanyProfileDTO profile = companyService.getProfile(token);
@@ -82,6 +85,12 @@ public class CompanyController {
             model.addAttribute("totalProjects", 0);
             model.addAttribute("confirmedMatches", 0);
         }
+        if ("true".equals(linkedinLinked)) {
+            model.addAttribute("successMsg", "Conta do LinkedIn conectada! Agora informe o link do seu perfil abaixo, em \"Editar\".");
+        }
+        if ("already_linked".equals(linkedinError)) {
+            model.addAttribute("errorMsg", "Esta conta do LinkedIn já está vinculada a outro usuário do Nexus.");
+        }
         model.addAttribute("activePage", "profile");
         return "company/company-profile";
     }
@@ -92,6 +101,7 @@ public class CompanyController {
             @RequestParam(required = false) String phone,
             @RequestParam(required = false) String cep,
             @RequestParam(required = false) String description,
+            @RequestParam(required = false) String linkedinUrl,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
@@ -101,6 +111,7 @@ public class CompanyController {
             dto.setPhone(phone);
             dto.setCep(cep);
             dto.setDescription(description);
+            dto.setLinkedinUrl(linkedinUrl != null && !linkedinUrl.isBlank() ? linkedinUrl : null);
             companyService.updateProfile(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Perfil atualizado com sucesso!");
         } catch (Exception e) {

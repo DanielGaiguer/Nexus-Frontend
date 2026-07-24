@@ -69,7 +69,10 @@ public class ProfessionalController {
     }
 
     @GetMapping("/profile")
-    public String profile(HttpSession session, Model model) {
+    public String profile(
+            @RequestParam(required = false) String linkedinLinked,
+            @RequestParam(required = false) String linkedinError,
+            HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         ProfessionalProfileDTO profile = professionalService.getProfile(token);
         List<SkillDTO> allSkills = professionalService.getAllSkills(token);
@@ -84,6 +87,12 @@ public class ProfessionalController {
         model.addAttribute("profile", profile);
         model.addAttribute("allSkills", allSkills);
         model.addAttribute("avgScore", Math.round(avgScore));
+        if ("true".equals(linkedinLinked)) {
+            model.addAttribute("successMsg", "Conta do LinkedIn conectada! Agora informe o link do seu perfil abaixo, em \"Editar\".");
+        }
+        if ("already_linked".equals(linkedinError)) {
+            model.addAttribute("errorMsg", "Esta conta do LinkedIn já está vinculada a outro usuário do Nexus.");
+        }
         model.addAttribute("activePage", "profile");
         return "pro/pro-profile";
     }
@@ -100,6 +109,7 @@ public class ProfessionalController {
             @RequestParam(required = false) Double expectedSalaryPJ,
             @RequestParam(required = false) Double freelanceMinExpectation,
             @RequestParam(required = false) Double freelanceMaxExpectation,
+            @RequestParam(required = false) String linkedinUrl,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
@@ -115,6 +125,7 @@ public class ProfessionalController {
             dto.setPreferredTypes(preferredTypes);
             dto.setExperienceLevel(experienceLevel);
             dto.setPreferredOpportunityTypes(preferredOpportunityTypes);
+            dto.setLinkedinUrl(linkedinUrl != null && !linkedinUrl.isBlank() ? linkedinUrl : null);
             dto.setExpectedSalaryCLT(expectedSalaryCLT);
             dto.setExpectedSalaryPJ(expectedSalaryPJ);
             dto.setFreelanceMinExpectation(freelanceMinExpectation);

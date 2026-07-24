@@ -18,6 +18,7 @@ var NexusCompleteness = ( function() {
     { key: 'salaryFilled',   label: 'Pretensão salarial',      weight: 10 },
     { key: 'preferredTypes', label: 'Tipos de oportunidade',   weight: 7,  minLength: 1 },
     { key: 'preferredOpportunityTypes', label: 'Regime desejado (Vaga/Projeto)', weight: 5, minLength: 1 },
+    { key: 'linkedinUrl',    label: 'LinkedIn',                weight: 8  },
   ];
 
   var CRITERIA_CO = [
@@ -29,6 +30,7 @@ var NexusCompleteness = ( function() {
     { key: 'taxId',          label: 'CNPJ',                    weight: 12 },
     { key: 'email',          label: 'E-mail de contato',       weight: 10 },
     { key: 'city',           label: 'Cidade e estado',         weight: 15 },
+    { key: 'linkedinUrl',    label: 'LinkedIn',                weight: 8  },
   ];
 
   function isFilled(profile, criterion) {

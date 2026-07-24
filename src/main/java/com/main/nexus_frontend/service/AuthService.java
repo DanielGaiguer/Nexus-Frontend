@@ -71,6 +71,34 @@ public class AuthService {
                 .body(String.class);
     }
 
+    // ── Registro de empresa via LinkedIn (companyName ainda precisa ser
+    //    informado manualmente — o LinkedIn não fornece razão social) ─────
+    public void registerCompanyViaLinkedIn(RegisterCompanyLinkedInRequestDTO request) {
+        restClient.post()
+                .uri("/auth/register/company/linkedin")
+                .body(request)
+                .retrieve()
+                .onStatus(status -> status.value() == 502, (req, res) -> {
+                    String body = readBody(res);
+                    throw new NexusAuthException(mapRegisterCompanyError(502, body), 502);
+                })
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    int status = res.getStatusCode().value();
+                    String body = readBody(res);
+                    if (status == 401) {
+                        throw new NexusAuthException(
+                            "Sua conexão com o LinkedIn expirou. Conecte-se novamente.", 401);
+                    }
+                    throw new NexusAuthException(
+                        mapRegisterCompanyError(status, body), status);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw new NexusAuthException(
+                        "O servidor encontrou um problema. Tente novamente em instantes.", 500);
+                })
+                .body(String.class);
+    }
+
     // ── Login ────────────────────────────────────────────────
     public LoginResponseDTO login(LoginRequestDTO request) {
         return restClient.post()

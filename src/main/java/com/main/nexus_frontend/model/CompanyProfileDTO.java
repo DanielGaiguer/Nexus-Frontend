@@ -15,6 +15,7 @@ public class CompanyProfileDTO {
     private Double latitude;
     private Double longitude;
     private String profilePhotoUrl;
+    private String linkedinUrl;
 
     public CompanyProfileDTO() {}
 
@@ -52,6 +53,12 @@ public class CompanyProfileDTO {
     public void setProfilePhotoUrl(String profilePhotoUrl) {
         this.profilePhotoUrl = profilePhotoUrl;
     }
-    
-    
+
+    public String getLinkedinUrl() {
+        return linkedinUrl;
+    }
+
+    public void setLinkedinUrl(String linkedinUrl) {
+        this.linkedinUrl = linkedinUrl;
+    }
 }

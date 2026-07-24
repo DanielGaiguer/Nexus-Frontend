@@ -26,6 +26,7 @@ public class ProfessionalProfileDTO {
     private boolean profileComplete;
     private List<String> missingFields;
     private String resume;
+    private String linkedinUrl;
 
     public ProfessionalProfileDTO() {}
 
@@ -75,4 +76,6 @@ public class ProfessionalProfileDTO {
     public void setMissingFields(List<String> missingFields) { this.missingFields = missingFields; }
     public String getResume() { return resume; }
     public void setResume(String resume) { this.resume = resume; }
+    public String getLinkedinUrl() { return linkedinUrl; }
+    public void setLinkedinUrl(String linkedinUrl) { this.linkedinUrl = linkedinUrl; }
 }
