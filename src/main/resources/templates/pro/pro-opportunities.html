@@ -117,23 +117,23 @@
                  th:text="${#strings.substring(n,0,2).toUpperCase()}">TC</div>
             <!-- Info -->
             <div class="flex-fill">
-              <div class="fw-semibold text-white" style="font-size:1rem"
+              <div class="fw-semibold text-white mb-2" style="font-size:1rem"
                    th:text="${opp.project != null ? opp.project.title : 'Projeto'}">Projeto</div>
               <span th:if="${opp.project?.opportunityType == 'JOB'}"
-                    class="nexus-badge-job">
+                    class="nexus-badge-job mb-2">
                 <i class="ti ti-building" style="font-size:0.65rem;margin-right:2px"></i>Vaga
               </span>
               <span th:unless="${opp.project?.opportunityType == 'JOB'}"
-                    class="nexus-badge-project">
-                <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
+                    class="nexus-badge-project mb-2">
+                <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px;margin-bottom: 3px"></i>Projeto
               </span>
-              <div style="color:#64748b;font-size:0.85rem"
+              <div style="color:#64748b;font-size:0.85rem;magin-top:5px"
                    th:text="${opp.project != null and opp.project.company != null ? opp.project.company.companyName : 'Empresa'}">Empresa</div>
-              <div class="d-flex gap-3 mt-1 flex-wrap">
+              <div class="d-flex gap-3 mt-1 flex-wrap mb-2">
                 <span th:if="${opp.project?.opportunityType != 'JOB'}"
                       style="color:#94a3b8;font-size:0.8rem">
                   <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
-                  <span class="tabular"
+                  <span class="tabular mb-3"
                         th:text="'R$'+${#numbers.formatDecimal(opp.project.minimumBudget,1,'COMMA',0,'POINT')}
                                  +'–'+${#numbers.formatDecimal(opp.project.maximumBudget,1,'COMMA',0,'POINT')}">—</span>
                 </span>
@@ -177,17 +177,17 @@
             <!-- Score ring -->
             <div th:with="s=${opp.getScoreAsInt()},
                           c=${s>=85?'high':(s>=70?'medium':'low')}">
-              <div style="position:relative;width:64px;height:64px;flex-shrink:0">
-                <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
-                  <circle cx="32" cy="32" r="27" class="nexus-score-ring-bg" stroke-width="5"/>
-                  <circle cx="32" cy="32" r="27"
+              <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
+                  <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                  <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
+                  <circle cx="55" cy="55" r="46"
                           th:class="'nexus-score-ring-fill ' + ${c}"
                           stroke-width="5"
-                          stroke-dasharray="169.65"
-                          th:stroke-dashoffset="${169.65 - (s/100.0)*169.65}"/>
+                          stroke-dasharray="207.35"
+                          th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
                 </svg>
                 <div class="nexus-score-ring-label">
-                  <span class="nexus-score-ring-pct" th:text="${s}+'%'">0%</span>
+                  <span class="nexus-score-ring-pct" th:text="${s}+'%'" style="font-size: 24px;">0%</span>
                   <span class="nexus-score-ring-tag"
                         th:text="${s>=85?'Alto':(s>=70?'Médio':'Baixo')}"
                         th:style="${s>=85?'color:#22c55e':(s>=70?'color:#f59e0b':'color:#ef4444')}">Alto</span>
@@ -197,21 +197,15 @@
           </div>
 
           <!-- Action -->
-          <div class="mt-3">
-            <th:block th:switch="${opp.professionalStatus}">
-              <th:block th:case="'PROFESSIONAL_INTERESTED'">
-                <span class="nexus-status-badge info">
-                  <i class="ti ti-check me-1"></i>Interesse demonstrado
-                </span>
-              </th:block>
-              <th:block th:case="*">
-                <form th:action="@{/pro/opportunities/{id}/interest(id=${opp.project != null ? opp.project.id : 0})}" method="post">
-                  <button type="submit" class="nexus-btn nexus-btn-primary nexus-btn-sm">
-                    <i class="ti ti-send"></i> Demonstrar interesse
-                  </button>
-                </form>
-              </th:block>
-            </th:block>
+          <div class="mt-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <span th:if="${opp.professionalStatus == 'PROFESSIONAL_INTERESTED'}"
+                  class="nexus-status-badge info">
+              <i class="ti ti-check me-1"></i>Interesse demonstrado
+            </span>
+            <a th:href="@{/public/opportunity/{id}(id=${opp.project != null ? opp.project.id : 0})}"
+               class="nexus-btn nexus-btn-ghost nexus-btn-sm ms-auto me-4">
+              Ver mais <i class="ti ti-arrow-right"></i>
+            </a>
           </div>
         </div>
       </div>

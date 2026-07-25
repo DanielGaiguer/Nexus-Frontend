@@ -14,16 +14,16 @@
 
       <!-- Header -->
       <div class="mb-4">
-        <a th:if="${companyId != null}"
-           th:href="@{/admin/company/{id}(id=${companyId})}"
+        <a th:if="${professionalId != null}"
+           th:href="@{/admin/professional/{id}(id=${professionalId})}"
            class="text-decoration-none d-inline-flex align-items-center gap-1 mb-2"
            style="color:#64748b;font-size:0.82rem">
-          <i class="ti ti-arrow-left"></i> Voltar para Perfil da Empresa
+          <i class="ti ti-arrow-left"></i> Voltar para o Perfil
         </a>
         <h1 class="fw-bold mb-1"
             style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Analytics</h1>
         <p style="color:#64748b;font-size:0.875rem">
-          Visão analítica do desempenho da sua empresa na plataforma
+          Visão analítica do seu desempenho na plataforma
         </p>
       </div>
 
@@ -38,7 +38,7 @@
            style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
         <div class="fw-semibold text-white mb-1">Dados ainda não disponíveis</div>
         <div style="color:#475569;font-size:0.875rem">
-          Publique projetos e receba matches para ver os dados analíticos.
+          Complete seu perfil e receba matches para ver os dados analíticos.
         </div>
       </div>
 
@@ -168,26 +168,26 @@
 
       </div><!-- /row 2 -->
 
-      <!-- ══ ROW 3 — Aceitação por projeto + Skills ════════════ -->
+      <!-- ══ ROW 3 — Aceitação por empresa + Skills ════════════ -->
       <div class="row g-3 mb-3">
 
-        <!-- Barras agrupadas: aceitação por projeto -->
+        <!-- Barras agrupadas: aceitação por empresa -->
         <div class="col-lg-7">
           <div class="nexus-card p-4 h-100">
-            <div class="fw-semibold text-white mb-1">Aceitação por Projeto</div>
+            <div class="fw-semibold text-white mb-1">Aceitação por Empresa</div>
             <div style="color:#64748b;font-size:0.8rem;margin-bottom:0.75rem">
-              Taxa de aceitação e score médio por projeto
+              Taxa de aceitação e score médio por empresa
             </div>
-            <div id="projectChart" style="height:240px"></div>
+            <div id="companyChart" style="height:240px"></div>
           </div>
         </div>
 
-        <!-- Donut: skills mais exigidas com categoria -->
+        <!-- Donut: skills mais presentes nos matches -->
         <div class="col-lg-5">
           <div class="nexus-card p-4 h-100">
-            <div class="fw-semibold text-white mb-1">Skills Mais Exigidas</div>
+            <div class="fw-semibold text-white mb-1">Minhas Skills Mais Demandadas</div>
             <div style="color:#64748b;font-size:0.8rem;margin-bottom:0.75rem">
-              Tecnologias que você mais demanda
+              Tecnologias mais presentes nos seus matches
             </div>
             <div id="skillChart" style="height:200px"></div>
             <!-- Lista de skills com categoria (abaixo do gráfico) -->
@@ -299,20 +299,20 @@
         </div>
       </div><!-- /reputação -->
 
-      <!-- ══ ROW 5 — Tabela completa de projetos ════════════════ -->
+      <!-- ══ ROW 5 — Tabela completa de empresas ════════════════ -->
       <div class="nexus-card p-0"
-           th:if="${analytics.acceptanceRatePerProject != null
-                   and !#lists.isEmpty(analytics.acceptanceRatePerProject)}">
+           th:if="${analytics.acceptanceRatePerCompany != null
+                   and !#lists.isEmpty(analytics.acceptanceRatePerCompany)}">
         <div class="p-3 pb-0 d-flex align-items-center justify-content-between">
-          <div class="fw-semibold text-white">Desempenho por Projeto</div>
+          <div class="fw-semibold text-white">Desempenho por Empresa</div>
           <div style="color:#475569;font-size:0.75rem"
-               th:text="${#lists.size(analytics.acceptanceRatePerProject)} + ' projeto(s)'">0</div>
+               th:text="${#lists.size(analytics.acceptanceRatePerCompany)} + ' empresa(s)'">0</div>
         </div>
         <div class="table-responsive">
           <table class="nexus-table" style="border-spacing:0">
             <thead>
               <tr>
-                <th>Projeto</th>
+                <th>Empresa</th>
                 <th>Total</th>
                 <th>Confirmados</th>
                 <th>Pendentes</th>
@@ -322,27 +322,27 @@
               </tr>
             </thead>
             <tbody>
-              <tr th:each="pr : ${analytics.acceptanceRatePerProject}">
+              <tr th:each="cr : ${analytics.acceptanceRatePerCompany}">
                 <td>
                   <span class="fw-medium text-white"
-                        th:text="${pr.projectTitle}">—</span>
+                        th:text="${cr.companyName}">—</span>
                 </td>
-                <td class="tabular" th:text="${pr.totalMatches}">0</td>
+                <td class="tabular" th:text="${cr.totalMatches}">0</td>
                 <td class="tabular" style="color:#22c55e"
-                    th:text="${pr.confirmedMatches}">0</td>
+                    th:text="${cr.confirmedMatches}">0</td>
                 <td class="tabular" style="color:#f59e0b"
-                    th:text="${(pr.totalMatches - pr.confirmedMatches - pr.rejectedMatches) > 0 ?
-                               (pr.totalMatches - pr.confirmedMatches - pr.rejectedMatches) : 0}">0</td>
+                    th:text="${(cr.totalMatches - cr.confirmedMatches - cr.rejectedMatches) > 0 ?
+                               (cr.totalMatches - cr.confirmedMatches - cr.rejectedMatches) : 0}">0</td>
                 <td class="tabular" style="color:#ef4444"
-                    th:text="${pr.rejectedMatches}">0</td>
+                    th:text="${cr.rejectedMatches}">0</td>
                 <td>
-                  <span th:with="r=${pr.acceptanceRate ?: 0},
+                  <span th:with="r=${cr.acceptanceRate ?: 0},
                                  c=${r >= 60 ? 'success' : (r >= 30 ? 'warning' : 'danger')}"
                         th:class="'nexus-status-badge ' + ${c}"
                         th:text="${#numbers.formatDecimal(r,1,1)+'%'}">0%</span>
                 </td>
                 <td>
-                  <span th:with="s=${pr.averageScore ?: 0},
+                  <span th:with="s=${cr.averageScore ?: 0},
                                  c=${s >= 85 ? '#22c55e' : (s >= 70 ? '#6b6eff' : (s >= 50 ? '#f59e0b' : '#ef4444'))}"
                         class="tabular fw-semibold"
                         th:style="'color:' + ${c}"
@@ -365,10 +365,10 @@
 /*<![CDATA[*/
 
 // ── Dados injetados pelo controller ─────────────────────────
-var MONTHLY    = /*[[${monthlyMatchesJson}]]*/ [];
-var SCORE_DIST = /*[[${scoreDistributionJson}]]*/ [];
-var PROJ_RATES = /*[[${projectRatesJson}]]*/ [];
-var SKILL_DEM  = /*[[${skillDemandJson}]]*/ [];
+var MONTHLY       = /*[[${monthlyMatchesJson}]]*/ [];
+var SCORE_DIST    = /*[[${scoreDistributionJson}]]*/ [];
+var COMPANY_RATES = /*[[${companyRatesJson}]]*/ [];
+var SKILL_DEM     = /*[[${skillDemandJson}]]*/ [];
 
 var REP = {
   overall:     /*[[${analytics?.reputationSummary?.overallReputation ?: 0}]]*/ 0,
@@ -489,7 +489,7 @@ function emptyMsg(el) {
       formatter: function(p) {
         var d = SCORE_DIST[p[0].dataIndex];
         return '<b>' + d.range + '</b><br>' +
-               p[0].value + ' candidatos (' + d.percentage.toFixed(1) + '%)';
+               p[0].value + ' matches (' + d.percentage.toFixed(1) + '%)';
       }
     }),
     xAxis: { type:'value', show:false },
@@ -519,16 +519,16 @@ function emptyMsg(el) {
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-// ── 3. BARRAS AGRUPADAS — aceitação por projeto ──────────────
+// ── 3. BARRAS AGRUPADAS — aceitação por empresa ──────────────
 (function() {
-  var el = document.getElementById('projectChart');
+  var el = document.getElementById('companyChart');
   if (!el) return;
-  if (!PROJ_RATES || !PROJ_RATES.length) { emptyMsg(el); return; }
+  if (!COMPANY_RATES || !COMPANY_RATES.length) { emptyMsg(el); return; }
 
   var chart = echarts.init(el, null, { renderer:'canvas', backgroundColor: C.bg });
 
-  var titles = PROJ_RATES.map(function(d) {
-    var t = d.projectTitle || '—';
+  var names = COMPANY_RATES.map(function(d) {
+    var t = d.companyName || '—';
     return t.length > 16 ? t.substring(0,14) + '…' : t;
   });
 
@@ -544,19 +544,19 @@ function emptyMsg(el) {
       trigger:'axis',
       formatter: function(params) {
         var idx = params[0].dataIndex;
-        var pr  = PROJ_RATES[idx];
-        return '<b>' + (pr.projectTitle||'—') + '</b><br>' +
-               '✅ Confirmados: ' + pr.confirmedMatches + '<br>' +
-               '❌ Rejeitados: ' + pr.rejectedMatches + '<br>' +
-               '📊 Taxa: ' + (pr.acceptanceRate||0).toFixed(1) + '%<br>' +
-               '⭐ Score médio: ' + (pr.averageScore||0).toFixed(1) + '%';
+        var cr  = COMPANY_RATES[idx];
+        return '<b>' + (cr.companyName||'—') + '</b><br>' +
+               '✅ Confirmados: ' + cr.confirmedMatches + '<br>' +
+               '❌ Rejeitados: ' + cr.rejectedMatches + '<br>' +
+               '📊 Taxa: ' + (cr.acceptanceRate||0).toFixed(1) + '%<br>' +
+               '⭐ Score médio: ' + (cr.averageScore||0).toFixed(1) + '%';
       }
     }),
     xAxis:{
-      type:'category', data: titles,
+      type:'category', data: names,
       axisLine:{ lineStyle:{ color:'rgba(255,255,255,0.06)' } },
       axisTick:{ show:false },
-      axisLabel:{ color: C.muted, fontSize:10, rotate: titles.length > 3 ? 20 : 0 }
+      axisLabel:{ color: C.muted, fontSize:10, rotate: names.length > 3 ? 20 : 0 }
     },
     yAxis:{
       type:'value', min:0, max:100,
@@ -568,7 +568,7 @@ function emptyMsg(el) {
       {
         name:'Taxa de Aceitação',
         type:'bar', barMaxWidth:24, barGap:'20%',
-        data: PROJ_RATES.map(function(d) {
+        data: COMPANY_RATES.map(function(d) {
           var v = d.acceptanceRate || 0;
           return { value: +v.toFixed(1),
                    itemStyle:{ color: valueColor(v), borderRadius:[4,4,0,0] } };
@@ -577,7 +577,7 @@ function emptyMsg(el) {
       {
         name:'Score Médio',
         type:'bar', barMaxWidth:24,
-        data: PROJ_RATES.map(function(d) {
+        data: COMPANY_RATES.map(function(d) {
           var v = d.averageScore || 0;
           return { value: +v.toFixed(1),
                    itemStyle:{ color: C.secondary, borderRadius:[4,4,0,0] } };
@@ -588,7 +588,7 @@ function emptyMsg(el) {
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-// ── 4. DONUT — skills mais exigidas ─────────────────────────
+// ── 4. DONUT — skills mais presentes nos matches ─────────────
 (function() {
   var el  = document.getElementById('skillChart');
   var leg = document.getElementById('skillLegend');
@@ -625,7 +625,7 @@ function emptyMsg(el) {
         var d = SKILL_DEM.find(function(x) { return x.skillName === p.name; });
         return '<b>' + p.name + '</b>' +
                (d && d.category ? '<br><span style="color:#64748b">' + d.category + '</span>' : '') +
-               '<br>' + p.value + ' projeto(s)  (' + p.percent + '%)';
+               '<br>' + p.value + ' match(es)  (' + p.percent + '%)';
       }
     }),
     series:[{
@@ -692,7 +692,7 @@ function emptyMsg(el) {
     { name:'Profissionalismo',max:100 }
   ];
 
-  // Os indicadores vêm em escala 0–5 (mesma escala usada em company-reputation.html);
+  // Os indicadores vêm em escala 0–5 (mesma escala usada em pro-reputation.html);
   // convertidos para 0–100 para bater com o eixo do radar.
   var values = [
     (REP.communication    || 0) * 20,

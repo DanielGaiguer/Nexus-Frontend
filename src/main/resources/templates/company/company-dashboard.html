@@ -59,7 +59,7 @@
           <div class="nexus-stat-card">
             <div>
               <div class="nexus-stat-value tabular"
-                   th:text="${totalProjects > 0 ? #numbers.formatDecimal(confirmedMatches * 100.0 / totalProjects, 1, 0) + '%' : '—'}">—</div>
+                   th:text="${totalProjects > 0 ? #numbers.formatDecimal(projectsWithMatchCount * 100.0 / totalProjects, 1, 0) + '%' : '—'}">—</div>
               <div class="nexus-stat-label">Taxa de Sucesso</div>
             </div>
             <div class="nexus-stat-icon warning"><i class="ti ti-trending-up"></i></div>

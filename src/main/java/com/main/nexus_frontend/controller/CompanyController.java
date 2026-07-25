@@ -55,13 +55,18 @@ public class CompanyController {
             model.addAttribute("confirmedMatches", dashboard.getConfirmedMatches() != null ? dashboard.getConfirmedMatches() : 0);
             List<ProjectDTO> allProjects = projectService.getProjects(token);
             long openCount = allProjects.stream().filter(p -> "OPEN".equals(p.getStatus())).count();
+            long projectsWithMatchCount = allProjects.stream()
+                    .filter(p -> p.getFilledPositions() != null && p.getFilledPositions() > 0)
+                    .count();
             model.addAttribute("openProjects", (int) openCount);
+            model.addAttribute("projectsWithMatchCount", (int) projectsWithMatchCount);
             model.addAttribute("recentProjects", allProjects.stream().limit(8).collect(Collectors.toList()));
         } catch (Exception e) {
             model.addAttribute("companyName", userName);
             model.addAttribute("totalProjects", 0);
             model.addAttribute("confirmedMatches", 0);
             model.addAttribute("openProjects", 0);
+            model.addAttribute("projectsWithMatchCount", 0);
             model.addAttribute("recentProjects", List.of());
         }
         model.addAttribute("activePage", "dashboard");

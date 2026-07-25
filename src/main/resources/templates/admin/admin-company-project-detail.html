@@ -61,9 +61,16 @@
               <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
                 <i class="ti ti-currency-dollar" style="color:#6b6eff;width:16px"></i>
                 <span class="tabular fw-semibold" style="color:#6b6eff"
-                      th:if="${project.minimumBudget != null}"
+                      th:if="${project.opportunityType != 'JOB' and project.minimumBudget != null}"
                       th:text="'R$ ' + ${#numbers.formatDecimal(project.minimumBudget,1,'COMMA',0,'POINT')} + ' – R$ ' + ${#numbers.formatDecimal(project.maximumBudget,1,'COMMA',0,'POINT')}">—</span>
-                <span th:unless="${project.minimumBudget != null}" style="color:#475569">Não informado</span>
+                <span class="tabular fw-semibold" style="color:#22c55e"
+                      th:if="${project.opportunityType == 'JOB' and project.monthlySalaryMin != null}"
+                      th:text="'R$ ' + ${#numbers.formatDecimal(project.monthlySalaryMin,1,'COMMA',0,'POINT')} + '/mês'">—</span>
+                <span class="tabular fw-semibold" style="color:#22c55e"
+                      th:if="${project.opportunityType == 'JOB' and project.monthlySalaryMax != null}"
+                      th:text="' – R$ ' + ${#numbers.formatDecimal(project.monthlySalaryMax,1,'COMMA',0,'POINT')}">—</span>
+                <span th:if="${(project.opportunityType != 'JOB' and project.minimumBudget == null) or (project.opportunityType == 'JOB' and project.monthlySalaryMin == null)}"
+                      style="color:#475569">Não informado</span>
               </div>
               <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem">
                 <i class="ti ti-calendar" style="color:#6b6eff;width:16px"></i>
@@ -137,7 +144,7 @@
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">Skills exigidas</div>
             <div class="d-flex flex-wrap gap-2" th:if="${project.requiredSkills != null and !#lists.isEmpty(project.requiredSkills)}">
-              <span th:each="sk : ${project.requiredSkills}" class="nexus-chip nexus-chip-tech" th:text="${sk}">Skill</span>
+              <span th:each="sk : ${project.requiredSkills}" class="nexus-chip nexus-chip-tech" th:text="${sk.name}">Skill</span>
             </div>
             <div th:unless="${project.requiredSkills != null and !#lists.isEmpty(project.requiredSkills)}"
                  style="color:#475569;font-size:0.875rem">

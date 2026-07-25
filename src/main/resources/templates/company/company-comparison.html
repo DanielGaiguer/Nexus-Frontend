@@ -512,11 +512,11 @@
                       th:text="${c.previousProjectsCount ?: 0}">0</span>
                 <span style="color:#475569;font-size:0.75rem"> projeto(s)</span>
                 <!-- Barra proporcional (10 = máximo no score) -->
-                <div class="score-mini-bar" style="max-width:60px;margin:4px auto 0">
+                <div class="score-mini-bar" style="max-width:60px;margin:4px auto 0"
+                     th:with="ppCount=${c.previousProjectsCount ?: 0},
+                              ppPct=${ppCount > 10 ? 100 : ppCount * 10}">
                   <div class="score-mini-bar-fill"
-                       th:style="'width:'+${#numbers.formatDecimal(
-                                   [0].min([10].max(c.previousProjectsCount ?: 0)) * 10, 1, 0)
-                                 }+'%;background:#6b6eff'"></div>
+                       th:style="'width:'+${ppPct}+'%;background:#6b6eff'"></div>
                 </div>
               </td>
             </tr>

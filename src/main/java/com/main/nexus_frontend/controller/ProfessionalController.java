@@ -44,6 +44,7 @@ public class ProfessionalController {
 
         List<MatchDTO> allMatches = professionalService.getMatches(token);
         List<MatchDTO> invites = professionalService.getPendingInvites(token);
+        List<PreviousProjectDTO> projects = professionalService.getProjects(token);
 
         List<MatchDTO> confirmed = allMatches.stream()
                 .filter(m -> "MATCHED".equals(m.getStatus()))
@@ -63,6 +64,7 @@ public class ProfessionalController {
         model.addAttribute("avgScore", Math.round(avgScore));
         model.addAttribute("recentInvites", invites.stream().limit(5).collect(Collectors.toList()));
         model.addAttribute("recentConfirmed", confirmed.stream().limit(5).collect(Collectors.toList()));
+        model.addAttribute("portfolioCount", projects.size());
         model.addAttribute("activePage", "dashboard");
 
         return "pro/pro-dashboard";
@@ -343,7 +345,7 @@ public class ProfessionalController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar interesse: " + e.getMessage());
         }
-        return "redirect:/pro/opportunities";
+        return "redirect:/public/opportunity/" + projectId;
     }
 
     @GetMapping("/reputation")
@@ -436,13 +438,32 @@ public class ProfessionalController {
         }
     }
 
-    @GetMapping("/stats")
-    public String stats(HttpSession session, Model model) {
+    @GetMapping("/analytics")
+    public String analytics(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
-        ProfessionalStatsDTO stats = professionalService.getStats(token);
-        model.addAttribute("stats", stats);
-        model.addAttribute("activePage", "stats");
-        return "pro/pro-stats";
+        try {
+            ProfessionalDashboardAnalyticsDTO analytics = professionalService.getAnalytics(token);
+            model.addAttribute("analytics", analytics);
+
+            model.addAttribute("monthlyMatchesJson",
+                    objectMapper.writeValueAsString(analytics.getMatchesPerMonth()));
+            model.addAttribute("scoreDistributionJson",
+                    objectMapper.writeValueAsString(analytics.getScoreDistribution()));
+            model.addAttribute("companyRatesJson",
+                    objectMapper.writeValueAsString(analytics.getAcceptanceRatePerCompany()));
+            model.addAttribute("skillDemandJson",
+                    objectMapper.writeValueAsString(analytics.getMostRequiredSkills()));
+        } catch (Exception e) {
+            model.addAttribute("analytics", null);
+            model.addAttribute("monthlyMatchesJson", "[]");
+            model.addAttribute("scoreDistributionJson", "[]");
+            model.addAttribute("companyRatesJson", "[]");
+            model.addAttribute("skillDemandJson", "[]");
+            model.addAttribute("errorMsg", "Não foi possível carregar os dados analíticos.");
+        }
+
+        model.addAttribute("activePage", "analytics");
+        return "pro/pro-analytics";
     }
 
     @GetMapping("/profile/export")

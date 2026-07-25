@@ -215,11 +215,20 @@
 
           <!-- Meta row -->
           <div class="d-flex gap-4 flex-wrap mb-3" style="font-size:0.8rem;color:#64748b">
-            <span>
+            <span th:if="${proj.opportunityType != 'JOB'}">
               <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
               <span class="tabular"
                     th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}
                              +'–'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+            </span>
+            <span th:if="${proj.opportunityType == 'JOB' and proj.monthlySalaryMin != null}">
+              <i class="ti ti-currency-dollar" style="color:#22c55e"></i>
+              <span class="tabular"
+                    th:text="'R$'+${#numbers.formatDecimal(proj.monthlySalaryMin,1,'COMMA',0,'POINT')}
+                             +'/mês'">—</span>
+              <span th:if="${proj.monthlySalaryMax != null}"
+                    class="tabular"
+                    th:text="'–R$'+${#numbers.formatDecimal(proj.monthlySalaryMax,1,'COMMA',0,'POINT')}">—</span>
             </span>
             <span>
               <i class="ti ti-map-pin" style="color:#6b6eff"></i>
@@ -260,7 +269,7 @@
           <div class="d-flex flex-wrap gap-2"
                th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
             <span th:each="sk : ${proj.requiredSkills}"
-                  class="nexus-chip nexus-chip-tech" th:text="${sk}">Skill</span>
+                  class="nexus-chip nexus-chip-tech" th:text="${sk.name}">Skill</span>
           </div>
 
         </div><!-- /.project-item -->

@@ -265,14 +265,32 @@ public class AdminController {
         return "admin/admin-professional-profile";
     }
 
-    @GetMapping("/professional/{id}/stats")
-    public String professionalStats(@PathVariable Long id, HttpSession session, Model model) {
+    @GetMapping("/professional/{id}/analytics")
+    public String professionalAnalytics(@PathVariable Long id, HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
-        ProfessionalStatsDTO stats = adminService.getProfessionalStats(token, id);
-        model.addAttribute("stats", stats);
+        try {
+            ProfessionalDashboardAnalyticsDTO analytics = adminService.getProfessionalAnalytics(token, id);
+            model.addAttribute("analytics", analytics);
+
+            model.addAttribute("monthlyMatchesJson",
+                    objectMapper.writeValueAsString(analytics.getMatchesPerMonth()));
+            model.addAttribute("scoreDistributionJson",
+                    objectMapper.writeValueAsString(analytics.getScoreDistribution()));
+            model.addAttribute("companyRatesJson",
+                    objectMapper.writeValueAsString(analytics.getAcceptanceRatePerCompany()));
+            model.addAttribute("skillDemandJson",
+                    objectMapper.writeValueAsString(analytics.getMostRequiredSkills()));
+        } catch (Exception e) {
+            model.addAttribute("analytics", null);
+            model.addAttribute("monthlyMatchesJson", "[]");
+            model.addAttribute("scoreDistributionJson", "[]");
+            model.addAttribute("companyRatesJson", "[]");
+            model.addAttribute("skillDemandJson", "[]");
+            model.addAttribute("errorMsg", "Não foi possível carregar os dados analíticos.");
+        }
         model.addAttribute("professionalId", id);
         model.addAttribute("activePage", "users");
-        return "pro/pro-stats";
+        return "pro/pro-analytics";
     }
 
     @GetMapping("/professional/{id}/export")

@@ -9,6 +9,7 @@ public class CompanyDTO {
     private String uf;
     private String description;
     private Double reputation;
+    private String profilePhotoUrl;
 
     public CompanyDTO() {}
 
@@ -35,4 +36,7 @@ public class CompanyDTO {
 
     public Double getReputation() { return reputation; }
     public void setReputation(Double reputation) { this.reputation = reputation; }
+
+    public String getProfilePhotoUrl() { return profilePhotoUrl; }
+    public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
 }

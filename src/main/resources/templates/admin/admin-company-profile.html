@@ -245,7 +245,7 @@
                 </div>
                 <div th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}"
                      class="d-flex flex-wrap gap-1 mb-2">
-                  <span th:each="sk : ${proj.requiredSkills}" class="nexus-chip nexus-chip-tech" th:text="${sk}" style="font-size:0.7rem">Skill</span>
+                  <span th:each="sk : ${proj.requiredSkills}" class="nexus-chip nexus-chip-tech" th:text="${sk.name}" style="font-size:0.7rem">Skill</span>
                 </div>
                 <a th:href="@{/admin/company/{companyId}/project/{projectId}(companyId=${companyId},projectId=${proj.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm" style="font-size:0.78rem">

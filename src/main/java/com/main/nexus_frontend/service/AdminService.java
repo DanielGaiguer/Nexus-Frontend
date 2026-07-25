@@ -174,20 +174,17 @@ public class AdminService {
                 .body(ProfessionalProfileDTO.class);
     }
 
-    public ProfessionalStatsDTO getProfessionalStats(String token, Long professionalId) {
+    public ProfessionalDashboardAnalyticsDTO getProfessionalAnalytics(String token, Long professionalId) {
         return restClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/professional/stats")
-                        .queryParam("professionalId", professionalId)
-                        .build())
+                .uri("/analytics/professional/{professionalId}/dashboard", professionalId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw new ResponseStatusException(
                             HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load stats");
+                            "Failed to load professional analytics");
                 })
-                .body(ProfessionalStatsDTO.class);
+                .body(ProfessionalDashboardAnalyticsDTO.class);
     }
 
     public byte[] exportProfessionalPdf(String token, Long professionalId) {

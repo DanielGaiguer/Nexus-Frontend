@@ -72,7 +72,6 @@
       '<span style="font-size:0.7rem;background:rgba(107,110,255,0.15);color:#a5b4fc;' +
         'padding:2px 7px;border-radius:20px">Profissional</span>' +
       (skills ? '<div style="margin-top:6px;font-size:0.75rem;color:#94a3b8">' + skills + '</div>' : '') +
-      (p.available === false ? '<div style="margin-top:4px;color:#f59e0b;font-size:0.72rem">⚠ Indisponível</div>' : '') +
       '</div>';
   }
 
@@ -93,20 +92,40 @@
 
   // ── Popup de oportunidade ─────────────────────────────────
   function popupOpp(o) {
-    var skills = (o.requiredSkills || []).slice(0, 4).join(', ');
     var typeColor = o.opportunityType === 'JOB' ? '#86efac' : '#a5b4fc';
     var typeBg    = o.opportunityType === 'JOB' ? 'rgba(34,197,94,0.12)' : 'rgba(107,110,255,0.12)';
-    return '<div style="min-width:190px;font-family:Inter,sans-serif">' +
+    var typeLabel = o.opportunityType === 'JOB' ? 'Vaga de emprego' : 'Projeto';
+
+    // URL de detalhe — rota diferente por papel (lida de uma meta tag injetada pelo template)
+    var baseUrl = document.querySelector('meta[name="nexus-map-base"]');
+    var detailBase = baseUrl ? baseUrl.content : '/public/opportunity';
+    var detailUrl  = detailBase + '/' + o.id;
+
+    var skills = (o.requiredSkills || []).slice(0, 3).join(', ');
+    var more   = (o.requiredSkills || []).length > 3
+                 ? ' +' + ((o.requiredSkills || []).length - 3) + ' mais'
+                 : '';
+
+    return '<div style="min-width:200px;max-width:240px;font-family:Inter,sans-serif">' +
       '<span style="font-size:0.68rem;background:' + typeBg + ';color:' + typeColor + ';' +
-        'padding:2px 7px;border-radius:20px;display:inline-block;margin-bottom:5px">' +
-        translateOppType(o.opportunityType) + '</span>' +
-      '<div style="font-weight:700;color:#fff;margin-bottom:2px">' + (o.title || '—') + '</div>' +
-      '<div style="color:#94a3b8;font-size:0.78rem;margin-bottom:4px">' + (o.companyName || '—') + '</div>' +
-      '<div style="color:#64748b;font-size:0.75rem;margin-bottom:4px">' +
+        'padding:2px 7px;border-radius:20px;display:inline-block;margin-bottom:6px">' +
+        typeLabel + '</span>' +
+      '<div style="font-weight:700;color:#fff;font-size:0.9rem;line-height:1.3;margin-bottom:3px">' +
+        (o.title || '—') + '</div>' +
+      '<div style="color:#94a3b8;font-size:0.78rem;margin-bottom:2px">' +
+        (o.companyName || '—') + '</div>' +
+      '<div style="color:#64748b;font-size:0.75rem;margin-bottom:6px">' +
         (o.city || '') + (o.uf ? ', ' + o.uf : '') +
         (o.workMode ? ' · ' + translateWorkMode(o.workMode) : '') +
       '</div>' +
-      (skills ? '<div style="font-size:0.72rem;color:#6b6eff">' + skills + '</div>' : '') +
+      (skills ? '<div style="font-size:0.72rem;color:#6b6eff;margin-bottom:8px">' +
+        skills + more + '</div>' : '') +
+      '<a href="' + detailUrl + '"' +
+        ' style="display:block;background:linear-gradient(135deg,#6b6eff,#5558e0);' +
+        'color:#fff;text-decoration:none;border-radius:7px;padding:0.4rem 0.75rem;' +
+        'font-size:0.78rem;font-weight:600;text-align:center;margin-top:4px">' +
+        '<i class="ti ti-arrow-right" style="margin-right:4px"></i>Ver oportunidade' +
+      '</a>' +
       '</div>';
   }
 

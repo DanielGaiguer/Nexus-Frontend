@@ -252,17 +252,17 @@ public class ProfessionalService {
                 .body(String.class);
     }
 
-    public ProfessionalStatsDTO getStats(String token) {
+    public ProfessionalDashboardAnalyticsDTO getAnalytics(String token) {
         return restClient.get()
-                .uri("/professional/stats")
+                .uri("/analytics/professional/dashboard")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw new ResponseStatusException(
                             HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load stats");
+                            "Erro ao buscar analytics");
                 })
-                .body(ProfessionalStatsDTO.class);
+                .body(ProfessionalDashboardAnalyticsDTO.class);
     }
 
     public byte[] exportPdf(String token, Long professionalId) {
