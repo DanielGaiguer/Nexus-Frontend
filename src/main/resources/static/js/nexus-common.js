@@ -280,11 +280,11 @@ function renderNotifications(notifications) {
       'background:' + color + '18;display:flex;align-items:center;justify-content:center">' +
       '<i class="ti ' + icon + '" style="color:' + color + ';font-size:0.9rem"></i></div>' +
 
-      '<div style="flex:1;overflow:hidden">' +
+      '<div style="flex:1;min-width:0">' +
         '<div style="font-weight:600;color:#e2e8f0;font-size:0.82rem;' +
-        'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + n.title + '</div>' +
+        'white-space:normal;word-break:break-word">' + n.title + '</div>' +
         '<div style="color:#64748b;font-size:0.75rem;margin-top:1px;' +
-        'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + n.message + '</div>' +
+        'white-space:normal;word-break:break-word">' + n.message + '</div>' +
         '<div style="color:#334155;font-size:0.7rem;margin-top:3px">' + timeAgo + '</div>' +
       '</div>' +
 

@@ -15,13 +15,20 @@
 
   // ── Guardar referências globais dos layers ────────────────
   var map;
-  var layerPros  = null;
-  var layerCos   = null;
-  var layerOpps  = null;
+  var layerPros     = null;
+  var layerCos      = null;
+  var layerOpps     = null;
+  var layerClusters = null; // marcadores agrupados (mesma localização/CEP)
 
   var currentRadius     = (typeof DEFAULT_RADIUS !== 'undefined') ? DEFAULT_RADIUS : 50;
   var currentType       = 'all';      // 'all' | 'professionals' | 'companies' | 'opportunities'
   var currentOppType    = '';         // '' | 'PROJECT' | 'JOB'
+
+  // Zoom mínimo a partir do qual pontos coincidentes deixam de ser
+  // mostrados como um único "cluster" numerado e passam a ser espalhados
+  // individualmente. Abaixo disso, mesmo com o espalhamento em metros,
+  // a separação em pixels seria pequena demais para notar sem dar zoom.
+  var CLUSTER_ZOOM_THRESHOLD = 17;
 
   // ── Haversine distance (km) ───────────────────────────────
   function distanceKm(lat1, lng1, lat2, lng2) {
@@ -50,6 +57,23 @@
   var PIN_CO   = null;
   var PIN_PROJ = null;
   var PIN_JOB  = null;
+
+  // ── Ícone de cluster (vários cadastros na mesma localização) ──
+  function makeClusterPin(count) {
+    var size = count > 9 ? 44 : 38;
+    var html =
+      '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;' +
+      'background:radial-gradient(circle at 35% 30%,#5558e0,#20234f);' +
+      'border:3px solid rgba(255,255,255,0.55);display:flex;align-items:center;' +
+      'justify-content:center;box-shadow:0 0 0 6px rgba(107,110,255,0.16),0 0 18px rgba(0,0,0,0.55);' +
+      'color:#fff;font-weight:800;font-size:0.92rem;font-family:Inter,sans-serif;">' +
+      count +
+      '</div>';
+    return L.divIcon({
+      className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2],
+      popupAnchor: [0, -size / 2 - 4], html: html
+    });
+  }
 
   // ── Tradução de campos ────────────────────────────────────
   function translateWorkMode(wm) {
@@ -149,22 +173,75 @@
       '</div>';
   }
 
+  // ── Agrupa marcadores que caem em coordenadas praticamente idênticas ──
+  // (ex: dois cadastros com o mesmo CEP)
+  function groupByCoord(items) {
+    var groups = {};
+    var order = [];
+    items.forEach(function(it) {
+      // ~11m de tolerância — suficiente para agrupar o mesmo CEP sem
+      // confundir endereços vizinhos distintos
+      var key = it.lat.toFixed(4) + ',' + it.lng.toFixed(4);
+      if (!groups[key]) { groups[key] = []; order.push(key); }
+      groups[key].push(it);
+    });
+    return order.map(function(key) { return groups[key]; });
+  }
+
+  // ── Espalha os itens de um grupo num pequeno círculo ao redor do ponto
+  // original, para que nenhum pin fique escondido atrás de outro.
+  function spreadGroup(group) {
+    if (group.length < 2) return;
+
+    var radiusMeters    = 20 + Math.min(group.length, 8) * 4;
+    var metersPerDegLat = 111320;
+    var metersPerDegLng = metersPerDegLat * Math.cos(group[0].lat * Math.PI / 180) || metersPerDegLat;
+
+    group.forEach(function(it, i) {
+      var angle = (2 * Math.PI * i) / group.length;
+      it.lat += (radiusMeters * Math.cos(angle)) / metersPerDegLat;
+      it.lng += (radiusMeters * Math.sin(angle)) / metersPerDegLng;
+    });
+  }
+
+  function addIndividualMarker(it) {
+    if (it.kind === 'pro') {
+      L.marker([it.lat, it.lng], { icon: PIN_PRO })
+       .bindPopup(popupPro(it.data), { className: 'nexus-popup' })
+       .addTo(layerPros);
+    } else if (it.kind === 'co') {
+      L.marker([it.lat, it.lng], { icon: PIN_CO })
+       .bindPopup(popupCo(it.data), { className: 'nexus-popup' })
+       .addTo(layerCos);
+    } else {
+      var pin = it.data.opportunityType === 'JOB' ? PIN_JOB : PIN_PROJ;
+      L.marker([it.lat, it.lng], { icon: pin })
+       .bindPopup(popupOpp(it.data), { className: 'nexus-popup' })
+       .addTo(layerOpps);
+    }
+  }
+
   // ── Renderizar markers ────────────────────────────────────
   function renderMarkers() {
     if (!map) return;
 
     // Limpa layers anteriores
-    if (layerPros) { map.removeLayer(layerPros); layerPros = null; }
-    if (layerCos)  { map.removeLayer(layerCos);  layerCos  = null; }
-    if (layerOpps) { map.removeLayer(layerOpps); layerOpps = null; }
+    if (layerPros)     { map.removeLayer(layerPros);     layerPros     = null; }
+    if (layerCos)      { map.removeLayer(layerCos);      layerCos      = null; }
+    if (layerOpps)     { map.removeLayer(layerOpps);     layerOpps     = null; }
+    if (layerClusters) { map.removeLayer(layerClusters); layerClusters = null; }
 
-    layerPros = L.layerGroup();
-    layerCos  = L.layerGroup();
-    layerOpps = L.layerGroup();
+    layerPros     = L.layerGroup();
+    layerCos      = L.layerGroup();
+    layerOpps     = L.layerGroup();
+    layerClusters = L.layerGroup();
 
-    var cntPros = 0, cntCos = 0, cntOpps = 0;
     var centerLat = (typeof CENTER_LAT !== 'undefined') ? CENTER_LAT : -23.5505;
     var centerLng = (typeof CENTER_LNG !== 'undefined') ? CENTER_LNG : -46.6333;
+
+    // Coleta todos os pontos visíveis (de qualquer tipo) antes de desenhar,
+    // para poder detectar coordenadas coincidentes entre si.
+    var pending = [];
 
     // Profissionais
     if (currentType === 'all' || currentType === 'professionals') {
@@ -172,10 +249,7 @@
       pros.forEach(function(p) {
         if (!p.latitude || !p.longitude) return;
         if (distanceKm(centerLat, centerLng, p.latitude, p.longitude) > currentRadius) return;
-        cntPros++;
-        L.marker([p.latitude, p.longitude], { icon: PIN_PRO })
-         .bindPopup(popupPro(p), { className: 'nexus-popup' })
-         .addTo(layerPros);
+        pending.push({ kind: 'pro', lat: p.latitude, lng: p.longitude, data: p });
       });
     }
 
@@ -185,10 +259,7 @@
       cos.forEach(function(c) {
         if (!c.latitude || !c.longitude) return;
         if (distanceKm(centerLat, centerLng, c.latitude, c.longitude) > currentRadius) return;
-        cntCos++;
-        L.marker([c.latitude, c.longitude], { icon: PIN_CO })
-         .bindPopup(popupCo(c), { className: 'nexus-popup' })
-         .addTo(layerCos);
+        pending.push({ kind: 'co', lat: c.latitude, lng: c.longitude, data: c });
       });
     }
 
@@ -200,17 +271,43 @@
         if (distanceKm(centerLat, centerLng, o.latitude, o.longitude) > currentRadius) return;
         // Filtro de subtipo
         if (currentOppType && o.opportunityType !== currentOppType) return;
-        cntOpps++;
-        var pin = o.opportunityType === 'JOB' ? PIN_JOB : PIN_PROJ;
-        L.marker([o.latitude, o.longitude], { icon: pin })
-         .bindPopup(popupOpp(o), { className: 'nexus-popup' })
-         .addTo(layerOpps);
+        pending.push({ kind: 'opp', lat: o.latitude, lng: o.longitude, data: o });
       });
     }
+
+    var zoom = map.getZoom();
+    var cntPros = 0, cntCos = 0, cntOpps = 0;
+
+    groupByCoord(pending).forEach(function(group) {
+      group.forEach(function(it) {
+        if (it.kind === 'pro') cntPros++;
+        else if (it.kind === 'co') cntCos++;
+        else cntOpps++;
+      });
+
+      // Zoom ainda afastado e há mais de um cadastro no mesmo ponto:
+      // mostra um único pin numerado, bem visível, em vez de espalhar
+      // marcadores que ficariam separados por poucos pixels.
+      if (group.length > 1 && zoom < CLUSTER_ZOOM_THRESHOLD) {
+        var lat = group[0].lat, lng = group[0].lng;
+        L.marker([lat, lng], { icon: makeClusterPin(group.length) })
+         .bindTooltip(group.length + ' cadastros neste local — clique para separar',
+                      { direction: 'top', offset: [0, -4], className: 'nexus-tooltip' })
+         .on('click', function() {
+           map.setView([lat, lng], CLUSTER_ZOOM_THRESHOLD, { animate: true });
+         })
+         .addTo(layerClusters);
+        return;
+      }
+
+      spreadGroup(group);
+      group.forEach(addIndividualMarker);
+    });
 
     layerPros.addTo(map);
     layerCos.addTo(map);
     layerOpps.addTo(map);
+    layerClusters.addTo(map);
 
     var total = cntPros + cntCos + cntOpps;
     updateCounts(cntPros, cntCos, cntOpps, total);
@@ -306,7 +403,10 @@
         'background:rgba(9,14,31,0.97);border:1px solid rgba(107,110,255,0.2);' +
         'border-radius:10px;color:#e2e8f0;box-shadow:0 8px 32px rgba(0,0,0,0.5)}' +
       '.nexus-popup .leaflet-popup-tip{background:rgba(9,14,31,0.97)}' +
-      '.nexus-popup .leaflet-popup-close-button{color:#64748b}';
+      '.nexus-popup .leaflet-popup-close-button{color:#64748b}' +
+      '.nexus-tooltip{background:rgba(9,14,31,0.97);border:1px solid rgba(107,110,255,0.25);' +
+        'color:#e2e8f0;font-size:0.75rem;font-weight:600;border-radius:6px;padding:4px 8px}' +
+      '.nexus-tooltip::before{border-top-color:rgba(9,14,31,0.97)}';
     document.head.appendChild(style);
 
     // Ativa "Ambos" como padrão
@@ -314,6 +414,10 @@
     if (defaultEl) defaultEl.style.background = 'rgba(107,110,255,0.1)';
 
     renderMarkers();
+
+    // Re-renderiza ao dar zoom, para alternar entre o pin agrupado
+    // (numerado) e os marcadores individuais espalhados.
+    map.on('zoomend', renderMarkers);
   });
 
 })();

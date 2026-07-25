@@ -79,9 +79,11 @@ public class CompanyController {
             @RequestParam(required = false) String linkedinError,
             HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
+        Long companyId = null;
         try {
             CompanyProfileDTO profile = companyService.getProfile(token);
             model.addAttribute("profile", profile);
+            companyId = profile.getId();
             CompanyDashboardDTO dashboard = companyService.getDashboard(token);
             model.addAttribute("totalProjects", dashboard.getTotalProjects() != null ? dashboard.getTotalProjects() : 0);
             model.addAttribute("confirmedMatches", dashboard.getConfirmedMatches() != null ? dashboard.getConfirmedMatches() : 0);
@@ -90,8 +92,15 @@ public class CompanyController {
             model.addAttribute("totalProjects", 0);
             model.addAttribute("confirmedMatches", 0);
         }
+        try {
+            model.addAttribute("reputation", companyId != null
+                    ? reputationService.getCompany(token, companyId)
+                    : new ReputationDTO());
+        } catch (Exception e) {
+            model.addAttribute("reputation", new ReputationDTO());
+        }
         if ("true".equals(linkedinLinked)) {
-            model.addAttribute("successMsg", "Conta do LinkedIn conectada! Agora informe o link do seu perfil abaixo, em \"Editar\".");
+            model.addAttribute("successMsg", "Conta do LinkedIn conectada com sucesso!");
         }
         if ("already_linked".equals(linkedinError)) {
             model.addAttribute("errorMsg", "Esta conta do LinkedIn já está vinculada a outro usuário do Nexus.");
@@ -536,20 +545,6 @@ public class CompanyController {
 
         model.addAttribute("activePage", "analytics");
         return "company/company-analytics";
-    }
-
-    @GetMapping("/reputation")
-    public String reputation(HttpSession session, Model model) {
-        String token = (String) session.getAttribute("token");
-        try {
-            CompanyProfileDTO profile = companyService.getProfile(token);
-            ReputationDTO reputation = reputationService.getCompany(token, profile.getId());
-            model.addAttribute("reputation", reputation);
-        } catch (Exception e) {
-            model.addAttribute("reputation", new ReputationDTO());
-        }
-        model.addAttribute("activePage", "profile");
-        return "company/company-reputation";
     }
 
     @GetMapping("/map")
