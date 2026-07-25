@@ -53,7 +53,7 @@ public class AdminController {
                     new MonthlyDataDTO("Mai", 0),
                     new MonthlyDataDTO("Jun", totalMatches != null ? totalMatches : 0)
             );
-            model.addAttribute("monthlyDataJson", objectMapper.writeValueAsString(monthlyData));
+            model.addAttribute("monthlyData", monthlyData);
         } catch (Exception e) {
             AdminDashboardDTO empty = new AdminDashboardDTO();
             empty.setTotalUsers(0);
@@ -68,7 +68,7 @@ public class AdminController {
             model.addAttribute("dashboard", empty);
             model.addAttribute("pendingList", List.of());
             model.addAttribute("latestCompanies", List.of());
-            model.addAttribute("monthlyDataJson", "[]");
+            model.addAttribute("monthlyData", List.of());
         }
         model.addAttribute("activePage", "dashboard");
         return "admin/admin-dashboard";
@@ -246,11 +246,16 @@ public class AdminController {
         List<MatchDTO> confirmed = matches.stream()
                 .filter(m -> "MATCHED".equals(m.getStatus()))
                 .collect(Collectors.toList());
+        List<MatchDTO> rejected = matches.stream()
+                .filter(m -> "REJECTED".equals(m.getStatus()))
+                .collect(Collectors.toList());
         List<PreviousProjectDTO> projects = adminService.getProfessionalProjects(token, id);
 
         long totalProjects = projects.size();
         long confirmedMatches = confirmed.size();
-        double successRate = totalProjects > 0 ? confirmedMatches * 100.0 / totalProjects : 0;
+        long rejectedMatches = rejected.size();
+        long decidedMatches = confirmedMatches + rejectedMatches;
+        double successRate = decidedMatches > 0 ? confirmedMatches * 100.0 / decidedMatches : 0;
 
         model.addAttribute("profile", profile);
         model.addAttribute("professionalId", id);
@@ -260,6 +265,7 @@ public class AdminController {
         model.addAttribute("previousProjects", projects);
         model.addAttribute("totalProjects", totalProjects);
         model.addAttribute("confirmedMatches", confirmedMatches);
+        model.addAttribute("decidedMatches", decidedMatches);
         model.addAttribute("successRate", Math.round(successRate));
         model.addAttribute("activePage", "users");
         return "admin/admin-professional-profile";
@@ -270,22 +276,22 @@ public class AdminController {
         String token = (String) session.getAttribute("token");
         try {
             ProfessionalDashboardAnalyticsDTO analytics = adminService.getProfessionalAnalytics(token, id);
+            if (analytics.getMatchSummary() != null) analytics.getMatchSummary().recomputeAcceptanceRate();
+            if (analytics.getAcceptanceRatePerCompany() != null) {
+                analytics.getAcceptanceRatePerCompany().forEach(CompanyAcceptanceRateDTO::recomputeAcceptanceRate);
+            }
             model.addAttribute("analytics", analytics);
 
-            model.addAttribute("monthlyMatchesJson",
-                    objectMapper.writeValueAsString(analytics.getMatchesPerMonth()));
-            model.addAttribute("scoreDistributionJson",
-                    objectMapper.writeValueAsString(analytics.getScoreDistribution()));
-            model.addAttribute("companyRatesJson",
-                    objectMapper.writeValueAsString(analytics.getAcceptanceRatePerCompany()));
-            model.addAttribute("skillDemandJson",
-                    objectMapper.writeValueAsString(analytics.getMostRequiredSkills()));
+            model.addAttribute("monthlyMatches", analytics.getMatchesPerMonth());
+            model.addAttribute("scoreDistribution", analytics.getScoreDistribution());
+            model.addAttribute("companyRates", analytics.getAcceptanceRatePerCompany());
+            model.addAttribute("skillDemand", analytics.getMostRequiredSkills());
         } catch (Exception e) {
             model.addAttribute("analytics", null);
-            model.addAttribute("monthlyMatchesJson", "[]");
-            model.addAttribute("scoreDistributionJson", "[]");
-            model.addAttribute("companyRatesJson", "[]");
-            model.addAttribute("skillDemandJson", "[]");
+            model.addAttribute("monthlyMatches", List.of());
+            model.addAttribute("scoreDistribution", List.of());
+            model.addAttribute("companyRates", List.of());
+            model.addAttribute("skillDemand", List.of());
             model.addAttribute("errorMsg", "Não foi possível carregar os dados analíticos.");
         }
         model.addAttribute("professionalId", id);
@@ -318,13 +324,18 @@ public class AdminController {
         List<MatchDTO> pending = matches.stream()
                 .filter(m -> "COMPANY_INTERESTED".equals(m.getStatus()) || "PROFESSIONAL_INTERESTED".equals(m.getStatus()))
                 .collect(Collectors.toList());
+        List<MatchDTO> rejected = matches.stream()
+                .filter(m -> "REJECTED".equals(m.getStatus()))
+                .collect(Collectors.toList());
 
         long totalProjects = projects.size();
         long openProjects = projects.stream()
                 .filter(p -> "OPEN".equals(p.getStatus()))
                 .count();
         long confirmedMatches = confirmed.size();
-        double successRate = totalProjects > 0 ? confirmedMatches * 100.0 / totalProjects : 0;
+        long rejectedMatches = rejected.size();
+        long decidedMatches = confirmedMatches + rejectedMatches;
+        double successRate = decidedMatches > 0 ? confirmedMatches * 100.0 / decidedMatches : 0;
 
         model.addAttribute("profile", profile);
         model.addAttribute("companyId", id);
@@ -335,6 +346,7 @@ public class AdminController {
         model.addAttribute("totalProjects", totalProjects);
         model.addAttribute("openProjects", openProjects);
         model.addAttribute("confirmedMatches", confirmedMatches);
+        model.addAttribute("decidedMatches", decidedMatches);
         model.addAttribute("successRate", Math.round(successRate));
         model.addAttribute("activePage", "users");
         return "admin/admin-company-profile";
@@ -359,22 +371,22 @@ public class AdminController {
         String token = (String) session.getAttribute("token");
         try {
             CompanyDashboardAnalyticsDTO analytics = adminService.getCompanyAnalytics(token, id);
+            if (analytics.getMatchSummary() != null) analytics.getMatchSummary().recomputeAcceptanceRate();
+            if (analytics.getAcceptanceRatePerProject() != null) {
+                analytics.getAcceptanceRatePerProject().forEach(ProjectAcceptanceRateDTO::recomputeAcceptanceRate);
+            }
             model.addAttribute("analytics", analytics);
 
-            model.addAttribute("monthlyMatchesJson",
-                    objectMapper.writeValueAsString(analytics.getMatchesPerMonth()));
-            model.addAttribute("scoreDistributionJson",
-                    objectMapper.writeValueAsString(analytics.getScoreDistribution()));
-            model.addAttribute("projectRatesJson",
-                    objectMapper.writeValueAsString(analytics.getAcceptanceRatePerProject()));
-            model.addAttribute("skillDemandJson",
-                    objectMapper.writeValueAsString(analytics.getMostRequiredSkills()));
+            model.addAttribute("monthlyMatches", analytics.getMatchesPerMonth());
+            model.addAttribute("scoreDistribution", analytics.getScoreDistribution());
+            model.addAttribute("projectRates", analytics.getAcceptanceRatePerProject());
+            model.addAttribute("skillDemand", analytics.getMostRequiredSkills());
         } catch (Exception e) {
             model.addAttribute("analytics", null);
-            model.addAttribute("monthlyMatchesJson", "[]");
-            model.addAttribute("scoreDistributionJson", "[]");
-            model.addAttribute("projectRatesJson", "[]");
-            model.addAttribute("skillDemandJson", "[]");
+            model.addAttribute("monthlyMatches", List.of());
+            model.addAttribute("scoreDistribution", List.of());
+            model.addAttribute("projectRates", List.of());
+            model.addAttribute("skillDemand", List.of());
             model.addAttribute("errorMsg", "Não foi possível carregar os dados analíticos.");
         }
         model.addAttribute("companyId", id);

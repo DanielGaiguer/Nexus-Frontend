@@ -66,4 +66,12 @@ public class CompanyAcceptanceRateDTO {
     public void setAverageScore(Double averageScore) {
         this.averageScore = averageScore;
     }
+
+    // confirmados / (confirmados + rejeitados) — ignora matches pendentes
+    public void recomputeAcceptanceRate() {
+        int confirmed = confirmedMatches != null ? confirmedMatches : 0;
+        int rejected = rejectedMatches != null ? rejectedMatches : 0;
+        int decided = confirmed + rejected;
+        this.acceptanceRate = decided > 0 ? confirmed * 100.0 / decided : 0.0;
+    }
 }

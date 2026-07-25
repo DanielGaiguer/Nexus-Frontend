@@ -515,22 +515,22 @@ public class CompanyController {
 
         try {
             CompanyDashboardAnalyticsDTO analytics = companyService.getAnalytics(token);
+            if (analytics.getMatchSummary() != null) analytics.getMatchSummary().recomputeAcceptanceRate();
+            if (analytics.getAcceptanceRatePerProject() != null) {
+                analytics.getAcceptanceRatePerProject().forEach(ProjectAcceptanceRateDTO::recomputeAcceptanceRate);
+            }
             model.addAttribute("analytics", analytics);
 
-            model.addAttribute("monthlyMatchesJson",
-                    objectMapper.writeValueAsString(analytics.getMatchesPerMonth()));
-            model.addAttribute("scoreDistributionJson",
-                    objectMapper.writeValueAsString(analytics.getScoreDistribution()));
-            model.addAttribute("projectRatesJson",
-                    objectMapper.writeValueAsString(analytics.getAcceptanceRatePerProject()));
-            model.addAttribute("skillDemandJson",
-                    objectMapper.writeValueAsString(analytics.getMostRequiredSkills()));
+            model.addAttribute("monthlyMatches", analytics.getMatchesPerMonth());
+            model.addAttribute("scoreDistribution", analytics.getScoreDistribution());
+            model.addAttribute("projectRates", analytics.getAcceptanceRatePerProject());
+            model.addAttribute("skillDemand", analytics.getMostRequiredSkills());
         } catch (Exception e) {
             model.addAttribute("analytics", null);
-            model.addAttribute("monthlyMatchesJson", "[]");
-            model.addAttribute("scoreDistributionJson", "[]");
-            model.addAttribute("projectRatesJson", "[]");
-            model.addAttribute("skillDemandJson", "[]");
+            model.addAttribute("monthlyMatches", List.of());
+            model.addAttribute("scoreDistribution", List.of());
+            model.addAttribute("projectRates", List.of());
+            model.addAttribute("skillDemand", List.of());
             model.addAttribute("errorMsg", "Não foi possível carregar os dados analíticos.");
         }
 

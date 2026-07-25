@@ -180,8 +180,7 @@
                       th:text="${dashboard.totalConfirmedMatches}">0</span>
               </div>
               <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:4px">
-                <div style="height:100%;border-radius:4px;background:#22c55e"
-                     th:style="'width:' + ${dashboard.totalMatches > 0 ?
+                <div th:style="'height:100%;border-radius:4px;background:#22c55e;width:' + ${dashboard.totalMatches > 0 ?
                        (dashboard.totalConfirmedMatches * 100 / dashboard.totalMatches) : 0} + '%'"></div>
               </div>
             </div>
@@ -194,8 +193,7 @@
                       th:text="${dashboard.totalOpenProjects}">0</span>
               </div>
               <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:4px">
-                <div style="height:100%;border-radius:4px;background:#67e8f9"
-                     th:style="'width:' + ${dashboard.totalProjects > 0 ?
+                <div th:style="'height:100%;border-radius:4px;background:#67e8f9;width:' + ${dashboard.totalProjects > 0 ?
                        (dashboard.totalOpenProjects * 100 / dashboard.totalProjects) : 0} + '%'"></div>
               </div>
             </div>
@@ -356,8 +354,8 @@
 var TOTAL_PROFESSIONALS = /*[[${dashboard.totalProfessionals}]]*/ 0;
 var TOTAL_COMPANIES     = /*[[${dashboard.totalCompanies}]]*/ 0;
 var AVG_SCORE           = /*[[${dashboard.averageMatchScore}]]*/ 0;
-var MONTHLY_DATA        = /*[[${monthlyDataJson}]]*/ [];
-// monthlyDataJson deve ser um array JSON tipo:
+var MONTHLY_DATA        = /*[[${monthlyData}]]*/ [];
+// monthlyData deve ser um array JSON tipo:
 // [{"label":"Jan","value":12},{"label":"Fev","value":18},...]
 // Se o backend não expuser isso ainda, o controller pode gerar mock (ver prompt do opencode)
 

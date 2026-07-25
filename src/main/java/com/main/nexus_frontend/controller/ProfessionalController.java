@@ -443,22 +443,22 @@ public class ProfessionalController {
         String token = (String) session.getAttribute("token");
         try {
             ProfessionalDashboardAnalyticsDTO analytics = professionalService.getAnalytics(token);
+            if (analytics.getMatchSummary() != null) analytics.getMatchSummary().recomputeAcceptanceRate();
+            if (analytics.getAcceptanceRatePerCompany() != null) {
+                analytics.getAcceptanceRatePerCompany().forEach(CompanyAcceptanceRateDTO::recomputeAcceptanceRate);
+            }
             model.addAttribute("analytics", analytics);
 
-            model.addAttribute("monthlyMatchesJson",
-                    objectMapper.writeValueAsString(analytics.getMatchesPerMonth()));
-            model.addAttribute("scoreDistributionJson",
-                    objectMapper.writeValueAsString(analytics.getScoreDistribution()));
-            model.addAttribute("companyRatesJson",
-                    objectMapper.writeValueAsString(analytics.getAcceptanceRatePerCompany()));
-            model.addAttribute("skillDemandJson",
-                    objectMapper.writeValueAsString(analytics.getMostRequiredSkills()));
+            model.addAttribute("monthlyMatches", analytics.getMatchesPerMonth());
+            model.addAttribute("scoreDistribution", analytics.getScoreDistribution());
+            model.addAttribute("companyRates", analytics.getAcceptanceRatePerCompany());
+            model.addAttribute("skillDemand", analytics.getMostRequiredSkills());
         } catch (Exception e) {
             model.addAttribute("analytics", null);
-            model.addAttribute("monthlyMatchesJson", "[]");
-            model.addAttribute("scoreDistributionJson", "[]");
-            model.addAttribute("companyRatesJson", "[]");
-            model.addAttribute("skillDemandJson", "[]");
+            model.addAttribute("monthlyMatches", List.of());
+            model.addAttribute("scoreDistribution", List.of());
+            model.addAttribute("companyRates", List.of());
+            model.addAttribute("skillDemand", List.of());
             model.addAttribute("errorMsg", "Não foi possível carregar os dados analíticos.");
         }
 

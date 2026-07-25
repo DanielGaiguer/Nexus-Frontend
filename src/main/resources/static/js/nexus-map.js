@@ -19,7 +19,7 @@
   var layerCos   = null;
   var layerOpps  = null;
 
-  var currentRadius     = 50;
+  var currentRadius     = (typeof DEFAULT_RADIUS !== 'undefined') ? DEFAULT_RADIUS : 50;
   var currentType       = 'all';      // 'all' | 'professionals' | 'companies' | 'opportunities'
   var currentOppType    = '';         // '' | 'PROJECT' | 'JOB'
 

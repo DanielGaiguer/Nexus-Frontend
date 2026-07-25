@@ -155,35 +155,6 @@
             </div>
           </div>
 
-          <!-- Distância -->
-          <div class="mb-3">
-            <div class="nexus-section-title">Distância (km)</div>
-            <div class="row g-2">
-              <div class="col-6">
-                <button class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 radius-btn"
-                        data-radius="5" onclick="setRadius(5, this)">5 km</button>
-              </div>
-              <div class="col-6">
-                <button class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 radius-btn"
-                        data-radius="10" onclick="setRadius(10, this)">10 km</button>
-              </div>
-              <div class="col-6">
-                <button class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 radius-btn"
-                        data-radius="20" onclick="setRadius(20, this)">20 km</button>
-              </div>
-              <div class="col-6">
-                <button class="nexus-btn nexus-btn-primary nexus-btn-sm w-100 radius-btn active-radius"
-                        data-radius="50" onclick="setRadius(50, this)">50 km</button>
-              </div>
-              <div class="col-12">
-                <button class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 radius-btn d-flex justify-content-center align-items-center"
-                        data-radius="0" onclick="setRadius(Infinity, this)">Sem distância</button>
-              </div>
-            </div>
-            <div style="color:#475569;font-size:0.72rem;margin-top:6px;text-align:center"
-                 id="radius-label">Mostrando raio de 50 km</div>
-          </div>
-
           <!-- Legenda -->
           <div class="mt-auto pt-3" style="border-top:1px solid rgba(255,255,255,0.06)">
             <div class="nexus-section-title mb-2">Legenda</div>
@@ -226,7 +197,7 @@
                     border-radius:8px;padding:0.4rem 0.75rem;
                     font-size:0.78rem;color:#a5b4fc;
                     pointer-events:none"
-             id="filter-badge">Filtro: 50 km</div>
+             id="filter-badge">Filtro: sem limite de distância</div>
       </div>
 
     </div><!-- /d-flex -->
@@ -240,6 +211,8 @@ var COMPANIES = /*[[${companiesJson}]]*/ [];
 var OPPORTUNITIES  = /*[[${opportunitiesJson}]]*/ [];
 var CENTER_LAT = /*[[${centerLat}]]*/ -23.3045;
 var CENTER_LNG = /*[[${centerLng}]]*/ -51.1696;
+// Admin não possui CEP fixo de referência — sem filtro de distância por padrão
+var DEFAULT_RADIUS = Infinity;
 
 function highlightOppType(el) {
   document.querySelectorAll('.opp-type-opt').forEach(function(o) {
