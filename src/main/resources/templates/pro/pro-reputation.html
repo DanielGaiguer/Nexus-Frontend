@@ -31,7 +31,7 @@
                       color=${score >= 4.0 ? '#22c55e' : (score >= 3.0 ? '#f59e0b' : '#ef4444')}">
           <div class="tabular fw-bold" style="font-size:3.5rem;letter-spacing:-0.02em"
                th:style="'color:' + ${color}"
-               th:text="${#numbers.formatDecimal(score,1,1)}">0.0</div>
+               th:text="${#numbers.formatDecimal(score,1,1)} + ' / 5,0'">0.0</div>
         </div>
         <div style="color:#64748b;font-size:0.9rem;margin-top:0.25rem">
           <span th:if="${reputation.totalReviews != null}">Baseado em <strong class="text-white" th:text="${reputation.totalReviews}">0</strong> avaliação(ões)</span>
@@ -132,18 +132,18 @@
         <div class="col-sm-6" th:if="${reputation.satisfactionAverage != null}">
           <div class="nexus-card p-4 text-center">
             <div class="tabular fw-bold" style="font-size:2rem;color:#6b6eff"
-                 th:text="${#numbers.formatDecimal(reputation.satisfactionAverage,1,1)}">0.0</div>
+                 th:text="${#numbers.formatDecimal(reputation.satisfactionAverage * 20,1,1)}">0.0</div>
             <div style="color:#64748b;font-size:0.8rem;margin-top:0.25rem">/ 100 satisfação média</div>
             <div class="nexus-breakdown-bar mt-2">
               <div class="nexus-breakdown-bar-fill"
-                   th:style="'width:' + ${reputation.satisfactionAverage} + '%;background:linear-gradient(90deg,#6b6eff,#a78bfa)'"></div>
+                   th:style="'width:' + ${reputation.satisfactionAverage * 20} + '%;background:linear-gradient(90deg,#6b6eff,#a78bfa)'"></div>
             </div>
           </div>
         </div>
         <div class="col-sm-6" th:if="${reputation.recommendationRate != null}">
           <div class="nexus-card p-4 text-center">
             <div class="tabular fw-bold" style="font-size:2rem;color:#22c55e"
-                 th:text="${#numbers.formatDecimal(reputation.recommendationRate,1,0)} + '%'">0%</div>
+                 th:text="${#numbers.formatDecimal(reputation.recommendationRate * 100,1,0)} + '%'">0%</div>
             <div style="color:#64748b;font-size:0.8rem;margin-top:0.25rem">recomendariam novamente</div>
           </div>
         </div>

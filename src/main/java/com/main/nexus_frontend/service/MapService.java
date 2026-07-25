@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MapService {
@@ -34,14 +35,14 @@ public class MapService {
     }
 
     public List<MapProfessionalDTO> getProfessionals(String token, String city, String uf, String opportunityType) {
-        var uri = new StringBuilder("/map/professionals");
-        boolean hasParams = false;
-        if (city != null && !city.isBlank())           { uri.append(hasParams ? "&" : "?").append("city=").append(city);           hasParams = true; }
-        if (uf   != null && !uf.isBlank())             { uri.append(hasParams ? "&" : "?").append("uf=").append(uf);               hasParams = true; }
-        if (opportunityType != null && !opportunityType.isBlank()) { uri.append(hasParams ? "&" : "?").append("type=").append(opportunityType); hasParams = true; }
-
         MapProfessionalDTO[] response = restClient.get()
-                .uri(uri.toString())
+                .uri(uriBuilder -> {
+                    uriBuilder.path("/map/professionals");
+                    if (city != null && !city.isBlank()) uriBuilder.queryParam("city", city);
+                    if (uf != null && !uf.isBlank()) uriBuilder.queryParam("uf", uf);
+                    if (opportunityType != null && !opportunityType.isBlank()) uriBuilder.queryParam("type", opportunityType);
+                    return uriBuilder.build();
+                })
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
@@ -58,13 +59,13 @@ public class MapService {
     }
 
     public List<MapCompanyDTO> getCompanies(String token, String city, String uf) {
-        var uri = new StringBuilder("/map/companies");
-        boolean hasParams = false;
-        if (city != null && !city.isBlank()) { uri.append(hasParams ? "&" : "?").append("city=").append(city); hasParams = true; }
-        if (uf   != null && !uf.isBlank())   { uri.append(hasParams ? "&" : "?").append("uf=").append(uf);     hasParams = true; }
-
         MapCompanyDTO[] response = restClient.get()
-                .uri(uri.toString())
+                .uri(uriBuilder -> {
+                    uriBuilder.path("/map/companies");
+                    if (city != null && !city.isBlank()) uriBuilder.queryParam("city", city);
+                    if (uf != null && !uf.isBlank()) uriBuilder.queryParam("uf", uf);
+                    return uriBuilder.build();
+                })
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
@@ -77,21 +78,58 @@ public class MapService {
     }
 
     public List<MapOpportunityDTO> getOpportunities(String token, String city, String uf, String type) {
-        var uri = new StringBuilder("/map/opportunities");
-        boolean hasParams = false;
-        if (city != null && !city.isBlank()) { uri.append(hasParams ? "&" : "?").append("city=").append(city); hasParams = true; }
-        if (uf   != null && !uf.isBlank())   { uri.append(hasParams ? "&" : "?").append("uf=").append(uf);     hasParams = true; }
-        if (type != null && !type.isBlank()) { uri.append(hasParams ? "&" : "?").append("type=").append(type); hasParams = true; }
-
         try {
             MapOpportunityDTO[] response = restClient.get()
-                    .uri(uri.toString())
+                    .uri(uriBuilder -> {
+                        uriBuilder.path("/map/opportunities");
+                        if (city != null && !city.isBlank()) uriBuilder.queryParam("city", city);
+                        if (uf != null && !uf.isBlank()) uriBuilder.queryParam("uf", uf);
+                        if (type != null && !type.isBlank()) uriBuilder.queryParam("type", type);
+                        return uriBuilder.build();
+                    })
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                     .retrieve()
                     .body(MapOpportunityDTO[].class);
-            return response != null ? Arrays.asList(response) : Collections.emptyList();
+            List<MapOpportunityDTO> list = response != null ? Arrays.asList(response) : Collections.emptyList();
+            // A API não filtra oportunidades por cidade/UF — filtra aqui como reforço
+            return list.stream()
+                    .filter(o -> city == null || city.isBlank()
+                            || (o.getCity() != null && o.getCity().equalsIgnoreCase(city.trim())))
+                    .filter(o -> uf == null || uf.isBlank()
+                            || (o.getUf() != null && o.getUf().equalsIgnoreCase(uf.trim())))
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             return Collections.emptyList();
         }
+    }
+
+    // Centro do mapa: centróide dos resultados encontrados, ou o fallback se não houver nenhum
+    public static double[] computeCenter(List<MapProfessionalDTO> pros, List<MapCompanyDTO> cos,
+                                          List<MapOpportunityDTO> opps, double fallbackLat, double fallbackLng) {
+        double sumLat = 0, sumLng = 0;
+        int count = 0;
+        for (MapProfessionalDTO p : pros) {
+            if (p.getLatitude() != null && p.getLongitude() != null) {
+                sumLat += p.getLatitude();
+                sumLng += p.getLongitude();
+                count++;
+            }
+        }
+        for (MapCompanyDTO c : cos) {
+            if (c.getLatitude() != null && c.getLongitude() != null) {
+                sumLat += c.getLatitude();
+                sumLng += c.getLongitude();
+                count++;
+            }
+        }
+        for (MapOpportunityDTO o : opps) {
+            if (o.getLatitude() != null && o.getLongitude() != null) {
+                sumLat += o.getLatitude();
+                sumLng += o.getLongitude();
+                count++;
+            }
+        }
+        if (count == 0) return new double[]{fallbackLat, fallbackLng};
+        return new double[]{sumLat / count, sumLng / count};
     }
 }

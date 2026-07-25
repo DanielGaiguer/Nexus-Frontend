@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -78,15 +79,35 @@ public class AdminController {
     public String approvals(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         try {
-            List<CompanyProfileDTO> companies = adminService.getPendingCompanies(token);
+            List<UserSummaryDTO> companyUsers = adminService.getUsers(token).stream()
+                    .filter(u -> "COMPANY".equals(u.getType()))
+                    .collect(Collectors.toList());
+            List<CompanyProfileDTO> companies = new ArrayList<>();
+            for (UserSummaryDTO u : companyUsers) {
+                try {
+                    companies.add(adminService.getCompanyProfile(token, u.getId()));
+                } catch (Exception ignored) {
+                    // pula empresas cujo perfil falhar ao carregar, sem derrubar a página inteira
+                }
+            }
             long pendingCount = companies.stream()
                     .filter(c -> "PENDING".equals(c.getStatus()))
                     .count();
+            long approvedCount = companies.stream()
+                    .filter(c -> "APPROVED".equals(c.getStatus()))
+                    .count();
+            long rejectedCount = companies.stream()
+                    .filter(c -> "REJECTED".equals(c.getStatus()))
+                    .count();
             model.addAttribute("companies", companies);
             model.addAttribute("pendingCount", (int) pendingCount);
+            model.addAttribute("approvedCount", (int) approvedCount);
+            model.addAttribute("rejectedCount", (int) rejectedCount);
         } catch (Exception e) {
             model.addAttribute("companies", List.of());
             model.addAttribute("pendingCount", 0);
+            model.addAttribute("approvedCount", 0);
+            model.addAttribute("rejectedCount", 0);
         }
         model.addAttribute("activePage", "approvals");
         return "admin/admin-approvals";
@@ -197,17 +218,29 @@ public class AdminController {
             HttpSession session,
             Model model) {
         String token = (String) session.getAttribute("token");
+        double centerLat = -23.5505;
+        double centerLng = -46.6333;
 
-        List<MapProfessionalDTO> pros = mapService.getProfessionals(token, city, uf, type);
-        List<MapCompanyDTO> cos       = mapService.getCompanies(token, city, uf);
-        List<MapOpportunityDTO> opps  = mapService.getOpportunities(token, city, uf, null);
+        try {
+            List<MapProfessionalDTO> pros = mapService.getProfessionals(token, city, uf, type);
+            List<MapCompanyDTO> cos       = mapService.getCompanies(token, city, uf);
+            List<MapOpportunityDTO> opps  = mapService.getOpportunities(token, city, uf, null);
+            model.addAttribute("professionalsJson", pros);
+            model.addAttribute("companiesJson",     cos);
+            model.addAttribute("opportunitiesJson", opps);
+            if (city != null && !city.isBlank()) {
+                double[] center = MapService.computeCenter(pros, cos, opps, centerLat, centerLng);
+                centerLat = center[0];
+                centerLng = center[1];
+            }
+        } catch (Exception e) {
+            model.addAttribute("professionalsJson", List.of());
+            model.addAttribute("companiesJson", List.of());
+            model.addAttribute("opportunitiesJson", List.of());
+        }
 
-        model.addAttribute("professionalsJson", pros);
-        model.addAttribute("companiesJson",     cos);
-        model.addAttribute("opportunitiesJson", opps);
-
-        model.addAttribute("centerLat", -23.3045);
-        model.addAttribute("centerLng", -51.1696);
+        model.addAttribute("centerLat", centerLat);
+        model.addAttribute("centerLng", centerLng);
         model.addAttribute("cityFilter", city != null ? city : "");
         model.addAttribute("ufFilter",   uf   != null ? uf   : "");
         model.addAttribute("activePage", "map");
@@ -257,6 +290,13 @@ public class AdminController {
         long decidedMatches = confirmedMatches + rejectedMatches;
         double successRate = decidedMatches > 0 ? confirmedMatches * 100.0 / decidedMatches : 0;
 
+        ReputationDTO reputation;
+        try {
+            reputation = reputationService.getProfessional(token, id);
+        } catch (Exception e) {
+            reputation = new ReputationDTO();
+        }
+
         model.addAttribute("profile", profile);
         model.addAttribute("professionalId", id);
         model.addAttribute("dashboard", dashboard);
@@ -267,6 +307,7 @@ public class AdminController {
         model.addAttribute("confirmedMatches", confirmedMatches);
         model.addAttribute("decidedMatches", decidedMatches);
         model.addAttribute("successRate", Math.round(successRate));
+        model.addAttribute("reputation", reputation);
         model.addAttribute("activePage", "users");
         return "admin/admin-professional-profile";
     }
@@ -337,6 +378,13 @@ public class AdminController {
         long decidedMatches = confirmedMatches + rejectedMatches;
         double successRate = decidedMatches > 0 ? confirmedMatches * 100.0 / decidedMatches : 0;
 
+        ReputationDTO reputation;
+        try {
+            reputation = reputationService.getCompany(token, id);
+        } catch (Exception e) {
+            reputation = new ReputationDTO();
+        }
+
         model.addAttribute("profile", profile);
         model.addAttribute("companyId", id);
         model.addAttribute("dashboard", dashboard);
@@ -348,22 +396,9 @@ public class AdminController {
         model.addAttribute("confirmedMatches", confirmedMatches);
         model.addAttribute("decidedMatches", decidedMatches);
         model.addAttribute("successRate", Math.round(successRate));
+        model.addAttribute("reputation", reputation);
         model.addAttribute("activePage", "users");
         return "admin/admin-company-profile";
-    }
-
-    @GetMapping("/company/{id}/reputation")
-    public String viewCompanyReputation(@PathVariable Long id, HttpSession session, Model model) {
-        String token = (String) session.getAttribute("token");
-        try {
-            ReputationDTO reputation = reputationService.getCompany(token, id);
-            model.addAttribute("reputation", reputation);
-        } catch (Exception e) {
-            model.addAttribute("reputation", new ReputationDTO());
-        }
-        model.addAttribute("companyId", id);
-        model.addAttribute("activePage", "users");
-        return "admin/admin-company-reputation";
     }
 
     @GetMapping("/company/{id}/analytics")

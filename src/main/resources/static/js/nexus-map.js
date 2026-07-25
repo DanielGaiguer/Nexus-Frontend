@@ -6,8 +6,8 @@
  *   var PROFESSIONALS  = [...];
  *   var COMPANIES      = [...];
  *   var OPPORTUNITIES  = [...];
- *   var CENTER_LAT     = -23.3045;
- *   var CENTER_LNG     = -51.1696;
+ *   var CENTER_LAT     = -23.5505;
+ *   var CENTER_LNG     = -46.6333;
  */
 
 (function() {
@@ -63,6 +63,10 @@
 
   // ── Popup de profissional ─────────────────────────────────
   function popupPro(p) {
+    var baseUrl = document.querySelector('meta[name="nexus-map-professional-base"]');
+    var detailBase = baseUrl ? baseUrl.content : '';
+    var detailUrl  = detailBase ? detailBase + '/' + p.id : '';
+
     var skills = (p.skills || []).slice(0, 3).join(', ');
     return '<div style="min-width:180px;font-family:Inter,sans-serif">' +
       '<div style="font-weight:700;color:#fff;margin-bottom:3px">' + (p.name || '—') + '</div>' +
@@ -72,11 +76,21 @@
       '<span style="font-size:0.7rem;background:rgba(107,110,255,0.15);color:#a5b4fc;' +
         'padding:2px 7px;border-radius:20px">Profissional</span>' +
       (skills ? '<div style="margin-top:6px;font-size:0.75rem;color:#94a3b8">' + skills + '</div>' : '') +
+      (detailUrl ? '<a href="' + detailUrl + '"' +
+        ' style="display:block;background:linear-gradient(135deg,#6b6eff,#5558e0);' +
+        'color:#fff;text-decoration:none;border-radius:7px;padding:0.4rem 0.75rem;' +
+        'font-size:0.78rem;font-weight:600;text-align:center;margin-top:8px">' +
+        '<i class="ti ti-arrow-right" style="margin-right:4px"></i>Ver profissional' +
+        '</a>' : '') +
       '</div>';
   }
 
   // ── Popup de empresa ──────────────────────────────────────
   function popupCo(c) {
+    var baseUrl = document.querySelector('meta[name="nexus-map-company-base"]');
+    var detailBase = baseUrl ? baseUrl.content : '';
+    var detailUrl  = detailBase ? detailBase + '/' + c.id : '';
+
     return '<div style="min-width:180px;font-family:Inter,sans-serif">' +
       '<div style="font-weight:700;color:#fff;margin-bottom:3px">' + (c.companyName || '—') + '</div>' +
       '<div style="color:#64748b;font-size:0.78rem;margin-bottom:6px">' +
@@ -87,6 +101,12 @@
       (c.description ? '<div style="margin-top:6px;font-size:0.75rem;color:#94a3b8;' +
         'max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' +
         c.description + '</div>' : '') +
+      (detailUrl ? '<a href="' + detailUrl + '"' +
+        ' style="display:block;background:linear-gradient(135deg,#6b6eff,#5558e0);' +
+        'color:#fff;text-decoration:none;border-radius:7px;padding:0.4rem 0.75rem;' +
+        'font-size:0.78rem;font-weight:600;text-align:center;margin-top:8px">' +
+        '<i class="ti ti-arrow-right" style="margin-right:4px"></i>Ver empresa' +
+        '</a>' : '') +
       '</div>';
   }
 
@@ -143,8 +163,8 @@
     layerOpps = L.layerGroup();
 
     var cntPros = 0, cntCos = 0, cntOpps = 0;
-    var centerLat = (typeof CENTER_LAT !== 'undefined') ? CENTER_LAT : -23.3045;
-    var centerLng = (typeof CENTER_LNG !== 'undefined') ? CENTER_LNG : -51.1696;
+    var centerLat = (typeof CENTER_LAT !== 'undefined') ? CENTER_LAT : -23.5505;
+    var centerLng = (typeof CENTER_LNG !== 'undefined') ? CENTER_LNG : -46.6333;
 
     // Profissionais
     if (currentType === 'all' || currentType === 'professionals') {
@@ -257,8 +277,8 @@
 
   // ── Inicialização ─────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function() {
-    var centerLat = (typeof CENTER_LAT !== 'undefined') ? CENTER_LAT : -23.3045;
-    var centerLng = (typeof CENTER_LNG !== 'undefined') ? CENTER_LNG : -51.1696;
+    var centerLat = (typeof CENTER_LAT !== 'undefined') ? CENTER_LAT : -23.5505;
+    var centerLng = (typeof CENTER_LNG !== 'undefined') ? CENTER_LNG : -46.6333;
 
     // Inicia os pins depois do DOM (Leaflet usa classes CSS)
     PIN_PRO  = makePin('#6b6eff', 'ti-user');
@@ -266,11 +286,17 @@
     PIN_PROJ = makePin('#a78bfa', 'ti-briefcase');
     PIN_JOB  = makePin('#22c55e', 'ti-file-text');
 
-    map = L.map('map', { zoomControl: true }).setView([centerLat, centerLng], 10);
+    var worldBounds = L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180));
+    map = L.map('map', {
+      zoomControl: true,
+      minZoom: 2,
+      maxBounds: worldBounds,
+      maxBoundsViscosity: 1.0
+    }).setView([centerLat, centerLng], 10);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-      subdomains: 'abcd', maxZoom: 19
+      subdomains: 'abcd', maxZoom: 19, noWrap: true
     }).addTo(map);
 
     // Popup style

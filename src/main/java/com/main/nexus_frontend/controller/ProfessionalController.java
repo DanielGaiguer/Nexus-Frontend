@@ -371,13 +371,14 @@ public class ProfessionalController {
             HttpSession session,
             Model model) {
         String token = (String) session.getAttribute("token");
+        double userLat = -23.5505;
+        double userLng = -46.6333;
         try {
             ProfessionalProfileDTO profile = professionalService.getProfile(token);
-            model.addAttribute("userLat", profile.getLatitude() != null ? profile.getLatitude() : -23.55);
-            model.addAttribute("userLng", profile.getLongitude() != null ? profile.getLongitude() : -46.63);
+            if (profile.getLatitude() != null) userLat = profile.getLatitude();
+            if (profile.getLongitude() != null) userLng = profile.getLongitude();
         } catch (Exception e) {
-            model.addAttribute("userLat", -23.55);
-            model.addAttribute("userLng", -46.63);
+            // mantém o fallback
         }
         try {
             List<MapProfessionalDTO> professionals = mapService.getProfessionals(token, city, uf, type);
@@ -386,11 +387,18 @@ public class ProfessionalController {
             model.addAttribute("professionalsJson", professionals);
             model.addAttribute("companiesJson", companies);
             model.addAttribute("opportunitiesJson", opportunities);
+            if (city != null && !city.isBlank()) {
+                double[] center = MapService.computeCenter(professionals, companies, opportunities, userLat, userLng);
+                userLat = center[0];
+                userLng = center[1];
+            }
         } catch (Exception e) {
             model.addAttribute("professionalsJson", List.of());
             model.addAttribute("companiesJson", List.of());
             model.addAttribute("opportunitiesJson", List.of());
         }
+        model.addAttribute("userLat", userLat);
+        model.addAttribute("userLng", userLng);
         model.addAttribute("cityFilter", city != null ? city : "");
         model.addAttribute("ufFilter",   uf   != null ? uf   : "");
         model.addAttribute("activePage", "map");

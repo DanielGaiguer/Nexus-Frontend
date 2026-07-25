@@ -80,14 +80,14 @@ document.addEventListener('DOMContentLoaded', function() {
     this.dropdown.style.top = (rect.bottom + 4) + 'px';
     this.dropdown.style.left = rect.left + 'px';
     this.dropdown.style.width = rect.width + 'px';
-    this.dropdown.style.maxHeight = 'none';
+    this.dropdown.style.maxHeight = '260px';
     this.dropdown.style.height = 'auto';
-    this.dropdown.style.overflow = 'visible';
+    this.dropdown.style.overflow = 'hidden';
     var dc = this.dropdown.querySelector('.ts-dropdown-content');
     if (dc) {
-      dc.style.maxHeight = 'none';
+      dc.style.maxHeight = '260px';
       dc.style.height = 'auto';
-      dc.style.overflow = 'visible';
+      dc.style.overflowY = 'auto';
     }
   };
 

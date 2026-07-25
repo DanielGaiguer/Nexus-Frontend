@@ -131,14 +131,112 @@
             </div>
           </div>
 
-          <!-- Reputação link -->
-          <div class="nexus-card p-3" style="margin-top:1rem">
-            <a th:href="@{/admin/company/{id}/reputation(id=${companyId})}"
-               class="d-flex align-items-center gap-2 text-decoration-none"
-               style="color:#6b6eff;font-size:0.875rem;font-weight:500">
-              <i class="ti ti-chart-bar"></i>
-              Ver detalhamento completo da reputação →
-            </a>
+          <!-- Reputação -->
+          <div class="nexus-card p-4" style="margin-top:1rem">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="fw-semibold text-white" style="font-size:0.875rem">Reputação</div>
+              <span style="color:#475569;font-size:0.7rem" th:if="${reputation.totalReviews != null}">
+                <span th:text="${reputation.totalReviews}">0</span> avaliação(ões)
+              </span>
+            </div>
+
+            <div th:if="${reputation.totalReviews == null}" style="color:#475569;font-size:0.8rem">
+              Nenhuma avaliação ainda.
+            </div>
+
+            <th:block th:if="${reputation.totalReviews != null}">
+              <!-- Score geral -->
+              <div class="text-center mb-4"
+                   th:with="score=${reputation.overallScore != null ? reputation.overallScore : 0.0},
+                            color=${score >= 4.0 ? '#22c55e' : (score >= 3.0 ? '#f59e0b' : '#ef4444')}">
+                <div class="tabular fw-bold" style="font-size:2rem;letter-spacing:-0.02em"
+                     th:style="'color:' + ${color}"
+                     th:text="${#numbers.formatDecimal(score,1,1)} + ' / 5,0'">0.0</div>
+              </div>
+
+              <!-- Confiança -->
+              <div class="mb-4" th:if="${reputation.confidencePercent != null}">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b;font-size:0.72rem">Confiança</span>
+                  <span class="tabular fw-semibold" style="color:#6b6eff;font-size:0.72rem"
+                        th:text="${#numbers.formatDecimal(reputation.confidencePercent,1,0)} + '%'">0%</span>
+                </div>
+                <div class="nexus-breakdown-bar" style="height:6px">
+                  <div class="nexus-breakdown-bar-fill"
+                       th:style="'width:' + ${reputation.confidencePercent} + '%;background:linear-gradient(90deg,#6b6eff,#a78bfa)'"></div>
+                </div>
+              </div>
+
+              <!-- Indicadores -->
+              <div class="d-flex flex-column gap-3 mb-4">
+                <div th:if="${reputation.communication != null}">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#94a3b8;font-size:0.72rem">Comunicação</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem"
+                          th:text="${#numbers.formatDecimal(reputation.communication,1,1)}">0.0</span>
+                  </div>
+                  <div class="nexus-breakdown-bar" style="height:5px">
+                    <div class="nexus-breakdown-bar-fill"
+                         th:style="'width:' + ${reputation.communication * 20} + '%;background:#67e8f9'"></div>
+                  </div>
+                </div>
+                <div th:if="${reputation.reliability != null}">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#94a3b8;font-size:0.72rem">Confiabilidade</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem"
+                          th:text="${#numbers.formatDecimal(reputation.reliability,1,1)}">0.0</span>
+                  </div>
+                  <div class="nexus-breakdown-bar" style="height:5px">
+                    <div class="nexus-breakdown-bar-fill"
+                         th:style="'width:' + ${reputation.reliability * 20} + '%;background:#22c55e'"></div>
+                  </div>
+                </div>
+                <div th:if="${reputation.punctuality != null}">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#94a3b8;font-size:0.72rem">Pontualidade</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem"
+                          th:text="${#numbers.formatDecimal(reputation.punctuality,1,1)}">0.0</span>
+                  </div>
+                  <div class="nexus-breakdown-bar" style="height:5px">
+                    <div class="nexus-breakdown-bar-fill"
+                         th:style="'width:' + ${reputation.punctuality * 20} + '%;background:#f59e0b'"></div>
+                  </div>
+                </div>
+                <div th:if="${reputation.professionalism != null}">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#94a3b8;font-size:0.72rem">Profissionalismo</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem"
+                          th:text="${#numbers.formatDecimal(reputation.professionalism,1,1)}">0.0</span>
+                  </div>
+                  <div class="nexus-breakdown-bar" style="height:5px">
+                    <div class="nexus-breakdown-bar-fill"
+                         th:style="'width:' + ${reputation.professionalism * 20} + '%;background:#a78bfa'"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Satisfação + Recomendação -->
+              <div class="d-flex flex-column gap-3">
+                <div style="background:rgba(107,110,255,0.06);border:1px solid rgba(107,110,255,0.15);
+                            border-radius:10px;padding:0.85rem"
+                     th:if="${reputation.satisfactionAverage != null}">
+                  <div style="color:#64748b;font-size:0.68rem;text-transform:uppercase;
+                              letter-spacing:0.05em;margin-bottom:4px">Satisfação média</div>
+                  <div class="tabular fw-bold" style="font-size:1.35rem;color:#6b6eff">
+                    <span th:text="${#numbers.formatDecimal(reputation.satisfactionAverage * 20,1,1)}">0.0</span>
+                    <span style="font-size:0.7rem;color:#64748b;font-weight:500">/ 100</span>
+                  </div>
+                </div>
+                <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);
+                            border-radius:10px;padding:0.85rem"
+                     th:if="${reputation.recommendationRate != null}">
+                  <div style="color:#64748b;font-size:0.68rem;text-transform:uppercase;
+                              letter-spacing:0.05em;margin-bottom:4px">Recomendam</div>
+                  <div class="tabular fw-bold" style="font-size:1.35rem;color:#22c55e"
+                       th:text="${#numbers.formatDecimal(reputation.recommendationRate * 100,1,1)} + '%'">0%</div>
+                </div>
+              </div>
+            </th:block>
           </div>
 
         </div><!-- /col-lg-4 -->
@@ -247,10 +345,13 @@
                      class="d-flex flex-wrap gap-1 mb-2">
                   <span th:each="sk : ${proj.requiredSkills}" class="nexus-chip nexus-chip-tech" th:text="${sk.name}" style="font-size:0.7rem">Skill</span>
                 </div>
-                <a th:href="@{/admin/company/{companyId}/project/{projectId}(companyId=${companyId},projectId=${proj.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm" style="font-size:0.78rem">
-                  <i class="ti ti-eye me-1"></i>Ver detalhes
-                </a>
+                <div class="d-flex justify-content-end">
+                  <a th:href="@{/admin/company/{companyId}/project/{projectId}(companyId=${companyId},projectId=${proj.id})}"
+                     class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                     style="font-size:0.78rem">
+                    <i class="ti ti-eye me-1"></i>Ver detalhes
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -267,7 +368,8 @@
             <div class="d-flex flex-column gap-2" th:unless="${#lists.isEmpty(confirmed)}">
               <div th:each="m : ${confirmed}"
                    class="d-flex align-items-center justify-content-between p-3"
-                   style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04)">
+                   style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04);cursor:pointer"
+                   th:onclick="${m.professional != null} ? ('window.location=\'' + @{/admin/professional/{id}(id=${m.professional.id})} + '\'') : null">
                 <div>
                   <div class="fw-semibold text-white" style="font-size:0.9rem" th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Profissional</div>
                   <div style="color:#64748b;font-size:0.78rem" th:text="${m.project.title}">Projeto</div>
@@ -296,7 +398,8 @@
             <div class="d-flex flex-column gap-2" th:unless="${#lists.isEmpty(pending)}">
               <div th:each="m : ${pending}"
                    class="d-flex align-items-center justify-content-between p-3"
-                   style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04)">
+                   style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04);cursor:pointer"
+                   th:onclick="${m.professional != null} ? ('window.location=\'' + @{/admin/professional/{id}(id=${m.professional.id})} + '\'') : null">
                 <div>
                   <div class="fw-semibold text-white" style="font-size:0.9rem" th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Profissional</div>
                   <div style="color:#64748b;font-size:0.78rem" th:text="${m.project.title}">Projeto</div>

@@ -42,7 +42,7 @@
                      placeholder="Buscar por cidade..."
                      style="padding-left:2.2rem;font-size:0.85rem">
             </div>
-            <select name="uf" class="nexus-select mt-2" style="font-size:0.85rem; display: none">
+            <select name="uf" class="nexus-select mt-2" style="font-size:0.85rem; display:none">
               <option value="">Todos os estados</option>
               <option th:each="uf : ${ {'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA',
                                         'MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN',
@@ -224,8 +224,8 @@
 var PROFESSIONALS = /*[[${professionalsJson}]]*/ [];
 var COMPANIES = /*[[${companiesJson}]]*/ [];
 var OPPORTUNITIES  = /*[[${opportunitiesJson}]]*/ [];
-var CENTER_LAT = /*[[${userLat}]]*/ -23.55;
-var CENTER_LNG = /*[[${userLng}]]*/ -46.63;
+var CENTER_LAT = /*[[${userLat}]]*/ -23.5505;
+var CENTER_LNG = /*[[${userLng}]]*/ -46.6333;
 
 function highlightOppType(el) {
   document.querySelectorAll('.opp-type-opt').forEach(function(o) {

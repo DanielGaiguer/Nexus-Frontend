@@ -11,7 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
   <link th:href="@{/css/style.css}" rel="stylesheet">
-  <link th:href="@{/css/nexus-app.css}" rel="stylesheet">
 </head>
 
 <head th:fragment="head-map(title)">
@@ -23,7 +22,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
   <link th:href="@{/css/style.css}" rel="stylesheet">
-  <link th:href="@{/css/nexus-app.css}" rel="stylesheet">
 </head>
 
 <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
@@ -162,7 +160,7 @@
         <a class="nav-link" th:href="@{/admin/approvals}"
            th:classappend="${activePage == 'approvals'} ? ' active'">
           <span class="nav-link-icon"><i class="ti ti-checklist"></i></span>
-          <span>Aprovações</span>
+          <span>Empresas</span>
         </a>
       </li>
       <li class="nav-item">

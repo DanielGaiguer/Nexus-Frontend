@@ -82,9 +82,21 @@
             </select>
           </div>
 
+          <!-- Nível de experiência -->
+          <div class="col-6 col-md-2">
+            <label class="nexus-label">Experiência</label>
+            <select class="nexus-select" id="filterExpLevel" multiple onchange="applyFilters()">
+              <option value="INTERNSHIP">Estágio</option>
+              <option value="TRAINEE">Trainee</option>
+              <option value="JUNIOR">Júnior</option>
+              <option value="PLENO">Pleno</option>
+              <option value="SENIOR">Sênior</option>
+            </select>
+          </div>
+
           <!-- Limpar -->
           <div class="col-6 col-md-2">
-            <button type="button" class="nexus-btn nexus-btn-ghost w-100"
+            <button type="button" class="nexus-btn nexus-btn-ghost w-80"
                     onclick="clearFilters()">
               <i class="ti ti-x"></i> Limpar
             </button>
@@ -166,7 +178,8 @@
              th:data-minbudget="${proj.minimumBudget}"
              th:data-maxbudget="${proj.maximumBudget}"
              th:data-minsalary="${proj.monthlySalaryMin}"
-             th:data-maxsalary="${proj.monthlySalaryMax}">
+             th:data-maxsalary="${proj.monthlySalaryMax}"
+             th:data-explevel="${proj.experienceLevel}">
 
           <!-- Top row: título + status -->
           <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
@@ -334,6 +347,8 @@ function applyFilters() {
   var maxBudget = parseFloat(document.getElementById('filterMaxBudget').value) || Infinity;
   var minSalary = parseFloat(document.getElementById('filterMinSalary').value) || 0;
   var maxSalary = parseFloat(document.getElementById('filterMaxSalary').value) || Infinity;
+  var expEl = document.getElementById('filterExpLevel');
+  var selectedLevels = Array.from(expEl.selectedOptions).map(function(o) { return o.value; });
 
   var items   = document.querySelectorAll('.project-item');
   var visible = 0;
@@ -351,6 +366,7 @@ function applyFilters() {
     var matchOppType     = !oppType  || item.dataset.opportunitytype === oppType;
     var matchModality    = !modality || item.dataset.modality === modality;
     var matchContractType = !contractType || item.dataset.contracttype === contractType;
+    var matchExpLevel = selectedLevels.length === 0 || selectedLevels.indexOf(item.dataset.explevel) !== -1;
 
     var matchBudget = true;
     if (oppType === 'PROJECT') {
@@ -363,7 +379,7 @@ function applyFilters() {
     }
 
     var show = matchSearch && matchStatus && matchOppType && matchModality
-             && matchContractType && matchBudget && matchSalary;
+             && matchContractType && matchExpLevel && matchBudget && matchSalary;
     item.style.display = show ? 'block' : 'none';
     if (show) visible++;
   });
@@ -380,6 +396,7 @@ function clearFilters() {
   document.getElementById('filterStatus').value   = '';
   document.getElementById('filterOpportunityType').value = '';
   document.getElementById('filterModality').value = '';
+  document.getElementById('filterExpLevel').selectedIndex = -1;
   document.getElementById('filterContractType').value = '';
   document.getElementById('filterMinBudget').value = '';
   document.getElementById('filterMaxBudget').value = '';

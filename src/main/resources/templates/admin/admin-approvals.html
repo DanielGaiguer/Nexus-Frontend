@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
-<head th:replace="~{fragments/app-shell :: head('Aprovações')}"></head>
+<head th:replace="~{fragments/app-shell :: head('Empresas')}"></head>
 <body class="nexus-app">
 
 <div th:replace="~{fragments/app-shell :: shell}"></div>
@@ -40,10 +40,10 @@
             Pendentes <span class="badge" th:text="${pendingCount}">0</span>
           </button>
           <button class="nexus-tab" id="tab-approved"  onclick="filterStatus('APPROVED')">
-            Aprovadas
+            Aprovadas <span class="badge" th:text="${approvedCount}">0</span>
           </button>
           <button class="nexus-tab" id="tab-rejected"  onclick="filterStatus('REJECTED')">
-            Rejeitadas
+            Rejeitadas <span class="badge" th:text="${rejectedCount}">0</span>
           </button>
         </div>
       </div>
@@ -60,7 +60,9 @@
         <div th:each="co : ${companies}"
              class="nexus-card p-4 company-card"
              th:data-status="${co.status}"
-             th:data-name="${co.companyName}">
+             th:data-name="${co.companyName}"
+             th:onclick="'window.location=\'' + @{/admin/company/{id}(id=${co.id})} + '\''"
+             style="cursor:pointer">
           <div class="d-flex align-items-start gap-3 flex-wrap">
 
             <!-- Avatar -->
@@ -91,7 +93,8 @@
             </div>
 
             <!-- Actions (only for PENDING) -->
-            <div class="d-flex gap-2 flex-shrink-0" th:if="${co.status == 'PENDING'}">
+            <div class="d-flex gap-2 flex-shrink-0" th:if="${co.status == 'PENDING'}"
+                 onclick="event.stopPropagation()">
               <button type="button"
                       class="nexus-btn nexus-btn-danger-outline nexus-btn-sm reject-co-trigger"
                       th:data-id="${co.id}" th:data-name="${co.companyName}">
@@ -119,7 +122,7 @@
     <div class="modal-content">
       <div class="modal-header" style="border-bottom-color:rgba(239,68,68,0.15)">
         <div style="width:4px;height:40px;background:#ef4444;border-radius:2px;margin-right:0.75rem"></div>
-        <div>
+        <div style="flex:1">
           <h5 class="modal-title fw-semibold text-white">Rejeitar empresa</h5>
           <div style="color:#64748b;font-size:0.8rem">Esta ação é definitiva</div>
         </div>

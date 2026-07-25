@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head-map('Mapa')}"></head>
 <meta name="nexus-map-base" content="/public/opportunity">
+<meta name="nexus-map-company-base" content="/admin/company">
+<meta name="nexus-map-professional-base" content="/admin/professional">
 <body class="nexus-app">
 
 <div th:replace="~{fragments/app-shell :: shell}"></div>
@@ -45,7 +47,7 @@
                      placeholder="Buscar por cidade..."
                      style="padding-left:2.2rem;font-size:0.85rem">
             </div>
-            <select name="uf" class="nexus-select mt-2" style="font-size:0.85rem; display: none;">
+            <select name="uf" class="nexus-select mt-2" style="font-size:0.85rem; display:none">
               <option value="">Todos os estados</option>
               <option th:each="uf : ${ {'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA',
                                         'MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN',
@@ -209,8 +211,8 @@
 var PROFESSIONALS = /*[[${professionalsJson}]]*/ [];
 var COMPANIES = /*[[${companiesJson}]]*/ [];
 var OPPORTUNITIES  = /*[[${opportunitiesJson}]]*/ [];
-var CENTER_LAT = /*[[${centerLat}]]*/ -23.3045;
-var CENTER_LNG = /*[[${centerLng}]]*/ -51.1696;
+var CENTER_LAT = /*[[${centerLat}]]*/ -23.5505;
+var CENTER_LNG = /*[[${centerLng}]]*/ -46.6333;
 // Admin não possui CEP fixo de referência — sem filtro de distância por padrão
 var DEFAULT_RADIUS = Infinity;
 
