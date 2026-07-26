@@ -11,6 +11,7 @@ public class MatchDTO {
     private LocalDateTime createdAt;
     private ProjectDTO project;
     private ProfessionalSimpleDTO professional;
+    private ScoreBreakdownDTO scoreBreakdown;
 
     public MatchDTO() {}
 
@@ -37,6 +38,9 @@ public class MatchDTO {
 
     public ProfessionalSimpleDTO getProfessional() { return professional; }
     public void setProfessional(ProfessionalSimpleDTO professional) { this.professional = professional; }
+
+    public ScoreBreakdownDTO getScoreBreakdown() { return scoreBreakdown; }
+    public void setScoreBreakdown(ScoreBreakdownDTO scoreBreakdown) { this.scoreBreakdown = scoreBreakdown; }
 
     public int getScoreAsInt() {
         return matchScore != null ? (int) Math.round(matchScore) : 0;

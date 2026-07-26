@@ -139,34 +139,42 @@
             </div>
 
             <!-- Score breakdown bars -->
-            <div class="row g-2 mb-3" style="font-size:0.78rem">
+            <div class="row g-2 mb-3" style="font-size:0.78rem" th:if="${inv.scoreBreakdown != null}">
               <div class="col-6">
                 <div class="d-flex justify-content-between mb-1">
                   <span style="color:#64748b">Skills</span>
-                  <span class="tabular" style="color:#a5b4fc">—</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(inv.scoreBreakdown.skills ?: 0,1,0)}">—</span>
                 </div>
-                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill" style="width:0%"></div></div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${inv.scoreBreakdown.skills ?: 0}+'%'"></div></div>
               </div>
               <div class="col-6">
                 <div class="d-flex justify-content-between mb-1">
                   <span style="color:#64748b">Orçamento</span>
-                  <span class="tabular" style="color:#a5b4fc">—</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(inv.scoreBreakdown.budget ?: 0,1,0)}">—</span>
                 </div>
-                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill" style="width:0%"></div></div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${inv.scoreBreakdown.budget ?: 0}+'%'"></div></div>
               </div>
               <div class="col-6">
                 <div class="d-flex justify-content-between mb-1">
                   <span style="color:#64748b">Histórico</span>
-                  <span class="tabular" style="color:#a5b4fc">—</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(inv.scoreBreakdown.history ?: 0,1,0)}">—</span>
                 </div>
-                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill" style="width:0%"></div></div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${inv.scoreBreakdown.history ?: 0}+'%'"></div></div>
               </div>
               <div class="col-6">
                 <div class="d-flex justify-content-between mb-1">
                   <span style="color:#64748b">Reputação</span>
-                  <span class="tabular" style="color:#a5b4fc">—</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(inv.scoreBreakdown.reputation ?: 0,1,0)}">—</span>
                 </div>
-                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill" style="width:0%"></div></div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${inv.scoreBreakdown.reputation ?: 0}+'%'"></div></div>
               </div>
             </div>
 

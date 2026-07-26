@@ -380,6 +380,9 @@ public class CompanyController {
             }
 
             if (ids.size() > 5) {
+                model.addAttribute("warningMsg",
+                        "Você selecionou " + ids.size() + " candidatos, mas é possível comparar no máximo 5. " +
+                        "Mostrando apenas os 5 primeiros selecionados.");
                 ids = ids.subList(0, 5);
             }
 
