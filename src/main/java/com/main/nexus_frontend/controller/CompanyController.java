@@ -430,10 +430,14 @@ public class CompanyController {
         List<MatchDTO> receivedInterests = allMatches.stream()
                 .filter(m -> "PROFESSIONAL_INTERESTED".equals(m.getStatus()))
                 .collect(Collectors.toList());
+        List<MatchDTO> sentInvites = allMatches.stream()
+                .filter(m -> "COMPANY_INTERESTED".equals(m.getStatus()))
+                .collect(Collectors.toList());
         List<MatchDTO> confirmed = allMatches.stream()
                 .filter(m -> "MATCHED".equals(m.getStatus()))
                 .collect(Collectors.toList());
         model.addAttribute("receivedInterests", receivedInterests);
+        model.addAttribute("sentInvites", sentInvites);
         model.addAttribute("confirmed", confirmed);
         model.addAttribute("activePage", "matches");
         return "company/company-matches";

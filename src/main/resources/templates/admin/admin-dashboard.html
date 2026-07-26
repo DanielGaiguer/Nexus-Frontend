@@ -264,7 +264,7 @@
                               h=${n.hashCode()},
                               hue=${(h%360)<0?(h%360)+360:h%360}"
                      th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.7rem'"
-                     th:text="${#strings.substring(n,0,2).toUpperCase()}">CN</div>
+                     th:text="${#strings.substring(n,0,1).toUpperCase()}">C</div>
                 <div class="flex-fill overflow-hidden">
                   <div class="fw-medium text-white text-truncate" style="font-size:0.875rem"
                        th:text="${co.companyName}">Empresa</div>
@@ -313,7 +313,7 @@
                                   h=${n.hashCode()},
                                   hue=${(h%360)<0?(h%360)+360:h%360}"
                          th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.7rem'"
-                         th:text="${#strings.substring(n,0,2).toUpperCase()}">CN</div>
+                         th:text="${#strings.substring(n,0,1).toUpperCase()}">C</div>
                     <span class="fw-medium text-white" th:text="${co.companyName}">—</span>
                   </div>
                 </td>

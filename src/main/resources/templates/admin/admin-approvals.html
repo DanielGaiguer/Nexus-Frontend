@@ -69,7 +69,7 @@
             <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
                  th:with="n=${co.companyName},h=${n.hashCode()},hue=${(h%360)<0?(h%360)+360:h%360}"
                  th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
-                 th:text="${#strings.substring(n,0,2).toUpperCase()}">CN</div>
+                 th:text="${#strings.substring(n,0,1).toUpperCase()}">C</div>
 
             <!-- Info -->
             <div class="flex-fill">

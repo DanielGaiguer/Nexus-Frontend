@@ -198,12 +198,11 @@
               <div class="d-flex align-items-center gap-2">
                 <div th:if="${proj.company != null}"
                      class="nexus-avatar-initials"
-                     style="width:22px;height:22px;font-size:0.6rem;flex-shrink:0"
                      th:with="n=${proj.company.companyName},
                               h=${n.hashCode()},
                               hue=${(h%360)<0?(h%360)+360:h%360}"
-                     th:style="'background:hsl('+${hue}+',50%,38%)'"
-                     th:text="${#strings.substring(n,0,2).toUpperCase()}">TC</div>
+                     th:style="'background:hsl('+${hue}+',50%,38%);width:22px;height:22px;font-size:0.6rem;flex-shrink:0'"
+                     th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
                 <span style="color:#64748b;font-size:0.82rem"
                       th:text="${proj.company != null ? proj.company.companyName : 'Empresa desconhecida'}">Empresa</span>
                 <span style="color:#334155;font-size:0.75rem">·</span>

@@ -55,7 +55,9 @@ public class MatchService {
             }
         }
         return allMatches.stream()
-                .filter(m -> "MATCHED".equals(m.getStatus()) || "PROFESSIONAL_INTERESTED".equals(m.getStatus()))
+                .filter(m -> "MATCHED".equals(m.getStatus())
+                        || "PROFESSIONAL_INTERESTED".equals(m.getStatus())
+                        || "COMPANY_INTERESTED".equals(m.getStatus()))
                 .collect(Collectors.toList());
     }
 

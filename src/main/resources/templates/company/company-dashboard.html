@@ -110,8 +110,19 @@
                        th:text="'Criado em ' + ${#temporals.format(proj.createdAt,'dd/MM/yyyy')}">—</div>
                 </td>
                 <td>
-                  <span class="tabular" style="color:#6b6eff;font-weight:600"
+                  <!-- Remuneração: PROJECT usa orçamento, JOB usa salário mensal -->
+                  <span th:if="${proj.opportunityType != 'JOB' and proj.minimumBudget != null and proj.maximumBudget != null}"
+                        class="tabular" style="color:#6b6eff;font-weight:600"
                         th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}+'–'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+                  <span th:if="${proj.opportunityType == 'JOB' and proj.monthlySalaryMin != null}"
+                        class="tabular" style="color:#22c55e;font-weight:600">
+                    <span th:text="'R$'+${#numbers.formatDecimal(proj.monthlySalaryMin,1,'COMMA',0,'POINT')}+'/mês'">R$—</span>
+                    <span th:if="${proj.monthlySalaryMax != null}"
+                          th:text="'–R$'+${#numbers.formatDecimal(proj.monthlySalaryMax,1,'COMMA',0,'POINT')}"></span>
+                  </span>
+                  <span th:unless="${(proj.opportunityType != 'JOB' and proj.minimumBudget != null and proj.maximumBudget != null)
+                                     or (proj.opportunityType == 'JOB' and proj.monthlySalaryMin != null)}"
+                        style="color:#475569">A combinar</span>
                 </td>
                 <td>
                   <span th:switch="${proj.modality}">

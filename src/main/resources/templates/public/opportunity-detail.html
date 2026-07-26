@@ -45,7 +45,7 @@
                                       h=${n.hashCode()},
                                       hue=${(h%360)<0?(h%360)+360:h%360}"
                              th:style="'width:72px;height:72px;border-radius:50%;background:hsl('+${hue}+',50%,38%);display:flex;align-items:center;justify-content:center;font-size:1.35rem;font-weight:700;color:#fff'"
-                             th:text="${#strings.substring(n,0,2).toUpperCase()}">EM</div>
+                             th:text="${#strings.substring(n,0,1).toUpperCase()}">E</div>
 
                         <div class="flex-fill">
                             <!-- Type badge -->

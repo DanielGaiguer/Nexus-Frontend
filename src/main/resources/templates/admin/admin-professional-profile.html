@@ -55,7 +55,7 @@
                               hue=${(h%360)<0?(h%360)+360:h%360}"
                      th:style="'background:hsl('+${hue}+',50%,40%);width:96px;height:96px;display:flex;align-items:center;justify-content:center;border-radius:50%'">
                   <span style="font-size:1.75rem;font-weight:700;color:#fff"
-                        th:text="${#strings.substring(n,0,2).toUpperCase()}">LF</span>
+                        th:text="${#strings.substring(n,0,1).toUpperCase()}">L</span>
                 </div>
               </th:block>
             </div>

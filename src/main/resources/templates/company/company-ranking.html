@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
-    <head th:replace="~{fragments/app-shell :: head('Ranking')}">
-        <style>
-        /* Checkbox de seleção no card do ranking */
-        .candidate-checkbox-wrapper {
-          position:absolute;top:1rem;left:1rem;z-index:2;
-        }
-        .candidate-checkbox {
-          width:18px;height:18px;border-radius:4px;cursor:pointer;
-          accent-color:#6b6eff;
-        }
-        .ranking-card-selectable { position:relative;transition:border-color 0.2s; }
-        .ranking-card-selectable.selected {
-          border-color:rgba(107,110,255,0.5) !important;
-          background:rgba(107,110,255,0.04) !important;
-        }
+<head th:replace="~{fragments/app-shell :: head('Ranking')}"></head>
+<style>
+/* Checkbox de seleção no card do ranking */
+.candidate-checkbox-wrapper {
+  position:absolute;top:1rem;left:1rem;z-index:2;
+}
+.candidate-checkbox {
+  width:18px;height:18px;border-radius:4px;cursor:pointer;
+  accent-color:#6b6eff;
+}
+.ranking-card-selectable { position:relative;transition:border-color 0.2s; }
+.ranking-card-selectable.selected {
+  border-color:rgba(107,110,255,0.5) !important;
+  background:rgba(107,110,255,0.04) !important;
+}
 
-        /* Botão flutuante de comparar */
-        #compareFloatingBtn {
-          position:fixed;bottom:2rem;right:2rem;z-index:1050;
-          display:none;
-          animation:slideUp 0.25s ease;
-        }
-        @keyframes slideUp {
-          from { transform:translateY(20px);opacity:0; }
-          to   { transform:translateY(0);opacity:1; }
-        }
-    </style>
-    </head>
+/* Botão flutuante de comparar */
+#compareFloatingBtn {
+  position:fixed;bottom:2rem;right:2rem;z-index:1050;
+  display:none;
+  animation:slideUp 0.25s ease;
+}
+@keyframes slideUp {
+  from { transform:translateY(20px);opacity:0; }
+  to   { transform:translateY(0);opacity:1; }
+}
+</style>
 <body class="nexus-app">
 
 <div th:replace="~{fragments/app-shell :: shell}"></div>
@@ -221,7 +220,7 @@
                               h=${n.hashCode()},
                               hue=${(h%360)<0?(h%360)+360:h%360}"
                      th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
-                     th:text="${#strings.substring(n,0,2).toUpperCase()}">P</div>
+                     th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
 
                 <!-- Info -->
                 <div class="flex-fill">
@@ -293,7 +292,7 @@
                     <th:block th:case="'WAITING'">
                       <div class="d-flex flex-column gap-2 align-items-center">
                         <a th:href="@{/public/professional/{id}(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                           <i class="ti ti-user"></i> Ver perfil completo
                         </a>
                         <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
@@ -310,7 +309,7 @@
                     <th:block th:case="'COMPANY_INTERESTED'">
                       <div class="d-flex flex-column gap-2 align-items-center">
                         <a th:href="@{/public/professional/{id}(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                           <i class="ti ti-user"></i> Ver perfil completo
                         </a>
                         <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
@@ -323,7 +322,7 @@
                     <th:block th:case="'PROFESSIONAL_INTERESTED'">
                       <div class="d-flex flex-column gap-2 align-items-center">
                         <a th:href="@{/public/professional/{id}(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                           <i class="ti ti-user"></i> Ver perfil completo
                         </a>
                         <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
@@ -336,7 +335,7 @@
                     <th:block th:case="'MATCHED'">
                       <div class="d-flex flex-column gap-2 align-items-center">
                         <a th:href="@{/public/professional/{id}(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                           <i class="ti ti-user"></i> Ver perfil completo
                         </a>
                         <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
