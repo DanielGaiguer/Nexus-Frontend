@@ -60,7 +60,14 @@ public class CompanyController {
                     .count();
             model.addAttribute("openProjects", (int) openCount);
             model.addAttribute("projectsWithMatchCount", (int) projectsWithMatchCount);
-            model.addAttribute("recentProjects", allProjects.stream().limit(8).collect(Collectors.toList()));
+            model.addAttribute("recentProjects", allProjects.stream()
+                    .filter(p -> !"JOB".equals(p.getOpportunityType()))
+                    .limit(5)
+                    .collect(Collectors.toList()));
+            model.addAttribute("recentJobs", allProjects.stream()
+                    .filter(p -> "JOB".equals(p.getOpportunityType()))
+                    .limit(5)
+                    .collect(Collectors.toList()));
         } catch (Exception e) {
             model.addAttribute("companyName", userName);
             model.addAttribute("totalProjects", 0);
@@ -68,6 +75,7 @@ public class CompanyController {
             model.addAttribute("openProjects", 0);
             model.addAttribute("projectsWithMatchCount", 0);
             model.addAttribute("recentProjects", List.of());
+            model.addAttribute("recentJobs", List.of());
         }
         model.addAttribute("activePage", "dashboard");
         return "company/company-dashboard";
@@ -301,6 +309,22 @@ public class CompanyController {
         return "redirect:/company/projects";
     }
 
+    @PostMapping("/projects/{id}/reopen")
+    public String reopenProject(
+            @PathVariable Long id,
+            @RequestParam(required = false) Integer maxPositions,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("token");
+        try {
+            projectService.reopenProject(token, id, maxPositions);
+            redirectAttributes.addFlashAttribute("successMsg", "Oportunidade reativada com sucesso!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao reativar oportunidade: " + e.getMessage());
+        }
+        return "redirect:/company/projects";
+    }
+
     @PostMapping("/projects/{id}/delete")
     public String deleteProject(
             @PathVariable Long id,
@@ -477,6 +501,21 @@ public class CompanyController {
         return "redirect:/company/matches";
     }
 
+    @PostMapping("/matches/{matchId}/cancel")
+    public String cancelMatch(
+            @PathVariable Long matchId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("token");
+        try {
+            matchService.companyCancel(token, matchId);
+            redirectAttributes.addFlashAttribute("successMsg", "Match cancelado.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao cancelar match: " + e.getMessage());
+        }
+        return "redirect:/company/matches";
+    }
+
     @GetMapping("/matches/{matchId}/review")
     public String reviewForm(
             @PathVariable Long matchId,
@@ -564,10 +603,14 @@ public class CompanyController {
         String token = (String) session.getAttribute("token");
         double userLat = -23.5505;
         double userLng = -46.6333;
+        Double myLat = null;
+        Double myLng = null;
         try {
             CompanyProfileDTO profile = companyService.getProfile(token);
             if (profile.getLatitude() != null) userLat = profile.getLatitude();
             if (profile.getLongitude() != null) userLng = profile.getLongitude();
+            myLat = profile.getLatitude();
+            myLng = profile.getLongitude();
         } catch (Exception e) {
             // mantém o fallback
         }
@@ -590,10 +633,31 @@ public class CompanyController {
         }
         model.addAttribute("userLat", userLat);
         model.addAttribute("userLng", userLng);
+        model.addAttribute("myLat", myLat);
+        model.addAttribute("myLng", myLng);
         model.addAttribute("cityFilter", city != null ? city : "");
         model.addAttribute("ufFilter",   uf   != null ? uf   : "");
         model.addAttribute("activePage", "map");
         return "company/company-map";
+    }
+
+    // Perfil do profissional com dados de contato — só liberado após match confirmado
+    @GetMapping("/professional/{id}")
+    public String viewProfessional(@PathVariable Long id, HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        PublicProfessionalDTO professional = professionalService.getPublicProfile(id);
+        model.addAttribute("professional", professional);
+
+        ContactInfoDTO contact = null;
+        try {
+            contact = professionalService.getContact(token, id);
+        } catch (Exception e) {
+            // Sem match confirmado — contato permanece oculto
+        }
+        model.addAttribute("contact", contact);
+
+        model.addAttribute("activePage", "matches");
+        return "company/company-professional-view";
     }
 
     @GetMapping("/{professionalId}/resume")

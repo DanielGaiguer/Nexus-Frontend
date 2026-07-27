@@ -36,12 +36,32 @@
         Ao criar um projeto, o ranking de profissionais compatíveis é gerado automaticamente. Ao editar, os scores em aberto são recalculados.
       </div>
 
+      <!-- Busca + filtros -->
+      <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+        <div style="position:relative;flex:1;min-width:220px;max-width:360px">
+          <i class="ti ti-search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
+          <input type="text" id="projectSearch" class="nexus-input"
+                 placeholder="Buscar por título..."
+                 style="padding-left:2.2rem" oninput="applyProjectFilters()">
+        </div>
+        <select class="nexus-select" id="filterModality" style="max-width:190px" onchange="applyProjectFilters()">
+          <option value="">Todas as modalidades</option>
+          <option value="REMOTE">Remoto</option>
+          <option value="ONSITE">Presencial</option>
+          <option value="HYBRID">Híbrido</option>
+        </select>
+        <select class="nexus-select" id="filterType" style="max-width:170px" onchange="applyProjectFilters()">
+          <option value="">Todos os tipos</option>
+          <option value="PROJECT">Projeto</option>
+          <option value="JOB">Vaga</option>
+        </select>
+      </div>
+
       <!-- Filter tabs -->
       <div class="nexus-tabs mb-4">
-        <button class="nexus-tab active" id="tab-all" onclick="filterProjects('all')">Todos</button>
-        <button class="nexus-tab" id="tab-open" onclick="filterProjects('OPEN')">Aberto</button>
-        <button class="nexus-tab" id="tab-closed" onclick="filterProjects('CLOSED')">Encerrado</button>
-        <button class="nexus-tab" id="tab-cancelled" onclick="filterProjects('CANCELLED')">Cancelado</button>
+        <button class="nexus-tab active" id="tab-all" onclick="filterStatus('all')">Todos</button>
+        <button class="nexus-tab" id="tab-open" onclick="filterStatus('OPEN')">Aberto</button>
+        <button class="nexus-tab" id="tab-closed" onclick="filterStatus('CLOSED')">Encerrado</button>
       </div>
 
       <!-- Empty -->
@@ -57,11 +77,24 @@
         </a>
       </div>
 
+      <!-- Sem resultados após filtro -->
+      <div th:unless="${#lists.isEmpty(projects)}"
+           id="noProjResults"
+           class="nexus-card p-5 text-center" style="display:none">
+        <i class="ti ti-search-off" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhum projeto encontrado com esses filtros</div>
+      </div>
+
       <!-- Project cards -->
       <div class="d-flex flex-column gap-3" id="projectList">
         <div th:each="proj : ${projects}"
              class="nexus-card p-4 project-card"
-             th:data-status="${proj.status}">
+             th:data-status="${proj.status}"
+             th:data-modality="${proj.modality}"
+             th:data-opportunity-type="${proj.opportunityType}"
+             th:data-title="${#strings.toLowerCase(proj.title)}"
+             th:onclick="'window.location=\'' + @{/public/opportunity/{id}(id=${proj.id})} + '\''"
+             style="cursor:pointer">
             <!-- Cabeçalho do card com tipo de oportunidade -->
             <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
               <div>
@@ -168,14 +201,90 @@
             </div>
 
             <!-- Skills -->
-            <div class="d-flex flex-wrap gap-2 mb-3"
+            <div class="mb-3" style="cursor:default" onclick="event.stopPropagation()"
                  th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
-              <span th:each="sk : ${proj.requiredSkills}"
-                    class="nexus-chip nexus-chip-tech" th:text="${sk}">Skill</span>
+              <div style="color:#64748b;font-size:0.7rem;font-weight:700;
+                          text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem">
+                Skills
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <span th:each="sk : ${proj.requiredSkills}"
+                      class="nexus-chip nexus-chip-tech" th:text="${sk.name}">Skill</span>
+              </div>
+            </div>
+
+            <!-- Ações -->
+            <div class="d-flex gap-2 flex-wrap pt-2"
+                 style="border-top:1px solid rgba(255,255,255,0.06)"
+                 onclick="event.stopPropagation()">
+              <a th:href="@{/company/projects/{id}/ranking(id=${proj.id})}"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                <i class="ti ti-list-check"></i> Ver ranking
+              </a>
+              <a th:href="@{/company/projects/{id}/edit(id=${proj.id})}"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                <i class="ti ti-pencil"></i> Editar
+              </a>
+              <button type="button"
+                      th:if="${proj.status == 'OPEN'}"
+                      class="nexus-btn nexus-btn-ghost nexus-btn-sm close-trigger"
+                      th:data-id="${proj.id}"
+                      th:data-title="${proj.title}">
+                <i class="ti ti-lock"></i> Encerrar
+              </button>
+              <button type="button"
+                      th:if="${proj.status == 'CLOSED'}"
+                      class="nexus-btn nexus-btn-success nexus-btn-sm reopen-trigger"
+                      th:data-id="${proj.id}"
+                      th:data-title="${proj.title}"
+                      th:data-filled="${proj.filledPositions}"
+                      th:data-max="${proj.maxPositions}">
+                <i class="ti ti-refresh"></i> Ativar oportunidade
+              </button>
+              <button type="button"
+                      class="nexus-btn nexus-btn-danger-outline nexus-btn-sm delete-proj-trigger"
+                      th:data-id="${proj.id}"
+                      th:data-title="${proj.title}">
+                <i class="ti ti-trash"></i> Excluir
+              </button>
             </div>
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL ATIVAR OPORTUNIDADE ═════════════════════════════ -->
+<div class="modal fade nexus-modal" id="reopenModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(34,197,94,0.2)">
+        <div class="d-flex align-items-center">
+          <div style="width:4px;height:40px;background:#22c55e;border-radius:2px;margin-right:0.75rem"></div>
+          <h5 class="modal-title fw-semibold text-white mb-0">Ativar oportunidade</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="reopenForm" method="post">
+        <div class="modal-body">
+          <p style="color:#94a3b8">
+            Deseja reativar <strong class="text-white" id="reopenProjTitle">—</strong>?
+            A vaga volta a ficar visível para os profissionais.
+          </p>
+          <label class="nexus-label">Número de posições</label>
+          <input type="number" class="nexus-input tabular" name="maxPositions" id="reopenMaxPositions" min="1">
+          <div style="color:#475569;font-size:0.75rem;margin-top:4px" id="reopenPositionsHint">
+            Preenchidas: — / —
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="nexus-btn nexus-btn-success">
+            <i class="ti ti-refresh"></i> Ativar oportunidade
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -239,12 +348,36 @@
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
-function filterProjects(status) {
-  document.querySelectorAll('.nexus-tab').forEach(function(t) { t.classList.remove('active'); });
+var currentStatus = 'all';
+
+function filterStatus(status) {
+  currentStatus = status;
+  document.querySelectorAll('.nexus-tabs .nexus-tab').forEach(function(t) { t.classList.remove('active'); });
   document.getElementById('tab-' + status.toLowerCase()).classList.add('active');
+  applyProjectFilters();
+}
+
+function applyProjectFilters() {
+  var search   = (document.getElementById('projectSearch').value || '').toLowerCase().trim();
+  var modality = document.getElementById('filterModality').value;
+  var oppType  = document.getElementById('filterType').value;
+
+  var visible = 0;
   document.querySelectorAll('.project-card').forEach(function(card) {
-    card.style.display = (status === 'all' || card.dataset.status === status) ? 'block' : 'none';
+    var statusMatch   = currentStatus === 'all' || card.dataset.status === currentStatus;
+    var modalityMatch = !modality || card.dataset.modality === modality;
+    var typeMatch     = !oppType || card.dataset.opportunityType === oppType;
+    var searchMatch   = !search || (card.dataset.title || '').indexOf(search) !== -1;
+    var show = statusMatch && modalityMatch && typeMatch && searchMatch;
+    card.style.display = show ? 'block' : 'none';
+    if (show) visible++;
   });
+
+  var noResults = document.getElementById('noProjResults');
+  if (noResults) noResults.style.display = (visible === 0) ? 'block' : 'none';
+
+  var list = document.getElementById('projectList');
+  if (list) list.style.display = visible > 0 ? 'flex' : 'none';
 }
 
 document.querySelectorAll('.close-trigger').forEach(function(btn) {
@@ -260,6 +393,25 @@ document.querySelectorAll('.delete-proj-trigger').forEach(function(btn) {
     document.getElementById('deleteProjTitle').textContent = this.dataset.title;
     document.getElementById('deleteProjForm').action = '/company/projects/' + this.dataset.id + '/delete';
     new bootstrap.Modal(document.getElementById('deleteProjModal')).show();
+  });
+});
+
+document.querySelectorAll('.reopen-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var filled = parseInt(this.dataset.filled) || 0;
+    var max    = parseInt(this.dataset.max) || 1;
+
+    document.getElementById('reopenProjTitle').textContent = this.dataset.title;
+    document.getElementById('reopenForm').action = '/company/projects/' + this.dataset.id + '/reopen';
+
+    var input = document.getElementById('reopenMaxPositions');
+    input.value = max;
+    input.min = filled > 0 ? filled : 1;
+
+    document.getElementById('reopenPositionsHint').textContent =
+      'Preenchidas: ' + filled + ' / ' + max + ' — aumente se quiser abrir mais vagas para essa oportunidade';
+
+    new bootstrap.Modal(document.getElementById('reopenModal')).show();
   });
 });
 </script>

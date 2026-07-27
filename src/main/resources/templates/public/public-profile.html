@@ -1,141 +1,525 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head(${professional.name} + ' — Perfil')}"></head>
-<body>
+<head th:replace="~{fragments/head :: head(${professional.name})}"></head>
+<body class="auth-page">
 
-    <div th:replace="~{fragments/header :: header}"></div>
+<div th:replace="~{fragments/header :: header}"></div>
 
-    <main>
-        <section class="py-5">
-            <div class="container" style="max-width:720px;">
+<main style="min-height:calc(100vh - 72px);padding:2.5rem 0 4rem">
+  <div class="container" style="max-width:860px">
 
-                <!-- Back -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <a href="javascript:history.back()"
-                       class="text-decoration-none d-inline-flex align-items-center gap-1"
-                       style="color:var(--text-muted);font-size:0.875rem">
-                        <i class="ti ti-arrow-left"></i> Voltar
-                    </a>
-                    <a th:href="@{/pro/profile/export(professionalId=${professional.id})}"
-                       target="_blank"
-                       class="btn btn-sm d-inline-flex align-items-center gap-1"
-                       style="background:rgba(107,110,255,0.12);color:#a5b4fc;border:1px solid rgba(107,110,255,0.2);border-radius:8px;padding:0.4rem 0.85rem;font-size:0.82rem;font-weight:500">
-                        <i class="ti ti-file-download"></i> Exportar PDF
-                    </a>
-                </div>
+    <!-- Back -->
+    <a href="javascript:history.back()"
+       class="d-inline-flex align-items-center gap-1 text-decoration-none mb-4"
+       style="color:#64748b;font-size:0.875rem;transition:color 0.2s"
+       onmouseenter="this.style.color='#a5b4fc'"
+       onmouseleave="this.style.color='#64748b'">
+      <i class="ti ti-arrow-left"></i> Voltar
+    </a>
 
-                <!-- Profile card -->
-                <div class="card card-bg border-0 p-4 mb-4">
-                    <div class="d-flex align-items-start gap-4 flex-wrap">
+    <!-- ══ CARD HERO: avatar + nome ══════════════════════════ -->
+    <div class="card border-0 p-4 mb-3"
+         style="background:linear-gradient(145deg,rgba(9,14,31,0.97),rgba(13,19,41,0.97));
+                border-radius:16px !important">
+      <div class="d-flex align-items-start gap-4 flex-wrap">
 
-                        <!-- Avatar with initials -->
-                        <div class="flex-shrink-0"
-                             th:with="n=${professional.name},
-                                      h=${n.hashCode()},
-                                      hue=${(h%360)<0?(h%360)+360:h%360}"
-                             th:style="'width:80px;height:80px;border-radius:50%;background:hsl('+${hue}+',50%,38%);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:700;color:#fff'"
-                             th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+        <!-- Avatar -->
+        <div style="flex-shrink:0">
+          <th:block th:if="${professional.profilePhotoUrl != null
+                            and !#strings.isEmpty(professional.profilePhotoUrl)}">
+            <img th:src="${professional.profilePhotoUrl}"
+                 style="width:88px;height:88px;border-radius:50%;object-fit:cover;
+                        border:3px solid rgba(107,110,255,0.3)"
+                 alt="Foto de perfil">
+          </th:block>
+          <th:block th:unless="${professional.profilePhotoUrl != null
+                               and !#strings.isEmpty(professional.profilePhotoUrl)}">
+            <div th:with="n=${professional.name},
+                          h=${n.hashCode()},
+                          hue=${(h%360)<0?(h%360)+360:h%360}"
+                 th:style="'width:88px;height:88px;border-radius:50%;display:flex;' +
+                           'align-items:center;justify-content:center;font-size:1.75rem;' +
+                           'font-weight:700;color:#fff;background:hsl('+${hue}+',50%,40%)'"
+                 th:text="${#strings.substring(n,0,2).toUpperCase()}">LF</div>
+          </th:block>
+        </div>
 
-                        <div class="flex-fill">
-                            <h2 class="fw-bold text-light mb-1" style="letter-spacing:-0.02em"
-                                th:text="${professional.name}">Nome</h2>
-                            <div class="d-flex align-items-center gap-2 flex-wrap mb-3" style="color:var(--text-secondary);font-size:0.9rem">
-                                <span th:if="${professional.city != null}">
-                                    <i class="ti ti-map-pin me-1"></i>
-                                    <span th:text="${professional.city} + (${professional.uf != null} ? ' / ' + ${professional.uf} : '')">Cidade</span>
-                                </span>
-                                <span th:if="${professional.experienceLevel != null}" class="d-inline-flex align-items-center gap-1">
-                                    <i class="ti ti-briefcase me-1"></i>
-                                    <span th:switch="${professional.experienceLevel}">
-                                        <span th:case="'JUNIOR'">Júnior</span>
-                                        <span th:case="'MID_LEVEL'">Pleno</span>
-                                        <span th:case="'SENIOR'">Sênior</span>
-                                        <span th:case="'LEAD'">Lead</span>
-                                        <span th:case="'PRINCIPAL'">Principal</span>
-                                        <span th:case="*" th:text="${professional.experienceLevel}">—</span>
-                                    </span>
-                                </span>
-                            </div>
-
-                            <!-- Availability badge + Reputation -->
-                            <div class="d-flex align-items-center gap-3 flex-wrap">
-                                <span th:if="${professional.available != null and professional.available}"
-                                      class="badge d-inline-flex align-items-center gap-1"
-                                      style="background:rgba(34,197,94,0.12);color:#22c55e;font-size:0.78rem;font-weight:600">
-                                    <i class="ti ti-circle-check"></i> Disponível
-                                </span>
-                                <span th:if="${professional.available == null or !professional.available}"
-                                      class="badge d-inline-flex align-items-center gap-1"
-                                      style="background:rgba(148,163,184,0.12);color:#94a3b8;font-size:0.78rem;font-weight:600">
-                                    <i class="ti ti-clock"></i> Indisponível
-                                </span>
-
-                                <!-- Reputation stars -->
-                                <span th:if="${professional.reputation != null and professional.reputation > 0}"
-                                      class="d-inline-flex align-items-center gap-1" style="font-size:0.85rem">
-                                    <template th:each="i : ${#numbers.sequence(1,5)}">
-                                        <i th:if="${i <= professional.reputation}"
-                                           class="ti ti-star-filled" style="color:var(--warning);font-size:0.9rem"></i>
-                                        <i th:if="${i > professional.reputation and (i - 1) < professional.reputation}"
-                                           class="ti ti-star-filled" style="color:var(--warning);font-size:0.9rem;opacity:0.5"></i>
-                                        <i th:if="${i > professional.reputation}"
-                                           class="ti ti-star" style="color:var(--text-muted);font-size:0.9rem"></i>
-                                    </template>
-                                    <span class="fw-semibold text-light ms-1" th:text="${#numbers.formatDecimal(professional.reputation,1,'COMMA',1,'POINT')}">0.0</span>
-                                </span>
-
-                                <!-- Overall score -->
-                                <span th:if="${professional.overallScore != null}"
-                                      class="badge d-inline-flex align-items-center gap-1"
-                                      style="background:rgba(107,110,255,0.12);color:#6b6eff;font-size:0.78rem;font-weight:600">
-                                    <i class="ti ti-trending-up"></i>
-                                    Score: <span th:text="${#numbers.formatDecimal(professional.overallScore,1,'COMMA',1,'POINT')}">0.0</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Skills -->
-                <div th:if="${professional.skills != null and !professional.skills.isEmpty()}" class="card card-bg border-0 p-4 mb-4">
-                    <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
-                        <i class="ti ti-code me-2" style="color:var(--primary)"></i>Skills
-                    </h5>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span th:each="skill : ${professional.skills}"
-                              class="badge"
-                              style="background:rgba(107,110,255,0.1);color:#a5b4fc;font-size:0.8rem;font-weight:500;padding:0.4rem 0.75rem;border-radius:6px"
-                              th:text="${skill}">Skill</span>
-                    </div>
-                </div>
-
-                <!-- Previous projects -->
-                <div th:if="${professional.previousProjects != null and !professional.previousProjects.isEmpty()}" class="card card-bg border-0 p-4 mb-4">
-                    <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
-                        <i class="ti ti-folder me-2" style="color:var(--primary)"></i>Projetos anteriores
-                    </h5>
-                    <div class="d-flex flex-column gap-3">
-                        <div th:each="proj : ${professional.previousProjects}"
-                             class="p-3" style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04)">
-                            <div class="d-flex justify-content-between align-items-start mb-1">
-                                <div class="fw-semibold text-light" th:text="${proj.title}">Título</div>
-                                <span th:if="${proj.yearOfCompletion != null}"
-                                      style="color:var(--text-muted);font-size:0.78rem;flex-shrink:0"
-                                      th:text="${proj.yearOfCompletion}">2024</span>
-                            </div>
-                            <div th:if="${proj.technologies != null}"
-                                 style="color:var(--text-secondary);font-size:0.82rem"
-                                 th:text="${proj.technologies}">Tecnologias</div>
-                        </div>
-                    </div>
-                </div>
-
+        <!-- Info principal -->
+        <div class="flex-fill">
+          <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
+            <div>
+              <h1 class="fw-bold mb-1"
+                  style="font-size:1.6rem;letter-spacing:-0.02em;color:#fff;line-height:1.2"
+                  th:text="${professional.name}">Nome</h1>
+              <div style="color:#64748b;font-size:0.9rem;margin-bottom:0.5rem">
+                <span th:switch="${professional.experienceLevel}">
+                  <span th:case="'INTERNSHIP'">Estagiário</span>
+                  <span th:case="'TRAINEE'">Trainee</span>
+                  <span th:case="'JUNIOR'">Desenvolvedor Júnior</span>
+                  <span th:case="'PLENO'">Desenvolvedor Pleno</span>
+                  <span th:case="'SENIOR'">Desenvolvedor Sênior</span>
+                  <span th:case="*">Profissional de TI</span>
+                </span>
+              </div>
+              <!-- Disponibilidade -->
+              <span th:if="${professional.available}"
+                    style="display:inline-flex;align-items:center;gap:4px;font-size:0.78rem;
+                           font-weight:600;color:#22c55e;background:rgba(34,197,94,0.1);
+                           border:1px solid rgba(34,197,94,0.2);border-radius:20px;
+                           padding:0.2em 0.7em">
+                <span style="width:7px;height:7px;border-radius:50%;background:#22c55e"></span>
+                Disponível para projetos
+              </span>
+              <span th:unless="${professional.available}"
+                    style="display:inline-flex;align-items:center;gap:4px;font-size:0.78rem;
+                           font-weight:600;color:#64748b;background:rgba(255,255,255,0.04);
+                           border:1px solid rgba(255,255,255,0.08);border-radius:20px;
+                           padding:0.2em 0.7em">
+                <span style="width:7px;height:7px;border-radius:50%;background:#64748b"></span>
+                Indisponível no momento
+              </span>
             </div>
-        </section>
-    </main>
 
-    <div th:replace="~{fragments/footer :: footer}"></div>
-    <div th:replace="~{fragments/scripts :: scripts}"></div>
+            <!-- Botão de match (só para COMPANY) -->
+            <div th:if="${session.userRole == 'COMPANY'}">
+              <button type="button"
+                      id="matchBtn"
+                      onclick="document.getElementById('matchModal').style.display='flex'"
+                      style="background:linear-gradient(135deg,#6b6eff,#5558e0);
+                             color:#fff;border:none;border-radius:10px;
+                             padding:0.65rem 1.4rem;font-size:0.875rem;font-weight:600;
+                             cursor:pointer;display:flex;align-items:center;gap:0.5rem;
+                             box-shadow:0 4px 16px rgba(107,110,255,0.35)">
+                <i class="ti ti-heart-handshake"></i> Ver score de match
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /hero -->
+
+    <!-- ══ GRID: dados + skills ══════════════════════════════ -->
+    <div class="row g-3 mb-3">
+
+      <!-- Coluna esquerda: dados + reputação -->
+      <div class="col-lg-5">
+
+        <!-- Localização e experiência -->
+        <div class="card border-0 p-4 mb-3"
+             style="background:rgba(13,19,41,0.9);border-radius:14px !important;
+                    border:1px solid rgba(107,110,255,0.1) !important">
+          <div style="color:#475569;font-size:0.72rem;text-transform:uppercase;
+                      letter-spacing:0.05em;margin-bottom:0.75rem">Perfil</div>
+          <div class="d-flex flex-column gap-3">
+            <div th:if="${professional.city != null}">
+              <div style="color:#475569;font-size:0.72rem;margin-bottom:2px">Localização</div>
+              <div style="color:#e2e8f0;font-size:0.875rem;font-weight:500">
+                <i class="ti ti-map-pin" style="color:#6b6eff;margin-right:4px"></i>
+                <span th:text="${professional.city+(professional.uf!=null?', '+professional.uf:'')}">—</span>
+              </div>
+            </div>
+            <div th:if="${professional.experienceLevel != null}">
+              <div style="color:#475569;font-size:0.72rem;margin-bottom:2px">Nível</div>
+              <div style="color:#e2e8f0;font-size:0.875rem;font-weight:500">
+                <i class="ti ti-award" style="color:#a78bfa;margin-right:4px"></i>
+                <span th:switch="${professional.experienceLevel}">
+                  <span th:case="'INTERNSHIP'">Estágio</span>
+                  <span th:case="'TRAINEE'">Trainee</span>
+                  <span th:case="'JUNIOR'">Júnior</span>
+                  <span th:case="'PLENO'">Pleno</span>
+                  <span th:case="'SENIOR'">Sênior</span>
+                </span>
+              </div>
+            </div>
+            <div th:if="${professional.minimumSalary != null}">
+              <div style="color:#475569;font-size:0.72rem;margin-bottom:2px">Pretensão salarial</div>
+              <div style="color:#6b6eff;font-size:0.875rem;font-weight:600;
+                          font-variant-numeric:tabular-nums">
+                <i class="ti ti-currency-dollar" style="margin-right:2px"></i>
+                <span th:text="'R$ '+${#numbers.formatDecimal(professional.minimumSalary,1,'COMMA',0,'POINT')}">—</span>
+                <span th:if="${professional.maximumSalary != null}"
+                      th:text="' – R$ '+${#numbers.formatDecimal(professional.maximumSalary,1,'COMMA',0,'POINT')}">—</span>
+                <span style="color:#475569;font-weight:400">/mês</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reputação -->
+        <div class="card border-0 p-4"
+             style="background:rgba(13,19,41,0.9);border-radius:14px !important;
+                    border:1px solid rgba(107,110,255,0.1) !important">
+          <div style="color:#475569;font-size:0.72rem;text-transform:uppercase;
+                      letter-spacing:0.05em;margin-bottom:0.75rem">Reputação</div>
+          <!-- Estrelas -->
+          <div class="d-flex align-items-center gap-2 mb-2"
+               th:if="${professional.reputation != null}">
+            <div class="d-flex gap-1">
+              <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                <i th:class="${i <= professional.reputation ? 'ti ti-star-filled' : 'ti ti-star'}"
+                   style="color:#f59e0b;font-size:1rem"></i>
+              </th:block>
+            </div>
+            <span style="color:#f59e0b;font-size:1rem;font-weight:700;
+                         font-variant-numeric:tabular-nums"
+                  th:text="${#numbers.formatDecimal(professional.reputation,1,1)}">0.0</span>
+            <span style="color:#475569;font-size:0.8rem">/ 5</span>
+          </div>
+          <!-- Indicadores de reputação detalhados -->
+          <th:block th:if="${reputation != null}">
+            <div class="d-flex flex-column gap-2 mt-2">
+              <th:block th:each="ind : ${ {
+                {'Comunicação',    reputation.communication},
+                {'Confiabilidade', reputation.reliability},
+                {'Pontualidade',   reputation.punctuality},
+                {'Profissionalismo',reputation.professionalism}
+              } }">
+                <div th:if="${ind[1] != null}">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#64748b;font-size:0.75rem" th:text="${ind[0]}">—</span>
+                    <span style="font-size:0.75rem;font-weight:600;font-variant-numeric:tabular-nums"
+                          th:with="v=${ind[1]}"
+                          th:style="${v >= 70 ? 'color:#22c55e' : (v >= 50 ? 'color:#f59e0b' : 'color:#ef4444')}"
+                          th:text="${#numbers.formatDecimal(ind[1],1,0)}">—</span>
+                  </div>
+                  <div style="height:3px;background:rgba(255,255,255,0.05);border-radius:4px">
+                    <div th:with="v=${ind[1]}"
+                         th:style="'height:100%;border-radius:4px;width:'+${v}+'%;' +
+                                   (${v >= 70} ? 'background:#22c55e' :
+                                   (${v >= 50} ? 'background:#f59e0b' : 'background:#ef4444'))"></div>
+                  </div>
+                </div>
+              </th:block>
+            </div>
+            <div style="color:#475569;font-size:0.72rem;margin-top:8px;text-align:right"
+                 th:text="${reputation.totalReviews + ' avaliação(ões)'}">—</div>
+          </th:block>
+          <div th:unless="${professional.reputation != null}"
+               style="color:#334155;font-size:0.85rem">Sem avaliações ainda</div>
+        </div>
+
+      </div><!-- /col esq -->
+
+      <!-- Coluna direita: skills + projetos anteriores -->
+      <div class="col-lg-7">
+
+        <!-- Skills -->
+        <div class="card border-0 p-4 mb-3"
+             th:if="${professional.skills != null and !#lists.isEmpty(professional.skills)}"
+             style="background:rgba(13,19,41,0.9);border-radius:14px !important;
+                    border:1px solid rgba(107,110,255,0.1) !important">
+          <div style="color:#475569;font-size:0.72rem;text-transform:uppercase;
+                      letter-spacing:0.05em;margin-bottom:0.75rem">
+            <i class="ti ti-code" style="color:#6b6eff;margin-right:4px"></i>Skills
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <span th:each="sk : ${professional.skills}"
+                  style="font-size:0.78rem;font-weight:500;padding:0.3em 0.75em;
+                         border-radius:7px;border:1px solid rgba(103,232,249,0.25);
+                         background:rgba(103,232,249,0.07);color:#67e8f9;
+                         font-family:'SF Mono','Fira Code',monospace"
+                  th:text="${sk}">Skill</span>
+          </div>
+        </div>
+
+        <!-- Projetos anteriores -->
+        <div class="card border-0 p-4"
+             th:if="${previousProjects != null and !#lists.isEmpty(previousProjects)}"
+             style="background:rgba(13,19,41,0.9);border-radius:14px !important;
+                    border:1px solid rgba(107,110,255,0.1) !important">
+          <div style="color:#475569;font-size:0.72rem;text-transform:uppercase;
+                      letter-spacing:0.05em;margin-bottom:0.75rem">
+            <i class="ti ti-briefcase" style="color:#a78bfa;margin-right:4px"></i>
+            Projetos entregues (<span th:text="${#lists.size(previousProjects)}">0</span>)
+          </div>
+          <div class="d-flex flex-column gap-3">
+            <div th:each="proj : ${previousProjects}"
+                 style="padding-bottom:0.85rem;border-bottom:1px solid rgba(255,255,255,0.04)"
+                 th:classappend="${projStat.last} ? 'border-bottom-0 pb-0' : ''">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fw-semibold text-white" style="font-size:0.9rem"
+                      th:text="${proj.title}">Título</span>
+                <span style="color:#475569;font-size:0.75rem;font-variant-numeric:tabular-nums"
+                      th:text="${proj.yearOfCompletion}">2024</span>
+              </div>
+              <div class="d-flex flex-wrap gap-1"
+                   th:if="${proj.technologies != null}">
+                <span th:each="tech : ${#strings.listSplit(proj.technologies, ',')}"
+                      style="font-size:0.7rem;background:rgba(107,110,255,0.08);
+                             color:#a5b4fc;border:1px solid rgba(107,110,255,0.15);
+                             padding:0.15em 0.5em;border-radius:5px"
+                      th:text="${#strings.trim(tech)}">Tech</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /col dir -->
+    </div><!-- /row -->
+
+  </div><!-- /container -->
+</main>
+
+<!-- ══ MODAL DE MATCH (empresa → profissional) ═══════════════ -->
+<div id="matchModal"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);
+            z-index:9999;align-items:center;justify-content:center;padding:1rem"
+     onclick="if(event.target===this)closeMatchModal()">
+  <div style="background:rgba(9,14,31,0.98);border:1px solid rgba(107,110,255,0.2);
+              border-radius:18px;width:100%;max-width:520px;padding:2rem;
+              position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.6)">
+
+    <!-- Fechar -->
+    <button onclick="closeMatchModal()"
+            style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.06);
+                   border:1px solid rgba(255,255,255,0.08);border-radius:8px;
+                   color:#64748b;cursor:pointer;padding:0.3rem 0.5rem">
+      <i class="ti ti-x"></i>
+    </button>
+
+    <!-- Step 1: escolher projeto -->
+    <div id="stepSelectProject">
+      <div class="fw-semibold text-white mb-1" style="font-size:1.05rem">
+        <i class="ti ti-heart-handshake" style="color:#6b6eff;margin-right:6px"></i>
+        Ver score de match
+      </div>
+      <div style="color:#64748b;font-size:0.85rem;margin-bottom:1.25rem">
+        Selecione um dos seus projetos para ver a compatibilidade com
+        <strong class="text-white" th:text="${professional.name}">Profissional</strong>
+      </div>
+
+      <!-- Lista de projetos da empresa -->
+      <div class="d-flex flex-column gap-2" id="projectsList">
+        <div th:each="proj : ${companyProjects}"
+             class="project-option"
+             th:data-projectid="${proj.id}"
+             th:data-projecttitle="${proj.title}"
+             onclick="selectProject(this)"
+             style="border:1px solid rgba(255,255,255,0.08);border-radius:10px;
+                    padding:0.75rem 1rem;cursor:pointer;transition:all 0.2s">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-medium text-white" style="font-size:0.875rem"
+                   th:text="${proj.title}">Projeto</div>
+              <div style="color:#64748b;font-size:0.75rem">
+                <span th:switch="${proj.modality}">
+                  <span th:case="'REMOTE'">Remoto</span>
+                  <span th:case="'ONSITE'">Presencial</span>
+                  <span th:case="'HYBRID'">Híbrido</span>
+                </span>
+                · <span th:switch="${proj.status}">
+                  <span th:case="'OPEN'" style="color:#22c55e">Aberto</span>
+                  <span th:case="*" th:text="${proj.status}">—</span>
+                </span>
+              </div>
+            </div>
+            <i class="ti ti-chevron-right" style="color:#334155;font-size:1rem"></i>
+          </div>
+        </div>
+        <!-- Empty -->
+        <div th:if="${companyProjects == null or #lists.isEmpty(companyProjects)}"
+             style="text-align:center;padding:1.5rem;color:#334155;font-size:0.875rem">
+          <i class="ti ti-folder-off" style="font-size:2rem;display:block;margin-bottom:0.5rem"></i>
+          Você não tem projetos abertos no momento.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: resultado do score -->
+    <div id="stepScoreResult" style="display:none">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <button onclick="backToProjects()"
+                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+                       border-radius:7px;color:#64748b;cursor:pointer;padding:0.3rem 0.6rem;
+                       font-size:0.8rem">
+          <i class="ti ti-arrow-left"></i>
+        </button>
+        <div class="fw-semibold text-white" style="font-size:1rem">Score de Compatibilidade</div>
+      </div>
+
+      <!-- Score em destaque -->
+      <div style="text-align:center;padding:1.5rem 0;margin-bottom:1rem;
+                  border-bottom:1px solid rgba(255,255,255,0.06)">
+        <div id="scoreValue"
+             style="font-size:3.5rem;font-weight:800;line-height:1;
+                    font-variant-numeric:tabular-nums">—</div>
+        <div style="color:#64748b;font-size:0.8rem;margin-top:4px">
+          Compatibilidade com <span id="scoreProjectName" style="color:#e2e8f0">—</span>
+        </div>
+        <!-- Barra de progresso -->
+        <div style="height:6px;background:rgba(255,255,255,0.05);border-radius:4px;
+                    max-width:280px;margin:0.75rem auto 0">
+          <div id="scoreBar"
+               style="height:100%;border-radius:4px;transition:width 0.8s ease;width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Breakdown por componente -->
+      <div id="scoreBreakdown" class="d-flex flex-column gap-2 mb-3"></div>
+
+      <!-- Ação: demonstrar interesse -->
+      <div id="matchActionArea"></div>
+
+      <!-- Loading -->
+      <div id="scoreLoading" style="text-align:center;padding:2rem;display:none">
+        <i class="ti ti-loader"
+           style="animation:spin 1s linear infinite;font-size:1.75rem;color:#6b6eff"></i>
+        <div style="color:#64748b;font-size:0.85rem;margin-top:0.5rem">Calculando score...</div>
+      </div>
+      <div id="scoreError"
+           style="display:none;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);
+                  border-radius:9px;padding:0.75rem 1rem;color:#fca5a5;font-size:0.85rem"></div>
+    </div>
+
+  </div>
+</div><!-- /matchModal -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+var PROFESSIONAL_ID = /*[[${professional.id}]]*/ 0;
+var selectedProjectId    = null;
+var selectedProjectTitle = null;
+
+function closeMatchModal() {
+  document.getElementById('matchModal').style.display = 'none';
+  backToProjects();
+}
+
+function selectProject(el) {
+  selectedProjectId    = el.dataset.projectid;
+  selectedProjectTitle = el.dataset.projecttitle;
+  fetchScore(selectedProjectId);
+}
+
+function backToProjects() {
+  document.getElementById('stepSelectProject').style.display = 'block';
+  document.getElementById('stepScoreResult').style.display   = 'none';
+  document.getElementById('scoreBreakdown').innerHTML = '';
+  document.getElementById('matchActionArea').innerHTML = '';
+  document.getElementById('scoreError').style.display  = 'none';
+  selectedProjectId = null;
+}
+
+function fetchScore(projectId) {
+  document.getElementById('stepSelectProject').style.display = 'none';
+  document.getElementById('stepScoreResult').style.display   = 'block';
+  document.getElementById('scoreLoading').style.display      = 'block';
+  document.getElementById('scoreBreakdown').innerHTML        = '';
+  document.getElementById('matchActionArea').innerHTML       = '';
+  document.getElementById('scoreError').style.display        = 'none';
+  document.getElementById('scoreValue').textContent          = '—';
+  document.getElementById('scoreBar').style.width            = '0%';
+  document.getElementById('scoreProjectName').textContent    = selectedProjectTitle;
+
+  // Chama o proxy do frontend que vai fazer o POST /api/comparison/candidates
+  fetch('/company/score-preview', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ professionalId: PROFESSIONAL_ID, projectId: parseInt(projectId) })
+  })
+  .then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(t || 'Erro ' + r.status); });
+    return r.json();
+  })
+  .then(function(data) {
+    document.getElementById('scoreLoading').style.display = 'none';
+    renderScore(data);
+  })
+  .catch(function(err) {
+    document.getElementById('scoreLoading').style.display = 'none';
+    var errEl = document.getElementById('scoreError');
+    errEl.style.display  = 'block';
+    errEl.textContent    = err.message || 'Não foi possível calcular o score. Tente novamente.';
+  });
+}
+
+function renderScore(data) {
+  var score = data.finalScore != null ? Math.round(data.finalScore) : 0;
+  var color = score >= 85 ? '#22c55e' : (score >= 70 ? '#6b6eff' : (score >= 50 ? '#f59e0b' : '#ef4444'));
+  var label = score >= 85 ? 'Excelente' : (score >= 70 ? 'Bom' : (score >= 50 ? 'Regular' : 'Baixo'));
+
+  var scoreEl = document.getElementById('scoreValue');
+  scoreEl.textContent  = score + '%';
+  scoreEl.style.color  = color;
+  document.getElementById('scoreBar').style.width      = score + '%';
+  document.getElementById('scoreBar').style.background = color;
+
+  // Breakdown
+  var breakdown = data.scoreBreakdown || {};
+  var labels = {
+    skills:'Skills', budget:'Orçamento', history:'Histórico',
+    reputation:'Reputação', availability:'Disponibilidade',
+    distance:'Distância', experience:'Experiência',
+    reputationAdjustment:'Ajuste de reputação'
+  };
+  var container = document.getElementById('scoreBreakdown');
+  Object.keys(labels).forEach(function(key) {
+    if (breakdown[key] == null) return;
+    var v   = breakdown[key];
+    var abs = Math.abs(v);
+    var c   = abs >= 80 ? '#22c55e' : (abs >= 60 ? '#6b6eff' : (abs >= 40 ? '#f59e0b' : '#ef4444'));
+    var prefix = key === 'reputationAdjustment' ? (v >= 0 ? '+' : '') : '';
+    container.innerHTML +=
+      '<div>' +
+        '<div style="display:flex;justify-content:space-between;margin-bottom:3px">' +
+          '<span style="color:#64748b;font-size:0.78rem">' + labels[key] + '</span>' +
+          '<span style="font-size:0.78rem;font-weight:600;color:' + c + ';font-variant-numeric:tabular-nums">' +
+            prefix + v.toFixed(1) + '</span>' +
+        '</div>' +
+        '<div style="height:3px;background:rgba(255,255,255,0.05);border-radius:4px">' +
+          '<div style="height:100%;border-radius:4px;background:' + c + ';width:' + Math.min(abs,100) + '%"></div>' +
+        '</div>' +
+      '</div>';
+  });
+
+  // Botão de demonstrar interesse (se o match ainda não foi feito)
+  var matchId = data.matchId;
+  var matchStatus = data.matchStatus;
+  var actionArea = document.getElementById('matchActionArea');
+  if (matchStatus === 'WAITING' || matchStatus == null) {
+    actionArea.innerHTML =
+      '<form action="/company/matches/' + (matchId || '') + '/interest" method="post">' +
+        '<button type="submit"' +
+          ' style="width:100%;margin-top:0.5rem;background:linear-gradient(135deg,#6b6eff,#5558e0);' +
+          'color:#fff;border:none;border-radius:10px;padding:0.65rem 1rem;font-size:0.875rem;' +
+          'font-weight:600;cursor:pointer">' +
+          '<i class="ti ti-send" style="margin-right:6px"></i>Demonstrar interesse' +
+        '</button>' +
+      '</form>';
+  } else if (matchStatus === 'MATCHED') {
+    actionArea.innerHTML =
+      '<div style="text-align:center;color:#22c55e;font-weight:600;font-size:0.9rem;margin-top:0.5rem">' +
+        '<i class="ti ti-heart-handshake" style="margin-right:6px"></i>Já há um match confirmado!' +
+      '</div>';
+  } else if (matchStatus === 'COMPANY_INTERESTED') {
+    actionArea.innerHTML =
+      '<div style="text-align:center;color:#6b6eff;font-weight:600;font-size:0.85rem;margin-top:0.5rem">' +
+        '<i class="ti ti-clock" style="margin-right:6px"></i>Aguardando resposta do profissional' +
+      '</div>';
+  }
+}
+
+// Hover nos cards de projeto
+document.querySelectorAll('.project-option').forEach(function(el) {
+  el.addEventListener('mouseenter', function() {
+    this.style.background    = 'rgba(107,110,255,0.08)';
+    this.style.borderColor   = 'rgba(107,110,255,0.3)';
+  });
+  el.addEventListener('mouseleave', function() {
+    this.style.background    = '';
+    this.style.borderColor   = 'rgba(255,255,255,0.08)';
+  });
+});
+/*]]>*/
+</script>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
 
 </body>
 </html>

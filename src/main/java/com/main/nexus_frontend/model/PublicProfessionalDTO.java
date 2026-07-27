@@ -13,6 +13,11 @@ public class PublicProfessionalDTO {
     private List<String> skills;
     private List<PublicProjectDTO> previousProjects;
     private Double overallScore;
+    private ReputationDTO reputationDetails;
+    private String profilePhotoUrl;
+    private Double minimumSalary;
+    private Double maximumSalary;
+    private List<String> preferredTypes;
 
     public PublicProfessionalDTO() {}
 
@@ -45,4 +50,19 @@ public class PublicProfessionalDTO {
 
     public Double getOverallScore() { return overallScore; }
     public void setOverallScore(Double overallScore) { this.overallScore = overallScore; }
+
+    public ReputationDTO getReputationDetails() { return reputationDetails; }
+    public void setReputationDetails(ReputationDTO reputationDetails) { this.reputationDetails = reputationDetails; }
+
+    public String getProfilePhotoUrl() { return profilePhotoUrl; }
+    public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
+
+    public Double getMinimumSalary() { return minimumSalary; }
+    public void setMinimumSalary(Double minimumSalary) { this.minimumSalary = minimumSalary; }
+
+    public Double getMaximumSalary() { return maximumSalary; }
+    public void setMaximumSalary(Double maximumSalary) { this.maximumSalary = maximumSalary; }
+
+    public List<String> getPreferredTypes() { return preferredTypes; }
+    public void setPreferredTypes(List<String> preferredTypes) { this.preferredTypes = preferredTypes; }
 }

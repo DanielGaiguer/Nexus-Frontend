@@ -95,6 +95,22 @@ public class ProjectService {
                 .toBodilessEntity();
     }
 
+    public void reopenProject(String token, Long id, Integer maxPositions) {
+        String uri = maxPositions != null
+                ? "/projects/{id}/reopen?maxPositions=" + maxPositions
+                : "/projects/{id}/reopen";
+        restClient.put()
+                .uri(uri, id)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to reactivate project");
+                })
+                .toBodilessEntity();
+    }
+
     public void deleteProject(String token, Long id) {
         restClient.delete()
                 .uri("/projects/{id}", id)

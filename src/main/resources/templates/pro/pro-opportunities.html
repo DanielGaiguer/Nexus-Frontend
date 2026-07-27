@@ -164,6 +164,14 @@
                   </span>
                 </span>
               </div>
+              <!-- Skills exigidas — ajuda a diferenciar vagas com o mesmo título -->
+              <div th:if="${opp.project?.requiredSkills != null and !#lists.isEmpty(opp.project.requiredSkills)}"
+                   class="d-flex flex-wrap gap-1 mt-1">
+                <span th:each="sk : ${opp.project.requiredSkills}"
+                      class="nexus-chip nexus-chip-tech"
+                      style="font-size:0.68rem;padding:0.15em 0.5em"
+                      th:text="${sk.name}">Skill</span>
+              </div>
               <div th:if="${opp.project?.opportunityType == 'JOB'
                            and opp.project?.benefits != null
                            and !#strings.isEmpty(opp.project.benefits)}"

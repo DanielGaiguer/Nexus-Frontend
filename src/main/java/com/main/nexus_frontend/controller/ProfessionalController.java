@@ -25,6 +25,8 @@ public class ProfessionalController {
     @Autowired
     private ProfessionalService professionalService;
     @Autowired
+    private CompanyService companyService;
+    @Autowired
     private MatchService matchService;
     @Autowired
     private ReviewService reviewService;
@@ -245,6 +247,25 @@ public class ProfessionalController {
         return "pro/pro-matches";
     }
 
+    // Perfil da empresa com dados de contato — só liberado após match confirmado
+    @GetMapping("/company/{id}")
+    public String viewCompany(@PathVariable Long id, HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        CompanyDTO company = companyService.getPublicProfile(id);
+        model.addAttribute("company", company);
+
+        ContactInfoDTO contact = null;
+        try {
+            contact = companyService.getContact(token, id);
+        } catch (Exception e) {
+            // Sem match confirmado — contato permanece oculto
+        }
+        model.addAttribute("contact", contact);
+
+        model.addAttribute("activePage", "matches");
+        return "pro/pro-company-view";
+    }
+
     @PostMapping("/matches/{matchId}/accept")
     public String acceptMatch(
             @PathVariable Long matchId,
@@ -373,10 +394,14 @@ public class ProfessionalController {
         String token = (String) session.getAttribute("token");
         double userLat = -23.5505;
         double userLng = -46.6333;
+        Double myLat = null;
+        Double myLng = null;
         try {
             ProfessionalProfileDTO profile = professionalService.getProfile(token);
             if (profile.getLatitude() != null) userLat = profile.getLatitude();
             if (profile.getLongitude() != null) userLng = profile.getLongitude();
+            myLat = profile.getLatitude();
+            myLng = profile.getLongitude();
         } catch (Exception e) {
             // mantém o fallback
         }
@@ -399,6 +424,8 @@ public class ProfessionalController {
         }
         model.addAttribute("userLat", userLat);
         model.addAttribute("userLng", userLng);
+        model.addAttribute("myLat", myLat);
+        model.addAttribute("myLng", myLng);
         model.addAttribute("cityFilter", city != null ? city : "");
         model.addAttribute("ufFilter",   uf   != null ? uf   : "");
         model.addAttribute("activePage", "map");

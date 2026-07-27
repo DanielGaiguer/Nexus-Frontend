@@ -8,6 +8,11 @@
  *   var OPPORTUNITIES  = [...];
  *   var CENTER_LAT     = -23.5505;
  *   var CENTER_LNG     = -46.6333;
+ *
+ * Opcional — pin vermelho fixo com a localização do usuário logado
+ * (omitido no mapa do admin, que não tem uma localização própria):
+ *   var MY_LAT = -23.5505;
+ *   var MY_LNG = -46.6333;
  */
 
 (function() {
@@ -57,6 +62,7 @@
   var PIN_CO   = null;
   var PIN_PROJ = null;
   var PIN_JOB  = null;
+  var PIN_ME   = null; // pin vermelho — localização do usuário logado
 
   // ── Ícone de cluster (vários cadastros na mesma localização) ──
   function makeClusterPin(count) {
@@ -382,6 +388,7 @@
     PIN_CO   = makePin('#f59e0b', 'ti-building');
     PIN_PROJ = makePin('#a78bfa', 'ti-briefcase');
     PIN_JOB  = makePin('#22c55e', 'ti-file-text');
+    PIN_ME   = makePin('#ef4444', 'ti-map-pin');
 
     var worldBounds = L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180));
     map = L.map('map', {
@@ -395,6 +402,20 @@
       attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
       subdomains: 'abcd', maxZoom: 19, noWrap: true
     }).addTo(map);
+
+    // Pin vermelho fixo com a localização do usuário logado (profissional/empresa).
+    // Fica de fora do ciclo de renderMarkers() — não é afetado por filtros,
+    // zoom ou raio, e não entra nas contagens de resultados visíveis.
+    var myLat = (typeof MY_LAT !== 'undefined') ? MY_LAT : null;
+    var myLng = (typeof MY_LNG !== 'undefined') ? MY_LNG : null;
+    if (myLat != null && myLng != null) {
+      L.marker([myLat, myLng], { icon: PIN_ME, zIndexOffset: 1000 })
+       .bindPopup(
+         '<div style="font-family:Inter,sans-serif;font-weight:700;color:#fff">' +
+         'Você está aqui</div>',
+         { className: 'nexus-popup' })
+       .addTo(map);
+    }
 
     // Popup style
     var style = document.createElement('style');

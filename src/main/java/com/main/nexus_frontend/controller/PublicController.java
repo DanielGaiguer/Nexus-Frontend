@@ -1,48 +1,97 @@
 package com.main.nexus_frontend.controller;
 
 import com.main.nexus_frontend.model.CompanyDTO;
+import com.main.nexus_frontend.model.CompanyStatsDTO;
 import com.main.nexus_frontend.model.ProjectDTO;
 import com.main.nexus_frontend.model.PublicProfessionalDTO;
+import com.main.nexus_frontend.model.ReputationDTO;
 import com.main.nexus_frontend.service.PublicOpportunityService;
+import com.main.nexus_frontend.service.PublicService;
+import com.main.nexus_frontend.service.ReputationService;
+import com.main.nexus_frontend.service.ProjectService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/public")
 public class PublicController {
 
-    private final RestClient restClient;
-
     @Autowired
     private PublicOpportunityService publicOpportunityService;
 
-    public PublicController(@Value("${nexus.api.base-url}") String baseUrl) {
-        this.restClient = RestClient.builder()
-                .baseUrl(baseUrl)
-                .build();
+    @Autowired
+    private PublicService publicService;
+
+    @Autowired
+    private ReputationService reputationService;
+
+    @Autowired
+    private ProjectService projectService;
+
+    // Perfil público do profissional
+    @GetMapping("/professional/{id}")
+    public String professionalProfile(@PathVariable Long id, HttpSession session, Model model) {
+        try {
+            PublicProfessionalDTO professional = publicService.getProfessional(id);
+
+            model.addAttribute("professional", professional);
+            model.addAttribute("previousProjects", professional.getPreviousProjects());
+
+            // Reputação detalhada — já vem embutida no perfil público
+            model.addAttribute("reputation", professional.getReputationDetails());
+
+            // Se visualizado por uma empresa, carrega os projetos dela para o modal de match
+            if ("COMPANY".equals(session.getAttribute("userRole"))) {
+                String token = (String) session.getAttribute("token");
+                try {
+                    List<ProjectDTO> companyProjects = projectService.getProjects(token).stream()
+                            .filter(p -> "OPEN".equals(p.getStatus()))
+                            .collect(Collectors.toList());
+                    model.addAttribute("companyProjects", companyProjects);
+                } catch (Exception e) {
+                    model.addAttribute("companyProjects", Collections.emptyList());
+                }
+            }
+
+            return "public/public-profile";
+        } catch (Exception e) {
+            return "redirect:/?error=Profissional+nao+encontrado";
+        }
     }
 
-    @GetMapping("/professional/{id}")
-    public String professionalProfile(@PathVariable Long id, Model model) {
-        PublicProfessionalDTO dto = restClient.get()
-                .uri("/public/professional/{id}", id)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Professional not found");
-                })
-                .body(PublicProfessionalDTO.class);
-        model.addAttribute("professional", dto);
-        return "public/public-profile";
+    // Perfil público da empresa
+    @GetMapping("/company/{id}")
+    public String companyProfile(@PathVariable Long id, HttpSession session, Model model) {
+        try {
+            CompanyDTO company = publicService.getCompany(id);
+            List<ProjectDTO> openProjects = publicService.getCompanyOpenProjects(id);
+
+            model.addAttribute("company", company);
+            model.addAttribute("openProjects", openProjects);
+
+            try {
+                model.addAttribute("reputation", reputationService.getCompany(null, id));
+            } catch (Exception e) {
+                model.addAttribute("reputation", new ReputationDTO());
+            }
+
+            CompanyStatsDTO stats = new CompanyStatsDTO();
+            stats.setTotalProjects(openProjects.size());
+            model.addAttribute("stats", stats);
+
+            return "public/public-company";
+        } catch (Exception e) {
+            return "redirect:/?error=Empresa+nao+encontrada";
+        }
     }
 
     @GetMapping("/opportunity/{id}")

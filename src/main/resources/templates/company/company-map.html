@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head-map('Mapa')}"></head>
 <meta name="nexus-map-base" content="/public/opportunity">
+<meta name="nexus-map-professional-base" content="/public/professional">
+<meta name="nexus-map-company-base" content="/public/company">
 <body class="nexus-app">
 
 <div th:replace="~{fragments/app-shell :: shell}"></div>
@@ -206,6 +208,11 @@
                              background:#22c55e;flex-shrink:0"></span>
                 <span style="color:#94a3b8;font-size:0.82rem">Vaga de emprego</span>
               </div>
+              <div class="d-flex align-items-center gap-2">
+                <span style="width:12px;height:12px;border-radius:50%;
+                             background:#ef4444;flex-shrink:0"></span>
+                <span style="color:#94a3b8;font-size:0.82rem">Você</span>
+              </div>
             </div>
             <div style="color:#475569;font-size:0.75rem;margin-top:0.75rem">
               <span id="visible-count">0</span> resultado(s) visível(is)
@@ -226,6 +233,8 @@ var COMPANIES = /*[[${companiesJson}]]*/ [];
 var OPPORTUNITIES  = /*[[${opportunitiesJson}]]*/ [];
 var CENTER_LAT = /*[[${userLat}]]*/ -23.5505;
 var CENTER_LNG = /*[[${userLng}]]*/ -46.6333;
+var MY_LAT = /*[[${myLat}]]*/ null;
+var MY_LNG = /*[[${myLng}]]*/ null;
 
 function highlightOppType(el) {
   document.querySelectorAll('.opp-type-opt').forEach(function(o) {

@@ -3,6 +3,7 @@ package com.main.nexus_frontend.model;
 public class ProjectAcceptanceRateDTO {
     private Long projectId;
     private String projectTitle;
+    private String opportunityType;
     private Integer totalMatches;
     private Integer confirmedMatches;
     private Integer rejectedMatches;
@@ -25,6 +26,14 @@ public class ProjectAcceptanceRateDTO {
 
     public void setProjectTitle(String projectTitle) {
         this.projectTitle = projectTitle;
+    }
+
+    public String getOpportunityType() {
+        return opportunityType;
+    }
+
+    public void setOpportunityType(String opportunityType) {
+        this.opportunityType = opportunityType;
     }
 
     public Integer getTotalMatches() {

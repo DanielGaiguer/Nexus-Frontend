@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head('Matches')}"></head>
+<style>
+/* Cards maiores, para acomodar o anel de score ampliado */
+#pane-received .nexus-match-card,
+#pane-sent .nexus-match-card,
+#pane-confirmed .nexus-match-card {
+  padding: 1.75rem 2rem;
+}
+/* Largura fixa e igual para os botões de ação empilhados */
+.match-action-btn { width: 190px; }
+</style>
 <body class="nexus-app">
 
 <div th:replace="~{fragments/app-shell :: shell}"></div>
@@ -66,21 +76,25 @@
               <div class="flex-fill">
                 <div class="fw-semibold text-white"
                      th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
-                <div style="color:#64748b;font-size:0.85rem" th:text="${m.project.title}">Projeto</div>
+                <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.5rem" th:text="${m.project.title}">Projeto</div>
+                <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                  <i class="ti ti-briefcase"></i> Ver oportunidade
+                </a>
               </div>
               <!-- Score ring -->
               <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
-                <div style="position:relative;width:56px;height:56px;flex-shrink:0">
-                  <svg width="56" height="56" viewBox="0 0 56 56" style="transform:rotate(-90deg)">
-                    <circle cx="28" cy="28" r="23" class="nexus-score-ring-bg" stroke-width="4"/>
-                    <circle cx="28" cy="28" r="23"
+                <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
+                  <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                    <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
+                    <circle cx="55" cy="55" r="46"
                             th:class="'nexus-score-ring-fill ' + ${c}"
-                            stroke-width="4"
-                            stroke-dasharray="144.51"
-                            th:stroke-dashoffset="${144.51 - (s/100.0)*144.51}"/>
+                            stroke-width="5"
+                            stroke-dasharray="207.35"
+                            th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
                   </svg>
                   <div class="nexus-score-ring-label">
-                    <span class="nexus-score-ring-pct" style="font-size:0.75rem" th:text="${s}+'%'">0%</span>
+                    <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
                   </div>
                 </div>
               </div>
@@ -132,21 +146,25 @@
               <div class="flex-fill">
                 <div class="fw-semibold text-white"
                      th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
-                <div style="color:#64748b;font-size:0.85rem" th:text="${m.project.title}">Projeto</div>
+                <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.5rem" th:text="${m.project.title}">Projeto</div>
+                <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                  <i class="ti ti-briefcase"></i> Ver oportunidade
+                </a>
               </div>
               <!-- Score ring -->
               <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
-                <div style="position:relative;width:56px;height:56px;flex-shrink:0">
-                  <svg width="56" height="56" viewBox="0 0 56 56" style="transform:rotate(-90deg)">
-                    <circle cx="28" cy="28" r="23" class="nexus-score-ring-bg" stroke-width="4"/>
-                    <circle cx="28" cy="28" r="23"
+                <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
+                  <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                    <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
+                    <circle cx="55" cy="55" r="46"
                             th:class="'nexus-score-ring-fill ' + ${c}"
-                            stroke-width="4"
-                            stroke-dasharray="144.51"
-                            th:stroke-dashoffset="${144.51 - (s/100.0)*144.51}"/>
+                            stroke-width="5"
+                            stroke-dasharray="207.35"
+                            th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
                   </svg>
                   <div class="nexus-score-ring-label">
-                    <span class="nexus-score-ring-pct" style="font-size:0.75rem" th:text="${s}+'%'">0%</span>
+                    <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
                   </div>
                 </div>
               </div>
@@ -156,10 +174,17 @@
               <span class="nexus-status-badge warning">
                 <i class="ti ti-clock me-1"></i>Aguardando resposta do profissional
               </span>
-              <a th:href="@{/public/professional/{id}(id=${m.professional.id})}"
-                 class="nexus-btn nexus-btn-ghost nexus-btn-sm">
-                <i class="ti ti-user"></i> Ver perfil completo
-              </a>
+              <div class="d-flex align-items-center gap-2">
+                <a th:href="@{/public/professional/{id}(id=${m.professional.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                  <i class="ti ti-user"></i> Ver perfil completo
+                </a>
+                <button type="button"
+                        class="nexus-btn nexus-btn-danger-outline nexus-btn-sm cancel-match-trigger"
+                        th:data-id="${m.id}">
+                  <i class="ti ti-x"></i> Cancelar Match
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -189,29 +214,54 @@
               <div class="flex-fill">
                 <div class="fw-semibold text-white"
                      th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
-                <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.35rem"
+                <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.5rem"
                      th:text="${m.project.title}">Projeto</div>
+                <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                  <i class="ti ti-briefcase"></i> Ver oportunidade
+                </a>
                 <!-- Contatos revelados -->
-                <div style="color:#6b6eff;font-size:0.82rem">
+                <div style="color:#6b6eff;font-size:0.82rem;margin-top:0.5rem">
                   <i class="ti ti-phone me-1"></i>
                   <span th:text="${m.professional != null ? m.professional.phone : '—'}">Telefone</span>
                 </div>
               </div>
-              <div class="d-flex flex-column align-items-end gap-2">
-                <span class="nexus-status success">Match Confirmado</span>
-                <a th:href="@{/public/professional/{id}(id=${m.professional.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+              <!-- Score ring -->
+              <div style="align-self:center" th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
+                <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
+                  <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                    <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
+                    <circle cx="55" cy="55" r="46"
+                            th:class="'nexus-score-ring-fill ' + ${c}"
+                            stroke-width="5"
+                            stroke-dasharray="207.35"
+                            th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
+                  </svg>
+                  <div class="nexus-score-ring-label">
+                    <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex flex-column align-items-center gap-2 match-action-btn">
+                <span class="nexus-status success w-100 d-block text-center">Match Confirmado</span>
+                <a th:href="@{/company/professional/{id}(id=${m.professional.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                   <i class="ti ti-user"></i> Ver perfil completo
                 </a>
                 <button type="button"
-                        class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger"
+                        class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger w-100"
                         th:data-id="${m.id}">
                   <i class="ti ti-clock-history"></i> Ver histórico
                 </button>
                 <a th:href="@{/company/matches/{id}/review(id=${m.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                   <i class="ti ti-star"></i> Avaliar
                 </a>
+                <button type="button"
+                        class="nexus-btn nexus-btn-danger-outline nexus-btn-sm cancel-match-trigger w-100"
+                        th:data-id="${m.id}">
+                  <i class="ti ti-x"></i> Cancelar Match
+                </button>
               </div>
             </div>
           </div>
@@ -311,6 +361,35 @@
   </div>
 </div>
 
+<!-- ══ MODAL CANCELAR MATCH ═════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="cancelMatchModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(239,68,68,0.15)">
+        <div style="width:4px;height:40px;background:#ef4444;border-radius:2px;margin-right:0.75rem"></div>
+        <div>
+          <h5 class="modal-title fw-semibold text-white">Cancelar match</h5>
+          <div style="color:#64748b;font-size:0.8rem">Esta ação não pode ser desfeita</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="cancelMatchForm" method="post">
+        <div class="modal-body">
+          <p style="color:#94a3b8;font-size:0.9rem;margin:0">
+            Tem certeza de que deseja cancelar este match confirmado? O profissional será notificado e os dados de contato deixarão de ser compartilhados.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Voltar</button>
+          <button type="submit" class="nexus-btn nexus-btn-danger-outline">
+            <i class="ti ti-x"></i> Confirmar cancelamento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MODAL HISTÓRICO ══════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="historyModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -361,6 +440,13 @@ document.querySelectorAll('#companyRejectForm input[type=checkbox]').forEach(fun
   cb.addEventListener('change', function() {
     var any = Array.from(document.querySelectorAll('#companyRejectForm input[type=checkbox]:checked')).length > 0;
     document.getElementById('confirmCompanyRejectBtn').disabled = !any;
+  });
+});
+
+document.querySelectorAll('.cancel-match-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.getElementById('cancelMatchForm').action = '/company/matches/' + this.dataset.id + '/cancel';
+    new bootstrap.Modal(document.getElementById('cancelMatchModal')).show();
   });
 });
 

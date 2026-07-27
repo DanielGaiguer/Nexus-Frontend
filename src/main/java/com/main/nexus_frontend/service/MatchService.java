@@ -128,6 +128,19 @@ public class MatchService {
                 .toBodilessEntity();
     }
 
+    public void companyCancel(String token, Long matchId) {
+        restClient.post()
+                .uri("/matches/{matchId}/company-cancel", matchId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to cancel match");
+                })
+                .toBodilessEntity();
+    }
+
     public List<MatchHistoryDTO> getHistory(String token, Long matchId) {
         MatchHistoryDTO[] response = restClient.get()
                 .uri("/matches/{matchId}/history", matchId)

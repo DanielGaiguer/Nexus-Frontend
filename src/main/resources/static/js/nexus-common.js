@@ -197,26 +197,32 @@ var notifPanelOpen = false;
 // Ícones por tipo de notificação
 var NOTIF_ICONS = {
   NEW_INVITE:                'ti-mail',
-  NEW_PROFESSIONAL_INTEREST: 'ti-send',
+  NEW_INTEREST_RECEIVED:     'ti-send',
   MATCH_CONFIRMED:           'ti-heart-handshake',
-  MATCH_REJECTED:            'ti-x',
+  INVITE_REJECTED:           'ti-x',
   NEW_REVIEW_RECEIVED:       'ti-star',
-  HIGH_SCORE_MATCH:          'ti-sparkles',
+  HIGH_SCORE_OPPORTUNITY:    'ti-sparkles',
+  HIGH_SCORE_CANDIDATE:      'ti-sparkles',
   COMPANY_APPROVED:          'ti-shield-check',
   COMPANY_REJECTED:          'ti-shield-x',
-  PROJECT_CLOSED:            'ti-lock'
+  PROJECT_CLOSED:            'ti-lock',
+  COMPLETE_YOUR_PROFILE:     'ti-user-exclamation',
+  NEW_COMPANY_REGISTRATION:  'ti-building-plus'
 };
 
 var NOTIF_COLORS = {
   NEW_INVITE:                '#6b6eff',
-  NEW_PROFESSIONAL_INTEREST: '#a78bfa',
+  NEW_INTEREST_RECEIVED:     '#a78bfa',
   MATCH_CONFIRMED:           '#22c55e',
-  MATCH_REJECTED:            '#ef4444',
+  INVITE_REJECTED:           '#ef4444',
   NEW_REVIEW_RECEIVED:       '#f59e0b',
-  HIGH_SCORE_MATCH:          '#67e8f9',
+  HIGH_SCORE_OPPORTUNITY:    '#67e8f9',
+  HIGH_SCORE_CANDIDATE:      '#67e8f9',
   COMPANY_APPROVED:          '#22c55e',
   COMPANY_REJECTED:          '#ef4444',
-  PROJECT_CLOSED:            '#f59e0b'
+  PROJECT_CLOSED:            '#f59e0b',
+  COMPLETE_YOUR_PROFILE:     '#f59e0b',
+  NEW_COMPANY_REGISTRATION:  '#6b6eff'
 };
 
 function toggleNotifPanel() {

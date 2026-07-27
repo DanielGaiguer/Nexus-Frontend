@@ -299,60 +299,126 @@
         </div>
       </div><!-- /reputação -->
 
-      <!-- ══ ROW 5 — Tabela completa de projetos ════════════════ -->
-      <div class="nexus-card p-0"
-           th:if="${analytics.acceptanceRatePerProject != null
-                   and !#lists.isEmpty(analytics.acceptanceRatePerProject)}">
-        <div class="p-3 pb-0 d-flex align-items-center justify-content-between">
-          <div class="fw-semibold text-white">Desempenho por Projeto</div>
-          <div style="color:#475569;font-size:0.75rem"
-               th:text="${#lists.size(analytics.acceptanceRatePerProject)} + ' projeto(s)'">0</div>
+      <!-- ══ ROW 5 — Tabelas de desempenho por Projeto e por Vaga ═══ -->
+      <th:block th:with="allRows=${analytics.acceptanceRatePerProject != null ? analytics.acceptanceRatePerProject : {}},
+                          projectRows=${allRows.?[opportunityType == 'PROJECT']},
+                          jobRows=${allRows.?[opportunityType == 'JOB']}">
+
+        <!-- Projetos -->
+        <div class="nexus-card p-0 mb-3">
+          <div class="p-3 pb-0 d-flex align-items-center justify-content-between">
+            <div class="fw-semibold text-white">Desempenho por Projeto</div>
+            <div style="color:#475569;font-size:0.75rem"
+                 th:text="${#lists.size(projectRows)} + ' projeto(s)'">0</div>
+          </div>
+          <div th:if="${#lists.isEmpty(projectRows)}"
+               class="p-3" style="color:#475569;font-size:0.85rem">
+            Nenhum projeto com matches ainda.
+          </div>
+          <div class="table-responsive" th:unless="${#lists.isEmpty(projectRows)}">
+            <table class="nexus-table" style="border-spacing:0">
+              <thead>
+                <tr>
+                  <th>Projeto</th>
+                  <th>Total</th>
+                  <th>Confirmados</th>
+                  <th>Pendentes</th>
+                  <th>Rejeitados</th>
+                  <th>Taxa</th>
+                  <th>Score médio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="pr : ${projectRows}">
+                  <td>
+                    <span class="fw-medium text-white"
+                          th:text="${pr.projectTitle}">—</span>
+                  </td>
+                  <td class="tabular" th:text="${pr.totalMatches}">0</td>
+                  <td class="tabular" style="color:#22c55e"
+                      th:text="${pr.confirmedMatches}">0</td>
+                  <td class="tabular" style="color:#f59e0b"
+                      th:text="${(pr.totalMatches - pr.confirmedMatches - pr.rejectedMatches) > 0 ?
+                                 (pr.totalMatches - pr.confirmedMatches - pr.rejectedMatches) : 0}">0</td>
+                  <td class="tabular" style="color:#ef4444"
+                      th:text="${pr.rejectedMatches}">0</td>
+                  <td>
+                    <span th:with="r=${pr.acceptanceRate ?: 0},
+                                   c=${r >= 60 ? 'success' : (r >= 30 ? 'warning' : 'danger')}"
+                          th:class="'nexus-status-badge ' + ${c}"
+                          th:text="${#numbers.formatDecimal(r,1,1)+'%'}">0%</span>
+                  </td>
+                  <td>
+                    <span th:with="s=${pr.averageScore ?: 0},
+                                   c=${s >= 85 ? '#22c55e' : (s >= 70 ? '#6b6eff' : (s >= 50 ? '#f59e0b' : '#ef4444'))}"
+                          class="tabular fw-semibold"
+                          th:style="'color:' + ${c}"
+                          th:text="${#numbers.formatDecimal(s,1,1)+'%'}">0%</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="table-responsive">
-          <table class="nexus-table" style="border-spacing:0">
-            <thead>
-              <tr>
-                <th>Projeto</th>
-                <th>Total</th>
-                <th>Confirmados</th>
-                <th>Pendentes</th>
-                <th>Rejeitados</th>
-                <th>Taxa</th>
-                <th>Score médio</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="pr : ${analytics.acceptanceRatePerProject}">
-                <td>
-                  <span class="fw-medium text-white"
-                        th:text="${pr.projectTitle}">—</span>
-                </td>
-                <td class="tabular" th:text="${pr.totalMatches}">0</td>
-                <td class="tabular" style="color:#22c55e"
-                    th:text="${pr.confirmedMatches}">0</td>
-                <td class="tabular" style="color:#f59e0b"
-                    th:text="${(pr.totalMatches - pr.confirmedMatches - pr.rejectedMatches) > 0 ?
-                               (pr.totalMatches - pr.confirmedMatches - pr.rejectedMatches) : 0}">0</td>
-                <td class="tabular" style="color:#ef4444"
-                    th:text="${pr.rejectedMatches}">0</td>
-                <td>
-                  <span th:with="r=${pr.acceptanceRate ?: 0},
-                                 c=${r >= 60 ? 'success' : (r >= 30 ? 'warning' : 'danger')}"
-                        th:class="'nexus-status-badge ' + ${c}"
-                        th:text="${#numbers.formatDecimal(r,1,1)+'%'}">0%</span>
-                </td>
-                <td>
-                  <span th:with="s=${pr.averageScore ?: 0},
-                                 c=${s >= 85 ? '#22c55e' : (s >= 70 ? '#6b6eff' : (s >= 50 ? '#f59e0b' : '#ef4444'))}"
-                        class="tabular fw-semibold"
-                        th:style="'color:' + ${c}"
-                        th:text="${#numbers.formatDecimal(s,1,1)+'%'}">0%</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+        <!-- Vagas -->
+        <div class="nexus-card p-0 mb-3">
+          <div class="p-3 pb-0 d-flex align-items-center justify-content-between">
+            <div class="fw-semibold text-white">Desempenho por Vaga</div>
+            <div style="color:#475569;font-size:0.75rem"
+                 th:text="${#lists.size(jobRows)} + ' vaga(s)'">0</div>
+          </div>
+          <div th:if="${#lists.isEmpty(jobRows)}"
+               class="p-3" style="color:#475569;font-size:0.85rem">
+            Nenhuma vaga com matches ainda.
+          </div>
+          <div class="table-responsive" th:unless="${#lists.isEmpty(jobRows)}">
+            <table class="nexus-table" style="border-spacing:0">
+              <thead>
+                <tr>
+                  <th>Vaga</th>
+                  <th>Total</th>
+                  <th>Confirmados</th>
+                  <th>Pendentes</th>
+                  <th>Rejeitados</th>
+                  <th>Taxa</th>
+                  <th>Score médio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="pr : ${jobRows}">
+                  <td>
+                    <span class="fw-medium text-white"
+                          th:text="${pr.projectTitle}">—</span>
+                  </td>
+                  <td class="tabular" th:text="${pr.totalMatches}">0</td>
+                  <td class="tabular" style="color:#22c55e"
+                      th:text="${pr.confirmedMatches}">0</td>
+                  <td class="tabular" style="color:#f59e0b"
+                      th:text="${(pr.totalMatches - pr.confirmedMatches - pr.rejectedMatches) > 0 ?
+                                 (pr.totalMatches - pr.confirmedMatches - pr.rejectedMatches) : 0}">0</td>
+                  <td class="tabular" style="color:#ef4444"
+                      th:text="${pr.rejectedMatches}">0</td>
+                  <td>
+                    <span th:with="r=${pr.acceptanceRate ?: 0},
+                                   c=${r >= 60 ? 'success' : (r >= 30 ? 'warning' : 'danger')}"
+                          th:class="'nexus-status-badge ' + ${c}"
+                          th:text="${#numbers.formatDecimal(r,1,1)+'%'}">0%</span>
+                  </td>
+                  <td>
+                    <span th:with="s=${pr.averageScore ?: 0},
+                                   c=${s >= 85 ? '#22c55e' : (s >= 70 ? '#6b6eff' : (s >= 50 ? '#f59e0b' : '#ef4444'))}"
+                          class="tabular fw-semibold"
+                          th:style="'color:' + ${c}"
+                          th:text="${#numbers.formatDecimal(s,1,1)+'%'}">0%</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+
+      </th:block>
 
       </th:block>
     </div>

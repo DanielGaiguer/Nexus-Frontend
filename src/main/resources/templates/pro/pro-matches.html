@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head('Matches')}"></head>
+<style>
+/* Card de convite pendente maior, para acomodar o anel de score ampliado */
+#pane-invites .nexus-match-card {
+  padding: 1.75rem 2rem;
+}
+</style>
 <body class="nexus-app">
 
 <div th:replace="~{fragments/app-shell :: shell}"></div>
@@ -106,6 +112,14 @@
                     </span>
                   </span>
                 </div>
+                <!-- Skills exigidas — ajuda a diferenciar vagas com o mesmo título -->
+                <div th:if="${inv.project?.requiredSkills != null and !#lists.isEmpty(inv.project.requiredSkills)}"
+                     class="d-flex flex-wrap gap-1 mt-1">
+                  <span th:each="sk : ${inv.project.requiredSkills}"
+                        class="nexus-chip nexus-chip-tech"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk.name}">Skill</span>
+                </div>
                 <div th:if="${inv.project?.opportunityType == 'JOB'
                              and inv.project?.benefits != null
                              and !#strings.isEmpty(inv.project.benefits)}"
@@ -119,17 +133,17 @@
               <!-- Score ring -->
               <div th:with="s=${inv.getScoreAsInt()},
                             c=${s>=85?'high':(s>=70?'medium':'low')}">
-                <div class="nexus-score-ring" style="position:relative;width:64px;height:64px;flex-shrink:0">
-                  <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
-                    <circle cx="32" cy="32" r="27" class="nexus-score-ring-bg" stroke-width="5"/>
-                    <circle cx="32" cy="32" r="27"
+                <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
+                  <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                    <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
+                    <circle cx="55" cy="55" r="46"
                             th:class="'nexus-score-ring-fill ' + ${c}"
                             stroke-width="5"
-                            stroke-dasharray="169.65"
-                            th:stroke-dashoffset="${169.65 - (s/100.0)*169.65}"/>
+                            stroke-dasharray="207.35"
+                            th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
                   </svg>
                   <div class="nexus-score-ring-label">
-                    <span class="nexus-score-ring-pct" th:text="${s}+'%'">0%</span>
+                    <span class="nexus-score-ring-pct" th:text="${s}+'%'" style="font-size:24px">0%</span>
                     <span class="nexus-score-ring-tag"
                           th:text="${s>=85?'Alto':(s>=70?'Médio':'Baixo')}"
                           th:style="${s>=85?'color:#22c55e':(s>=70?'color:#f59e0b':'color:#ef4444')}">Alto</span>
@@ -235,6 +249,14 @@
                   <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
                 </span>
                 <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.4rem" th:text="${m.project.company.companyName}">Empresa</div>
+                <!-- Skills exigidas — ajuda a diferenciar vagas com o mesmo título -->
+                <div th:if="${m.project?.requiredSkills != null and !#lists.isEmpty(m.project.requiredSkills)}"
+                     class="d-flex flex-wrap gap-1 mb-2">
+                  <span th:each="sk : ${m.project.requiredSkills}"
+                        class="nexus-chip nexus-chip-tech"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk.name}">Skill</span>
+                </div>
                 <!-- Contatos liberados -->
                 <div class="d-flex flex-column gap-1">
                   <div style="color:#6b6eff;font-size:0.82rem" th:if="${m.project.company.phone != null}">
@@ -245,6 +267,10 @@
               </div>
               <div class="d-flex flex-column align-items-end gap-2">
                 <span class="nexus-status success">Match Confirmado</span>
+                <a th:href="@{/pro/company/{id}(id=${m.project.company.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                  <i class="ti ti-building"></i> Ver perfil da empresa
+                </a>
                 <button type="button"
                         class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger"
                         th:data-id="${m.id}">

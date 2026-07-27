@@ -22,7 +22,9 @@ public class ReputationService {
     public ReputationDTO getProfessional(String token, Long professionalId) {
         return restClient.get()
                 .uri("/reputation/professional/{id}", professionalId)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .headers(headers -> {
+                    if (token != null) headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+                })
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw new ResponseStatusException(
@@ -35,7 +37,9 @@ public class ReputationService {
     public ReputationDTO getCompany(String token, Long companyId) {
         return restClient.get()
                 .uri("/reputation/company/{id}", companyId)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .headers(headers -> {
+                    if (token != null) headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+                })
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw new ResponseStatusException(

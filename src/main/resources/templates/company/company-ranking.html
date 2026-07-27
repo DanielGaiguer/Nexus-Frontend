@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head('Ranking')}"></head>
 <style>
@@ -10,7 +10,8 @@
   width:18px;height:18px;border-radius:4px;cursor:pointer;
   accent-color:#6b6eff;
 }
-.ranking-card-selectable { position:relative;transition:border-color 0.2s; }
+.ranking-card-selectable { position:relative;transition:border-color 0.2s;padding:1.75rem 2rem !important; }
+.ranking-action-btn { width:190px; }
 .ranking-card-selectable.selected {
   border-color:rgba(107,110,255,0.5) !important;
   background:rgba(107,110,255,0.04) !important;
@@ -281,17 +282,17 @@
                 <div class="d-flex flex-column align-items-center gap-2 flex-shrink-0">
                   <div th:with="s=${item.getScoreAsInt()},
                                 c=${s>=85?'high':(s>=70?'medium':'low')}">
-                    <div style="position:relative;width:64px;height:64px">
-                      <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
-                        <circle cx="32" cy="32" r="27" class="nexus-score-ring-bg" stroke-width="5"/>
-                        <circle cx="32" cy="32" r="27"
+                    <div style="position:relative;width:110px;height:110px;margin-bottom:0.5rem">
+                      <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                        <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
+                        <circle cx="55" cy="55" r="46"
                                 th:class="'nexus-score-ring-fill ' + ${c}"
                                 stroke-width="5"
-                                stroke-dasharray="169.65"
-                                th:stroke-dashoffset="${169.65 - (s/100.0)*169.65}"/>
+                                stroke-dasharray="207.35"
+                                th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
                       </svg>
                       <div class="nexus-score-ring-label">
-                        <span class="nexus-score-ring-pct" th:text="${s}+'%'">0%</span>
+                        <span class="nexus-score-ring-pct" th:text="${s}+'%'" style="font-size:24px">0%</span>
                         <span class="nexus-score-ring-tag"
                               th:text="${s>=85?'Alto':(s>=70?'Médio':'Baixo')}"
                               th:style="${s>=85?'color:#22c55e':(s>=70?'color:#f59e0b':'color:#ef4444')}">—</span>
@@ -302,59 +303,59 @@
                   <!-- Action: interest or status badge -->
                   <th:block th:switch="${item.status}">
                     <th:block th:case="'WAITING'">
-                      <div class="d-flex flex-column gap-2 align-items-center">
+                      <div class="d-flex flex-column gap-2 align-items-center ranking-action-btn">
                         <a th:href="@{/public/professional/{id}(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                           <i class="ti ti-user"></i> Ver perfil completo
                         </a>
                         <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" target="_blank">
                           <i class="ti ti-file-text"></i> Currículo
                         </a>
-                        <form th:action="@{/company/matches/{id}/interest(id=${item.id})}" method="post">
-                          <button type="submit" class="nexus-btn nexus-btn-primary nexus-btn-sm">
+                        <form th:action="@{/company/matches/{id}/interest(id=${item.id})}" method="post" class="w-100">
+                          <button type="submit" class="nexus-btn nexus-btn-primary nexus-btn-sm w-100">
                             <i class="ti ti-send"></i> Demonstrar interesse
                           </button>
                         </form>
                       </div>
                     </th:block>
                     <th:block th:case="'COMPANY_INTERESTED'">
-                      <div class="d-flex flex-column gap-2 align-items-center">
+                      <div class="d-flex flex-column gap-2 align-items-center ranking-action-btn">
                         <a th:href="@{/public/professional/{id}(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                           <i class="ti ti-user"></i> Ver perfil completo
                         </a>
                         <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" target="_blank">
                           <i class="ti ti-file-text"></i> Currículo
                         </a>
-                        <span class="nexus-status-badge warning">Interesse enviado</span>
+                        <span class="nexus-status-badge warning w-100 d-block text-center">Interesse enviado</span>
                       </div>
                     </th:block>
                     <th:block th:case="'PROFESSIONAL_INTERESTED'">
-                      <div class="d-flex flex-column gap-2 align-items-center">
+                      <div class="d-flex flex-column gap-2 align-items-center ranking-action-btn">
                         <a th:href="@{/public/professional/{id}(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                           <i class="ti ti-user"></i> Ver perfil completo
                         </a>
                         <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" target="_blank">
                           <i class="ti ti-file-text"></i> Currículo
                         </a>
-                        <span class="nexus-status-badge info">Profissional interessado</span>
+                        <span class="nexus-status-badge info w-100 d-block text-center">Profissional interessado</span>
                       </div>
                     </th:block>
                     <th:block th:case="'MATCHED'">
-                      <div class="d-flex flex-column gap-2 align-items-center">
-                        <a th:href="@{/public/professional/{id}(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                      <div class="d-flex flex-column gap-2 align-items-center ranking-action-btn">
+                        <a th:href="@{/company/professional/{id}(id=${item.professional.id})}"
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                           <i class="ti ti-user"></i> Ver perfil completo
                         </a>
                         <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm" target="_blank">
+                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" target="_blank">
                           <i class="ti ti-file-text"></i> Currículo
                         </a>
-                        <span class="nexus-status-badge success">Match confirmado</span>
+                        <span class="nexus-status-badge success w-100 d-block text-center">Match confirmado</span>
                       </div>
                     </th:block>
                     <th:block th:case="'REJECTED'">

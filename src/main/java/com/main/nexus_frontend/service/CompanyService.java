@@ -2,7 +2,9 @@ package com.main.nexus_frontend.service;
 
 import com.main.nexus_frontend.model.CompanyDashboardAnalyticsDTO;
 import com.main.nexus_frontend.model.CompanyDashboardDTO;
+import com.main.nexus_frontend.model.CompanyDTO;
 import com.main.nexus_frontend.model.CompanyProfileDTO;
+import com.main.nexus_frontend.model.ContactInfoDTO;
 import com.main.nexus_frontend.model.SkillDTO;
 import com.main.nexus_frontend.model.UpdateCompanyDTO;
 import java.util.Arrays;
@@ -122,6 +124,33 @@ public class CompanyService {
                             "Failed to upload photo");
                 })
                 .body(String.class);
+    }
+
+    // Perfil público — usado quando um profissional visualiza uma empresa
+    public CompanyDTO getPublicProfile(Long id) {
+        return restClient.get()
+                .uri("/public/company/{id}", id)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Company not found");
+                })
+                .body(CompanyDTO.class);
+    }
+
+    // Contato liberado só depois de um match confirmado com o profissional logado
+    public ContactInfoDTO getContact(String token, Long companyId) {
+        return restClient.get()
+                .uri("/company/{companyId}/contact", companyId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Contact not available");
+                })
+                .body(ContactInfoDTO.class);
     }
 
     public void removePhoto(String token) {

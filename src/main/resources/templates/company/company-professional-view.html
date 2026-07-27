@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head(${professional.name} + ' — Perfil')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4" style="max-width:920px">
+
+      <!-- Back -->
+      <div class="mb-4">
+        <a href="javascript:history.back()"
+           class="d-inline-flex align-items-center gap-1 text-decoration-none"
+           style="color:#64748b;font-size:0.875rem">
+          <i class="ti ti-arrow-left"></i> Voltar
+        </a>
+      </div>
+
+      <div class="row g-3">
+
+        <!-- Left col -->
+        <div class="col-lg-4">
+
+          <!-- Avatar + nome -->
+          <div class="nexus-card p-4 text-center mb-3">
+            <div class="nexus-avatar-xl mx-auto mb-3"
+                 th:with="n=${professional.name != null ? professional.name : 'P'},
+                          h=${n.hashCode()},
+                          hue=${(h%360)<0?(h%360)+360:h%360}"
+                 th:style="'background:hsl('+${hue}+',50%,40%);width:96px;height:96px;display:flex;align-items:center;justify-content:center'">
+              <span style="font-size:1.75rem;font-weight:700;color:#fff"
+                    th:text="${#strings.substring(n,0,1).toUpperCase()}">P</span>
+            </div>
+
+            <div class="fw-bold text-white" style="font-size:1.15rem" th:text="${professional.name}">Nome</div>
+            <div style="color:#64748b;font-size:0.85rem;margin-top:2px"
+                 th:if="${professional.city != null}"
+                 th:text="${professional.city} + (${professional.uf != null} ? ' / ' + ${professional.uf} : '')">Cidade</div>
+
+            <div style="color:#94a3b8;font-size:0.85rem;margin-top:4px" th:if="${professional.experienceLevel != null}">
+              <i class="ti ti-briefcase me-1"></i>
+              <span th:switch="${professional.experienceLevel}">
+                <span th:case="'JUNIOR'">Júnior</span>
+                <span th:case="'MID_LEVEL'">Pleno</span>
+                <span th:case="'SENIOR'">Sênior</span>
+                <span th:case="'LEAD'">Lead</span>
+                <span th:case="'PRINCIPAL'">Principal</span>
+                <span th:case="*" th:text="${professional.experienceLevel}">—</span>
+              </span>
+            </div>
+
+            <!-- Reputação estrelas -->
+            <div class="d-flex align-items-center justify-content-center gap-1 mt-2"
+                 th:if="${professional.reputation != null and professional.reputation > 0}">
+              <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                <i th:class="${i <= professional.reputation} ? 'ti ti-star-filled' : 'ti ti-star'"
+                   style="color:#f59e0b;font-size:0.9rem"></i>
+              </th:block>
+              <span class="tabular ms-1" style="color:#f59e0b;font-size:0.85rem;font-weight:600"
+                    th:text="${#numbers.formatDecimal(professional.reputation,1,1)}">0.0</span>
+            </div>
+
+            <!-- Badges -->
+            <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap mt-3">
+              <span th:if="${professional.available != null and professional.available}"
+                    class="nexus-status-badge success">
+                <i class="ti ti-circle-check me-1"></i>Disponível
+              </span>
+              <span th:if="${professional.available == null or !professional.available}"
+                    class="nexus-status-badge">
+                <i class="ti ti-clock me-1"></i>Indisponível
+              </span>
+              <span th:if="${professional.overallScore != null}" class="nexus-status-badge info">
+                <i class="ti ti-trending-up me-1"></i>
+                Score: <span th:text="${#numbers.formatDecimal(professional.overallScore,1,1)}">0.0</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Contato -->
+          <div class="nexus-card p-3 mb-3">
+            <div class="fw-semibold text-white mb-2 d-flex align-items-center gap-2">
+              <i class="ti ti-lock-open" style="color:#22c55e" th:if="${contact != null}"></i>
+              <i class="ti ti-lock" style="color:#64748b" th:if="${contact == null}"></i>
+              Contato
+            </div>
+
+            <div th:if="${contact != null}" class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem" th:if="${contact.phone != null}">
+                <i class="ti ti-phone" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${contact.phone}">Telefone</span>
+              </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem" th:if="${contact.email != null}">
+                <i class="ti ti-mail" style="color:#6b6eff;width:16px"></i>
+                <span th:text="${contact.email}">Email</span>
+              </div>
+              <a th:href="@{/company/{id}/resume(id=${professional.id})}"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100 mt-1" target="_blank">
+                <i class="ti ti-file-text"></i> Baixar currículo
+              </a>
+            </div>
+
+            <div th:if="${contact == null}" style="color:#64748b;font-size:0.82rem">
+              Os dados de contato deste profissional são liberados automaticamente após a confirmação de um match.
+            </div>
+          </div>
+
+          <!-- Reputação -->
+          <div class="nexus-card p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="fw-semibold text-white" style="font-size:0.875rem">Reputação</div>
+              <span style="color:#475569;font-size:0.7rem"
+                    th:if="${professional.reputationDetails != null and professional.reputationDetails.totalReviews != null}">
+                <span th:text="${professional.reputationDetails.totalReviews}">0</span> avaliação(ões)
+              </span>
+            </div>
+
+            <div th:if="${professional.reputationDetails == null or professional.reputationDetails.totalReviews == null}"
+                 style="color:#475569;font-size:0.8rem">
+              Nenhuma avaliação ainda.
+            </div>
+
+            <th:block th:if="${professional.reputationDetails != null and professional.reputationDetails.totalReviews != null}"
+                      th:with="rep=${professional.reputationDetails}">
+              <!-- Score geral -->
+              <div class="text-center mb-4"
+                   th:with="score=${rep.overallScore != null ? rep.overallScore : 0.0},
+                            color=${score >= 4.0 ? '#22c55e' : (score >= 3.0 ? '#f59e0b' : '#ef4444')}">
+                <div class="tabular fw-bold" style="font-size:2rem;letter-spacing:-0.02em"
+                     th:style="'color:' + ${color}"
+                     th:text="${#numbers.formatDecimal(score,1,1)} + ' / 5,0'">0.0</div>
+              </div>
+
+              <!-- Confiança -->
+              <div class="mb-4" th:if="${rep.confidencePercent != null}">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b;font-size:0.72rem">Confiança</span>
+                  <span class="tabular fw-semibold" style="color:#6b6eff;font-size:0.72rem"
+                        th:text="${#numbers.formatDecimal(rep.confidencePercent,1,0)} + '%'">0%</span>
+                </div>
+                <div class="nexus-breakdown-bar" style="height:6px">
+                  <div class="nexus-breakdown-bar-fill"
+                       th:style="'width:' + ${rep.confidencePercent} + '%;background:linear-gradient(90deg,#6b6eff,#a78bfa)'"></div>
+                </div>
+              </div>
+
+              <!-- Indicadores -->
+              <div class="d-flex flex-column gap-3 mb-4">
+                <div th:if="${rep.technicalCompetence != null}">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#94a3b8;font-size:0.72rem">Competência técnica</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.technicalCompetence,1,1)}">0.0</span>
+                  </div>
+                  <div class="nexus-breakdown-bar" style="height:5px">
+                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.technicalCompetence * 20} + '%;background:#6b6eff'"></div>
+                  </div>
+                </div>
+                <div th:if="${rep.communication != null}">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#94a3b8;font-size:0.72rem">Comunicação</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.communication,1,1)}">0.0</span>
+                  </div>
+                  <div class="nexus-breakdown-bar" style="height:5px">
+                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.communication * 20} + '%;background:#67e8f9'"></div>
+                  </div>
+                </div>
+                <div th:if="${rep.reliability != null}">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#94a3b8;font-size:0.72rem">Confiabilidade</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.reliability,1,1)}">0.0</span>
+                  </div>
+                  <div class="nexus-breakdown-bar" style="height:5px">
+                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.reliability * 20} + '%;background:#22c55e'"></div>
+                  </div>
+                </div>
+                <div th:if="${rep.punctuality != null}">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#94a3b8;font-size:0.72rem">Pontualidade</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.punctuality,1,1)}">0.0</span>
+                  </div>
+                  <div class="nexus-breakdown-bar" style="height:5px">
+                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.punctuality * 20} + '%;background:#f59e0b'"></div>
+                  </div>
+                </div>
+                <div th:if="${rep.professionalism != null}">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span style="color:#94a3b8;font-size:0.72rem">Profissionalismo</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.professionalism,1,1)}">0.0</span>
+                  </div>
+                  <div class="nexus-breakdown-bar" style="height:5px">
+                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.professionalism * 20} + '%;background:#a78bfa'"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Satisfação + Recomendação -->
+              <div class="d-flex flex-column gap-3">
+                <div style="background:rgba(107,110,255,0.06);border:1px solid rgba(107,110,255,0.15);border-radius:10px;padding:0.85rem"
+                     th:if="${rep.satisfactionAverage != null}">
+                  <div style="color:#64748b;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">Satisfação média</div>
+                  <div class="tabular fw-bold" style="font-size:1.35rem;color:#6b6eff">
+                    <span th:text="${#numbers.formatDecimal(rep.satisfactionAverage * 20,1,1)}">0.0</span>
+                    <span style="font-size:0.7rem;color:#64748b;font-weight:500">/ 100</span>
+                  </div>
+                </div>
+                <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:0.85rem"
+                     th:if="${rep.recommendationRate != null}">
+                  <div style="color:#64748b;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">Recomendam</div>
+                  <div class="tabular fw-bold" style="font-size:1.35rem;color:#22c55e"
+                       th:text="${#numbers.formatDecimal(rep.recommendationRate * 100,1,1)} + '%'">0%</div>
+                </div>
+              </div>
+            </th:block>
+          </div>
+
+        </div><!-- /col-lg-4 -->
+
+        <!-- Right col -->
+        <div class="col-lg-8">
+
+          <!-- Skills -->
+          <div th:if="${professional.skills != null and !professional.skills.isEmpty()}" class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3" style="font-size:0.9rem">
+              <i class="ti ti-code me-2" style="color:#6b6eff"></i>Skills
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+              <span th:each="skill : ${professional.skills}"
+                    class="nexus-chip nexus-chip-tech"
+                    th:text="${skill}">Skill</span>
+            </div>
+          </div>
+
+          <!-- Previous projects -->
+          <div th:if="${professional.previousProjects != null and !professional.previousProjects.isEmpty()}" class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3" style="font-size:0.9rem">
+              <i class="ti ti-folder me-2" style="color:#6b6eff"></i>Projetos anteriores
+            </div>
+            <div class="d-flex flex-column gap-3">
+              <div th:each="proj : ${professional.previousProjects}"
+                   class="p-3" style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04)">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <div class="fw-semibold text-white" th:text="${proj.title}">Título</div>
+                  <span th:if="${proj.yearOfCompletion != null}"
+                        style="color:#64748b;font-size:0.78rem;flex-shrink:0"
+                        th:text="${proj.yearOfCompletion}">2024</span>
+                </div>
+                <div th:if="${proj.technologies != null}"
+                     style="color:#94a3b8;font-size:0.82rem"
+                     th:text="${proj.technologies}">Tecnologias</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /col-lg-8 -->
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+</body>
+</html>

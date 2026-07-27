@@ -265,6 +265,33 @@ public class ProfessionalService {
                 .body(ProfessionalDashboardAnalyticsDTO.class);
     }
 
+    // Perfil público — usado quando uma empresa visualiza um profissional
+    public PublicProfessionalDTO getPublicProfile(Long id) {
+        return restClient.get()
+                .uri("/public/professional/{id}", id)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Professional not found");
+                })
+                .body(PublicProfessionalDTO.class);
+    }
+
+    // Contato liberado só depois de um match confirmado com a empresa logada
+    public ContactInfoDTO getContact(String token, Long professionalId) {
+        return restClient.get()
+                .uri("/professional/{professionalId}/contact", professionalId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Contact not available");
+                })
+                .body(ContactInfoDTO.class);
+    }
+
     public byte[] exportPdf(String token, Long professionalId) {
         String uri = "/professional/profile/export";
         if (professionalId != null) {
