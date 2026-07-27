@@ -118,7 +118,7 @@
                     <td>
                       <span th:if="${proj.minimumBudget != null and proj.maximumBudget != null}"
                             class="tabular" style="color:#6b6eff;font-weight:600"
-                            th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}+'–'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+                            th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}+'–R$'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
                       <span th:unless="${proj.minimumBudget != null and proj.maximumBudget != null}"
                             style="color:#475569">A combinar</span>
                     </td>

@@ -1,8 +1,12 @@
 package com.main.nexus_frontend.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CompanyDashboardDTO {
     private CompanyProfileDTO profile;
     private Integer totalProjects;
+    // O backend expõe este campo como "totalMatches" (ver CompanyDashboardDTO no nexus)
+    @JsonProperty("totalMatches")
     private Integer confirmedMatches;
 
     public CompanyDashboardDTO() {}

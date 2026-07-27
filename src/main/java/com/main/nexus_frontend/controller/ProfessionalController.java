@@ -91,6 +91,11 @@ public class ProfessionalController {
         model.addAttribute("profile", profile);
         model.addAttribute("allSkills", allSkills);
         model.addAttribute("avgScore", Math.round(avgScore));
+        try {
+            model.addAttribute("reputation", reputationService.getProfessional(token, profile.getId()));
+        } catch (Exception e) {
+            model.addAttribute("reputation", new ReputationDTO());
+        }
         if ("true".equals(linkedinLinked)) {
             model.addAttribute("successMsg", "Conta do LinkedIn conectada! Agora informe o link do seu perfil abaixo, em \"Editar\".");
         }
@@ -367,21 +372,6 @@ public class ProfessionalController {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar interesse: " + e.getMessage());
         }
         return "redirect:/public/opportunity/" + projectId;
-    }
-
-    @GetMapping("/reputation")
-    public String reputation(HttpSession session, Model model) {
-        String token = (String) session.getAttribute("token");
-        Long userId = (Long) session.getAttribute("userId");
-        try {
-            ProfessionalProfileDTO profile = professionalService.getProfile(token);
-            ReputationDTO reputation = reputationService.getProfessional(token, profile.getId());
-            model.addAttribute("reputation", reputation);
-        } catch (Exception e) {
-            model.addAttribute("reputation", new ReputationDTO());
-        }
-        model.addAttribute("activePage", "profile");
-        return "pro/pro-reputation";
     }
 
     @GetMapping("/map")
