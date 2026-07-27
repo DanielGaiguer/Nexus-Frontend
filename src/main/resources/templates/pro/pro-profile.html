@@ -560,22 +560,27 @@
             Selecione as skills que você domina. Elas impactam diretamente o componente de Skills no score de compatibilidade.
           </p>
           <!-- Skills do catálogo (allSkills vem do model como List de objetos com id e name) -->
-          <div class="d-flex flex-wrap gap-2" th:if="${allSkills != null and !#lists.isEmpty(allSkills)}">
-            <label th:each="sk : ${allSkills}"
-                   style="cursor:pointer;margin:0">
-              <input type="checkbox" name="skillIds" th:value="${sk.id}"
-                     style="display:none"
-                     th:checked="${profile.skills != null and profile.skills.contains(sk.name)}"
-                     class="skill-checkbox">
-              <span class="nexus-chip skill-chip-toggle"
-                    th:classappend="${profile.skills != null and profile.skills.contains(sk.name)} ? ' skill-chip-active' : ''"
-                    th:text="${sk.name}">Skill</span>
-            </label>
-          </div>
+          <label class="nexus-label mb-2">Suas skills</label>
+          <select class="nexus-select" name="skillIds" id="proSkills" multiple
+                  data-placeholder="Buscar e selecionar skills..."
+                  th:if="${allSkills != null and !#lists.isEmpty(allSkills)}">
+            <option th:each="sk : ${allSkills}"
+                    th:value="${sk.id}"
+                    th:text="${sk.name}"
+                    th:selected="${profile.skills != null and profile.skills.contains(sk.name)}">Skill</option>
+          </select>
           <div th:unless="${allSkills != null and !#lists.isEmpty(allSkills)}"
                style="color:#475569;font-size:0.875rem">
             Catálogo de skills não disponível. Contate o administrador.
           </div>
+          <!-- O Tom Select global limita o dropdown a max-width:280px (pensado para
+               os filtros compactos de tabelas) — aqui, dentro do modal de skills,
+               queremos que ele ocupe a largura toda disponível. -->
+          <style>
+            #skillsModal .ts-wrapper.nexus-select {
+              max-width: 100% !important;
+            }
+          </style>
         </div>
         <div class="modal-footer">
           <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
@@ -646,15 +651,6 @@
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
-// Toggle visual do skill chip
-document.querySelectorAll('.skill-chip-toggle').forEach(function(chip) {
-  chip.addEventListener('click', function() {
-    var cb = this.previousElementSibling;
-    cb.checked = !cb.checked;
-    this.classList.toggle('skill-chip-active', cb.checked);
-  });
-});
-
 // Validação do formulário de edição de perfil
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('editProfileForm');
@@ -668,13 +664,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
-<style>
-.skill-chip-active {
-  border-color: rgba(107,110,255,0.5) !important;
-  background: rgba(107,110,255,0.18) !important;
-  color: #a5b4fc !important;
-}
-</style>
 
 <!-- ══ Cropper.js CDN ══ -->
 <link rel="stylesheet"
