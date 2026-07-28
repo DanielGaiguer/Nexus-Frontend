@@ -1,238 +1,975 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Home')}"></head>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nexus conecta empresas de tecnologia a profissionais autônomos de TI com matchmaking inteligente: score de compatibilidade real e contato liberado só quando os dois lados dizem sim.">
+    <meta property="og:title" content="Nexus — Matching inteligente para TI">
+    <meta property="og:description" content="Score de compatibilidade real. Match bilateral. Contato liberado só quando os dois lados dizem sim.">
+    <meta property="og:type" content="website">
+    <title>Nexus — Matching inteligente para TI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            /* ─── Nexus brand tokens (paleta oficial do projeto) ─── */
+            --nexus-primary: #6b6eff;
+            --nexus-secondary: #a78bfa;
+            --nexus-accent: #67e8f9;
+            --nexus-bg-1: #040613;
+            --nexus-bg-2: #090e1f;
+            --nexus-bg-3: #0d1329;
+            --nexus-success: #22c55e;
+            --nexus-warning: #f59e0b;
+            --nexus-info: #06b6d4;
+            --nexus-danger: #ef4444;
+
+            /* ─── Aliases usados nesta página ─── */
+            --nexus-white: #f1f5f9;
+            --nexus-muted: #94a3b8;
+            --nexus-border: rgba(107, 110, 255, 0.14);
+            --nexus-card: rgba(255,255,255,0.04);
+            --nx-radius: 16px;
+            --nx-ease: 250ms ease;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            background: var(--nexus-bg-1);
+            color: var(--nexus-white);
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4 { font-family: 'Sora', sans-serif; margin: 0; }
+        p { margin: 0; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; margin: 0; padding: 0; }
+        img, svg { display: block; max-width: 100%; }
+        section { position: relative; }
+
+        .nx-container {
+            width: 100%;
+            max-width: 1180px;
+            margin-inline: auto;
+            padding-inline: 20px;
+        }
+        @media (min-width: 768px) {
+            .nx-container { padding-inline: 32px; }
+        }
+
+        .eyebrow {
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 11px;
+            color: var(--nexus-accent);
+            margin-bottom: 14px;
+        }
+        .section-title {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            font-size: clamp(28px, 4vw, 40px);
+            color: var(--nexus-white);
+            line-height: 1.15;
+        }
+        .grad-text {
+            background: linear-gradient(135deg, var(--nexus-primary), var(--nexus-secondary), var(--nexus-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* ── Buttons ── */
+        .btn-nx {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 26px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            transition: transform var(--nx-ease), background var(--nx-ease), border-color var(--nx-ease), box-shadow var(--nx-ease), color var(--nx-ease);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn-nx-sm { padding: 9px 20px; font-size: 14px; }
+        .btn-nx-lg { padding: 16px 32px; font-size: 16px; }
+        .btn-nx-filled {
+            background: var(--nexus-primary);
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(107,110,255,0.28);
+        }
+        .btn-nx-filled:hover { background: #5558e0; transform: translateY(-2px); }
+        .btn-nx-outline {
+            background: transparent;
+            border-color: rgba(255,255,255,0.22);
+            color: var(--nexus-white);
+        }
+        .btn-nx-outline:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04); }
+        .btn-nx-ghost {
+            background: transparent;
+            border-color: var(--nexus-border);
+            color: var(--nexus-muted);
+        }
+        .btn-nx-ghost:hover { border-color: var(--nexus-accent); color: var(--nexus-white); }
+
+        /* ── Navbar ── */
+        .nx-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: transparent;
+            border-bottom: 1px solid transparent;
+            transition: background var(--nx-ease), border-color var(--nx-ease), backdrop-filter var(--nx-ease);
+        }
+        .nx-navbar.is-scrolled {
+            background: rgba(4, 6, 19, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom-color: var(--nexus-border);
+        }
+        .nx-nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-block: 18px;
+        }
+        .nx-logo {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+            font-size: 20px;
+            color: var(--nexus-white);
+        }
+        .nx-logo .dot { color: var(--nexus-accent); }
+        .nx-nav-links {
+            display: none;
+            align-items: center;
+            gap: 34px;
+        }
+        .nx-nav-links a {
+            font-size: 14.5px;
+            font-weight: 500;
+            color: var(--nexus-muted);
+            transition: color var(--nx-ease);
+        }
+        .nx-nav-links a:hover { color: var(--nexus-white); }
+        .nx-nav-actions { display: none; align-items: center; gap: 10px; }
+        .nx-nav-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: 1px solid var(--nexus-border);
+            border-radius: 10px;
+            color: var(--nexus-white);
+            cursor: pointer;
+        }
+        .nx-nav-toggle svg .l2 { transition: opacity 150ms ease; }
+        .nx-nav-toggle svg .l1, .nx-nav-toggle svg .l3 { transition: transform 150ms ease; transform-origin: center; }
+        .nx-nav-toggle.is-open svg .l1 { transform: translateY(6px) rotate(45deg); }
+        .nx-nav-toggle.is-open svg .l3 { transform: translateY(-6px) rotate(-45deg); }
+        .nx-nav-toggle.is-open svg .l2 { opacity: 0; }
+        .nx-mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            padding: 10px 0 22px;
+            border-top: 1px solid var(--nexus-border);
+        }
+        .nx-mobile-menu.is-open { display: flex; }
+        .nx-mobile-menu a {
+            padding: 12px 4px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--nexus-muted);
+            border-bottom: 1px solid var(--nexus-border);
+        }
+        .nx-mobile-menu .nx-mobile-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 14px;
+        }
+        .nx-mobile-actions .btn-nx { flex: 1; }
+        @media (min-width: 992px) {
+            .nx-nav-links { display: flex; }
+            .nx-nav-actions { display: flex; }
+            .nx-nav-toggle { display: none; }
+        }
+
+        /* ── Hero ── */
+        .nx-hero {
+            padding-top: clamp(56px, 8vw, 96px);
+            padding-bottom: clamp(56px, 8vw, 96px);
+            overflow: hidden;
+        }
+        .hero-grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1.2' cy='1.2' r='1.2' fill='rgba(107,110,255,0.12)'/%3E%3C/svg%3E");
+            background-size: 32px 32px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+            pointer-events: none;
+        }
+        .hero-inner {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 56px;
+            align-items: center;
+        }
+        @media (min-width: 992px) {
+            .hero-inner { grid-template-columns: 1.05fr 0.95fr; gap: 40px; }
+        }
+        .hero-fade {
+            opacity: 0;
+            animation: fadeUp 700ms ease forwards;
+        }
+        .hero-title {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            font-size: clamp(42px, 6vw, 80px);
+            line-height: 1.06;
+            margin-bottom: 20px;
+        }
+        .hero-subtitle {
+            font-size: 17px;
+            line-height: 1.65;
+            color: var(--nexus-muted);
+            max-width: 520px;
+            margin-bottom: 32px;
+        }
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        .hero-proof {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--nexus-muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 10px;
+        }
+        .hero-proof .sep { color: var(--nexus-accent); }
+
+        /* ── Match score visualizer ── */
+        .match-visualizer {
+            position: relative;
+            max-width: 360px;
+            margin-inline: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .mv-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--nexus-card);
+            border: 1px solid var(--nexus-border);
+            border-radius: var(--nx-radius);
+            padding: 16px 18px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .mv-card-company { animation: floatDown 4.2s ease-in-out infinite; }
+        .mv-card-pro { animation: floatUp 4.2s ease-in-out infinite; }
+        .mv-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mv-icon svg { width: 20px; height: 20px; }
+        .mv-card-company .mv-icon { background: rgba(107,110,255,0.14); color: var(--nexus-primary); }
+        .mv-card-pro .mv-icon { background: rgba(103,232,249,0.14); color: var(--nexus-accent); }
+        .mv-card-title { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 14.5px; color: var(--nexus-white); }
+        .mv-card-sub { font-size: 12.5px; color: var(--nexus-muted); margin-top: 2px; }
+        .mv-connector {
+            position: relative;
+            height: 108px;
+            width: 2px;
+            margin: -2px auto;
+            background: linear-gradient(var(--nexus-primary), var(--nexus-secondary), var(--nexus-accent));
+            animation: pulseLine 2.6s ease-in-out infinite;
+        }
+        .mv-score {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            background: var(--nexus-bg-1);
+            border: 1px solid var(--nexus-accent);
+            box-shadow: 0 0 26px rgba(103,232,249,0.25);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+        }
+        .mv-score-value {
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            color: var(--nexus-white);
+        }
+        .mv-score-value::after { content: '%'; }
+        .mv-score-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--nexus-muted);
+        }
+
+        @keyframes floatDown { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+        @keyframes floatUp { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes pulseLine { 0%, 100% { opacity: 0.5; transform: scaleY(1); } 50% { opacity: 1; transform: scaleY(1.04); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── Logos belt ── */
+        .logos-belt {
+            background: var(--nexus-bg-2);
+            border-top: 1px solid var(--nexus-border);
+            border-bottom: 1px solid var(--nexus-border);
+            padding-block: 40px;
+        }
+        .logos-belt .eyebrow { display: block; text-align: center; }
+        .logos-belt-viewport { overflow: hidden; }
+        .logos-belt-track {
+            display: flex;
+            width: max-content;
+            animation: marquee 34s linear infinite;
+        }
+        .logos-belt-group {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            gap: 14px;
+            padding-right: 14px;
+        }
+        .logos-belt-group span:not(.sep) {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--nexus-muted);
+            white-space: nowrap;
+        }
+        .logos-belt-group .sep { color: var(--nexus-accent); }
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* ── Como funciona ── */
+        .nx-section { padding-block: clamp(64px, 9vw, 112px); }
+        .section-head { max-width: 620px; margin-bottom: 48px; }
+        .section-head p { color: var(--nexus-muted); font-size: 16px; margin-top: 14px; line-height: 1.6; }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 768px) {
+            .steps-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        }
+        .step-card {
+            background: var(--nexus-card);
+            border: 1px solid var(--nexus-border);
+            border-radius: var(--nx-radius);
+            padding: 28px 26px;
+        }
+        .step-number {
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            font-size: 48px;
+            color: var(--nexus-primary);
+            line-height: 1;
+            margin-bottom: 14px;
+        }
+        .step-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 11px;
+            background: rgba(103,232,249,0.1);
+            color: var(--nexus-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .step-icon svg { width: 22px; height: 22px; }
+        .step-card h3 { font-weight: 600; font-size: 18px; margin-bottom: 10px; }
+        .step-card p { color: var(--nexus-muted); font-size: 14.5px; line-height: 1.6; }
+
+        /* ── Métricas ── */
+        .nx-metrics { background: var(--nexus-bg-2); }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px 20px;
+        }
+        @media (min-width: 992px) {
+            .metrics-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        .metric-item { text-align: center; }
+        .metric-value {
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            font-size: clamp(36px, 5vw, 56px);
+            background: linear-gradient(135deg, var(--nexus-primary), var(--nexus-secondary), var(--nexus-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.1;
+        }
+        .metric-label { font-size: 14px; color: var(--nexus-muted); margin-top: 8px; }
+
+        /* ── Para quem é ── */
+        .audience-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        @media (min-width: 768px) {
+            .audience-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .audience-card {
+            background: var(--nexus-card);
+            border: 1px solid var(--nexus-border);
+            border-radius: var(--nx-radius);
+            padding: 34px 30px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform var(--nx-ease), box-shadow var(--nx-ease);
+        }
+        .audience-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+        }
+        .audience-card.is-company {
+            border: 1px solid rgba(107,110,255,0.3);
+            box-shadow: 0 0 30px rgba(107,110,255,0.08);
+        }
+        .audience-card.is-company:hover { box-shadow: 0 12px 32px rgba(107,110,255,0.18); }
+        .audience-card h3 { font-weight: 600; font-size: 22px; margin-bottom: 20px; }
+        .audience-list { display: flex; flex-direction: column; gap: 13px; margin-bottom: 26px; }
+        .audience-list li { display: flex; gap: 10px; font-size: 15px; color: var(--nexus-white); line-height: 1.5; }
+        .audience-card.is-pro .audience-list li span.arrow { color: var(--nexus-accent); }
+        .audience-card.is-company .audience-list li span.arrow { color: var(--nexus-primary); }
+
+        /* ── Depoimentos ── */
+        .nx-testimonials { background: var(--nexus-bg-2); }
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 22px;
+        }
+        @media (min-width: 992px) {
+            .testimonials-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        .testimonial-card {
+            background: var(--nexus-card);
+            border: 1px solid var(--nexus-border);
+            border-radius: var(--nx-radius);
+            padding: 30px 26px 26px;
+        }
+        .testimonial-card .quote-mark {
+            font-family: 'Sora', sans-serif;
+            font-size: 80px;
+            line-height: 0;
+            color: var(--nexus-accent);
+            display: block;
+            height: 40px;
+            margin-bottom: 6px;
+        }
+        .testimonial-text { font-size: 15.5px; line-height: 1.65; color: var(--nexus-white); margin-bottom: 22px; }
+        .testimonial-stars { color: var(--nexus-accent); letter-spacing: 2px; margin-bottom: 14px; font-size: 14px; }
+        .testimonial-name { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 15px; }
+        .testimonial-role { font-size: 13.5px; color: var(--nexus-muted); margin-top: 2px; }
+
+        /* ── CTA final ── */
+        .nx-cta-final {
+            background: linear-gradient(135deg, var(--nexus-bg-1), var(--nexus-bg-3));
+            padding-block: clamp(70px, 10vw, 120px);
+            text-align: center;
+            overflow: hidden;
+        }
+        .cta-visual-decor {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        .cta-visual-decor .match-visualizer { transform: scale(1.4); }
+        .nx-cta-final .section-title { font-size: clamp(30px, 5vw, 48px); margin-bottom: 14px; }
+        .nx-cta-final p { color: var(--nexus-muted); font-size: 16.5px; margin-bottom: 36px; }
+        .cta-final-actions { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+
+        /* ── Footer ── */
+        .nx-footer { background: var(--nexus-bg-1); border-top: 1px solid var(--nexus-border); padding-block: 56px 32px; }
+        .footer-top { display: grid; grid-template-columns: 1fr; gap: 40px; margin-bottom: 40px; }
+        @media (min-width: 768px) {
+            .footer-top { grid-template-columns: 1.4fr repeat(3, 1fr); }
+        }
+        .footer-brand p { color: var(--nexus-muted); font-size: 14px; margin-top: 12px; max-width: 260px; line-height: 1.6; }
+        .footer-col h4 { font-size: 13px; font-weight: 600; color: var(--nexus-white); margin-bottom: 16px; }
+        .footer-col ul { display: flex; flex-direction: column; gap: 11px; }
+        .footer-col a { font-size: 14px; color: var(--nexus-muted); transition: color var(--nx-ease); }
+        .footer-col a:hover { color: var(--nexus-white); }
+        .footer-bottom { border-top: 1px solid var(--nexus-border); padding-top: 24px; font-size: 13px; color: var(--nexus-muted); }
+
+        /* ── Reduced motion ── */
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .hero-fade { animation: none !important; opacity: 1 !important; }
+            .mv-card-company, .mv-card-pro, .mv-connector { animation: none !important; }
+            .logos-belt-track { animation: none !important; }
+            .logos-belt-group[aria-hidden="true"] { display: none; }
+            .audience-card:hover { transform: none; }
+        }
+    </style>
+</head>
 <body>
 
-    <div th:replace="~{fragments/header :: header}"></div>
+<nav class="nx-navbar" id="nxNavbar">
+    <div class="nx-container nx-nav-inner">
+        <a class="nx-logo" th:href="@{/}" href="/">nexus<span class="dot">.</span></a>
 
-    <main>
-        <!-- ─── Hero ─── -->
-        <section class="nexus-hero">
-            <div class="hero-grid-bg"></div>
-            <div class="container">
-                <div class="row align-items-center" style="min-height:85vh;">
-                    <div class="col-lg-6">
-                        <span class="badge badge-glow d-inline-flex align-items-center gap-1 mb-4">
-                            <i class="ti ti-sparkles"></i> Matchmaking Inteligente
-                        </span>
-                        <h1 class="display-3 fw-bold lh-1 mb-3" style="letter-spacing:-0.03em;">
-                            Encontre o<br>
-                            <span class="text-gradient">talento ideal</span>
-                            <br>para seu projeto
-                        </h1>
-                        <p class="fs-5 mb-4" style="color:var(--text-secondary);max-width:520px;">
-                            O Nexus conecta empresas de tecnologia a profissionais aut&ocirc;nomos
-                            usando um algoritmo inteligente de compatibilidade.
-                        </p>
-                        <div class="d-flex gap-3 flex-wrap">
-                            <a th:href="@{/auth/register/professional}" class="btn btn-primary btn-lg btn-glow px-4">
-                                <i class="ti ti-user-plus me-2"></i>Sou Profissional
-                            </a>
-                            <a th:href="@{/auth/register/company}" class="btn btn-outline-light btn-lg px-4">
-                                <i class="ti ti-building me-2"></i>Sou Empresa
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-5 offset-lg-1 d-none d-lg-block">
-                        <div class="match-preview-card">
-                            <div class="d-flex align-items-center gap-2 mb-3" style="color:var(--text-accent);font-weight:600;">
-                                <i class="ti ti-hexagon-letter-n"></i>
-                                <span style="font-size:0.85rem;">Match Score</span>
-                                <span class="match-score-value ms-auto">94%</span>
-                            </div>
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="company-avatar"><i class="ti ti-building-skyscraper"></i></div>
-                                <div>
-                                    <div class="fw-semibold text-light">TechFlow Solutions</div>
-                                    <small style="color:var(--text-muted);">Projeto: App Mobile</small>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-column gap-2">
-                                <div>
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <small style="color:var(--text-muted);">Skills</small>
-                                        <small style="color:var(--text-muted);">95%</small>
-                                    </div>
-                                    <div class="progress" style="height:5px;background:rgba(255,255,255,0.05);border-radius:10px;">
-                                        <div class="progress-bar rounded-pill" style="width:95%;background:var(--primary);"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <small style="color:var(--text-muted);">Or&ccedil;amento</small>
-                                        <small style="color:var(--text-muted);">88%</small>
-                                    </div>
-                                    <div class="progress" style="height:5px;background:rgba(255,255,255,0.05);border-radius:10px;">
-                                        <div class="progress-bar rounded-pill" style="width:88%;background:var(--success);"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <small style="color:var(--text-muted);">Hist&oacute;rico</small>
-                                        <small style="color:var(--text-muted);">72%</small>
-                                    </div>
-                                    <div class="progress" style="height:5px;background:rgba(255,255,255,0.05);border-radius:10px;">
-                                        <div class="progress-bar rounded-pill" style="width:72%;background:var(--warning);"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-3 pt-3 text-center border-top" style="border-color:var(--border-color) !important;">
-                                <small style="color:var(--text-muted);">
-                                    <i class="ti ti-star-filled me-1" style="color:var(--warning);"></i>Matchmaking em tempo real
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="nx-nav-links">
+            <a href="#como-funciona">Como funciona</a>
+            <a href="#para-empresas">Para empresas</a>
+            <a href="#para-profissionais">Para profissionais</a>
+        </div>
 
-        <!-- ─── Como funciona ─── -->
-        <section id="how-it-works" class="py-5">
-            <div class="container py-4">
-                <div class="text-center mb-5">
-                    <span class="badge badge-outline d-inline-flex mb-3">Fluxo</span>
-                    <h2 class="section-title">Como funciona</h2>
-                    <p class="text-light col-lg-6 mx-auto">
-                        Em tr&ecirc;s passos simples, encontre a parceria perfeita.
+        <div class="nx-nav-actions">
+            <a class="btn-nx btn-nx-outline btn-nx-sm" th:href="@{/auth/login}" href="/auth/login">Entrar</a>
+            <a class="btn-nx btn-nx-filled btn-nx-sm" th:href="@{/auth/register/professional}" href="/auth/register/professional">Criar conta</a>
+        </div>
+
+        <button class="nx-nav-toggle" id="nxNavToggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="nxMobileMenu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20">
+                <line class="l1" x1="3" y1="6" x2="21" y2="6"></line>
+                <line class="l2" x1="3" y1="12" x2="21" y2="12"></line>
+                <line class="l3" x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <div class="nx-mobile-menu nx-container" id="nxMobileMenu">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#para-empresas">Para empresas</a>
+        <a href="#para-profissionais">Para profissionais</a>
+        <div class="nx-mobile-actions">
+            <a class="btn-nx btn-nx-outline" th:href="@{/auth/login}" href="/auth/login">Entrar</a>
+            <a class="btn-nx btn-nx-filled" th:href="@{/auth/register/professional}" href="/auth/register/professional">Criar conta</a>
+        </div>
+    </div>
+</nav>
+
+<main>
+    <!-- ── Hero ── -->
+    <section class="nx-hero" id="hero">
+        <div class="hero-grid-bg" aria-hidden="true"></div>
+        <div class="nx-container">
+            <div class="hero-inner">
+                <div>
+                    <p class="eyebrow hero-fade" style="animation-delay:0s;">Matching inteligente para TI</p>
+                    <h1 class="hero-title hero-fade" style="animation-delay:0.1s;">
+                        Conectamos talentos<br>
+                        ao projeto <span class="grad-text">certo.</span>
+                    </h1>
+                    <p class="hero-subtitle hero-fade" style="animation-delay:0.2s;">
+                        Score de compatibilidade real. Match bilateral. Contato liberado só quando os dois lados dizem sim.
                     </p>
+                    <div class="hero-actions hero-fade" style="animation-delay:0.3s;">
+                        <a class="btn-nx btn-nx-filled btn-nx-lg" th:href="@{/auth/register/professional}" href="/auth/register/professional">Encontrar projetos</a>
+                        <a class="btn-nx btn-nx-ghost btn-nx-lg" th:href="@{/auth/register/company}" href="/auth/register/company">Publicar vaga</a>
+                    </div>
+                    <div class="hero-proof hero-fade" style="animation-delay:0.4s;">
+                        <span>▪ +2.400 profissionais cadastrados</span>
+                        <span class="sep">▪</span>
+                        <span>+180 empresas</span>
+                        <span class="sep">▪</span>
+                        <span>94% de taxa de match</span>
+                    </div>
                 </div>
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="card card-bg card-hover border-0 text-center h-100 p-3">
-                            <div class="card-body">
-                                <div class="step-number mb-3">1</div>
-                                <i class="ti ti-user-plus fs-1 text-primary mb-3 d-block" style="color:var(--primary) !important;"></i>
-                                <h5 class="text-light">Crie seu perfil</h5>
-                                <p class="text-light small mb-0">
-                                    Cadastre-se como profissional ou empresa e complete suas informa&ccedil;&otilde;es.
-                                </p>
+
+                <div>
+                    <div class="match-visualizer" role="img" aria-label="Visualizador de score de compatibilidade: 94% de match entre empresa e profissional">
+                        <div class="mv-card mv-card-company">
+                            <div class="mv-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="4" y="2" width="16" height="20" rx="1"></rect>
+                                    <path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="mv-card-title">TechNova Ltda</div>
+                                <div class="mv-card-sub">Vaga: Dev Backend Pleno</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-bg card-hover border-0 text-center h-100 p-3">
-                            <div class="card-body">
-                                <div class="step-number mb-3">2</div>
-                                <i class="ti ti-robot fs-1 text-primary mb-3 d-block" style="color:var(--primary) !important;"></i>
-                                <h5 class="text-light">Matchmaking inteligente</h5>
-                                <p class="text-light small mb-0">
-                                    Nosso algoritmo analisa skills, or&ccedil;amento, hist&oacute;rico e reputa&ccedil;&atilde;o.
-                                </p>
+
+                        <div class="mv-connector">
+                            <div class="mv-score">
+                                <span class="mv-score-value" data-target="94" data-suffix="%">0</span>
+                                <span class="mv-score-label">match</span>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-bg card-hover border-0 text-center h-100 p-3">
-                            <div class="card-body">
-                                <div class="step-number mb-3">3</div>
-                                <i class="ti ti-handshake fs-1 text-primary mb-3 d-block" style="color:var(--primary) !important;"></i>
-                                <h5 class="text-light">Conectem-se</h5>
-                                <p class="text-light small mb-0">
-                                    Ambos demonstram interesse m&uacute;tuo e o match &eacute; confirmado.
-                                </p>
+
+                        <div class="mv-card mv-card-pro">
+                            <div class="mv-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="8" r="4"></circle>
+                                    <path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="mv-card-title">Marina Torres</div>
+                                <div class="mv-card-sub">Backend · 6 anos exp.</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ─── Algoritmo ─── -->
-        <section id="matching-engine" class="py-5 bg-surface">
-            <div class="container py-4">
-                <div class="row align-items-center g-5">
-                    <div class="col-lg-6">
-                        <span class="badge badge-outline d-inline-flex mb-3">Algoritmo</span>
-                        <h2 class="section-title">Motor de matchmaking</h2>
-                        <p class="text-light mb-4">
-                            Nosso algoritmo propriet&aacute;rio calcula a compatibilidade usando
-                            m&uacute;ltiplos fatores ponderados.
-                        </p>
-                        <div class="formula-box p-4">
-                            <code class="formula-text">
-                                Score = Skills &times; 0.35 + Or&ccedil;amento &times; 0.25 +<br>
-                                &emsp;&emsp;&emsp;Hist&oacute;rico &times; 0.20 + Reputa&ccedil;&atilde;o &times; 0.10 +<br>
-                                &emsp;&emsp;&emsp;Disponibilidade &times; 0.10
-                            </code>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="d-flex flex-column gap-3">
-                            <div class="card card-bg border-0 p-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-semibold text-light">Skills</span>
-                                    <span class="fw-bold" style="color:var(--primary);">35%</span>
-                                </div>
-                                <div class="progress mt-2" style="height:7px;background:rgba(255,255,255,0.04);border-radius:10px;">
-                                    <div class="progress-bar rounded-pill" style="width:35%;background:var(--primary);"></div>
-                                </div>
-                            </div>
-                            <div class="card card-bg border-0 p-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-semibold text-light">Or&ccedil;amento</span>
-                                    <span class="fw-bold" style="color:var(--success);">25%</span>
-                                </div>
-                                <div class="progress mt-2" style="height:7px;background:rgba(255,255,255,0.04);border-radius:10px;">
-                                    <div class="progress-bar rounded-pill" style="width:25%;background:var(--success);"></div>
-                                </div>
-                            </div>
-                            <div class="card card-bg border-0 p-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-semibold text-light">Hist&oacute;rico</span>
-                                    <span class="fw-bold" style="color:var(--warning);">20%</span>
-                                </div>
-                                <div class="progress mt-2" style="height:7px;background:rgba(255,255,255,0.04);border-radius:10px;">
-                                    <div class="progress-bar rounded-pill" style="width:20%;background:var(--warning);"></div>
-                                </div>
-                            </div>
-                            <div class="card card-bg border-0 p-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-semibold text-light">Reputa&ccedil;&atilde;o</span>
-                                    <span class="fw-bold" style="color:var(--info);">10%</span>
-                                </div>
-                                <div class="progress mt-2" style="height:7px;background:rgba(255,255,255,0.04);border-radius:10px;">
-                                    <div class="progress-bar rounded-pill" style="width:10%;background:var(--info);"></div>
-                                </div>
-                            </div>
-                            <div class="card card-bg border-0 p-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-semibold text-light">Disponibilidade</span>
-                                    <span class="fw-bold" style="color:#a78bfa;">10%</span>
-                                </div>
-                                <div class="progress mt-2" style="height:7px;background:rgba(255,255,255,0.04);border-radius:10px;">
-                                    <div class="progress-bar rounded-pill" style="width:10%;background:#a78bfa;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <!-- ── Logos belt ── -->
+    <section class="logos-belt" id="ecossistema">
+        <p class="eyebrow" style="text-align:center;">Ecossistema de tecnologias</p>
+        <div class="logos-belt-viewport">
+            <div class="logos-belt-track">
+                <div class="logos-belt-group">
+                    <span>Java</span><span class="sep">•</span>
+                    <span>Spring Boot</span><span class="sep">•</span>
+                    <span>React</span><span class="sep">•</span>
+                    <span>Node.js</span><span class="sep">•</span>
+                    <span>Python</span><span class="sep">•</span>
+                    <span>Flutter</span><span class="sep">•</span>
+                    <span>AWS</span><span class="sep">•</span>
+                    <span>Docker</span><span class="sep">•</span>
+                    <span>Kubernetes</span><span class="sep">•</span>
+                    <span>TypeScript</span><span class="sep">•</span>
+                    <span>PostgreSQL</span><span class="sep">•</span>
+                    <span>Go</span>
+                </div>
+                <div class="logos-belt-group" aria-hidden="true">
+                    <span>Java</span><span class="sep">•</span>
+                    <span>Spring Boot</span><span class="sep">•</span>
+                    <span>React</span><span class="sep">•</span>
+                    <span>Node.js</span><span class="sep">•</span>
+                    <span>Python</span><span class="sep">•</span>
+                    <span>Flutter</span><span class="sep">•</span>
+                    <span>AWS</span><span class="sep">•</span>
+                    <span>Docker</span><span class="sep">•</span>
+                    <span>Kubernetes</span><span class="sep">•</span>
+                    <span>TypeScript</span><span class="sep">•</span>
+                    <span>PostgreSQL</span><span class="sep">•</span>
+                    <span>Go</span>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ─── CTA ─── -->
-        <section class="py-5">
-            <div class="container py-3">
-                <div class="card border-0 text-center p-5 position-relative overflow-hidden" style="background:linear-gradient(145deg, rgba(13,19,41,0.95), rgba(9,14,31,0.98));">
-                    <div class="cta-glow"></div>
-                    <div class="position-relative">
-                        <h2 class="display-6 fw-bold mb-3 text-light" style="letter-spacing:-0.02em;">Pronto para encontrar o match perfeito?</h2>
-                        <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
-                            <a th:href="@{/auth/register/professional}" class="btn btn-primary btn-lg btn-glow px-5">
-                                <i class="ti ti-user-plus me-2"></i>Quero ser encontrado
-                            </a>
-                            <a th:href="@{/auth/register/company}" class="btn btn-outline-light btn-lg px-5">
-                                <i class="ti ti-building me-2"></i>Quero encontrar talentos
-                            </a>
-                        </div>
+    <!-- ── Como funciona ── -->
+    <section class="nx-section" id="como-funciona">
+        <div class="nx-container">
+            <div class="section-head">
+                <p class="eyebrow">O processo</p>
+                <h2 class="section-title">Do cadastro ao match em minutos.</h2>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M19 8v6M22 11h-6"></path>
+                        </svg>
                     </div>
+                    <h3>Crie seu perfil</h3>
+                    <p>Profissionais informam skills, pretensão e nível; empresas descrevem a vaga.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                            <rect x="9" y="9" width="6" height="6"></rect>
+                            <path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"></path>
+                        </svg>
+                    </div>
+                    <h3>O algoritmo age</h3>
+                    <p>Score de compatibilidade calculado com 7 critérios: skills, orçamento, experiência, localização, reputação, histórico e disponibilidade.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                    </div>
+                    <h3>Conecte-se</h3>
+                    <p>Match confirmado, contatos liberados, chat desbloqueado por 30 dias.</p>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <div th:replace="~{fragments/footer :: footer}"></div>
-    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <!-- ── Métricas ── -->
+    <section class="nx-section nx-metrics" id="metricas">
+        <div class="nx-container">
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="metric-value" data-target="94" data-suffix="%">0</div>
+                    <div class="metric-label">Taxa média de compatibilidade</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" data-target="7" data-suffix="">0</div>
+                    <div class="metric-label">Critérios no algoritmo de match</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" data-target="30" data-suffix="">0</div>
+                    <div class="metric-label">Dias de chat após match confirmado</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" data-target="2" data-suffix="min">0</div>
+                    <div class="metric-label">Tempo médio para primeiro match</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Para quem é ── -->
+    <section class="nx-section" id="para-quem">
+        <div class="nx-container">
+            <div class="audience-grid">
+                <div class="audience-card is-pro" id="para-profissionais">
+                    <h3>Para profissionais</h3>
+                    <ul class="audience-list">
+                        <li><span class="arrow">→</span> Seja encontrado por empresas compatíveis</li>
+                        <li><span class="arrow">→</span> Score de match baseado nas suas skills reais</li>
+                        <li><span class="arrow">→</span> Chat direto após confirmação mútua</li>
+                        <li><span class="arrow">→</span> Portfólio valorizado a cada projeto concluído</li>
+                    </ul>
+                    <a class="btn-nx btn-nx-filled" th:href="@{/auth/register/professional}" href="/auth/register/professional">Criar perfil grátis</a>
+                </div>
+                <div class="audience-card is-company" id="para-empresas">
+                    <h3>Para empresas</h3>
+                    <ul class="audience-list">
+                        <li><span class="arrow">→</span> Ranking de candidatos por compatibilidade</li>
+                        <li><span class="arrow">→</span> Vagas e projetos freelance na mesma plataforma</li>
+                        <li><span class="arrow">→</span> Histórico de reputação verificado</li>
+                        <li><span class="arrow">→</span> Dashboard analítico de todas as oportunidades</li>
+                    </ul>
+                    <a class="btn-nx btn-nx-outline" th:href="@{/auth/register/company}" href="/auth/register/company">Publicar primeira vaga</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Depoimentos ── -->
+    <section class="nx-section nx-testimonials" id="depoimentos">
+        <div class="nx-container">
+            <div class="section-head">
+                <p class="eyebrow">Resultados reais</p>
+                <h2 class="section-title">Quem já encontrou o match certo.</h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+                    <p class="testimonial-text">Recebi 3 convites na primeira semana. O algoritmo entendeu exatamente o que eu buscava.</p>
+                    <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
+                    <div class="testimonial-name">Lucas M.</div>
+                    <div class="testimonial-role">Engenheiro Backend Sênior</div>
+                </div>
+                <div class="testimonial-card">
+                    <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+                    <p class="testimonial-text">Encontramos o DevOps certo em 48 horas. O score de match foi cirúrgico.</p>
+                    <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
+                    <div class="testimonial-name">Ana P.</div>
+                    <div class="testimonial-role">CTO na TechInova Soluções</div>
+                </div>
+                <div class="testimonial-card">
+                    <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+                    <p class="testimonial-text">Nunca perco tempo com candidatos fora do perfil. Cada match já vem pré-qualificado.</p>
+                    <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
+                    <div class="testimonial-name">Rafael S.</div>
+                    <div class="testimonial-role">Head de Produto na CloudNexus</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── CTA final ── -->
+    <section class="nx-cta-final" id="cta-final">
+        <div class="cta-visual-decor" aria-hidden="true">
+            <div class="match-visualizer">
+                <div class="mv-card mv-card-company">
+                    <div class="mv-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="2" width="16" height="20" rx="1"></rect>
+                        </svg>
+                    </div>
+                    <div><div class="mv-card-title">Empresa</div></div>
+                </div>
+                <div class="mv-connector">
+                    <div class="mv-score">
+                        <span class="mv-score-value">94</span>
+                        <span class="mv-score-label">match</span>
+                    </div>
+                </div>
+                <div class="mv-card mv-card-pro">
+                    <div class="mv-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div><div class="mv-card-title">Profissional</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="nx-container" style="position:relative;">
+            <h2 class="section-title">Seu próximo projeto começa aqui.</h2>
+            <p>Cadastro gratuito. Sem cartão de crédito.</p>
+            <div class="cta-final-actions">
+                <a class="btn-nx btn-nx-filled btn-nx-lg" th:href="@{/auth/register/professional}" href="/auth/register/professional">Sou profissional</a>
+                <a class="btn-nx btn-nx-outline btn-nx-lg" th:href="@{/auth/register/company}" href="/auth/register/company">Sou empresa</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="nx-footer">
+    <div class="nx-container">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a class="nx-logo" th:href="@{/}" href="/">nexus<span class="dot">.</span></a>
+                <p>Matching inteligente para o ecossistema de TI.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Produto</h4>
+                <ul>
+                    <li><a href="#como-funciona">Como funciona</a></li>
+                    <li><a href="#para-profissionais">Para profissionais</a></li>
+                    <li><a href="#para-empresas">Para empresas</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Empresa</h4>
+                <ul>
+                    <li><a href="#">Sobre nós</a></li>
+                    <li><a href="#">Carreiras</a></li>
+                    <li><a href="#">Contato</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Termos de uso</a></li>
+                    <li><a href="#">Privacidade</a></li>
+                    <li><a href="#">Cookies</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2025 Nexus. Todos os direitos reservados.
+        </div>
+    </div>
+</footer>
+
+<script>
+    (function () {
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        var navbar = document.getElementById('nxNavbar');
+        function onScroll() {
+            if (window.scrollY > 8) navbar.classList.add('is-scrolled');
+            else navbar.classList.remove('is-scrolled');
+        }
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        var toggle = document.getElementById('nxNavToggle');
+        var mobileMenu = document.getElementById('nxMobileMenu');
+        if (toggle && mobileMenu) {
+            toggle.addEventListener('click', function () {
+                var isOpen = mobileMenu.classList.toggle('is-open');
+                toggle.classList.toggle('is-open', isOpen);
+                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+            mobileMenu.querySelectorAll('a').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    mobileMenu.classList.remove('is-open');
+                    toggle.classList.remove('is-open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                });
+            });
+        }
+
+        function animateCount(el) {
+            var target = parseFloat(el.getAttribute('data-target'));
+            var suffix = el.getAttribute('data-suffix') || '';
+            if (isNaN(target)) return;
+            if (reduceMotion) {
+                el.textContent = target + suffix;
+                return;
+            }
+            var duration = 1400;
+            var start = null;
+            function step(ts) {
+                if (!start) start = ts;
+                var progress = Math.min((ts - start) / duration, 1);
+                var eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.round(target * eased) + suffix;
+                if (progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        var countEls = document.querySelectorAll('[data-target]');
+        if ('IntersectionObserver' in window) {
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        animateCount(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.4 });
+            countEls.forEach(function (el) { observer.observe(el); });
+        } else {
+            countEls.forEach(animateCount);
+        }
+    })();
+</script>
 
 </body>
 </html>
