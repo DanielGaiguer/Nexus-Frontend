@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Chat')}"></head>
+<style>
+  .nexus-chat-page {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 64px);
+  }
+  .nexus-chat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+  .nexus-chat-header-info { flex: 1; min-width: 0; }
+  .nexus-chat-header-name { font-weight: 600; color: #fff; font-size: 0.95rem; }
+  .nexus-chat-header-project { color: #64748b; font-size: 0.8rem; }
+  .nexus-chat-banner {
+    margin: 0 1.5rem 0.75rem;
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .nexus-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .nexus-chat-row { display: flex; gap: 0.5rem; max-width: 70%; }
+  .nexus-chat-row.mine { align-self: flex-end; flex-direction: row-reverse; }
+  .nexus-chat-row.theirs { align-self: flex-start; }
+  .nexus-chat-bubble-wrap { display: flex; flex-direction: column; }
+  .nexus-chat-row.mine .nexus-chat-bubble-wrap { align-items: flex-end; }
+  .nexus-chat-sender-name { font-size: 0.72rem; color: #64748b; margin-bottom: 2px; padding: 0 0.25rem; }
+  .nexus-chat-bubble {
+    padding: 0.6rem 0.9rem;
+    border-radius: 14px;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .nexus-chat-row.mine .nexus-chat-bubble {
+    background: #6b6eff;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .nexus-chat-row.theirs .nexus-chat-bubble {
+    background: rgba(255,255,255,0.06);
+    color: #e2e8f0;
+    border-bottom-left-radius: 4px;
+  }
+  .nexus-chat-meta {
+    font-size: 0.68rem;
+    color: #475569;
+    margin-top: 3px;
+    padding: 0 0.25rem;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .nexus-chat-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    object-fit: cover; flex-shrink: 0; align-self: flex-end;
+  }
+  .nexus-chat-skeleton {
+    height: 42px; border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    width: 55%;
+    animation: nexusSkeletonPulse 1.4s ease-in-out infinite;
+  }
+  .nexus-chat-row.mine .nexus-chat-skeleton { align-self: flex-end; }
+  @keyframes nexusSkeletonPulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+  .nexus-chat-input-area {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 0.85rem 1.5rem;
+    flex-shrink: 0;
+  }
+  .nexus-chat-input-row { display: flex; align-items: flex-end; gap: 0.6rem; }
+  .nexus-chat-textarea {
+    flex: 1;
+    resize: none;
+    max-height: 120px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e2e8f0;
+    border-radius: 12px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.875rem;
+  }
+  .nexus-chat-textarea:focus { outline: none; border-color: #6b6eff; }
+  .nexus-chat-send-btn {
+    background: #6b6eff; border: none; color: #fff;
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; cursor: pointer;
+  }
+  .nexus-chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .nexus-chat-input-footer {
+    display: flex; justify-content: space-between;
+    font-size: 0.7rem; color: #475569; margin-top: 4px; padding: 0 0.25rem;
+  }
+  .nexus-chat-counter.over-limit { color: #ef4444; }
+  .chat-input--disabled { opacity: 0.6; cursor: not-allowed; }
+</style>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="nexus-chat-page">
+
+    <!-- ── HEADER ── -->
+    <div class="nexus-chat-header">
+      <a th:href="${matchesUrl}" class="nexus-icon-btn" aria-label="Voltar">
+        <i class="ti ti-arrow-left"></i>
+      </a>
+
+      <th:block th:if="${summary.otherPartyPhotoUrl != null and !#strings.isEmpty(summary.otherPartyPhotoUrl)}">
+        <img th:src="${summary.otherPartyPhotoUrl}" class="nexus-avatar-initials"
+             style="width:40px;height:40px;object-fit:cover" alt="Foto">
+      </th:block>
+      <th:block th:unless="${summary.otherPartyPhotoUrl != null and !#strings.isEmpty(summary.otherPartyPhotoUrl)}">
+        <div class="nexus-avatar-initials"
+             th:with="n=${summary.otherPartyName != null ? summary.otherPartyName : '?'},
+                      h=${n.hashCode()},
+                      hue=${(h % 360) < 0 ? (h % 360) + 360 : h % 360}"
+             th:style="'background:hsl(' + ${hue} + ',50%,40%);width:40px;height:40px'"
+             th:text="${#strings.substring(n,0,1)}">?</div>
+      </th:block>
+
+      <div class="nexus-chat-header-info">
+        <div class="nexus-chat-header-name" th:text="${summary.otherPartyName}">Nome</div>
+        <div class="nexus-chat-header-project">
+          <i class="ti ti-folder" style="font-size:0.7rem"></i>
+          <span th:text="${summary.projectTitle}">Projeto</span>
+        </div>
+      </div>
+
+      <span id="wsStatusBadge" style="display:none;font-size:0.72rem;color:#f59e0b">
+        <i class="ti ti-wifi-off"></i> Conectando...
+      </span>
+    </div>
+
+    <!-- Banner de expiração -->
+    <div class="nexus-chat-banner nexus-alert-warning"
+         th:if="${summary.matchActive and summary.daysUntilExpiration != null and summary.daysUntilExpiration >= 0 and summary.daysUntilExpiration <= 7}">
+      <i class="ti ti-alert-triangle"></i>
+      <span>⚠️ Este chat encerra em <span th:text="${summary.daysUntilExpiration}">7</span> dia(s).</span>
+    </div>
+
+    <!-- Banner de match encerrado -->
+    <div class="nexus-chat-banner" style="background:rgba(100,116,139,0.15);color:#94a3b8"
+         th:if="${summary.matchActive == false}">
+      <i class="ti ti-lock"></i>
+      <span>🔒 Este chat foi encerrado. O histórico está disponível somente para leitura.</span>
+    </div>
+
+    <!-- Banner de erro de conexão -->
+    <div id="wsErrorBanner" class="nexus-chat-banner nexus-alert-danger" style="display:none">
+      <i class="ti ti-alert-circle"></i>
+      <span id="wsErrorText">Sem conexão. Tentando reconectar...</span>
+    </div>
+
+    <!-- ── LISTA DE MENSAGENS ── -->
+    <div class="nexus-chat-messages" id="chatMessages">
+      <div class="nexus-chat-row theirs"><div class="nexus-chat-skeleton"></div></div>
+      <div class="nexus-chat-row mine"><div class="nexus-chat-skeleton"></div></div>
+      <div class="nexus-chat-row theirs"><div class="nexus-chat-skeleton"></div></div>
+      <div class="nexus-chat-row mine"><div class="nexus-chat-skeleton"></div></div>
+    </div>
+
+    <!-- ── INPUT ── -->
+    <div class="nexus-chat-input-area">
+      <div class="nexus-chat-input-row">
+        <textarea id="chatInput" class="nexus-chat-textarea" rows="1"
+                  th:classappend="${summary.matchActive == false} ? ' chat-input--disabled'"
+                  maxlength="2000"
+                  placeholder="Digite sua mensagem..."
+                  th:disabled="${summary.matchActive == false}"></textarea>
+        <button id="chatSendBtn" class="nexus-chat-send-btn"
+                th:disabled="${summary.matchActive == false}">
+          <i class="ti ti-send"></i>
+        </button>
+      </div>
+      <div class="nexus-chat-input-footer">
+        <span id="chatCharCounter" class="nexus-chat-counter">0/2000</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  window.NEXUS_MATCH_ACTIVE = /*[[${summary.matchActive}]]*/ true;
+  window.NEXUS_DAYS_UNTIL_EXPIRATION = /*[[${summary.daysUntilExpiration}]]*/ 30;
+  /*]]>*/
+
+  var NEXUS_CHAT = {
+    matchId: /*[[${matchId}]]*/ 0,
+    myUserId: /*[[${session.userId}]]*/ 0,
+    matchesUrl: /*[[${matchesUrl}]]*/ '/',
+    matchActive: /*[[${summary.matchActive}]]*/ true,
+    wsBaseUrl: /*[[${wsBaseUrl}]]*/ 'http://localhost:8081'
+  };
+  /*<![CDATA[*/
+  window.NEXUS_WS_TOKEN = /*[[${wsToken}]]*/ null;
+  /*]]>*/
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script th:src="@{/js/nexus-chat-socket.js}"></script>
+<script th:src="@{/js/nexus-chat.js}"></script>
+
+</body>
+</html>

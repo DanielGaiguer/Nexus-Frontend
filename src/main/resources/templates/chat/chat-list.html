@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Conversas')}"></head>
+<style>
+  .nexus-chatlist-search {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e2e8f0;
+    border-radius: 12px;
+    padding: 0.6rem 0.9rem 0.6rem 2.4rem;
+    font-size: 0.875rem;
+    width: 100%;
+  }
+  .nexus-chatlist-search:focus { outline: none; border-color: #6b6eff; }
+  .nexus-chatlist-search-wrap { position: relative; }
+  .nexus-chatlist-search-wrap i {
+    position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%);
+    color: #64748b;
+  }
+  .nexus-chat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .nexus-chat-item:hover { background: rgba(107,110,255,0.06); }
+  .chat-item--encerrado { opacity: 0.6; }
+  .nexus-chat-item-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+  .nexus-chat-item-body { flex: 1; min-width: 0; }
+  .nexus-chat-item-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+  .nexus-chat-item-name { font-weight: 600; color: #fff; font-size: 0.9rem; }
+  .nexus-chat-item-project { color: #64748b; font-size: 0.75rem; margin-left: 6px; }
+  .nexus-chat-item-time { font-size: 0.72rem; color: #64748b; white-space: nowrap; flex-shrink: 0; }
+  .nexus-chat-item-badge-ended {
+    font-size: 0.68rem; color: #94a3b8; background: rgba(148,163,184,0.15);
+    border-radius: 999px; padding: 2px 8px; white-space: nowrap; flex-shrink: 0;
+  }
+  .nexus-chat-item-bottom { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-top: 2px; }
+  .nexus-chat-item-preview { color: #94a3b8; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nexus-chat-item-unread {
+    background: #ef4444; color: #fff; font-size: 0.68rem; font-weight: 700;
+    border-radius: 999px; min-width: 20px; height: 20px; padding: 0 6px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .nexus-chat-item-expiring { color: #f59e0b; font-size: 0.72rem; margin-top: 2px; }
+  .nexus-chatlist-empty {
+    text-align: center; padding: 4rem 1.5rem; color: #64748b;
+  }
+</style>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4" style="max-width:720px">
+
+      <div class="mb-3">
+        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Conversas</h1>
+      </div>
+
+      <div class="nexus-chatlist-search-wrap mb-3">
+        <i class="ti ti-search"></i>
+        <input type="text" id="chatSearchInput" class="nexus-chatlist-search"
+               placeholder="Buscar por nome ou projeto...">
+      </div>
+
+      <div id="chatListContainer">
+        <!-- Preenchido via JS -->
+      </div>
+
+      <div id="chatListEmpty" class="nexus-chatlist-empty" style="display:none">
+        <i class="ti ti-message-circle-off" style="font-size:2.5rem;display:block;margin-bottom:0.75rem"></i>
+        Nenhuma conversa ainda.<br>
+        Quando um match for confirmado, o chat será liberado aqui.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script th:src="@{/js/nexus-chat-list.js}"></script>
+
+</body>
+</html>

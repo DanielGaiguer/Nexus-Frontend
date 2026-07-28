@@ -372,3 +372,42 @@ setInterval(function() {
   var badge = document.getElementById('notifBadge');
   if (badge) loadBadgeCount();
 }, 60000);
+
+// ── Badge de mensagens não lidas (chat) ─────────────────────────
+
+function loadChatUnreadTotal() {
+  fetch('/app-api/chat/unread-total')
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(total) {
+      if (total === null) return;
+      var badges = document.querySelectorAll('.chat-unread-badge');
+      badges.forEach(function(badge) {
+        if (total > 0) {
+          badge.textContent = total > 99 ? '99+' : total;
+          badge.style.display = '';
+        } else {
+          badge.style.display = 'none';
+        }
+      });
+    })
+    .catch(function() {});
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (document.querySelector('.chat-unread-badge')) {
+    loadChatUnreadTotal();
+  }
+
+  // Ao entrar num chat individual, o markAllAsReadInMatch roda no back —
+  // espera 1s para o badge refletir a leitura antes de reconsultar
+  if (/^\/chat\/\d+$/.test(window.location.pathname)) {
+    setTimeout(loadChatUnreadTotal, 1000);
+  }
+});
+
+// Polling a cada 30s para manter o badge de chat atualizado
+setInterval(function() {
+  if (document.querySelector('.chat-unread-badge')) {
+    loadChatUnreadTotal();
+  }
+}, 30000);

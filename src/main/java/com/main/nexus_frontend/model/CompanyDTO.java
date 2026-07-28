@@ -14,6 +14,7 @@ public class CompanyDTO {
     private String profilePhotoUrl;
     private ReputationDTO reputationDetails;
     private List<CompanyPreviousProjectDTO> previousProjects;
+    private String contactEmail;
 
     public CompanyDTO() {}
 
@@ -49,4 +50,7 @@ public class CompanyDTO {
 
     public List<CompanyPreviousProjectDTO> getPreviousProjects() { return previousProjects; }
     public void setPreviousProjects(List<CompanyPreviousProjectDTO> previousProjects) { this.previousProjects = previousProjects; }
+
+    public String getContactEmail() { return contactEmail; }
+    public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
 }
