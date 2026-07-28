@@ -104,13 +104,13 @@
 
             <th:block th:if="${company.reputationDetails != null and company.reputationDetails.totalReviews != null}"
                       th:with="rep=${company.reputationDetails}">
-              <!-- Score geral -->
+              <!-- Índice geral (escala 0-100, indicador interno do matching — não é a nota de estrelas) -->
               <div class="text-center mb-4"
                    th:with="score=${rep.overallScore != null ? rep.overallScore : 0.0},
-                            color=${score >= 4.0 ? '#22c55e' : (score >= 3.0 ? '#f59e0b' : '#ef4444')}">
+                            color=${score >= 80 ? '#22c55e' : (score >= 60 ? '#f59e0b' : '#ef4444')}">
                 <div class="tabular fw-bold" style="font-size:2rem;letter-spacing:-0.02em"
                      th:style="'color:' + ${color}"
-                     th:text="${#numbers.formatDecimal(score,1,1)} + ' / 5,0'">0.0</div>
+                     th:text="${#numbers.formatDecimal(score,1,0)} + ' / 100'">0</div>
               </div>
 
               <!-- Confiança -->
@@ -131,37 +131,37 @@
                 <div th:if="${rep.communication != null}">
                   <div class="d-flex justify-content-between mb-1">
                     <span style="color:#94a3b8;font-size:0.72rem">Comunicação</span>
-                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.communication,1,1)}">0.0</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.communication / 20.0,1,1)}">0.0</span>
                   </div>
                   <div class="nexus-breakdown-bar" style="height:5px">
-                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.communication * 20} + '%;background:#67e8f9'"></div>
+                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.communication} + '%;background:#67e8f9'"></div>
                   </div>
                 </div>
                 <div th:if="${rep.reliability != null}">
                   <div class="d-flex justify-content-between mb-1">
                     <span style="color:#94a3b8;font-size:0.72rem">Confiabilidade</span>
-                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.reliability,1,1)}">0.0</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.reliability / 20.0,1,1)}">0.0</span>
                   </div>
                   <div class="nexus-breakdown-bar" style="height:5px">
-                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.reliability * 20} + '%;background:#22c55e'"></div>
+                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.reliability} + '%;background:#22c55e'"></div>
                   </div>
                 </div>
                 <div th:if="${rep.punctuality != null}">
                   <div class="d-flex justify-content-between mb-1">
                     <span style="color:#94a3b8;font-size:0.72rem">Pontualidade</span>
-                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.punctuality,1,1)}">0.0</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.punctuality / 20.0,1,1)}">0.0</span>
                   </div>
                   <div class="nexus-breakdown-bar" style="height:5px">
-                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.punctuality * 20} + '%;background:#f59e0b'"></div>
+                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.punctuality} + '%;background:#f59e0b'"></div>
                   </div>
                 </div>
                 <div th:if="${rep.professionalism != null}">
                   <div class="d-flex justify-content-between mb-1">
                     <span style="color:#94a3b8;font-size:0.72rem">Profissionalismo</span>
-                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.professionalism,1,1)}">0.0</span>
+                    <span class="tabular" style="color:#a5b4fc;font-size:0.72rem" th:text="${#numbers.formatDecimal(rep.professionalism / 20.0,1,1)}">0.0</span>
                   </div>
                   <div class="nexus-breakdown-bar" style="height:5px">
-                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.professionalism * 20} + '%;background:#a78bfa'"></div>
+                    <div class="nexus-breakdown-bar-fill" th:style="'width:' + ${rep.professionalism} + '%;background:#a78bfa'"></div>
                   </div>
                 </div>
               </div>
@@ -180,7 +180,7 @@
                      th:if="${rep.recommendationRate != null}">
                   <div style="color:#64748b;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">Recomendam</div>
                   <div class="tabular fw-bold" style="font-size:1.35rem;color:#22c55e"
-                       th:text="${#numbers.formatDecimal(rep.recommendationRate * 100,1,1)} + '%'">0%</div>
+                       th:text="${#numbers.formatDecimal(rep.recommendationRate,1,1)} + '%'">0%</div>
                 </div>
               </div>
             </th:block>
@@ -197,6 +197,22 @@
               <i class="ti ti-building me-2" style="color:#6b6eff"></i>Sobre a empresa
             </div>
             <div style="color:#94a3b8;font-size:0.9rem;white-space:pre-line" th:text="${company.description}">Descrição</div>
+          </div>
+
+          <!-- Projetos anteriores -->
+          <div class="nexus-card p-4 mt-3" th:if="${company.previousProjects != null and !#lists.isEmpty(company.previousProjects)}">
+            <div class="fw-semibold text-white mb-3" style="font-size:0.9rem">
+              <i class="ti ti-history me-2" style="color:#6b6eff"></i>Projetos anteriores
+            </div>
+            <div class="d-flex flex-column gap-2">
+              <div th:each="pp : ${company.previousProjects}"
+                   style="background:rgba(100,116,139,0.06);border:1px solid rgba(100,116,139,0.15);border-radius:8px;padding:0.7rem 0.9rem"
+                   class="d-flex align-items-center justify-content-between">
+                <span style="color:#e2e8f0;font-size:0.85rem;font-weight:500" th:text="${pp.projectTitle}">Projeto</span>
+                <span style="color:#64748b;font-size:0.75rem" th:if="${pp.completedAt != null}"
+                      th:text="${#temporals.format(pp.completedAt, 'MM/yyyy')}">00/0000</span>
+              </div>
+            </div>
           </div>
 
         </div><!-- /col-lg-8 -->

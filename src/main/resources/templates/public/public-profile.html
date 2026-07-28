@@ -166,8 +166,10 @@
                   th:text="${#numbers.formatDecimal(professional.reputation,1,1)}">0.0</span>
             <span style="color:#475569;font-size:0.8rem">/ 5</span>
           </div>
-          <!-- Indicadores de reputação detalhados -->
+          <!-- Análise de qualidade (indicador auxiliar interno, escala 0-100 — não é a nota de estrelas acima) -->
           <th:block th:if="${reputation != null}">
+            <div style="color:#334155;font-size:0.68rem;text-transform:uppercase;
+                        letter-spacing:0.05em;margin:0.75rem 0 0.5rem">Análise de qualidade</div>
             <div class="d-flex flex-column gap-2 mt-2">
               <th:block th:each="ind : ${ {
                 {'Comunicação',    reputation.communication},
@@ -245,11 +247,11 @@
               </div>
               <div class="d-flex flex-wrap gap-1"
                    th:if="${proj.technologies != null}">
-                <span th:each="tech : ${#strings.listSplit(proj.technologies, ',')}"
+                <span th:each="tech : ${proj.technologies}"
                       style="font-size:0.7rem;background:rgba(107,110,255,0.08);
                              color:#a5b4fc;border:1px solid rgba(107,110,255,0.15);
                              padding:0.15em 0.5em;border-radius:5px"
-                      th:text="${#strings.trim(tech)}">Tech</span>
+                      th:text="${tech}">Tech</span>
               </div>
             </div>
           </div>

@@ -12,6 +12,7 @@ public class MatchDTO {
     private ProjectDTO project;
     private ProfessionalSimpleDTO professional;
     private ScoreBreakdownDTO scoreBreakdown;
+    private Boolean active;
 
     public MatchDTO() {}
 
@@ -42,7 +43,17 @@ public class MatchDTO {
     public ScoreBreakdownDTO getScoreBreakdown() { return scoreBreakdown; }
     public void setScoreBreakdown(ScoreBreakdownDTO scoreBreakdown) { this.scoreBreakdown = scoreBreakdown; }
 
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+
     public int getScoreAsInt() {
         return matchScore != null ? (int) Math.round(matchScore) : 0;
+    }
+
+    // Dias restantes até completar 30 dias desde createdAt (pode ser negativo se já passou)
+    public long getDaysRemaining() {
+        if (createdAt == null) return 30;
+        long daysElapsed = java.time.Duration.between(createdAt, java.time.LocalDateTime.now()).toDays();
+        return 30 - daysElapsed;
     }
 }

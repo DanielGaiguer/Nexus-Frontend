@@ -43,6 +43,12 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
+        // Status check é respondido só pela empresa; review é aberto a empresa e profissional
+        if (uri.contains("/status-check") && !"COMPANY".equals(userRole)) {
+            response.sendRedirect("/");
+            return false;
+        }
+
         return true;
     }
 

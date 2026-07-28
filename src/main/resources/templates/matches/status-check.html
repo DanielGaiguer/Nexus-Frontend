@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Como está indo o match?')}"></head>
+<style>
+.outcome-option-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 1rem 1.1rem;
+}
+.outcome-option-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  color: inherit;
+  font-size: 0.95rem;
+}
+.outcome-option-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+#confirmStatusCheckBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+</style>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4" style="max-width:640px">
+
+      <!-- Flash -->
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
+      <!-- Header -->
+      <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">
+          Como está indo o match?
+        </h1>
+        <p style="color:#64748b;font-size:0.875rem">
+          Faltam 15 dias para este match encerrar. Conte-nos como está sendo.
+        </p>
+      </div>
+
+      <div class="nexus-card p-4">
+        <form id="statusCheckForm" method="post" th:action="@{/matches/{id}/status-check(id=${matchId})}">
+
+          <div class="d-flex flex-column gap-3 mb-3">
+            <label class="rejection-option">
+              <input type="radio" name="outcome" value="WORKING_TOGETHER" onchange="onOutcomeChange()">
+              <div class="rejection-option-inner outcome-option-inner">
+                <div class="outcome-option-title"><span>✅</span> Sim, já estamos trabalhando juntos</div>
+                <div class="outcome-option-desc">O projeto está em andamento.</div>
+              </div>
+            </label>
+
+            <label class="rejection-option">
+              <input type="radio" name="outcome" value="DID_NOT_WORK_OUT" onchange="onOutcomeChange()">
+              <div class="rejection-option-inner outcome-option-inner">
+                <div class="outcome-option-title"><span>❌</span> Não, o match não deu certo</div>
+                <div class="outcome-option-desc">Não chegamos a trabalhar juntos.</div>
+              </div>
+            </label>
+
+            <label class="rejection-option">
+              <input type="radio" name="outcome" value="NO_CONTACT_YET" onchange="onOutcomeChange()">
+              <div class="rejection-option-inner outcome-option-inner">
+                <div class="outcome-option-title"><span>⏳</span> Ainda não estabelecemos contato</div>
+                <div class="outcome-option-desc">Ainda não conversamos sobre o projeto.</div>
+              </div>
+            </label>
+          </div>
+
+          <div id="workingTogetherHint"
+               style="display:none;background:rgba(107,110,255,0.08);border:1px solid rgba(107,110,255,0.25);
+                      border-radius:8px;padding:0.6rem 0.85rem;color:#a5b4fc;font-size:0.82rem;margin-bottom:1rem">
+            ✨ O projeto será adicionado ao portfólio do profissional.
+          </div>
+
+          <button type="submit" id="confirmStatusCheckBtn" class="nexus-btn nexus-btn-primary" disabled>
+            Confirmar
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script>
+function onOutcomeChange() {
+  var selected = document.querySelector('input[name=outcome]:checked');
+  document.getElementById('confirmStatusCheckBtn').disabled = !selected;
+
+  var hint = document.getElementById('workingTogetherHint');
+  hint.style.display = (selected && selected.value === 'WORKING_TOGETHER') ? 'block' : 'none';
+}
+</script>
+</body>
+</html>

@@ -49,6 +49,10 @@
           Confirmados
           <span class="badge" th:text="${#lists.size(confirmed)}">0</span>
         </button>
+        <button class="nexus-tab" id="tab-previous" onclick="switchTab('previous')">
+          Projetos Anteriores
+          <span class="badge" th:text="${#lists.size(previousProjects)}">0</span>
+        </button>
       </div>
 
       <!-- ── ABA: CONVITES RECEBIDOS ── -->
@@ -216,6 +220,21 @@
                      th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
                 <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.5rem"
                      th:text="${m.project.title}">Projeto</div>
+
+                <!-- Contador de expiração do match (30 dias desde a confirmação) -->
+                <div th:with="daysRemaining=${m.getDaysRemaining()}" style="margin-bottom:0.5rem">
+                  <div th:if="${m.active != null and !m.active or daysRemaining <= 0}"
+                       style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.2);
+                              border-radius:8px;padding:0.4rem 0.7rem;color:#94a3b8;font-size:0.78rem;font-weight:600">
+                    Este match foi encerrado
+                  </div>
+                  <div th:if="${(m.active == null or m.active) and daysRemaining >= 1 and daysRemaining <= 15}"
+                       style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);
+                              border-radius:8px;padding:0.4rem 0.7rem;color:#f59e0b;font-size:0.78rem;font-weight:600">
+                    ⚠️ Este match expira em <span th:text="${daysRemaining}">15</span> dias
+                  </div>
+                </div>
+
                 <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                   <i class="ti ti-briefcase"></i> Ver oportunidade
@@ -244,6 +263,11 @@
               </div>
               <div class="d-flex flex-column align-items-center gap-2 match-action-btn">
                 <span class="nexus-status success w-100 d-block text-center">Match Confirmado</span>
+                <button type="button"
+                        class="nexus-btn nexus-btn-primary nexus-btn-sm contact-trigger w-100"
+                        th:data-id="${m.id}">
+                  <i class="ti ti-address-book"></i> Entrar em contato
+                </button>
                 <a th:href="@{/company/professional/{id}(id=${m.professional.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                   <i class="ti ti-user"></i> Ver perfil completo
@@ -258,6 +282,7 @@
                   <i class="ti ti-star"></i> Avaliar
                 </a>
                 <button type="button"
+                        th:if="${m.active == null or m.active}"
                         class="nexus-btn nexus-btn-danger-outline nexus-btn-sm cancel-match-trigger w-100"
                         th:data-id="${m.id}">
                   <i class="ti ti-x"></i> Cancelar Match
@@ -267,6 +292,75 @@
           </div>
         </div>
       </div><!-- /#pane-confirmed -->
+
+      <!-- ── ABA: PROJETOS ANTERIORES ── -->
+      <div id="pane-previous" style="display:none">
+
+        <div th:if="${#lists.isEmpty(previousProjects)}"
+             class="nexus-card p-5 text-center">
+          <i class="ti ti-history" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+          <div class="fw-semibold text-white mb-1">Nenhum projeto anterior</div>
+          <div style="color:#475569;font-size:0.875rem">
+            Quando um match confirmado for encerrado, ele aparecerá aqui como histórico.
+          </div>
+        </div>
+
+        <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(previousProjects)}">
+          <div th:each="m : ${previousProjects}" class="nexus-match-card">
+            <div class="d-flex align-items-start gap-3 flex-wrap">
+              <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                   th:with="n=${m.professional != null ? m.professional.name : 'P'},
+                            h=${n.hashCode()},
+                            hue=${(h%360)<0?(h%360)+360:h%360}"
+                   th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                   th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              <div class="flex-fill">
+                <div class="fw-semibold text-white"
+                     th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
+                <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.5rem"
+                     th:text="${m.project.title}">Projeto</div>
+                <div style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.2);
+                            border-radius:8px;padding:0.4rem 0.7rem;color:#94a3b8;font-size:0.78rem;
+                            font-weight:600;display:inline-block;margin-bottom:0.5rem">
+                  Match encerrado
+                </div>
+                <br>
+                <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                  <i class="ti ti-briefcase"></i> Ver oportunidade
+                </a>
+              </div>
+              <!-- Score ring -->
+              <div style="align-self:center" th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
+                <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
+                  <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                    <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
+                    <circle cx="55" cy="55" r="46"
+                            th:class="'nexus-score-ring-fill ' + ${c}"
+                            stroke-width="5"
+                            stroke-dasharray="207.35"
+                            th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
+                  </svg>
+                  <div class="nexus-score-ring-label">
+                    <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex flex-column align-items-center gap-2 match-action-btn">
+                <button type="button"
+                        class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger w-100"
+                        th:data-id="${m.id}">
+                  <i class="ti ti-clock-history"></i> Ver histórico
+                </button>
+                <a th:href="@{/company/matches/{id}/review(id=${m.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
+                  <i class="ti ti-star"></i> Avaliar
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /#pane-previous -->
 
     </div>
   </div>
@@ -376,7 +470,7 @@
       <form id="cancelMatchForm" method="post">
         <div class="modal-body">
           <p style="color:#94a3b8;font-size:0.9rem;margin:0">
-            Tem certeza de que deseja cancelar este match confirmado? O profissional será notificado e os dados de contato deixarão de ser compartilhados.
+            Tem certeza que deseja cancelar este match? Esta ação não pode ser desfeita.
           </p>
         </div>
         <div class="modal-footer">
@@ -386,6 +480,50 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL ENTRAR EM CONTATO ═════════════════════════════ -->
+<div class="modal fade nexus-modal" id="contactModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(107,110,255,0.15)">
+        <div style="width:4px;height:40px;background:#6b6eff;border-radius:2px;margin-right:0.75rem"></div>
+        <div>
+          <h5 class="modal-title fw-semibold text-white">Entrar em contato</h5>
+          <div style="color:#64748b;font-size:0.8rem">Dados liberados pelo match confirmado</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div id="contactLoading" class="py-4">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+        <div id="contactError" class="py-4" style="display:none;color:#94a3b8;font-size:0.85rem">
+          Não foi possível carregar os dados de contato.
+        </div>
+        <div id="contactContent" style="display:none">
+          <div id="contactAvatarWrap" class="mb-3"></div>
+          <div id="contactName" class="fw-bold text-white mb-3" style="font-size:1.1rem"></div>
+          <div class="d-flex flex-column gap-2 text-start mx-auto" style="max-width:280px">
+            <div id="contactPhoneRow" class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.9rem">
+              <i class="ti ti-phone" style="color:#6b6eff;width:18px"></i>
+              <span id="contactPhone"></span>
+            </div>
+            <div id="contactEmailRow" class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.9rem">
+              <i class="ti ti-mail" style="color:#6b6eff;width:18px"></i>
+              <span id="contactEmail"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Fechar</button>
+        <a id="contactProfileLink" href="#" class="nexus-btn nexus-btn-primary">
+          <i class="ti ti-user"></i> Ver perfil
+        </a>
+      </div>
     </div>
   </div>
 </div>
@@ -422,9 +560,11 @@ function switchTab(tab) {
   document.getElementById('pane-received').style.display  = tab === 'received'  ? 'block' : 'none';
   document.getElementById('pane-sent').style.display      = tab === 'sent'      ? 'block' : 'none';
   document.getElementById('pane-confirmed').style.display = tab === 'confirmed' ? 'block' : 'none';
+  document.getElementById('pane-previous').style.display  = tab === 'previous'  ? 'block' : 'none';
   document.getElementById('tab-received').classList.toggle('active',  tab === 'received');
   document.getElementById('tab-sent').classList.toggle('active',      tab === 'sent');
   document.getElementById('tab-confirmed').classList.toggle('active', tab === 'confirmed');
+  document.getElementById('tab-previous').classList.toggle('active',  tab === 'previous');
 }
 
 document.querySelectorAll('.company-reject-trigger').forEach(function(btn) {
@@ -505,6 +645,72 @@ document.querySelectorAll('.history-trigger').forEach(function(btn) {
       });
   });
 });
+
+document.querySelectorAll('.contact-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var matchId = this.dataset.id;
+    var loading = document.getElementById('contactLoading');
+    var error = document.getElementById('contactError');
+    var content = document.getElementById('contactContent');
+    loading.style.display = 'block';
+    error.style.display = 'none';
+    content.style.display = 'none';
+    new bootstrap.Modal(document.getElementById('contactModal')).show();
+    fetch('/company/matches/' + matchId + '/contact')
+      .then(function(r) { if (!r.ok) throw new Error('fail'); return r.json(); })
+      .then(function(data) {
+        loading.style.display = 'none';
+        content.style.display = 'block';
+
+        document.getElementById('contactName').textContent = data.name || '—';
+        document.getElementById('contactProfileLink').href = data.profileUrl || '#';
+
+        var avatarWrap = document.getElementById('contactAvatarWrap');
+        if (data.photoUrl) {
+          avatarWrap.innerHTML = '<img src="' + data.photoUrl + '" alt="Foto" ' +
+            'style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid rgba(107,110,255,0.3)">';
+        } else {
+          var n = data.name || '?';
+          var h = 0;
+          for (var i = 0; i < n.length; i++) { h = n.charCodeAt(i) + ((h << 5) - h); }
+          var hue = ((h % 360) + 360) % 360;
+          avatarWrap.innerHTML = '<div style="width:88px;height:88px;border-radius:50%;margin:0 auto;' +
+            'display:flex;align-items:center;justify-content:center;background:hsl(' + hue + ',50%,40%);' +
+            'font-size:1.75rem;font-weight:700;color:#fff">' + n.charAt(0).toUpperCase() + '</div>';
+        }
+
+        var phoneRow = document.getElementById('contactPhoneRow');
+        if (data.phone) {
+          document.getElementById('contactPhone').textContent = data.phone;
+          phoneRow.style.display = 'flex';
+        } else {
+          phoneRow.style.display = 'none';
+        }
+
+        var emailRow = document.getElementById('contactEmailRow');
+        if (data.email) {
+          document.getElementById('contactEmail').textContent = data.email;
+          emailRow.style.display = 'flex';
+        } else {
+          emailRow.style.display = 'none';
+        }
+      })
+      .catch(function() {
+        loading.style.display = 'none';
+        error.style.display = 'block';
+      });
+  });
+});
+</script>
+
+<!-- Abre a janela de contato automaticamente quando este match acabou de ser confirmado -->
+<script th:inline="javascript">
+var justConfirmedMatchId = /*[[${justConfirmedMatchId}]]*/ null;
+if (justConfirmedMatchId) {
+  switchTab('confirmed');
+  var justConfirmedBtn = document.querySelector('.contact-trigger[data-id="' + justConfirmedMatchId + '"]');
+  if (justConfirmedBtn) { justConfirmedBtn.click(); }
+}
 </script>
 </body>
 </html>

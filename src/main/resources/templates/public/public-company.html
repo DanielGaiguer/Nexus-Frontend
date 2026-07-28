@@ -299,6 +299,27 @@
       </div>
     </div>
 
+    <!-- ══ PROJETOS ANTERIORES ═════════════════════════════════ -->
+    <div class="card border-0 p-4 mt-3"
+         th:if="${company.previousProjects != null and !#lists.isEmpty(company.previousProjects)}"
+         style="background:rgba(13,19,41,0.9);border-radius:14px !important;
+                border:1px solid rgba(107,110,255,0.1) !important">
+      <div style="color:#475569;font-size:0.72rem;text-transform:uppercase;
+                  letter-spacing:0.05em;margin-bottom:0.75rem">
+        <i class="ti ti-history" style="color:#6b6eff;margin-right:4px"></i>
+        Projetos anteriores (<span th:text="${#lists.size(company.previousProjects)}">0</span>)
+      </div>
+      <div class="d-flex flex-column gap-2">
+        <div th:each="pp : ${company.previousProjects}"
+             class="d-flex align-items-center justify-content-between"
+             style="padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+          <span class="fw-medium text-white" style="font-size:0.875rem" th:text="${pp.projectTitle}">Projeto</span>
+          <span style="color:#64748b;font-size:0.78rem" th:if="${pp.completedAt != null}"
+                th:text="${#temporals.format(pp.completedAt, 'MM/yyyy')}">00/0000</span>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /container -->
 </main>
 

@@ -153,10 +153,10 @@
             </div>
           </div>
 
-          <!-- Reputação -->
+          <!-- Análise de qualidade (indicador auxiliar, não confundir com a nota de estrelas acima) -->
           <div class="nexus-card p-4" style="margin-top:1rem">
             <div class="d-flex align-items-center justify-content-between mb-3">
-              <div class="fw-semibold text-white" style="font-size:0.875rem">Reputação</div>
+              <div class="fw-semibold text-white" style="font-size:0.875rem">Análise de qualidade</div>
               <span style="color:#475569;font-size:0.7rem" th:if="${reputation.totalReviews != null}">
                 <span th:text="${reputation.totalReviews}">0</span> avaliação(ões)
               </span>
@@ -167,13 +167,13 @@
             </div>
 
             <th:block th:if="${reputation.totalReviews != null}">
-              <!-- Score geral -->
+              <!-- Índice geral (escala 0-100, indicador interno do matching — não é a nota de estrelas) -->
               <div class="text-center mb-4"
                    th:with="score=${reputation.overallScore != null ? reputation.overallScore : 0.0},
-                            color=${score >= 4.0 ? '#22c55e' : (score >= 3.0 ? '#f59e0b' : '#ef4444')}">
+                            color=${score >= 80 ? '#22c55e' : (score >= 60 ? '#f59e0b' : '#ef4444')}">
                 <div class="tabular fw-bold" style="font-size:2rem;letter-spacing:-0.02em"
                      th:style="'color:' + ${color}"
-                     th:text="${#numbers.formatDecimal(score,1,1)} + ' / 5,0'">0.0</div>
+                     th:text="${#numbers.formatDecimal(score,1,0)} + ' / 100'">0</div>
               </div>
 
               <!-- Confiança -->
@@ -195,44 +195,44 @@
                   <div class="d-flex justify-content-between mb-1">
                     <span style="color:#94a3b8;font-size:0.72rem">Comunicação</span>
                     <span class="tabular" style="color:#a5b4fc;font-size:0.72rem"
-                          th:text="${#numbers.formatDecimal(reputation.communication,1,1)}">0.0</span>
+                          th:text="${#numbers.formatDecimal(reputation.communication / 20.0,1,1)}">0.0</span>
                   </div>
                   <div class="nexus-breakdown-bar" style="height:5px">
                     <div class="nexus-breakdown-bar-fill"
-                         th:style="'width:' + ${reputation.communication * 20} + '%;background:#67e8f9'"></div>
+                         th:style="'width:' + ${reputation.communication} + '%;background:#67e8f9'"></div>
                   </div>
                 </div>
                 <div th:if="${reputation.reliability != null}">
                   <div class="d-flex justify-content-between mb-1">
                     <span style="color:#94a3b8;font-size:0.72rem">Confiabilidade</span>
                     <span class="tabular" style="color:#a5b4fc;font-size:0.72rem"
-                          th:text="${#numbers.formatDecimal(reputation.reliability,1,1)}">0.0</span>
+                          th:text="${#numbers.formatDecimal(reputation.reliability / 20.0,1,1)}">0.0</span>
                   </div>
                   <div class="nexus-breakdown-bar" style="height:5px">
                     <div class="nexus-breakdown-bar-fill"
-                         th:style="'width:' + ${reputation.reliability * 20} + '%;background:#22c55e'"></div>
+                         th:style="'width:' + ${reputation.reliability} + '%;background:#22c55e'"></div>
                   </div>
                 </div>
                 <div th:if="${reputation.punctuality != null}">
                   <div class="d-flex justify-content-between mb-1">
                     <span style="color:#94a3b8;font-size:0.72rem">Pontualidade</span>
                     <span class="tabular" style="color:#a5b4fc;font-size:0.72rem"
-                          th:text="${#numbers.formatDecimal(reputation.punctuality,1,1)}">0.0</span>
+                          th:text="${#numbers.formatDecimal(reputation.punctuality / 20.0,1,1)}">0.0</span>
                   </div>
                   <div class="nexus-breakdown-bar" style="height:5px">
                     <div class="nexus-breakdown-bar-fill"
-                         th:style="'width:' + ${reputation.punctuality * 20} + '%;background:#f59e0b'"></div>
+                         th:style="'width:' + ${reputation.punctuality} + '%;background:#f59e0b'"></div>
                   </div>
                 </div>
                 <div th:if="${reputation.professionalism != null}">
                   <div class="d-flex justify-content-between mb-1">
                     <span style="color:#94a3b8;font-size:0.72rem">Profissionalismo</span>
                     <span class="tabular" style="color:#a5b4fc;font-size:0.72rem"
-                          th:text="${#numbers.formatDecimal(reputation.professionalism,1,1)}">0.0</span>
+                          th:text="${#numbers.formatDecimal(reputation.professionalism / 20.0,1,1)}">0.0</span>
                   </div>
                   <div class="nexus-breakdown-bar" style="height:5px">
                     <div class="nexus-breakdown-bar-fill"
-                         th:style="'width:' + ${reputation.professionalism * 20} + '%;background:#a78bfa'"></div>
+                         th:style="'width:' + ${reputation.professionalism} + '%;background:#a78bfa'"></div>
                   </div>
                 </div>
               </div>
@@ -255,7 +255,7 @@
                   <div style="color:#64748b;font-size:0.68rem;text-transform:uppercase;
                               letter-spacing:0.05em;margin-bottom:4px">Recomendam</div>
                   <div class="tabular fw-bold" style="font-size:1.35rem;color:#22c55e"
-                       th:text="${#numbers.formatDecimal(reputation.recommendationRate * 100,1,1)} + '%'">0%</div>
+                       th:text="${#numbers.formatDecimal(reputation.recommendationRate,1,1)} + '%'">0%</div>
                 </div>
               </div>
             </th:block>

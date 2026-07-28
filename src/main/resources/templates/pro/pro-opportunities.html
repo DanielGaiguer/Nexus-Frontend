@@ -27,6 +27,12 @@
 
       <!-- Filters (client-side) -->
       <div class="d-flex gap-3 flex-wrap mb-3" style="align-items:flex-start">
+        <div style="position:relative;flex:1;min-width:220px;max-width:360px">
+          <i class="ti ti-search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
+          <input type="text" id="oppSearch" class="nexus-input"
+                 placeholder="Buscar por título ou empresa..."
+                 style="padding-left:2.2rem" oninput="applyOppFilters()">
+        </div>
         <div class="nexus-tabs modality-tabs">
           <button class="nexus-tab active" onclick="filterOpp('all')">Todas</button>
           <button class="nexus-tab" onclick="filterOpp('REMOTE')">Remoto</button>
@@ -106,7 +112,9 @@
              th:data-max-budget="${opp.project != null ? opp.project.maximumBudget : ''}"
              th:data-min-salary="${opp.project != null ? opp.project.monthlySalaryMin : ''}"
              th:data-max-salary="${opp.project != null ? opp.project.monthlySalaryMax : ''}"
-             th:data-exp-level="${opp.project != null ? opp.project.experienceLevel : ''}">
+             th:data-exp-level="${opp.project != null ? opp.project.experienceLevel : ''}"
+             th:data-title="${opp.project != null ? #strings.toLowerCase(opp.project.title) : ''}"
+             th:data-company="${opp.project != null and opp.project.company != null ? #strings.toLowerCase(opp.project.company.companyName) : ''}">
           <div class="d-flex align-items-start gap-3 flex-wrap">
             <!-- Avatar empresa -->
             <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
@@ -266,6 +274,7 @@ function onContractTypeChange() {
 }
 
 function applyOppFilters() {
+  var search = (document.getElementById('oppSearch').value || '').toLowerCase().trim();
   var minB = parseFloat(document.getElementById('filterMinBudget').value) || 0;
   var maxB = parseFloat(document.getElementById('filterMaxBudget').value) || Infinity;
   var minS = parseFloat(document.getElementById('filterMinSalary').value) || 0;
@@ -291,6 +300,9 @@ function applyOppFilters() {
     var oppTypeMatch  = !currentOppType || oppType === currentOppType;
     var contractMatch = !contractType || ct === contractType;
     var expMatch      = selectedLevels.length === 0 || selectedLevels.indexOf(cardExp) !== -1;
+    var searchMatch   = !search
+      || (card.dataset.title || '').indexOf(search) !== -1
+      || (card.dataset.company || '').indexOf(search) !== -1;
 
     var budgetMatch = true;
     if (currentOppType === 'PROJECT') {
@@ -302,7 +314,7 @@ function applyOppFilters() {
       salaryMatch = cardMaxSalary >= minS && cardMinSalary <= maxS;
     }
 
-    var show = modMatch && oppTypeMatch && contractMatch && expMatch && budgetMatch && salaryMatch;
+    var show = modMatch && oppTypeMatch && contractMatch && expMatch && budgetMatch && salaryMatch && searchMatch;
     card.style.display = show ? 'block' : 'none';
     if (show) visible++;
   });

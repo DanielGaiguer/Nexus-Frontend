@@ -203,7 +203,7 @@ public class ProfessionalController {
     public String addProject(
             @RequestParam String title,
             @RequestParam(required = false) String description,
-            @RequestParam String technologies,
+            @RequestParam(required = false) List<String> technologies,
             @RequestParam Integer yearOfCompletion,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
@@ -212,7 +212,7 @@ public class ProfessionalController {
             PreviousProjectDTO dto = new PreviousProjectDTO();
             dto.setTitle(title);
             dto.setDescription(description);
-            dto.setTechnologies(technologies);
+            dto.setTechnologies(technologies != null ? technologies : List.of());
             dto.setYearOfCompletion(yearOfCompletion);
             professionalService.addProject(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto adicionado com sucesso!");
@@ -280,6 +280,7 @@ public class ProfessionalController {
         try {
             matchService.professionalAccept(token, matchId);
             redirectAttributes.addFlashAttribute("successMsg", "Convite aceito! Match confirmado.");
+            redirectAttributes.addFlashAttribute("justConfirmedMatchId", matchId);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao aceitar convite: " + e.getMessage());
         }
@@ -298,6 +299,21 @@ public class ProfessionalController {
             redirectAttributes.addFlashAttribute("successMsg", "Convite recusado.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao recusar convite: " + e.getMessage());
+        }
+        return "redirect:/pro/matches";
+    }
+
+    @PostMapping("/matches/{matchId}/cancel")
+    public String cancelMatch(
+            @PathVariable Long matchId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("token");
+        try {
+            matchService.cancelMatch(token, matchId);
+            redirectAttributes.addFlashAttribute("successMsg", "Match cancelado.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Não foi possível cancelar o match. Tente novamente.");
         }
         return "redirect:/pro/matches";
     }
@@ -322,6 +338,28 @@ public class ProfessionalController {
             return ResponseEntity.ok(matchService.getHistory(token, id));
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Erro ao carregar histórico: " + e.getMessage());
+        }
+    }
+
+    // Dados para a janela "Entrar em contato" — só liberado em match confirmado
+    @GetMapping("/matches/{id}/contact")
+    @ResponseBody
+    public ResponseEntity<?> getMatchContact(@PathVariable Long id, HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        try {
+            MatchDTO match = matchService.getMatch(token, id);
+            Long companyId = match.getProject().getCompany().getId();
+            ContactInfoDTO contact = companyService.getContact(token, companyId);
+            ContactCardDTO card = new ContactCardDTO(
+                    match.getProject().getCompany().getCompanyName(),
+                    match.getProject().getCompany().getProfilePhotoUrl(),
+                    contact.getPhone(),
+                    contact.getEmail(),
+                    "/pro/company/" + companyId
+            );
+            return ResponseEntity.ok(card);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao carregar contato: " + e.getMessage());
         }
     }
 

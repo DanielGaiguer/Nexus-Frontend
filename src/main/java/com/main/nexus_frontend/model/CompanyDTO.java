@@ -1,5 +1,7 @@
 package com.main.nexus_frontend.model;
 
+import java.util.List;
+
 public class CompanyDTO {
     private Long id;
     private String companyName;
@@ -11,6 +13,7 @@ public class CompanyDTO {
     private Double reputation;
     private String profilePhotoUrl;
     private ReputationDTO reputationDetails;
+    private List<CompanyPreviousProjectDTO> previousProjects;
 
     public CompanyDTO() {}
 
@@ -43,4 +46,7 @@ public class CompanyDTO {
 
     public ReputationDTO getReputationDetails() { return reputationDetails; }
     public void setReputationDetails(ReputationDTO reputationDetails) { this.reputationDetails = reputationDetails; }
+
+    public List<CompanyPreviousProjectDTO> getPreviousProjects() { return previousProjects; }
+    public void setPreviousProjects(List<CompanyPreviousProjectDTO> previousProjects) { this.previousProjects = previousProjects; }
 }

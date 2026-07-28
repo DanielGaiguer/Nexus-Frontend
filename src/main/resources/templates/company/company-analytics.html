@@ -233,8 +233,8 @@
             <div id="repGauge" style="height:160px;width:100%"></div>
             <div class="tabular fw-bold text-center"
                  style="font-size:1.75rem;color:#6b6eff;margin-top:-0.5rem;line-height:1"
-                 th:text="${#numbers.formatDecimal((analytics.reputationSummary.overallReputation ?: 0) * 20,1,1)}">0</div>
-            <div style="color:#475569;font-size:0.72rem;text-align:center">Score geral (0–100)</div>
+                 th:text="${#numbers.formatDecimal(analytics.reputationSummary.overallReputation ?: 0,1,0)}">0</div>
+            <div style="color:#475569;font-size:0.72rem;text-align:center">Índice de qualidade (0–100)</div>
 
             <!-- Barra de confiança -->
             <div style="width:100%;margin-top:0.75rem">
@@ -292,7 +292,7 @@
               <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
                           letter-spacing:0.05em;margin-bottom:4px">Recomendariam</div>
               <div class="tabular fw-bold" style="font-size:1.5rem;color:#22c55e"
-                   th:text="${#numbers.formatDecimal((analytics.reputationSummary.recommendationRate ?: 0) * 100,1,1)+'%'}">—</div>
+                   th:text="${#numbers.formatDecimal(analytics.reputationSummary.recommendationRate ?: 0,1,1)+'%'}">—</div>
             </div>
 
           </div>
@@ -722,7 +722,7 @@ function emptyMsg(el) {
   var el = document.getElementById('repGauge');
   if (!el) return;
 
-  var score = Math.min(Math.max((REP.overall || 0) * 20, 0), 100);
+  var score = Math.min(Math.max(REP.overall || 0, 0), 100);
   var color = valueColor(score);
   var chart = echarts.init(el, null, { renderer:'canvas', backgroundColor: C.bg });
 
@@ -758,13 +758,12 @@ function emptyMsg(el) {
     { name:'Profissionalismo',max:100 }
   ];
 
-  // Os indicadores vêm em escala 0–5 (mesma escala usada em company-reputation.html);
-  // convertidos para 0–100 para bater com o eixo do radar.
+  // Os indicadores já vêm em escala 0–100 (ReputationMetrics), direto no eixo do radar.
   var values = [
-    (REP.communication    || 0) * 20,
-    (REP.reliability      || 0) * 20,
-    (REP.punctuality      || 0) * 20,
-    (REP.professionalism  || 0) * 20
+    REP.communication    || 0,
+    REP.reliability      || 0,
+    REP.punctuality      || 0,
+    REP.professionalism  || 0
   ];
 
   chart.setOption({

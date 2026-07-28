@@ -368,6 +368,9 @@ public class AdminController {
         List<MatchDTO> rejected = matches.stream()
                 .filter(m -> "REJECTED".equals(m.getStatus()))
                 .collect(Collectors.toList());
+        List<MatchDTO> previousProjects = matches.stream()
+                .filter(m -> "MATCHED".equals(m.getStatus()) && Boolean.FALSE.equals(m.getActive()))
+                .collect(Collectors.toList());
 
         long totalProjects = projects.size();
         long openProjects = projects.stream()
@@ -391,6 +394,7 @@ public class AdminController {
         model.addAttribute("projects", projects);
         model.addAttribute("confirmed", confirmed);
         model.addAttribute("pending", pending);
+        model.addAttribute("previousProjects", previousProjects);
         model.addAttribute("totalProjects", totalProjects);
         model.addAttribute("openProjects", openProjects);
         model.addAttribute("confirmedMatches", confirmedMatches);

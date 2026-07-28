@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,6 +60,20 @@ public class MatchService {
                         || "PROFESSIONAL_INTERESTED".equals(m.getStatus())
                         || "COMPANY_INTERESTED".equals(m.getStatus()))
                 .collect(Collectors.toList());
+    }
+
+    public List<MatchDTO> getPreviousProjects(String token) {
+        MatchDTO[] response = restClient.get()
+                .uri("/projects/previous")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load previous projects");
+                })
+                .body(MatchDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
     }
 
     public void professionalAccept(String token, Long matchId) {
@@ -137,6 +152,34 @@ public class MatchService {
                     throw new ResponseStatusException(
                             HttpStatusCode.valueOf(res.getStatusCode().value()),
                             "Failed to cancel match");
+                })
+                .toBodilessEntity();
+    }
+
+    // Cancelamento genérico — usado pelo profissional (empresa continua usando companyCancel)
+    public void cancelMatch(String token, Long matchId) {
+        restClient.post()
+                .uri("/matches/{matchId}/cancel", matchId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to cancel match");
+                })
+                .toBodilessEntity();
+    }
+
+    public void answerStatusCheck(String token, Long matchId, String outcome) {
+        restClient.post()
+                .uri("/matches/{matchId}/status-check", matchId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .body(Map.of("outcome", outcome))
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to answer status check");
                 })
                 .toBodilessEntity();
     }

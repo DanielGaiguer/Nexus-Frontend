@@ -463,9 +463,11 @@ public class CompanyController {
         List<MatchDTO> confirmed = allMatches.stream()
                 .filter(m -> "MATCHED".equals(m.getStatus()))
                 .collect(Collectors.toList());
+        List<MatchDTO> previousProjects = matchService.getPreviousProjects(token);
         model.addAttribute("receivedInterests", receivedInterests);
         model.addAttribute("sentInvites", sentInvites);
         model.addAttribute("confirmed", confirmed);
+        model.addAttribute("previousProjects", previousProjects);
         model.addAttribute("activePage", "matches");
         return "company/company-matches";
     }
@@ -479,6 +481,7 @@ public class CompanyController {
         try {
             matchService.companyAccept(token, matchId);
             redirectAttributes.addFlashAttribute("successMsg", "Interesse aceito! Match confirmado.");
+            redirectAttributes.addFlashAttribute("justConfirmedMatchId", matchId);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao aceitar: " + e.getMessage());
         }
@@ -511,7 +514,7 @@ public class CompanyController {
             matchService.companyCancel(token, matchId);
             redirectAttributes.addFlashAttribute("successMsg", "Match cancelado.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao cancelar match: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMsg", "Não foi possível cancelar o match. Tente novamente.");
         }
         return "redirect:/company/matches";
     }
@@ -536,6 +539,28 @@ public class CompanyController {
             return ResponseEntity.ok(matchService.getHistory(token, id));
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Erro ao carregar histórico: " + e.getMessage());
+        }
+    }
+
+    // Dados para a janela "Entrar em contato" — só liberado em match confirmado
+    @GetMapping("/matches/{id}/contact")
+    @ResponseBody
+    public ResponseEntity<?> getMatchContact(@PathVariable Long id, HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        try {
+            MatchDTO match = matchService.getMatch(token, id);
+            Long professionalId = match.getProfessional().getId();
+            ContactInfoDTO contact = professionalService.getContact(token, professionalId);
+            ContactCardDTO card = new ContactCardDTO(
+                    match.getProfessional().getName(),
+                    match.getProfessional().getProfilePhotoUrl(),
+                    contact.getPhone(),
+                    contact.getEmail(),
+                    "/company/professional/" + professionalId
+            );
+            return ResponseEntity.ok(card);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao carregar contato: " + e.getMessage());
         }
     }
 

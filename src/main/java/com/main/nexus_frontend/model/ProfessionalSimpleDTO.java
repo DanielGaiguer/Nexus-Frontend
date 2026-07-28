@@ -5,6 +5,7 @@ public class ProfessionalSimpleDTO {
     private String name;
     private String phone;
     private Double reputation;
+    private String profilePhotoUrl;
 
     public ProfessionalSimpleDTO() {}
 
@@ -19,4 +20,7 @@ public class ProfessionalSimpleDTO {
 
     public Double getReputation() { return reputation; }
     public void setReputation(Double reputation) { this.reputation = reputation; }
+
+    public String getProfilePhotoUrl() { return profilePhotoUrl; }
+    public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
 }

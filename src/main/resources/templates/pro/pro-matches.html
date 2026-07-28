@@ -57,7 +57,7 @@
         <!-- List -->
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(invites)}">
           <div th:each="inv : ${invites}" class="nexus-match-card">
-            <div class="d-flex align-items-start gap-3 mb-3 flex-wrap">
+            <div class="d-flex align-items-start gap-3 mb-4 flex-wrap">
               <!-- Avatar -->
               <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
                    th:with="n=${inv.project.company.companyName},
@@ -153,7 +153,7 @@
             </div>
 
             <!-- Score breakdown bars -->
-            <div class="row g-2 mb-3" style="font-size:0.78rem" th:if="${inv.scoreBreakdown != null}">
+            <div class="row g-3 mb-4" style="font-size:0.78rem" th:if="${inv.scoreBreakdown != null}">
               <div class="col-6">
                 <div class="d-flex justify-content-between mb-1">
                   <span style="color:#64748b">Skills</span>
@@ -192,24 +192,22 @@
               </div>
             </div>
 
-            <!-- Actions: two forms side-by-side -->
-            <div class="row g-2">
+            <!-- Actions: right-aligned, half-width buttons -->
+            <div class="d-flex justify-content-end gap-2 mt-3">
               <!-- Recusar (abre modal) -->
-              <div class="col-6">
-                <button type="button"
-                        class="nexus-btn nexus-btn-danger-outline w-100 reject-trigger"
-                        th:data-id="${inv.id}">
-                  <i class="ti ti-x"></i> Recusar
-                </button>
-              </div>
+              <button type="button"
+                      class="nexus-btn nexus-btn-danger-outline reject-trigger"
+                      style="width:25%;min-width:140px;justify-content:center"
+                      th:data-id="${inv.id}">
+                <i class="ti ti-x"></i> Recusar
+              </button>
               <!-- Aceitar -->
-              <div class="col-6">
-                <form th:action="@{/pro/matches/{id}/accept(id=${inv.id})}" method="post">
-                  <button type="submit" class="nexus-btn nexus-btn-success w-100">
-                    <i class="ti ti-check"></i> Aceitar convite
-                  </button>
-                </form>
-              </div>
+              <form th:action="@{/pro/matches/{id}/accept(id=${inv.id})}" method="post"
+                    style="width:25%;min-width:160px">
+                <button type="submit" class="nexus-btn nexus-btn-success w-100" style="justify-content:center">
+                  <i class="ti ti-check"></i> Aceitar convite
+                </button>
+              </form>
             </div>
           </div>
         </div>
@@ -249,6 +247,21 @@
                   <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
                 </span>
                 <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.4rem" th:text="${m.project.company.companyName}">Empresa</div>
+
+                <!-- Contador de expiração do match (30 dias desde a confirmação) -->
+                <div th:with="daysRemaining=${m.getDaysRemaining()}" style="margin-bottom:0.5rem">
+                  <div th:if="${m.active != null and !m.active or daysRemaining <= 0}"
+                       style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.2);
+                              border-radius:8px;padding:0.4rem 0.7rem;color:#94a3b8;font-size:0.78rem;font-weight:600">
+                    Este match foi encerrado
+                  </div>
+                  <div th:if="${(m.active == null or m.active) and daysRemaining >= 1 and daysRemaining <= 15}"
+                       style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);
+                              border-radius:8px;padding:0.4rem 0.7rem;color:#f59e0b;font-size:0.78rem;font-weight:600">
+                    ⚠️ Este match expira em <span th:text="${daysRemaining}">15</span> dias
+                  </div>
+                </div>
+
                 <!-- Skills exigidas — ajuda a diferenciar vagas com o mesmo título -->
                 <div th:if="${m.project?.requiredSkills != null and !#lists.isEmpty(m.project.requiredSkills)}"
                      class="d-flex flex-wrap gap-1 mb-2">
@@ -267,6 +280,11 @@
               </div>
               <div class="d-flex flex-column align-items-end gap-2">
                 <span class="nexus-status success">Match Confirmado</span>
+                <button type="button"
+                        class="nexus-btn nexus-btn-primary nexus-btn-sm contact-trigger"
+                        th:data-id="${m.id}">
+                  <i class="ti ti-address-book"></i> Entrar em contato
+                </button>
                 <a th:href="@{/pro/company/{id}(id=${m.project.company.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                   <i class="ti ti-building"></i> Ver perfil da empresa
@@ -281,6 +299,12 @@
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                   <i class="ti ti-star"></i> Avaliar
                 </a>
+                <button type="button"
+                        th:if="${m.active == null or m.active}"
+                        class="nexus-btn nexus-btn-danger-outline nexus-btn-sm cancel-match-trigger"
+                        th:data-id="${m.id}">
+                  <i class="ti ti-x"></i> Cancelar Match
+                </button>
               </div>
             </div>
           </div>
@@ -443,6 +467,79 @@
   </div>
 </div>
 
+<!-- ══ MODAL ENTRAR EM CONTATO ═════════════════════════════ -->
+<div class="modal fade nexus-modal" id="contactModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(107,110,255,0.15)">
+        <div style="width:4px;height:40px;background:#6b6eff;border-radius:2px;margin-right:0.75rem"></div>
+        <div>
+          <h5 class="modal-title fw-semibold text-white">Entrar em contato</h5>
+          <div style="color:#64748b;font-size:0.8rem">Dados liberados pelo match confirmado</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div id="contactLoading" class="py-4">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+        <div id="contactError" class="py-4" style="display:none;color:#94a3b8;font-size:0.85rem">
+          Não foi possível carregar os dados de contato.
+        </div>
+        <div id="contactContent" style="display:none">
+          <div id="contactAvatarWrap" class="mb-3"></div>
+          <div id="contactName" class="fw-bold text-white mb-3" style="font-size:1.1rem"></div>
+          <div class="d-flex flex-column gap-2 text-start mx-auto" style="max-width:280px">
+            <div id="contactPhoneRow" class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.9rem">
+              <i class="ti ti-phone" style="color:#6b6eff;width:18px"></i>
+              <span id="contactPhone"></span>
+            </div>
+            <div id="contactEmailRow" class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.9rem">
+              <i class="ti ti-mail" style="color:#6b6eff;width:18px"></i>
+              <span id="contactEmail"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Fechar</button>
+        <a id="contactProfileLink" href="#" class="nexus-btn nexus-btn-primary">
+          <i class="ti ti-building"></i> Ver perfil
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL CANCELAR MATCH ══════════════════════════════════ -->
+<div class="modal fade nexus-modal" id="cancelMatchModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(239,68,68,0.15)">
+        <div style="width:4px;height:40px;background:#ef4444;border-radius:2px;margin-right:0.75rem"></div>
+        <div>
+          <h5 class="modal-title fw-semibold text-white">Cancelar match</h5>
+          <div style="color:#64748b;font-size:0.8rem">Esta ação não pode ser desfeita</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="cancelMatchForm" method="post">
+        <div class="modal-body">
+          <p style="color:#94a3b8;font-size:0.9rem;margin:0">
+            Tem certeza que deseja cancelar este match? Esta ação não pode ser desfeita.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Voltar</button>
+          <button type="submit" class="nexus-btn nexus-btn-danger-outline">
+            <i class="ti ti-x"></i> Confirmar cancelamento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
 // Tab switch
@@ -472,6 +569,13 @@ document.querySelectorAll('#rejectForm input[type=checkbox]').forEach(function(c
   cb.addEventListener('change', function() {
     var any = Array.from(document.querySelectorAll('#rejectForm input[type=checkbox]:checked')).length > 0;
     document.getElementById('confirmRejectBtn').disabled = !any;
+  });
+});
+
+document.querySelectorAll('.cancel-match-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.getElementById('cancelMatchForm').action = '/pro/matches/' + this.dataset.id + '/cancel';
+    new bootstrap.Modal(document.getElementById('cancelMatchModal')).show();
   });
 });
 
@@ -530,6 +634,72 @@ document.querySelectorAll('.history-trigger').forEach(function(btn) {
       });
   });
 });
+
+document.querySelectorAll('.contact-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var matchId = this.dataset.id;
+    var loading = document.getElementById('contactLoading');
+    var error = document.getElementById('contactError');
+    var content = document.getElementById('contactContent');
+    loading.style.display = 'block';
+    error.style.display = 'none';
+    content.style.display = 'none';
+    new bootstrap.Modal(document.getElementById('contactModal')).show();
+    fetch('/pro/matches/' + matchId + '/contact')
+      .then(function(r) { if (!r.ok) throw new Error('fail'); return r.json(); })
+      .then(function(data) {
+        loading.style.display = 'none';
+        content.style.display = 'block';
+
+        document.getElementById('contactName').textContent = data.name || '—';
+        document.getElementById('contactProfileLink').href = data.profileUrl || '#';
+
+        var avatarWrap = document.getElementById('contactAvatarWrap');
+        if (data.photoUrl) {
+          avatarWrap.innerHTML = '<img src="' + data.photoUrl + '" alt="Foto" ' +
+            'style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid rgba(107,110,255,0.3)">';
+        } else {
+          var n = data.name || '?';
+          var h = 0;
+          for (var i = 0; i < n.length; i++) { h = n.charCodeAt(i) + ((h << 5) - h); }
+          var hue = ((h % 360) + 360) % 360;
+          avatarWrap.innerHTML = '<div style="width:88px;height:88px;border-radius:50%;margin:0 auto;' +
+            'display:flex;align-items:center;justify-content:center;background:hsl(' + hue + ',50%,40%);' +
+            'font-size:1.75rem;font-weight:700;color:#fff">' + n.charAt(0).toUpperCase() + '</div>';
+        }
+
+        var phoneRow = document.getElementById('contactPhoneRow');
+        if (data.phone) {
+          document.getElementById('contactPhone').textContent = data.phone;
+          phoneRow.style.display = 'flex';
+        } else {
+          phoneRow.style.display = 'none';
+        }
+
+        var emailRow = document.getElementById('contactEmailRow');
+        if (data.email) {
+          document.getElementById('contactEmail').textContent = data.email;
+          emailRow.style.display = 'flex';
+        } else {
+          emailRow.style.display = 'none';
+        }
+      })
+      .catch(function() {
+        loading.style.display = 'none';
+        error.style.display = 'block';
+      });
+  });
+});
+</script>
+
+<!-- Abre a janela de contato automaticamente quando este match acabou de ser confirmado -->
+<script th:inline="javascript">
+var justConfirmedMatchId = /*[[${justConfirmedMatchId}]]*/ null;
+if (justConfirmedMatchId) {
+  switchTab('confirmed');
+  var justConfirmedBtn = document.querySelector('.contact-trigger[data-id="' + justConfirmedMatchId + '"]');
+  if (justConfirmedBtn) { justConfirmedBtn.click(); }
+}
 </script>
 </body>
 </html>

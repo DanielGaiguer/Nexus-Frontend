@@ -64,9 +64,9 @@
                  th:text="${proj.description}">Descrição</p>
               <!-- Tech chips -->
               <div class="d-flex flex-wrap gap-2" th:if="${proj.technologies != null}">
-                <span th:each="tech : ${#strings.listSplit(proj.technologies, ',')}"
+                <span th:each="tech : ${proj.technologies}"
                       class="nexus-chip nexus-chip-tech"
-                      th:text="${#strings.trim(tech)}">Tech</span>
+                      th:text="${tech}">Tech</span>
               </div>
             </div>
             <!-- Delete -->
@@ -106,11 +106,16 @@
               <textarea class="nexus-input nexus-textarea" name="description"
                         placeholder="Descreva o projeto, seus objetivos e resultados"></textarea>
             </div>
-            <div class="col-sm-8">
+            <div class="col-12">
               <label class="nexus-label">Tecnologias usadas *</label>
-              <input type="text" class="nexus-input" name="technologies" id="projTechs" required
-                     placeholder="Ex: Java, Spring Boot, React, Docker">
-              <div style="color:#475569;font-size:0.75rem;margin-top:4px">Separe por vírgula</div>
+              <div class="d-flex gap-2">
+                <input type="text" class="nexus-input" id="techInput"
+                       placeholder="Ex: Java" maxlength="50">
+                <button type="button" class="nexus-btn nexus-btn-ghost flex-shrink-0" id="addTechBtn">Adicionar</button>
+              </div>
+              <div id="techError" class="text-danger" style="font-size:0.75rem;margin-top:4px;display:none"></div>
+              <div id="techTagsList" class="d-flex flex-wrap gap-2" style="margin-top:8px"></div>
+              <div id="techHiddenInputs"></div>
             </div>
             <div class="col-sm-4">
               <label class="nexus-label">Ano de conclusão *</label>
@@ -184,6 +189,103 @@ document.querySelectorAll('.delete-trigger').forEach(function(btn) {
   });
 });
 
+// Tags de tecnologias
+var MAX_TECHNOLOGIES = 15;
+var selectedTechnologies = [];
+
+function renderTechTags() {
+  var list = document.getElementById('techTagsList');
+  var hiddenInputs = document.getElementById('techHiddenInputs');
+  list.innerHTML = '';
+  hiddenInputs.innerHTML = '';
+
+  selectedTechnologies.forEach(function(tech, index) {
+    var chip = document.createElement('span');
+    chip.className = 'nexus-chip nexus-chip-tech';
+    chip.textContent = tech;
+
+    var removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.textContent = '×';
+    removeBtn.setAttribute('aria-label', 'Remover ' + tech);
+    removeBtn.style.marginLeft = '6px';
+    removeBtn.style.background = 'none';
+    removeBtn.style.border = 'none';
+    removeBtn.style.color = 'inherit';
+    removeBtn.style.cursor = 'pointer';
+    removeBtn.addEventListener('click', function() {
+      selectedTechnologies.splice(index, 1);
+      renderTechTags();
+    });
+
+    chip.appendChild(removeBtn);
+    list.appendChild(chip);
+
+    var hidden = document.createElement('input');
+    hidden.type = 'hidden';
+    hidden.name = 'technologies';
+    hidden.value = tech;
+    hiddenInputs.appendChild(hidden);
+  });
+}
+
+function showTechError(message) {
+  var errorEl = document.getElementById('techError');
+  errorEl.textContent = message || '';
+  errorEl.style.display = message ? 'block' : 'none';
+}
+
+function addTechnology() {
+  var input = document.getElementById('techInput');
+  var value = input.value.trim();
+
+  if (!value) {
+    showTechError('Informe uma tecnologia.');
+    return;
+  }
+  if (selectedTechnologies.length >= MAX_TECHNOLOGIES) {
+    showTechError('Máximo de ' + MAX_TECHNOLOGIES + ' tecnologias.');
+    return;
+  }
+  var isDuplicate = selectedTechnologies.some(function(t) {
+    return t.toLowerCase() === value.toLowerCase();
+  });
+  if (isDuplicate) {
+    showTechError('Essa tecnologia já foi adicionada.');
+    return;
+  }
+
+  showTechError('');
+  selectedTechnologies.push(value);
+  input.value = '';
+  renderTechTags();
+  input.focus();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var techInput = document.getElementById('techInput');
+  var addTechBtn = document.getElementById('addTechBtn');
+  if (techInput && addTechBtn) {
+    addTechBtn.addEventListener('click', addTechnology);
+    techInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addTechnology();
+      }
+    });
+  }
+
+  var addProjectModal = document.getElementById('addProjectModal');
+  if (addProjectModal) {
+    addProjectModal.addEventListener('hidden.bs.modal', function() {
+      selectedTechnologies = [];
+      if (techInput) techInput.value = '';
+      showTechError('');
+      renderTechTags();
+    });
+  }
+});
+
 // Validação do formulário de adicionar projeto
 document.addEventListener('DOMContentLoaded', function() {
   var currentYear = new Date().getFullYear();
@@ -191,9 +293,12 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!form) return;
   attachSubmitGuard(form, function() {
     var title = document.getElementById('projTitle').value.trim();
-    var techs = document.getElementById('projTechs').value.trim();
     var year  = parseInt(document.getElementById('projYear').value);
-    return title.length >= 2 && techs.length >= 2 && year >= 1990 && year <= currentYear;
+    if (selectedTechnologies.length < 1) {
+      showTechError('Adicione ao menos uma tecnologia.');
+      return false;
+    }
+    return title.length >= 2 && year >= 1990 && year <= currentYear;
   });
 });
 </script>
