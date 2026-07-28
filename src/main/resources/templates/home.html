@@ -193,19 +193,41 @@
             border-top: 1px solid var(--nexus-border);
         }
         .nx-mobile-menu.is-open { display: flex; }
-        .nx-mobile-menu a {
+        .nx-mobile-menu a:not(.btn-nx) {
             padding: 12px 4px;
             font-size: 15px;
             font-weight: 500;
             color: var(--nexus-muted);
             border-bottom: 1px solid var(--nexus-border);
         }
+        .nx-mobile-menu > .btn-nx { width: 100%; justify-content: center; margin: 10px 0 4px; }
         .nx-mobile-menu .nx-mobile-actions {
             display: flex;
             gap: 10px;
             padding-top: 14px;
         }
         .nx-mobile-actions .btn-nx { flex: 1; }
+        .nx-mobile-actions-user { flex-direction: column; align-items: flex-start; gap: 12px; }
+        .nx-mobile-actions-user .btn-nx-logout { width: 100%; justify-content: center; }
+        .nx-user-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--nexus-white);
+        }
+        .nx-nav-actions .nx-user-name {
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .btn-nx-logout {
+            background: var(--nexus-bg-1);
+            border-color: var(--nexus-border);
+            color: var(--nexus-muted);
+        }
+        .btn-nx-logout:hover { color: var(--nexus-white); border-color: rgba(255,255,255,0.22); }
         @media (min-width: 992px) {
             .nx-nav-links { display: flex; }
             .nx-nav-actions { display: flex; }
@@ -564,11 +586,25 @@
             <a href="#como-funciona">Como funciona</a>
             <a href="#para-empresas">Para empresas</a>
             <a href="#para-profissionais">Para profissionais</a>
+            <a class="btn-nx btn-nx-outline btn-nx-sm"
+               th:with="dashboardUrl=${session.userName == null ? '/auth/login' : (session.userRole == 'ADMIN' ? '/admin/dashboard' : (session.userRole == 'COMPANY' ? '/company/dashboard' : '/pro/dashboard'))}"
+               th:href="@{${dashboardUrl}}" href="/auth/login">Dashboard</a>
         </div>
 
-        <div class="nx-nav-actions">
+        <div class="nx-nav-actions" th:if="${session.userName == null}">
             <a class="btn-nx btn-nx-outline btn-nx-sm" th:href="@{/auth/login}" href="/auth/login">Entrar</a>
             <a class="btn-nx btn-nx-filled btn-nx-sm" th:href="@{/auth/register/professional}" href="/auth/register/professional">Criar conta</a>
+        </div>
+        <div class="nx-nav-actions" th:if="${session.userName != null}">
+            <span class="nx-user-name" th:text="${session.userName}">Usuário</span>
+            <a class="btn-nx btn-nx-logout btn-nx-sm" th:href="@{/auth/logout}" href="/auth/logout">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sair
+            </a>
         </div>
 
         <button class="nx-nav-toggle" id="nxNavToggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="nxMobileMenu">
@@ -584,9 +620,23 @@
         <a href="#como-funciona">Como funciona</a>
         <a href="#para-empresas">Para empresas</a>
         <a href="#para-profissionais">Para profissionais</a>
-        <div class="nx-mobile-actions">
+        <a class="btn-nx btn-nx-outline"
+           th:with="dashboardUrl=${session.userName == null ? '/auth/login' : (session.userRole == 'ADMIN' ? '/admin/dashboard' : (session.userRole == 'COMPANY' ? '/company/dashboard' : '/pro/dashboard'))}"
+           th:href="@{${dashboardUrl}}" href="/auth/login">Dashboard</a>
+        <div class="nx-mobile-actions" th:if="${session.userName == null}">
             <a class="btn-nx btn-nx-outline" th:href="@{/auth/login}" href="/auth/login">Entrar</a>
             <a class="btn-nx btn-nx-filled" th:href="@{/auth/register/professional}" href="/auth/register/professional">Criar conta</a>
+        </div>
+        <div class="nx-mobile-actions nx-mobile-actions-user" th:if="${session.userName != null}">
+            <span class="nx-user-name" th:text="${session.userName}">Usuário</span>
+            <a class="btn-nx btn-nx-logout" th:href="@{/auth/logout}" href="/auth/logout">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sair
+            </a>
         </div>
     </div>
 </nav>
