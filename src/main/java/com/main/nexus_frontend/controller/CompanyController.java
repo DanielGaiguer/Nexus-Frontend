@@ -618,6 +618,18 @@ public class CompanyController {
         return "company/company-analytics";
     }
 
+    @GetMapping("/companies")
+    public String companiesDirectory(Model model) {
+        model.addAttribute("activePage", "companies");
+        return "company/company-companies";
+    }
+
+    @GetMapping("/professionals")
+    public String professionalsDirectory(Model model) {
+        model.addAttribute("activePage", "professionals");
+        return "company/company-professionals";
+    }
+
     @GetMapping("/map")
     public String map(
             @RequestParam(required = false) String city,

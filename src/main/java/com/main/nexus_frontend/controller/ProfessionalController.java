@@ -421,6 +421,18 @@ public class ProfessionalController {
         return "redirect:/public/opportunity/" + projectId;
     }
 
+    @GetMapping("/companies")
+    public String companiesDirectory(Model model) {
+        model.addAttribute("activePage", "companies");
+        return "pro/pro-companies";
+    }
+
+    @GetMapping("/professionals")
+    public String professionalsDirectory(Model model) {
+        model.addAttribute("activePage", "professionals");
+        return "pro/pro-professionals";
+    }
+
     @GetMapping("/map")
     public String map(
             @RequestParam(required = false) String city,

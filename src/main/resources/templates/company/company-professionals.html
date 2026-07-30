@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Profissionais')}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4">
+
+      <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Profissionais</h1>
+        <p style="color:#64748b;font-size:0.875rem">Explore os profissionais cadastrados na plataforma</p>
+      </div>
+
+      <div class="mb-4" style="position:relative;max-width:360px">
+        <i class="ti ti-search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
+        <input type="text" id="directorySearch" class="nexus-input"
+               placeholder="Buscar por nome..." style="padding-left:2.2rem">
+      </div>
+
+      <div id="directoryEmpty" class="nexus-card p-5 text-center" style="display:none">
+        <i class="ti ti-users" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhum profissional encontrado</div>
+      </div>
+
+      <div class="row g-4" id="directoryList" style="max-width:1200px"></div>
+
+      <div id="directoryLoading" style="display:none;text-align:center;padding:2rem">
+        <i class="ti ti-loader" style="animation:spin 1s linear infinite;font-size:1.75rem;color:#6b6eff"></i>
+      </div>
+
+      <div id="directorySentinel"></div>
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script th:src="@{/js/nexus-directory.js}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    initNexusDirectory({ type: 'professionals' });
+  });
+</script>
+</body>
+</html>

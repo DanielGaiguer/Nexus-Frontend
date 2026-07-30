@@ -103,6 +103,20 @@
           <span>Mapa</span>
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/pro/companies}"
+           th:classappend="${activePage == 'companies'} ? ' active'">
+          <span class="nav-link-icon"><i class="ti ti-building"></i></span>
+          <span>Empresas</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/pro/professionals}"
+           th:classappend="${activePage == 'professionals'} ? ' active'">
+          <span class="nav-link-icon"><i class="ti ti-users"></i></span>
+          <span>Profissionais</span>
+        </a>
+      </li>
     </ul>
 
     <ul class="navbar-nav" th:if="${session.userRole == 'COMPANY'}">
@@ -156,6 +170,20 @@
           <span>Mapa</span>
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/company/companies}"
+           th:classappend="${activePage == 'companies'} ? ' active'">
+          <span class="nav-link-icon"><i class="ti ti-building"></i></span>
+          <span>Empresas</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/company/professionals}"
+           th:classappend="${activePage == 'professionals'} ? ' active'">
+          <span class="nav-link-icon"><i class="ti ti-users"></i></span>
+          <span>Profissionais</span>
+        </a>
+      </li>
     </ul>
 
     <ul class="navbar-nav" th:if="${session.userRole == 'ADMIN'}">
@@ -199,6 +227,20 @@
              th:classappend="${activePage == 'map'} ? ' active'">
             <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>
             <span>Mapa</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/admin/companies}"
+             th:classappend="${activePage == 'companies'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-building"></i></span>
+            <span>Empresas</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/admin/professionals}"
+             th:classappend="${activePage == 'professionals'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-users"></i></span>
+            <span>Profissionais</span>
           </a>
         </li>
     </ul>
