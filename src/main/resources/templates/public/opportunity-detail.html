@@ -93,16 +93,20 @@
                                th:text="${project.description != null ? project.description : 'Nenhuma descrição cadastrada.'}">—</p>
                         </div>
 
-                        <div class="card card-bg border-0 p-4 mb-3"
-                             th:if="${project.requiredSkills != null and !project.requiredSkills.isEmpty()}">
+                        <div class="card card-bg border-0 p-4 mb-3">
                             <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
                                 <i class="ti ti-code me-2" style="color:var(--primary)"></i>Skills exigidas
                             </h5>
-                            <div class="d-flex flex-wrap gap-2">
+                            <div class="d-flex flex-wrap gap-2"
+                                 th:if="${project.requiredSkills != null and !project.requiredSkills.isEmpty()}">
                                 <span th:each="sk : ${project.requiredSkills}"
                                       class="nexus-chip nexus-chip-tech"
                                       th:text="${sk.name}">Skill</span>
                             </div>
+                            <p th:unless="${project.requiredSkills != null and !project.requiredSkills.isEmpty()}"
+                               style="color:#475569;font-size:0.875rem;margin-bottom:0">
+                                Nenhuma skill exigida.
+                            </p>
                         </div>
 
                         <div class="card card-bg border-0 p-4 mb-3"
@@ -239,7 +243,18 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-start mt-3">
-                                <a th:href="@{/pro/company/{id}(id=${company.id})}"
+                                <a th:if="${session.userRole == 'ADMIN'}"
+                                   th:href="@{/admin/company/{id}(id=${company.id})}"
+                                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                                    Ver mais <i class="ti ti-arrow-right" style="font-size:0.8rem"></i>
+                                </a>
+                                <a th:if="${session.userRole == 'PROFESSIONAL'}"
+                                   th:href="@{/pro/company/{id}(id=${company.id})}"
+                                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                                    Ver mais <i class="ti ti-arrow-right" style="font-size:0.8rem"></i>
+                                </a>
+                                <a th:unless="${session.userRole == 'ADMIN' or session.userRole == 'PROFESSIONAL'}"
+                                   th:href="@{/public/company/{id}(id=${company.id})}"
                                    class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                                     Ver mais <i class="ti ti-arrow-right" style="font-size:0.8rem"></i>
                                 </a>

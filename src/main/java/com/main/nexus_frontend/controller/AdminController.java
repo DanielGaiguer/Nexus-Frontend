@@ -15,7 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,17 +80,7 @@ public class AdminController {
     public String approvals(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         try {
-            List<UserSummaryDTO> companyUsers = adminService.getUsers(token).stream()
-                    .filter(u -> "COMPANY".equals(u.getType()))
-                    .collect(Collectors.toList());
-            List<CompanyProfileDTO> companies = new ArrayList<>();
-            for (UserSummaryDTO u : companyUsers) {
-                try {
-                    companies.add(adminService.getCompanyProfile(token, u.getId()));
-                } catch (Exception ignored) {
-                    // pula empresas cujo perfil falhar ao carregar, sem derrubar a página inteira
-                }
-            }
+            List<CompanyProfileDTO> companies = adminService.getAllCompanies(token);
             long pendingCount = companies.stream()
                     .filter(c -> "PENDING".equals(c.getStatus()))
                     .count();
@@ -291,6 +280,21 @@ public class AdminController {
         return "admin/admin-projects";
     }
 
+    @PostMapping("/projects/{id}/close")
+    public String closeProject(
+            @PathVariable Long id,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("token");
+        try {
+            adminService.closeProject(token, id);
+            redirectAttributes.addFlashAttribute("successMsg", "Oportunidade encerrada com sucesso!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao encerrar oportunidade: " + e.getMessage());
+        }
+        return "redirect:/admin/projects";
+    }
+
     @GetMapping("/professional/{id}")
     public String viewProfessional(@PathVariable Long id, HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
@@ -460,28 +464,5 @@ public class AdminController {
         model.addAttribute("companyId", id);
         model.addAttribute("activePage", "users");
         return "company/company-analytics";
-    }
-
-    @GetMapping("/company/{companyId}/project/{projectId}")
-    public String viewCompanyProject(
-            @PathVariable Long companyId,
-            @PathVariable Long projectId,
-            HttpSession session,
-            Model model) {
-        String token = (String) session.getAttribute("token");
-        CompanyProfileDTO profile = adminService.getCompanyProfile(token, companyId);
-        List<ProjectDTO> projects = adminService.getCompanyProjects(token, companyId);
-        ProjectDTO project = projects.stream()
-                .filter(p -> projectId.equals(p.getId()))
-                .findFirst()
-                .orElse(null);
-        if (project == null) {
-            return "redirect:/admin/company/" + companyId;
-        }
-        model.addAttribute("profile", profile);
-        model.addAttribute("companyId", companyId);
-        model.addAttribute("project", project);
-        model.addAttribute("activePage", "users");
-        return "admin/admin-company-project-detail";
     }
 }

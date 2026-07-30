@@ -177,6 +177,7 @@ var NOTIF_ICONS = {
   COMPANY_APPROVED:          'ti-shield-check',
   COMPANY_REJECTED:          'ti-shield-x',
   PROJECT_CLOSED:            'ti-lock',
+  PROJECT_CLOSED_BY_ADMIN:   'ti-shield-x',
   COMPLETE_YOUR_PROFILE:     'ti-user-exclamation',
   NEW_COMPANY_REGISTRATION:  'ti-building-plus'
 };
@@ -192,6 +193,7 @@ var NOTIF_COLORS = {
   COMPANY_APPROVED:          '#22c55e',
   COMPANY_REJECTED:          '#ef4444',
   PROJECT_CLOSED:            '#f59e0b',
+  PROJECT_CLOSED_BY_ADMIN:   '#ef4444',
   COMPLETE_YOUR_PROFILE:     '#f59e0b',
   NEW_COMPANY_REGISTRATION:  '#6b6eff'
 };

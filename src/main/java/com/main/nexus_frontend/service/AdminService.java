@@ -76,6 +76,19 @@ public class AdminService {
                 .toBodilessEntity();
     }
 
+    public void closeProject(String token, Long id) {
+        restClient.put()
+                .uri("/admin/projects/{id}/close", id)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to close project");
+                })
+                .toBodilessEntity();
+    }
+
     public List<SkillDTO> getSkills(String token) {
         SkillDTO[] response = restClient.get()
                 .uri("/admin/skills")
@@ -237,6 +250,20 @@ public class AdminService {
                             "Failed to load professional dashboard");
                 })
                 .body(ProfessionalDashboardDTO.class);
+    }
+
+    public List<CompanyProfileDTO> getAllCompanies(String token) {
+        CompanyProfileDTO[] response = restClient.get()
+                .uri("/admin/companies")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to load companies");
+                })
+                .body(CompanyProfileDTO[].class);
+        return response != null ? List.of(response) : List.of();
     }
 
     public CompanyProfileDTO getCompanyProfile(String token, Long companyId) {

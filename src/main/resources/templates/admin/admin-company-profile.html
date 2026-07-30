@@ -122,6 +122,11 @@
                   <span th:text="${profile.linkedinUrl}">LinkedIn</span>
                 </a>
               </div>
+              <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem"
+                   th:unless="${profile.linkedinUrl != null and !#strings.isEmpty(profile.linkedinUrl)}">
+                <i class="ti ti-brand-linkedin" style="color:#0A66C2;width:16px"></i>
+                <span>LinkedIn não vinculado</span>
+              </div>
             </div>
           </div>
 
@@ -302,7 +307,7 @@
                         style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;border-radius:5px;background:rgba(107,110,255,0.1);color:#a5b4fc;border:1px solid rgba(107,110,255,0.2)">Projeto</span>
                   <span class="fw-semibold text-white" style="font-size:0.875rem" th:text="${proj.title}">Título</span>
                 </div>
-                <a th:href="@{/admin/company/{companyId}/project/{projectId}(companyId=${companyId},projectId=${proj.id})}"
+                <a th:href="@{/public/opportunity/{id}(id=${proj.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                    style="font-size:0.78rem">
                   <i class="ti ti-eye me-1"></i>Ver detalhes
@@ -359,7 +364,7 @@
                   <span th:each="sk : ${proj.requiredSkills}" class="nexus-chip nexus-chip-tech" th:text="${sk.name}" style="font-size:0.7rem">Skill</span>
                 </div>
                 <div class="d-flex justify-content-end">
-                  <a th:href="@{/admin/company/{companyId}/project/{projectId}(companyId=${companyId},projectId=${proj.id})}"
+                  <a th:href="@{/public/opportunity/{id}(id=${proj.id})}"
                      class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                      style="font-size:0.78rem">
                     <i class="ti ti-eye me-1"></i>Ver detalhes

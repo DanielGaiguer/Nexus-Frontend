@@ -11,6 +11,13 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
+      <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
+        <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
+      </div>
+      <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
+        <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
+      </div>
+
       <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
         <div>
           <h1 class="fw-bold mb-1"
@@ -87,6 +94,11 @@
           </div>
 
           <div class="col-6 col-md-2">
+            <label class="nexus-label">Data de postagem</label>
+            <input type="date" class="nexus-input" id="filterPostedDate" onchange="applyFilters()">
+          </div>
+
+          <div class="col-6 col-md-2">
             <button type="button" class="nexus-btn nexus-btn-ghost w-80"
                     onclick="clearFilters()">
               <i class="ti ti-x"></i> Limpar
@@ -155,8 +167,10 @@
 
         <div th:each="proj : ${projects}"
              class="nexus-card p-4 project-item"
+             style="cursor:pointer"
+             th:onclick="'window.location.href=\'/public/opportunity/' + ${proj.id} + '\''"
              th:data-title="${proj.title}"
-             th:data-company="${proj.company != null ? proj.company.companyName : ''}"
+             th:data-company="${proj.companyName != null ? proj.companyName : ''}"
              th:data-status="${proj.status}"
              th:data-modality="${proj.modality}"
              th:data-opportunitytype="${proj.opportunityType}"
@@ -165,13 +179,18 @@
              th:data-maxbudget="${proj.maximumBudget}"
              th:data-minsalary="${proj.monthlySalaryMin}"
              th:data-maxsalary="${proj.monthlySalaryMax}"
-             th:data-explevel="${proj.experienceLevel}">
+             th:data-explevel="${proj.experienceLevel}"
+             th:data-createdat="${#temporals.format(proj.createdAt,'yyyy-MM-dd')}">
 
           <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
             <div class="flex-fill">
               <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                 <span class="fw-semibold text-white" style="font-size:1rem"
                       th:text="${proj.title}">Título</span>
+                <span th:if="${proj.opportunityType == 'JOB'}"
+                      style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;border-radius:5px;background:rgba(34,197,94,0.1);color:#86efac;border:1px solid rgba(34,197,94,0.2)">Vaga</span>
+                <span th:unless="${proj.opportunityType == 'JOB'}"
+                      style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;border-radius:5px;background:rgba(107,110,255,0.1);color:#a5b4fc;border:1px solid rgba(107,110,255,0.2)">Projeto</span>
                 <span th:switch="${proj.status}">
                   <span th:case="'OPEN'"      class="nexus-status success">Aberto</span>
                   <span th:case="'CLOSED'"    class="nexus-status danger">Encerrado</span>
@@ -180,15 +199,19 @@
               </div>
 
               <div class="d-flex align-items-center gap-2">
-                <div th:if="${proj.company != null}"
+                <img th:if="${proj.company != null and proj.company.profilePhotoUrl != null and !#strings.isEmpty(proj.company.profilePhotoUrl)}"
+                     th:src="${proj.company.profilePhotoUrl}"
+                     style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0"
+                     alt="Logo da empresa">
+                <div th:if="${proj.companyName != null and (proj.company == null or proj.company.profilePhotoUrl == null or #strings.isEmpty(proj.company.profilePhotoUrl))}"
                      class="nexus-avatar-initials"
-                     th:with="n=${proj.company.companyName},
+                     th:with="n=${proj.companyName},
                               h=${n.hashCode()},
                               hue=${(h%360)<0?(h%360)+360:h%360}"
                      th:style="'background:hsl('+${hue}+',50%,38%);width:22px;height:22px;font-size:0.6rem;flex-shrink:0'"
                      th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
                 <span style="color:#64748b;font-size:0.82rem"
-                      th:text="${proj.company != null ? proj.company.companyName : 'Empresa desconhecida'}">Empresa</span>
+                      th:text="${proj.companyName != null ? proj.companyName : 'Empresa desconhecida'}">Empresa</span>
                 <span style="color:#334155;font-size:0.75rem">·</span>
                 <span style="color:#475569;font-size:0.78rem"
                       th:text="'Criado em ' + ${#temporals.format(proj.createdAt,'dd/MM/yyyy')}">—</span>
@@ -212,7 +235,7 @@
               <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
               <span class="tabular"
                     th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}
-                             +'–'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+                             +'–R$'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
             </span>
             <span th:if="${proj.opportunityType == 'JOB' and proj.monthlySalaryMin != null}">
               <i class="ti ti-currency-dollar" style="color:#22c55e"></i>
@@ -232,7 +255,7 @@
                 <span th:case="*" th:text="${proj.modality}">—</span>
               </span>
             </span>
-            <span>
+            <span th:if="${proj.type != null}">
               <i class="ti ti-briefcase" style="color:#6b6eff"></i>
               <span th:switch="${proj.type}">
                 <span th:case="'FREELANCE'">Freelance</span>
@@ -240,10 +263,29 @@
                 <span th:case="'PART_TIME'">Meio período</span>
                 <span th:case="*" th:text="${proj.type}">—</span>
               </span>
+              <span th:if="${proj.opportunityType == 'JOB' and proj.contractType != null}">
+                ·
+                <span th:switch="${proj.contractType}">
+                  <span th:case="'CLT'">CLT</span>
+                  <span th:case="'PJ'">PJ</span>
+                  <span th:case="'FREELANCER'">Freelancer</span>
+                  <span th:case="'INTERNSHIP'">Estágio</span>
+                  <span th:case="'TEMPORARY'">Temporário</span>
+                  <span th:case="*" th:text="${proj.contractType}">—</span>
+                </span>
+              </span>
             </span>
-            <span>
+            <span th:if="${proj.opportunityType != 'JOB'}">
               <i class="ti ti-calendar" style="color:#6b6eff"></i>
-              <span class="nexus-deadline" th:data-deadline="${proj.deadline}"></span>
+              <span th:if="${proj.deadline != null}"
+                    th:text="'Entrega prevista: ' + ${#temporals.format(proj.deadline,'dd/MM/yyyy')}">—</span>
+              <span th:unless="${proj.deadline != null}" style="color:#475569">Prazo não informado</span>
+            </span>
+            <span th:if="${proj.opportunityType == 'JOB'}">
+              <i class="ti ti-calendar" style="color:#6b6eff"></i>
+              <span th:if="${proj.startDate != null}"
+                    th:text="'Início previsto: ' + ${#temporals.format(proj.startDate,'dd/MM/yyyy')}">—</span>
+              <span th:unless="${proj.startDate != null}" style="color:#475569">Início não informado</span>
             </span>
             <span th:if="${proj.experienceLevel != null}">
               <i class="ti ti-award" style="color:#a78bfa"></i>
@@ -258,10 +300,26 @@
             </span>
           </div>
 
-          <div class="d-flex flex-wrap gap-2"
+          <div class="d-flex flex-wrap gap-2 mb-3"
                th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
             <span th:each="sk : ${proj.requiredSkills}"
                   class="nexus-chip nexus-chip-tech" th:text="${sk.name}">Skill</span>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a th:if="${proj.companyId != null}"
+               th:href="@{/admin/company/{id}(id=${proj.companyId})}"
+               onclick="event.stopPropagation()"
+               class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+              <i class="ti ti-building"></i> Ver empresa
+            </a>
+            <button type="button"
+                    th:if="${proj.status == 'OPEN'}"
+                    class="nexus-btn nexus-btn-danger-outline nexus-btn-sm close-proj-trigger"
+                    th:data-id="${proj.id}" th:data-title="${proj.title}"
+                    onclick="event.stopPropagation()">
+              <i class="ti ti-lock"></i> Encerrar oportunidade
+            </button>
           </div>
 
         </div>
@@ -279,6 +337,36 @@
         </button>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<div class="modal fade nexus-modal" id="closeProjModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(239,68,68,0.15)">
+        <div style="width:4px;height:40px;background:#ef4444;border-radius:2px;margin-right:0.75rem"></div>
+        <div style="flex:1">
+          <h5 class="modal-title fw-semibold text-white">Encerrar oportunidade</h5>
+          <div style="color:#64748b;font-size:0.8rem">Esta ação é definitiva</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="color:#94a3b8;font-size:0.875rem">
+          Deseja encerrar a oportunidade
+          <strong class="text-white" id="closeProjTitle">—</strong>?
+          Ela deixará de aceitar novos interesses. Esta ação não pode ser desfeita.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <form id="closeProjForm" method="post">
+          <button type="submit" class="nexus-btn nexus-btn-danger-outline">
+            <i class="ti ti-lock"></i> Confirmar encerramento
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
@@ -325,6 +413,7 @@ function applyFilters() {
   var maxSalary = parseFloat(document.getElementById('filterMaxSalary').value) || Infinity;
   var expEl = document.getElementById('filterExpLevel');
   var selectedLevels = Array.from(expEl.selectedOptions).map(function(o) { return o.value; });
+  var postedDate = document.getElementById('filterPostedDate').value;
 
   var items   = document.querySelectorAll('.project-item');
   var visible = 0;
@@ -343,6 +432,7 @@ function applyFilters() {
     var matchModality    = !modality || item.dataset.modality === modality;
     var matchContractType = !contractType || item.dataset.contracttype === contractType;
     var matchExpLevel = selectedLevels.length === 0 || selectedLevels.indexOf(item.dataset.explevel) !== -1;
+    var matchPostedDate = !postedDate || item.dataset.createdat === postedDate;
 
     var matchBudget = true;
     if (oppType === 'PROJECT') {
@@ -355,7 +445,7 @@ function applyFilters() {
     }
 
     var show = matchSearch && matchStatus && matchOppType && matchModality
-             && matchContractType && matchExpLevel && matchBudget && matchSalary;
+             && matchContractType && matchExpLevel && matchPostedDate && matchBudget && matchSalary;
     item.style.display = show ? 'block' : 'none';
     if (show) visible++;
   });
@@ -373,6 +463,7 @@ function clearFilters() {
   document.getElementById('filterOpportunityType').value = '';
   document.getElementById('filterModality').value = '';
   document.getElementById('filterExpLevel').selectedIndex = -1;
+  document.getElementById('filterPostedDate').value = '';
   document.getElementById('filterContractType').value = '';
   document.getElementById('filterMinBudget').value = '';
   document.getElementById('filterMaxBudget').value = '';
@@ -387,6 +478,14 @@ function clearFilters() {
 
 document.addEventListener('DOMContentLoaded', function() {
   applyFilters();
+});
+
+document.querySelectorAll('.close-proj-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.getElementById('closeProjTitle').textContent = this.dataset.title;
+    document.getElementById('closeProjForm').action = '/admin/projects/' + this.dataset.id + '/close';
+    new bootstrap.Modal(document.getElementById('closeProjModal')).show();
+  });
 });
 </script>
 </body>

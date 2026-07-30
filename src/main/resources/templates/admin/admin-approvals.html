@@ -60,7 +60,13 @@
              style="cursor:pointer">
           <div class="d-flex align-items-start gap-3 flex-wrap">
 
-            <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+            <img th:if="${co.profilePhotoUrl != null and !#strings.isEmpty(co.profilePhotoUrl)}"
+                 th:src="${co.profilePhotoUrl}"
+                 class="nexus-avatar-lg flex-shrink-0"
+                 style="object-fit:cover;border-radius:50%"
+                 alt="Logo da empresa">
+            <div th:unless="${co.profilePhotoUrl != null and !#strings.isEmpty(co.profilePhotoUrl)}"
+                 class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
                  th:with="n=${co.companyName},h=${n.hashCode()},hue=${(h%360)<0?(h%360)+360:h%360}"
                  th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
                  th:text="${#strings.substring(n,0,1).toUpperCase()}">C</div>
