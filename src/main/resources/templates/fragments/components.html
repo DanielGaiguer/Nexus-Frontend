@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<!-- ═══════════════════════════════════════════════════════════════
-     stat-card — KPI card with icon
-     Parameters: label, value, icon, colorToken (e.g. "primary", "success")
-     ═══════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="stat-card(label, value, icon, colorToken)">
 <div class="card">
     <div class="card-body">
@@ -26,20 +22,14 @@
 </div>
 </th:block>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     score-badge — Colored badge based on score value
-     Parameters: score (number), size ("sm" | "lg")
-     ═══════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="score-badge(score, size)">
 <th:block th:with="
     scoreVal=${score},
     color=${scoreVal >= 85 ? 'success' : (scoreVal >= 70 ? 'warning' : 'danger')}">
-    <!-- sm: number only -->
     <th:block th:if="${size == 'sm'}">
         <span th:class="'badge bg-' + ${color} + '-lt text-' + ${color}"
               th:text="${scoreVal}" style="font-variant-numeric:tabular-nums;">0</span>
     </th:block>
-    <!-- lg: number + progress + label -->
     <th:block th:if="${size == 'lg'}">
         <div class="d-flex flex-column gap-1" style="min-width:120px;">
             <span th:class="'badge bg-' + ${color} + '-lt text-' + ${color} + ' fw-bold'"
@@ -54,10 +44,6 @@
 </th:block>
 </th:block>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     status-badge — Colored badge for status strings or active boolean
-     Parameters: status (string or Boolean)
-     ═══════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="status-badge(status)">
 <th:block th:if="${status instanceof T(java.lang.Boolean)}">
     <th:block th:with="active=${status}">
@@ -84,10 +70,6 @@
 </th:block>
 </th:block>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     empty-state — Tabler .empty component
-     Parameters: icon, title, description, ctaLabel, ctaUrl
-     ═══════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="empty-state(icon, title, description, ctaLabel, ctaUrl)">
 <div class="empty">
     <p class="empty-icon">
@@ -103,10 +85,6 @@
 </div>
 </th:block>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     avatar — Tabler avatar with initials + deterministic color
-     Parameters: name, size ("sm" | "md" | "xl")
-     ═══════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="avatar(name, size)">
 <th:block th:with="
     n=${name != null ? name : 'U'},
@@ -120,10 +98,6 @@
 </th:block>
 </th:block>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     skill-chip — Pill badge, active/inactive
-     Parameters: label, active (boolean)
-     ═══════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="skill-chip(label, active)">
 <th:block th:if="${active}">
     <span class="badge rounded-pill"
@@ -137,10 +111,6 @@
 </th:block>
 </th:block>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     modal-confirm — Confirmation modal with colored status bar
-     Parameters: id, title, subtitle, confirmLabel, confirmVariant
-     ═══════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="modal-confirm(id, title, subtitle, confirmLabel, confirmVariant)">
 <div class="modal modal-fade" th:id="${id}" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -160,11 +130,6 @@
 </div>
 </th:block>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     rejection-options — Clickable checkbox-cards for rejection reasons
-     Parameters: options (list of {value, label} maps)
-     Used in: Prompts 5 and 13
-     ═══════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="rejection-options(options)">
 <div class="rejection-options d-flex flex-column gap-2">
     <th:block th:each="opt : ${options}">
@@ -192,11 +157,6 @@
 </style>
 </th:block>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     reputation-bar — Horizontal bar 0-100 with label + color bands
-     Parameters: label, value (0-100)
-     Used in: Prompt 14
-     ═══════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="reputation-bar(label, value)">
 <th:block th:with="
     v=${value},
@@ -213,10 +173,6 @@
 </th:block>
 </th:block>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     tag-input — Reusable tag input with optional suggestions
-     Parameters: id, label, suggestions (comma-separated string, nullable)
-     ═══════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="tag-input(id, label, suggestions)">
 <div class="tag-input-wrapper" th:id="${id}">
     <label class="form-label" th:text="${label}">Tags</label>

@@ -1,10 +1,3 @@
-/**
- * Calcula e renderiza o badge de completude do perfil.
- * Recebe um objeto profileData e um elemento container onde renderizar.
- *
- * Uso:
- *   NexusCompleteness.render(profileData, document.getElementById('completenessWidget'));
- */
 var NexusCompleteness = ( function() {
 
   var CRITERIA_PRO = [

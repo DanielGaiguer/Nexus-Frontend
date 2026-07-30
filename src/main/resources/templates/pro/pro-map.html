@@ -16,12 +16,8 @@
                     border-right:1px solid rgba(255,255,255,0.06);
                     overflow-y:auto;display:flex;flex-direction:column;padding:1.25rem">
 
-          <!-- Título (muda por papel) -->
           <div class="mb-3">
             <div class="fw-semibold text-white" style="font-size:1rem">
-              <!-- pro-map:     Mapa de Talentos -->
-              <!-- company-map: Mapa de Profissionais -->
-              <!-- admin-map:   Mapa Geral -->
               Mapa de Talentos
             </div>
             <div style="color:#64748b;font-size:0.8rem;margin-top:2px">
@@ -29,7 +25,6 @@
             </div>
           </div>
 
-          <!-- Busca por cidade -->
           <form method="get" class="mb-3"
                 th:action="${session.userRole == 'PROFESSIONAL'} ? '/pro/map' :
                            (${session.userRole == 'COMPANY'} ? '/company/map' : '/admin/map')">
@@ -56,12 +51,10 @@
             </button>
           </form>
 
-          <!-- Tipo -->
           <div class="mb-3">
             <div class="nexus-section-title">Tipo</div>
             <div class="d-flex flex-column gap-1">
 
-              <!-- Ambos -->
               <label class="type-filter-option d-flex align-items-center gap-2"
                      data-type="all"
                      onclick="setTypeFilter('all', this)"
@@ -74,7 +67,6 @@
                 <span id="count-all" class="nexus-badge-count ms-auto">0</span>
               </label>
 
-              <!-- Profissionais -->
               <label class="type-filter-option d-flex align-items-center gap-2"
                      data-type="professionals"
                      onclick="setTypeFilter('professionals', this)"
@@ -86,7 +78,6 @@
                 <span id="count-pros" class="nexus-badge-count ms-auto">0</span>
               </label>
 
-              <!-- Empresas -->
               <label class="type-filter-option d-flex align-items-center gap-2"
                      data-type="companies"
                      onclick="setTypeFilter('companies', this)"
@@ -98,7 +89,6 @@
                 <span id="count-cos" class="nexus-badge-count ms-auto">0</span>
               </label>
 
-              <!-- Oportunidades -->
               <label class="type-filter-option d-flex align-items-center gap-2"
                      data-type="opportunities"
                      onclick="setTypeFilter('opportunities', this)"
@@ -111,7 +101,6 @@
                 <span id="count-opps" class="nexus-badge-count ms-auto">0</span>
               </label>
 
-              <!-- Sub-select de tipo de oportunidade (só aparece ao selecionar Oportunidades) -->
               <div id="oppTypeSubSelect"
                    style="display:none;margin-left:1.25rem;margin-top:0.3rem;
                           padding:0.6rem;background:rgba(107,110,255,0.06);
@@ -152,7 +141,6 @@
             </div>
           </div>
 
-          <!-- Distância -->
           <div class="mb-3">
             <div class="nexus-section-title">Distância (km)</div>
             <div class="row g-2">
@@ -181,7 +169,6 @@
                  id="radius-label">Mostrando raio de 50 km</div>
           </div>
 
-          <!-- Legenda -->
           <div class="mt-auto pt-3" style="border-top:1px solid rgba(255,255,255,0.06)">
             <div class="nexus-section-title mb-2">Legenda</div>
             <div class="d-flex flex-column gap-2">
@@ -218,21 +205,19 @@
 
         </div>
 
-      <!-- Mapa -->
       <div id="map" style="flex:1;height:100%"></div>
     </div>
   </div>
 </div>
 
-<!-- Data injection -->
 <script th:inline="javascript">
-var PROFESSIONALS = /*[[${professionalsJson}]]*/ [];
-var COMPANIES = /*[[${companiesJson}]]*/ [];
-var OPPORTUNITIES  = /*[[${opportunitiesJson}]]*/ [];
-var CENTER_LAT = /*[[${userLat}]]*/ -23.5505;
-var CENTER_LNG = /*[[${userLng}]]*/ -46.6333;
-var MY_LAT = /*[[${myLat}]]*/ null;
-var MY_LNG = /*[[${myLng}]]*/ null;
+var PROFESSIONALS =  [];
+var COMPANIES =  [];
+var OPPORTUNITIES  =  [];
+var CENTER_LAT =  -23.5505;
+var CENTER_LNG =  -46.6333;
+var MY_LAT =  null;
+var MY_LNG =  null;
 
 function highlightOppType(el) {
   document.querySelectorAll('.opp-type-opt').forEach(function(o) {

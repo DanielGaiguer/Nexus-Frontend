@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
@@ -19,7 +18,6 @@
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Header -->
       <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
         <div>
           <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Gerenciamento de Skills</h1>
@@ -32,7 +30,6 @@
         </button>
       </div>
 
-      <!-- Category filter pills -->
       <div class="d-flex flex-wrap gap-2 mb-4">
         <button class="nexus-btn nexus-btn-primary nexus-btn-sm" id="cat-all"
                 onclick="filterCategory('all')">Todas</button>
@@ -52,7 +49,6 @@
                 onclick="filterCategory('API')">API</button>
       </div>
 
-      <!-- Grouped by category -->
       <div class="d-flex flex-column gap-3" id="skillGroups">
         <th:block th:each="catEntry : ${skillsByCategory}">
           <div class="nexus-card p-4 skill-group" th:data-category="${catEntry.key}">
@@ -85,7 +81,6 @@
         </th:block>
       </div>
 
-      <!-- Empty -->
       <div th:if="${skills == null or #lists.isEmpty(skills)}"
            class="nexus-card p-5 text-center">
         <i class="ti ti-tag-off" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
@@ -100,7 +95,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL NOVA SKILL ══════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="addSkillModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -146,7 +140,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL DELETAR SKILL ══════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="deleteSkillModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -176,13 +169,11 @@
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
-// Collect existing skill names for duplicate check
 var existingSkills = [];
 document.querySelectorAll('.nexus-chip').forEach(function(chip) {
   existingSkills.push(chip.textContent.trim().toLowerCase());
 });
 
-// Category filter
 function filterCategory(cat) {
   document.querySelectorAll('[id^="cat-"]').forEach(function(b) {
     b.classList.remove('nexus-btn-primary');
@@ -195,7 +186,6 @@ function filterCategory(cat) {
   });
 }
 
-// Validation: name required, no duplicate, category required
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('addSkillForm');
   attachSubmitGuard(form, function() {
@@ -213,7 +203,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Delete trigger
 document.querySelectorAll('.delete-skill-trigger').forEach(function(btn) {
   btn.addEventListener('click', function() {
     document.getElementById('deleteSkillName').textContent = this.dataset.name;

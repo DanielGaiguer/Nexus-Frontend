@@ -121,7 +121,6 @@
 
   <div class="nexus-chat-page">
 
-    <!-- ── HEADER ── -->
     <div class="nexus-chat-header">
       <a th:href="${matchesUrl}" class="nexus-icon-btn" aria-label="Voltar">
         <i class="ti ti-arrow-left"></i>
@@ -153,27 +152,23 @@
       </span>
     </div>
 
-    <!-- Banner de expiração -->
     <div class="nexus-chat-banner nexus-alert-warning"
          th:if="${summary.matchActive and summary.daysUntilExpiration != null and summary.daysUntilExpiration >= 0 and summary.daysUntilExpiration <= 7}">
       <i class="ti ti-alert-triangle"></i>
       <span>⚠️ Este chat encerra em <span th:text="${summary.daysUntilExpiration}">7</span> dia(s).</span>
     </div>
 
-    <!-- Banner de match encerrado -->
     <div class="nexus-chat-banner" style="background:rgba(100,116,139,0.15);color:#94a3b8"
          th:if="${summary.matchActive == false}">
       <i class="ti ti-lock"></i>
       <span>🔒 Este chat foi encerrado. O histórico está disponível somente para leitura.</span>
     </div>
 
-    <!-- Banner de erro de conexão -->
     <div id="wsErrorBanner" class="nexus-chat-banner nexus-alert-danger" style="display:none">
       <i class="ti ti-alert-circle"></i>
       <span id="wsErrorText">Sem conexão. Tentando reconectar...</span>
     </div>
 
-    <!-- ── LISTA DE MENSAGENS ── -->
     <div class="nexus-chat-messages" id="chatMessages">
       <div class="nexus-chat-row theirs"><div class="nexus-chat-skeleton"></div></div>
       <div class="nexus-chat-row mine"><div class="nexus-chat-skeleton"></div></div>
@@ -181,7 +176,6 @@
       <div class="nexus-chat-row mine"><div class="nexus-chat-skeleton"></div></div>
     </div>
 
-    <!-- ── INPUT ── -->
     <div class="nexus-chat-input-area">
       <div class="nexus-chat-input-row">
         <textarea id="chatInput" class="nexus-chat-textarea" rows="1"
@@ -203,21 +197,17 @@
 </div>
 
 <script th:inline="javascript">
-  /*<![CDATA[*/
-  window.NEXUS_MATCH_ACTIVE = /*[[${summary.matchActive}]]*/ true;
-  window.NEXUS_DAYS_UNTIL_EXPIRATION = /*[[${summary.daysUntilExpiration}]]*/ 30;
-  /*]]>*/
+  window.NEXUS_MATCH_ACTIVE =  true;
+  window.NEXUS_DAYS_UNTIL_EXPIRATION =  30;
 
   var NEXUS_CHAT = {
-    matchId: /*[[${matchId}]]*/ 0,
-    myUserId: /*[[${session.userId}]]*/ 0,
-    matchesUrl: /*[[${matchesUrl}]]*/ '/',
-    matchActive: /*[[${summary.matchActive}]]*/ true,
-    wsBaseUrl: /*[[${wsBaseUrl}]]*/ 'http://localhost:8081'
+    matchId:  0,
+    myUserId:  0,
+    matchesUrl:  '/',
+    matchActive:  true,
+    wsBaseUrl:  'http://localhost:8081'
   };
-  /*<![CDATA[*/
-  window.NEXUS_WS_TOKEN = /*[[${wsToken}]]*/ null;
-  /*]]>*/
+  window.NEXUS_WS_TOKEN =  null;
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>

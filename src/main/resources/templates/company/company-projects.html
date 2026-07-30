@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
@@ -19,7 +18,6 @@
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Header -->
       <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
         <div>
           <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Meus Projetos</h1>
@@ -30,13 +28,11 @@
         </a>
       </div>
 
-      <!-- Info alert -->
       <div class="nexus-alert nexus-alert-info mb-4" style="font-size:0.82rem">
         <i class="ti ti-info-circle"></i>
         Ao criar um projeto, o ranking de profissionais compatíveis é gerado automaticamente. Ao editar, os scores em aberto são recalculados.
       </div>
 
-      <!-- Busca + filtros -->
       <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
         <div style="position:relative;flex:1;min-width:220px;max-width:360px">
           <i class="ti ti-search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
@@ -57,14 +53,12 @@
         </select>
       </div>
 
-      <!-- Filter tabs -->
       <div class="nexus-tabs mb-4">
         <button class="nexus-tab active" id="tab-all" onclick="filterStatus('all')">Todos</button>
         <button class="nexus-tab" id="tab-open" onclick="filterStatus('OPEN')">Aberto</button>
         <button class="nexus-tab" id="tab-closed" onclick="filterStatus('CLOSED')">Encerrado</button>
       </div>
 
-      <!-- Empty -->
       <div th:if="${#lists.isEmpty(projects)}"
            class="nexus-card p-5 text-center">
         <i class="ti ti-folder-off" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
@@ -77,7 +71,6 @@
         </a>
       </div>
 
-      <!-- Sem resultados após filtro -->
       <div th:unless="${#lists.isEmpty(projects)}"
            id="noProjResults"
            class="nexus-card p-5 text-center" style="display:none">
@@ -85,7 +78,6 @@
         <div class="fw-semibold text-white mb-1">Nenhum projeto encontrado com esses filtros</div>
       </div>
 
-      <!-- Project cards -->
       <div class="d-flex flex-column gap-3" id="projectList">
         <div th:each="proj : ${projects}"
              class="nexus-card p-4 project-card"
@@ -95,11 +87,9 @@
              th:data-title="${#strings.toLowerCase(proj.title)}"
              th:onclick="'window.location=\'' + @{/public/opportunity/{id}(id=${proj.id})} + '\''"
              style="cursor:pointer">
-            <!-- Cabeçalho do card com tipo de oportunidade -->
             <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
               <div>
                 <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                  <!-- Badge de tipo de oportunidade (NOVO) -->
                   <span th:if="${proj.opportunityType == 'JOB'}"
                         class="nexus-badge-job">
                     <i class="ti ti-building" style="font-size:0.65rem;margin-right:2px"></i>Vaga
@@ -119,7 +109,6 @@
                 <div style="color:#475569;font-size:0.78rem"
                      th:text="'Criado em ' + ${#temporals.format(proj.createdAt,'dd/MM/yyyy')}">—</div>
               </div>
-              <!-- Posições -->
               <div class="text-end flex-shrink-0" th:if="${proj.maxPositions != null}">
                 <div style="color:#64748b;font-size:0.72rem">Vagas</div>
                 <div class="tabular fw-semibold" style="color:#a5b4fc;font-size:0.9rem"
@@ -130,10 +119,8 @@
             <p style="color:#94a3b8;font-size:0.875rem;line-height:1.6;margin-bottom:0.75rem"
                th:text="${proj.description}">—</p>
 
-            <!-- Meta row — muda conforme o tipo -->
             <div class="d-flex gap-4 flex-wrap mb-2" style="font-size:0.8rem;color:#64748b">
 
-              <!-- Remuneração: PROJECT usa orçamento, JOB usa salário mensal -->
               <span th:if="${proj.opportunityType != 'JOB'}">
                 <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
                 <span class="tabular"
@@ -150,7 +137,6 @@
                       th:text="'–R$'+${#numbers.formatDecimal(proj.monthlySalaryMax,1,'COMMA',0,'POINT')}">—</span>
               </span>
 
-              <!-- Modalidade -->
               <span>
                 <i class="ti ti-map-pin" style="color:#6b6eff"></i>
                 <span th:switch="${proj.modality}">
@@ -161,7 +147,6 @@
                 </span>
               </span>
 
-              <!-- Prazo (PROJECT) ou Data de início (JOB) -->
               <span th:if="${proj.opportunityType != 'JOB' and proj.deadline != null}">
                 <i class="ti ti-calendar" style="color:#6b6eff"></i>
                 <span class="nexus-deadline" th:data-deadline="${proj.deadline}"></span>
@@ -172,7 +157,6 @@
                       th:text="'Início: ' + ${#temporals.format(proj.startDate,'dd/MM/yyyy')}">—</span>
               </span>
 
-              <!-- Tipo de contrato (JOB) -->
               <span th:if="${proj.opportunityType == 'JOB' and proj.contractType != null}">
                 <i class="ti ti-file-text" style="color:#a78bfa"></i>
                 <span th:switch="${proj.contractType}">
@@ -185,14 +169,12 @@
                 </span>
               </span>
 
-              <!-- Carga horária (JOB) -->
               <span th:if="${proj.opportunityType == 'JOB' and proj.workloadHoursPerWeek != null}">
                 <i class="ti ti-clock" style="color:#a78bfa"></i>
                 <span class="tabular" th:text="${proj.workloadHoursPerWeek}+'h/sem'">—</span>
               </span>
             </div>
 
-            <!-- Benefícios (JOB) -->
             <div th:if="${proj.opportunityType == 'JOB' and proj.benefits != null and !#strings.isEmpty(proj.benefits)}"
                  class="d-flex flex-wrap gap-1 mb-2">
               <span th:each="b : ${#strings.listSplit(proj.benefits, ',')}"
@@ -200,7 +182,6 @@
                     th:text="${#strings.trim(b)}">Benefício</span>
             </div>
 
-            <!-- Skills -->
             <div class="mb-3" style="cursor:default" onclick="event.stopPropagation()"
                  th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
               <div style="color:#64748b;font-size:0.7rem;font-weight:700;
@@ -213,7 +194,6 @@
               </div>
             </div>
 
-            <!-- Ações -->
             <div class="d-flex gap-2 flex-wrap pt-2"
                  style="border-top:1px solid rgba(255,255,255,0.06)"
                  onclick="event.stopPropagation()">
@@ -255,7 +235,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL ATIVAR OPORTUNIDADE ═════════════════════════════ -->
 <div class="modal fade nexus-modal" id="reopenModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -289,7 +268,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL ENCERRAR ════════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="closeModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -316,7 +294,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL DELETAR ═════════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="deleteProjModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">

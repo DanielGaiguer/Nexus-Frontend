@@ -17,7 +17,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&display=swap');
 
         :root {
-            /* ─── Nexus brand tokens (paleta oficial do projeto) ─── */
             --nexus-primary: #6b6eff;
             --nexus-secondary: #a78bfa;
             --nexus-accent: #67e8f9;
@@ -29,7 +28,6 @@
             --nexus-info: #06b6d4;
             --nexus-danger: #ef4444;
 
-            /* ─── Aliases usados nesta página ─── */
             --nexus-white: #f1f5f9;
             --nexus-muted: #94a3b8;
             --nexus-border: rgba(107, 110, 255, 0.14);
@@ -90,7 +88,6 @@
             color: transparent;
         }
 
-        /* ── Buttons ── */
         .btn-nx {
             display: inline-flex;
             align-items: center;
@@ -127,7 +124,6 @@
         }
         .btn-nx-ghost:hover { border-color: var(--nexus-accent); color: var(--nexus-white); }
 
-        /* ── Navbar ── */
         .nx-navbar {
             position: sticky;
             top: 0;
@@ -234,7 +230,6 @@
             .nx-nav-toggle { display: none; }
         }
 
-        /* ── Hero ── */
         .nx-hero {
             padding-top: clamp(56px, 8vw, 96px);
             padding-bottom: clamp(56px, 8vw, 96px);
@@ -293,7 +288,6 @@
         }
         .hero-proof .sep { color: var(--nexus-accent); }
 
-        /* ── Match score visualizer ── */
         .match-visualizer {
             position: relative;
             max-width: 360px;
@@ -373,7 +367,6 @@
         @keyframes pulseLine { 0%, 100% { opacity: 0.5; transform: scaleY(1); } 50% { opacity: 1; transform: scaleY(1.04); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ── Logos belt ── */
         .logos-belt {
             background: var(--nexus-bg-2);
             border-top: 1px solid var(--nexus-border);
@@ -403,7 +396,6 @@
         .logos-belt-group .sep { color: var(--nexus-accent); }
         @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-        /* ── Como funciona ── */
         .nx-section { padding-block: clamp(64px, 9vw, 112px); }
         .section-head { max-width: 620px; margin-bottom: 48px; }
         .section-head p { color: var(--nexus-muted); font-size: 16px; margin-top: 14px; line-height: 1.6; }
@@ -445,7 +437,6 @@
         .step-card h3 { font-weight: 600; font-size: 18px; margin-bottom: 10px; }
         .step-card p { color: var(--nexus-muted); font-size: 14.5px; line-height: 1.6; }
 
-        /* ── Métricas ── */
         .nx-metrics { background: var(--nexus-bg-2); }
         .metrics-grid {
             display: grid;
@@ -468,7 +459,6 @@
         }
         .metric-label { font-size: 14px; color: var(--nexus-muted); margin-top: 8px; }
 
-        /* ── Para quem é ── */
         .audience-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -501,7 +491,6 @@
         .audience-card.is-pro .audience-list li span.arrow { color: var(--nexus-accent); }
         .audience-card.is-company .audience-list li span.arrow { color: var(--nexus-primary); }
 
-        /* ── Depoimentos ── */
         .nx-testimonials { background: var(--nexus-bg-2); }
         .testimonials-grid {
             display: grid;
@@ -531,7 +520,6 @@
         .testimonial-name { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 15px; }
         .testimonial-role { font-size: 13.5px; color: var(--nexus-muted); margin-top: 2px; }
 
-        /* ── CTA final ── */
         .nx-cta-final {
             background: linear-gradient(135deg, var(--nexus-bg-1), var(--nexus-bg-3));
             padding-block: clamp(70px, 10vw, 120px);
@@ -552,7 +540,6 @@
         .nx-cta-final p { color: var(--nexus-muted); font-size: 16.5px; margin-bottom: 36px; }
         .cta-final-actions { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
 
-        /* ── Footer ── */
         .nx-footer { background: var(--nexus-bg-1); border-top: 1px solid var(--nexus-border); padding-block: 56px 32px; }
         .footer-top { display: grid; grid-template-columns: 1fr; gap: 40px; margin-bottom: 40px; }
         @media (min-width: 768px) {
@@ -565,7 +552,6 @@
         .footer-col a:hover { color: var(--nexus-white); }
         .footer-bottom { border-top: 1px solid var(--nexus-border); padding-top: 24px; font-size: 13px; color: var(--nexus-muted); }
 
-        /* ── Reduced motion ── */
         @media (prefers-reduced-motion: reduce) {
             html { scroll-behavior: auto; }
             .hero-fade { animation: none !important; opacity: 1 !important; }
@@ -642,7 +628,6 @@
 </nav>
 
 <main>
-    <!-- ── Hero ── -->
     <section class="nx-hero" id="hero">
         <div class="hero-grid-bg" aria-hidden="true"></div>
         <div class="nx-container">
@@ -709,7 +694,6 @@
         </div>
     </section>
 
-    <!-- ── Logos belt ── -->
     <section class="logos-belt" id="ecossistema">
         <p class="eyebrow" style="text-align:center;">Ecossistema de tecnologias</p>
         <div class="logos-belt-viewport">
@@ -746,7 +730,6 @@
         </div>
     </section>
 
-    <!-- ── Como funciona ── -->
     <section class="nx-section" id="como-funciona">
         <div class="nx-container">
             <div class="section-head">
@@ -793,7 +776,6 @@
         </div>
     </section>
 
-    <!-- ── Métricas ── -->
     <section class="nx-section nx-metrics" id="metricas">
         <div class="nx-container">
             <div class="metrics-grid">
@@ -817,7 +799,6 @@
         </div>
     </section>
 
-    <!-- ── Para quem é ── -->
     <section class="nx-section" id="para-quem">
         <div class="nx-container">
             <div class="audience-grid">
@@ -845,7 +826,6 @@
         </div>
     </section>
 
-    <!-- ── Depoimentos ── -->
     <section class="nx-section nx-testimonials" id="depoimentos">
         <div class="nx-container">
             <div class="section-head">
@@ -878,7 +858,6 @@
         </div>
     </section>
 
-    <!-- ── CTA final ── -->
     <section class="nx-cta-final" id="cta-final">
         <div class="cta-visual-decor" aria-hidden="true">
             <div class="match-visualizer">

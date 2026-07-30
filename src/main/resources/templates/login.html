@@ -81,6 +81,7 @@
                             </div>
 
                             <form th:action="@{/auth/login}" method="post">
+                                <input type="hidden" name="redirect" th:if="${redirect}" th:value="${redirect}">
                                 <div class="mb-3">
                                     <label class="form-label">Email</label>
                                     <div class="input-group">
@@ -106,7 +107,7 @@
                                 <hr class="flex-fill m-0" style="border-color:var(--border-color);">
                             </div>
 
-                            <a th:href="@{/auth/linkedin/login}"
+                            <a th:href="${redirect} != null ? @{/auth/linkedin/login(redirect=${redirect})} : @{/auth/linkedin/login}"
                                class="btn w-100 py-2 d-flex align-items-center justify-content-center gap-2"
                                style="background:#0A66C2;border:none;color:#fff;">
                                 <i class="ti ti-brand-linkedin" style="font-size:1.1rem"></i>Entrar com LinkedIn

@@ -4,6 +4,8 @@ import com.main.nexus_frontend.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.nio.charset.StandardCharsets;
+import java.net.URLEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -24,7 +26,10 @@ public class AuthInterceptor implements HandlerInterceptor {
         String userRole = (session != null) ? (String) session.getAttribute("userRole") : null;
 
         if (token == null) {
-            response.sendRedirect("/auth/login");
+            String queryString = request.getQueryString();
+            String originalUrl = uri + (queryString != null ? "?" + queryString : "");
+            String encodedRedirect = URLEncoder.encode(originalUrl, StandardCharsets.UTF_8);
+            response.sendRedirect("/auth/login?redirect=" + encodedRedirect);
             return false;
         }
 

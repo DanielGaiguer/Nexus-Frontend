@@ -11,12 +11,10 @@
   <div class="page-body">
     <div class="container-xl py-4" style="max-width:800px">
 
-      <!-- Flash -->
       <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Back + header -->
       <div class="mb-4">
         <a th:href="@{/company/projects}"
            class="text-decoration-none d-inline-flex align-items-center gap-1 mb-3"
@@ -31,7 +29,6 @@
         </p>
       </div>
 
-      <!-- Info alert -->
       <div class="nexus-alert nexus-alert-info mb-4" style="font-size:0.82rem">
         <i class="ti ti-robot"></i>
         <span th:text="${editMode}
@@ -45,7 +42,6 @@
                 : '/company/projects/new'}"
               method="post" id="projectForm">
 
-          <!-- ══ TOGGLE DE TIPO ════════════════════════════════ -->
           <div class="mb-4">
             <label class="nexus-label mb-2">Tipo de oportunidade *</label>
             <div class="opportunity-type-toggle" id="typeToggle">
@@ -77,10 +73,8 @@
 
           <hr style="border-color:rgba(255,255,255,0.06);margin:1.25rem 0">
 
-          <!-- ══ CAMPOS COMUNS ════════════════════════════════ -->
           <div class="row g-3">
 
-            <!-- Título -->
             <div class="col-12">
               <label class="nexus-label">Título *</label>
               <input type="text" class="nexus-input" name="title" id="projTitle" required
@@ -88,7 +82,6 @@
                      placeholder="Ex: Desenvolvedor Backend Sênior">
             </div>
 
-            <!-- Descrição -->
             <div class="col-12">
               <label class="nexus-label">Descrição *</label>
               <textarea class="nexus-input nexus-textarea" name="description"
@@ -97,7 +90,6 @@
                         th:text="${project?.description ?: ''}"></textarea>
             </div>
 
-            <!-- Tipo de projeto (FREELANCE / FULL_TIME / PART_TIME) -->
             <div class="col-sm-6">
               <label class="nexus-label">Regime de trabalho *</label>
               <select class="nexus-select" name="type" id="projType" required>
@@ -111,7 +103,6 @@
               </select>
             </div>
 
-            <!-- Modalidade de trabalho -->
             <div class="col-sm-6">
               <label class="nexus-label">Modalidade *</label>
               <select class="nexus-select" name="workMode" id="projWorkMode" required>
@@ -125,7 +116,6 @@
               </select>
             </div>
 
-            <!-- Nível de experiência -->
             <div class="col-sm-6">
               <label class="nexus-label">Nível de experiência</label>
               <select class="nexus-select" name="experienceLevel">
@@ -146,7 +136,6 @@
               </div>
             </div>
 
-            <!-- Vagas disponíveis -->
             <div class="col-sm-6">
               <label class="nexus-label">Vagas disponíveis</label>
               <input type="number" class="nexus-input tabular" name="maxPositions"
@@ -158,7 +147,6 @@
               </div>
             </div>
 
-            <!-- CEP específico da vaga/projeto -->
             <div class="col-sm-6">
               <label class="nexus-label">CEP do local (opcional)</label>
               <input type="text" class="nexus-input tabular" name="cep" id="projCep"
@@ -173,11 +161,10 @@
               </div>
             </div>
 
-          </div><!-- /campos comuns -->
+          </div>
 
           <hr style="border-color:rgba(255,255,255,0.06);margin:1.25rem 0">
 
-          <!-- ══ CAMPOS DE PROJETO ═══════════════════════════ -->
           <div id="fieldsProject" class="fields-project row g-3">
 
             <div class="col-12">
@@ -187,7 +174,6 @@
               </div>
             </div>
 
-            <!-- Orçamento min/max -->
             <div class="col-sm-6">
               <label class="nexus-label">Orçamento mínimo (R$) *</label>
               <input type="number" class="nexus-input tabular"
@@ -207,7 +193,6 @@
               </div>
             </div>
 
-            <!-- Prazo -->
             <div class="col-sm-6">
               <label class="nexus-label">Prazo de entrega *</label>
               <input type="date" class="nexus-input tabular"
@@ -219,9 +204,8 @@
               </div>
             </div>
 
-          </div><!-- /fieldsProject -->
+          </div>
 
-          <!-- ══ CAMPOS DE VAGA (JOB) ════════════════════════ -->
           <div id="fieldsJob" class="fields-job fields-hidden row g-3">
 
             <div class="col-12">
@@ -231,7 +215,6 @@
               </div>
             </div>
 
-            <!-- Tipo de contrato -->
             <div class="col-sm-6">
               <label class="nexus-label">Tipo de contrato *</label>
               <select class="nexus-select" name="contractType" id="projContractType">
@@ -249,7 +232,6 @@
               </select>
             </div>
 
-            <!-- Carga horária -->
             <div class="col-sm-6">
               <label class="nexus-label">Carga horária semanal</label>
               <div style="position:relative">
@@ -263,7 +245,6 @@
               </div>
             </div>
 
-            <!-- Salário min -->
             <div class="col-sm-6">
               <label class="nexus-label">Salário mínimo (R$/mês) *</label>
               <input type="number" class="nexus-input tabular"
@@ -272,7 +253,6 @@
                      th:value="${project?.monthlySalaryMin ?: ''}">
             </div>
 
-            <!-- Salário max -->
             <div class="col-sm-6">
               <label class="nexus-label">Salário máximo (R$/mês) *</label>
               <input type="number" class="nexus-input tabular"
@@ -285,7 +265,6 @@
               </div>
             </div>
 
-            <!-- Data de início -->
             <div class="col-sm-6">
               <label class="nexus-label">Data de início prevista</label>
               <input type="date" class="nexus-input tabular"
@@ -293,7 +272,6 @@
                      th:value="${project?.startDate ?: ''}">
             </div>
 
-            <!-- Benefícios -->
             <div class="col-12">
               <label class="nexus-label">Benefícios</label>
               <input type="text" class="nexus-input" name="benefits" id="projBenefits"
@@ -304,11 +282,10 @@
               </div>
             </div>
 
-          </div><!-- /fieldsJob -->
+          </div>
 
           <hr style="border-color:rgba(255,255,255,0.06);margin:1.25rem 0">
 
-          <!-- ══ SKILLS ════════════════════════════════════════ -->
           <div class="col-12">
             <label class="nexus-label mb-2">Skills exigidas *</label>
             <select class="nexus-select" name="skillIds" id="projSkills" multiple required
@@ -333,7 +310,6 @@
             </div>
           </div>
 
-          <!-- ══ FOOTER ════════════════════════════════════════ -->
           <div class="d-flex gap-2 justify-content-end mt-4">
             <a th:href="@{/company/projects}"
                class="nexus-btn nexus-btn-ghost">Cancelar</a>
@@ -345,21 +321,17 @@
           </div>
 
         </form>
-      </div><!-- /.nexus-card -->
+      </div>
     </div>
   </div>
 </div>
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script th:inline="javascript">
-/*<![CDATA[*/
 
-// Tipo inicial (vem do model no modo editar)
-var INITIAL_TYPE = /*[[${project != null and project.opportunityType != null
-                         ? project.opportunityType : 'PROJECT'}]]*/ 'PROJECT';
-var IS_EDIT = /*[[${editMode}]]*/ false;
+var INITIAL_TYPE =  'PROJECT';
+var IS_EDIT =  false;
 
-// ── Toggle de tipo ───────────────────────────────────────────
 function setOpportunityType(type) {
   document.getElementById('opportunityType').value = type;
 
@@ -377,9 +349,6 @@ function setOpportunityType(type) {
     fJob.classList.add('fields-hidden');
     hintP.style.display = '';
     hintJ.style.display = 'none';
-    // Campos de projeto: requeridos e habilitados; campos de vaga: limpos e desabilitados
-    // (desabilitar evita que valores de campos ocultos sejam enviados ao backend,
-    //  que rejeita a requisição inteira se um campo do outro tipo vier preenchido)
     setFieldState(['projMinBudget','projMaxBudget','projDeadline'], true);
     setFieldState(['projContractType','projSalaryMin','projSalaryMax'], false);
     setFieldState(['projWorkload','projStartDate','projBenefits'], false);
@@ -398,8 +367,6 @@ function setOpportunityType(type) {
   revalidate();
 }
 
-// active=true  -> campo obrigatório-visível: habilitado, limpo apenas se estava desabilitado
-// active=false -> campo do outro tipo: limpo e desabilitado (não é enviado no submit)
 function setFieldState(ids, active) {
   ids.forEach(function(id) {
     var el = document.getElementById(id);
@@ -420,7 +387,6 @@ function setFieldState(ids, active) {
   });
 }
 
-// ── Validação ────────────────────────────────────────────────
 var TODAY = new Date().toISOString().split('T')[0];
 
 function revalidate() {
@@ -464,7 +430,6 @@ function revalidate() {
   if (btn) btn.disabled = !valid;
 }
 
-// ── Listeners para revalidação ────────────────────────────────
 ['projTitle','projDesc','projMinBudget','projMaxBudget','projDeadline','projMaxPositions','projCep',
  'projSalaryMin','projSalaryMax','projContractType','projWorkMode','projType','projSkills']
 .forEach(function(id) {
@@ -473,14 +438,12 @@ function revalidate() {
   if (el) el.addEventListener('change', revalidate);
 });
 
-// ── Inicialização ────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('projDeadline').min = TODAY;
   setOpportunityType(INITIAL_TYPE);
   revalidate();
 });
 
-/*]]>*/
 </script>
 </body>
 </html>

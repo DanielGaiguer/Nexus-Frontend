@@ -5,6 +5,7 @@ import com.main.nexus_frontend.model.CompanyDashboardDTO;
 import com.main.nexus_frontend.model.CompanyDTO;
 import com.main.nexus_frontend.model.CompanyProfileDTO;
 import com.main.nexus_frontend.model.ContactInfoDTO;
+import com.main.nexus_frontend.model.ProjectDTO;
 import com.main.nexus_frontend.model.SkillDTO;
 import com.main.nexus_frontend.model.UpdateCompanyDTO;
 import java.util.Arrays;
@@ -137,6 +138,20 @@ public class CompanyService {
                             "Company not found");
                 })
                 .body(CompanyDTO.class);
+    }
+
+    // Histórico de oportunidades encerradas da empresa (vagas e projetos) — usado no
+    // perfil visto por profissionais para mostrar o histórico completo da empresa
+    public List<ProjectDTO> getCompanyClosedProjects(Long id) {
+        try {
+            ProjectDTO[] res = restClient.get()
+                    .uri("/public/company/{id}/projects/closed", id)
+                    .retrieve()
+                    .body(ProjectDTO[].class);
+            return res != null ? Arrays.asList(res) : Collections.emptyList();
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 
     // Contato liberado só depois de um match confirmado com o profissional logado

@@ -43,7 +43,6 @@ public class MatchService {
                 .body(MatchDTO.class);
     }
 
-    // TODO: Ineficiente — deveria virar uma rota dedicada no backend (GET /api/company/matches)
     public List<MatchDTO> getCompanyMatches(String token) {
         List<MatchDTO> allMatches = new ArrayList<>();
         List<ProjectDTO> projects = projectService.getProjects(token);

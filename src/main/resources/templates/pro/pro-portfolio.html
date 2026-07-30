@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
@@ -19,7 +18,6 @@
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Header -->
       <div class="d-flex align-items-start justify-content-between mb-2 gap-3 flex-wrap">
         <div>
           <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Projetos Anteriores</h1>
@@ -32,7 +30,6 @@
         </button>
       </div>
 
-      <!-- Empty state -->
       <div th:if="${#lists.isEmpty(projects)}"
            class="nexus-card p-5 text-center mt-4">
         <i class="ti ti-briefcase" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
@@ -46,12 +43,10 @@
         </button>
       </div>
 
-      <!-- Project list -->
       <div class="d-flex flex-column gap-3 mt-3" th:unless="${#lists.isEmpty(projects)}">
         <div th:each="proj : ${projects}" class="nexus-card p-4 portfolio-card">
           <div class="d-flex align-items-start justify-content-between gap-3">
             <div class="flex-fill">
-              <!-- Title + year -->
               <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                 <span class="fw-semibold text-white" style="font-size:1rem" th:text="${proj.title}">Título</span>
                 <span class="nexus-status-badge info" style="font-size:0.7rem">
@@ -59,17 +54,14 @@
                   <span th:text="${proj.yearOfCompletion}">2024</span>
                 </span>
               </div>
-              <!-- Description -->
               <p style="color:#94a3b8;font-size:0.875rem;margin-bottom:0.75rem;line-height:1.5"
                  th:text="${proj.description}">Descrição</p>
-              <!-- Tech chips -->
               <div class="d-flex flex-wrap gap-2" th:if="${proj.technologies != null}">
                 <span th:each="tech : ${proj.technologies}"
                       class="nexus-chip nexus-chip-tech"
                       th:text="${tech}">Tech</span>
               </div>
             </div>
-            <!-- Delete -->
             <button type="button"
                     class="nexus-btn nexus-btn-danger-outline nexus-btn-sm flex-shrink-0 delete-trigger"
                     style="opacity:0;transition:opacity 0.2s"
@@ -85,7 +77,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL ADICIONAR ══════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="addProjectModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -134,7 +125,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL CONFIRMAR DELETE ════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="deleteModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -166,7 +156,6 @@
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
-// Hover: mostrar botão de deletar
 document.querySelectorAll('.portfolio-card').forEach(function(card) {
   card.addEventListener('mouseenter', function() {
     var btn = this.querySelector('.delete-trigger');
@@ -178,7 +167,6 @@ document.querySelectorAll('.portfolio-card').forEach(function(card) {
   });
 });
 
-// Abrir modal de delete
 document.querySelectorAll('.delete-trigger').forEach(function(btn) {
   btn.addEventListener('click', function() {
     var id = this.dataset.id;
@@ -189,7 +177,6 @@ document.querySelectorAll('.delete-trigger').forEach(function(btn) {
   });
 });
 
-// Tags de tecnologias
 var MAX_TECHNOLOGIES = 15;
 var selectedTechnologies = [];
 
@@ -286,7 +273,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Validação do formulário de adicionar projeto
 document.addEventListener('DOMContentLoaded', function() {
   var currentYear = new Date().getFullYear();
   var form = document.getElementById('addProjForm');

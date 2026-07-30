@@ -11,28 +11,25 @@
   <div class="page-body">
     <div class="container-xl py-4" style="max-width:680px">
 
-      <!-- Sucesso — some o resto da tela e agenda o redirect -->
       <div th:if="${submitted}">
         <div class="nexus-alert nexus-alert-success mb-4">
           <i class="ti ti-circle-check"></i><span>Avaliação enviada com sucesso!</span>
         </div>
         <script th:inline="javascript">
           setTimeout(function() {
-            window.location.href = /*[[${session.userRole == 'PROFESSIONAL'} ? '/pro/matches' : '/company/matches']]*/ '/company/matches';
+            window.location.href =  '/company/matches';
           }, 2000);
         </script>
       </div>
 
       <div th:unless="${submitted}">
 
-        <!-- Back -->
         <a th:href="${session.userRole == 'PROFESSIONAL'} ? '/pro/matches' : '/company/matches'"
            class="text-decoration-none d-inline-flex align-items-center gap-1 mb-4"
            style="color:#64748b;font-size:0.875rem">
           <i class="ti ti-arrow-left"></i> Voltar para matches
         </a>
 
-        <!-- Banner contextual — match encerrado -->
         <div class="mb-4" style="background:rgba(100,116,139,0.1);border:1px solid rgba(100,116,139,0.25);
                     border-radius:10px;padding:0.85rem 1rem;color:#94a3b8;font-size:0.875rem">
           📋 Este match foi encerrado. Compartilhe sua experiência.
@@ -48,7 +45,6 @@
           <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
         </div>
 
-        <!-- Precisa responder o status check antes -->
         <div th:if="${needsStatusCheck}" class="nexus-card p-4 text-center">
           <i class="ti ti-clipboard-question" style="font-size:2.5rem;color:#f59e0b;display:block;margin-bottom:1rem"></i>
           <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:1.25rem">
@@ -59,7 +55,6 @@
           </a>
         </div>
 
-        <!-- Sem contato estabelecido -->
         <div th:if="${noContact}" class="nexus-card p-4 text-center">
           <i class="ti ti-message-off" style="font-size:2.5rem;color:#64748b;display:block;margin-bottom:1rem"></i>
           <p style="color:#94a3b8;font-size:0.9rem;margin:0">
@@ -67,12 +62,10 @@
           </p>
         </div>
 
-        <!-- Formulário normal -->
         <div class="nexus-card p-4"
              th:if="${(needsStatusCheck == null or !needsStatusCheck) and (noContact == null or !noContact)}">
           <form th:action="@{/matches/{id}/review(id=${match.id})}" method="post" id="reviewForm">
 
-            <!-- Star rating -->
             <div class="mb-4">
               <label class="nexus-label mb-2">Avaliação geral *</label>
               <div class="d-flex gap-2 align-items-center">
@@ -91,7 +84,6 @@
               </div>
             </div>
 
-            <!-- Positive reasons -->
             <div class="mb-4">
               <label class="nexus-label mb-2">Pontos positivos</label>
               <div class="d-flex flex-wrap gap-2">
@@ -113,7 +105,6 @@
               </div>
             </div>
 
-            <!-- Negative reasons -->
             <div class="mb-4">
               <label class="nexus-label mb-2">Pontos negativos</label>
               <div class="d-flex flex-wrap gap-2">
@@ -134,7 +125,6 @@
               </div>
             </div>
 
-            <!-- Comment -->
             <div class="mb-4">
               <label class="nexus-label">Comentário <span style="color:#475569">(opcional)</span></label>
               <textarea class="nexus-input nexus-textarea" name="comment"

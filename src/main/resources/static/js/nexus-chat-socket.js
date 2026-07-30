@@ -1,33 +1,3 @@
-/**
- * nexus-chat-socket.js — Conexão STOMP/WebSocket reutilizável para o chat.
- *
- * Este projeto não tem build JS (sem npm/webpack) — as libs são carregadas via
- * CDN na própria página do chat, ANTES deste script:
- *   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
- *   <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
- *   <script th:src="@{/js/nexus-chat-socket.js}"></script>
- *
- * O JWT não existe no navegador (sessão fica só no servidor, ver
- * nexus_frontend/AuthService) — a página Thymeleaf do chat precisa expor o
- * token para este script via uma variável global, por exemplo:
- *   <script th:inline="javascript">
- *     /*<![CDATA[* /
- *     window.NEXUS_WS_TOKEN = /*[[${wsToken}]]* / null;
- *     /*]]* /
- *   </script>
- * (o controller da página injeta ${wsToken} a partir da sessão do usuário)
- *
- * Uso:
- *   var chat = createChatSocket(matchId, {
- *     onConnected: function() { ... },
- *     onMessageReceived: function(messageDTO) { ... },
- *     onError: function(errorMessage) { ... }
- *   });
- *   chat.sendMessage('Olá!');
- *   chat.isConnected // boolean
- *   chat.error       // string | null
- *   chat.disconnect();
- */
 function createChatSocket(matchId, options) {
     options = options || {};
     var onConnected = options.onConnected || function () {};
@@ -38,7 +8,6 @@ function createChatSocket(matchId, options) {
     var state = { isConnected: false, error: null };
     var client = null;
 
-    // Não conecta se matchId não foi informado
     if (matchId === null || matchId === undefined) {
         return {
             sendMessage: function () {},

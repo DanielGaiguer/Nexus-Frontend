@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Header -->
       <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
         <div>
           <a th:href="@{/admin/company/{id}(id=${companyId})}"
@@ -35,10 +34,8 @@
 
       <div class="row g-3">
 
-        <!-- Left column -->
         <div class="col-lg-4">
 
-          <!-- Empresa -->
           <div class="nexus-card p-4 text-center mb-3">
             <div class="mx-auto mb-3" style="width:72px;height:72px">
               <div class="nexus-avatar-xl"
@@ -54,7 +51,6 @@
             <div style="color:#64748b;font-size:0.82rem;margin-top:2px">Empresa contratante</div>
           </div>
 
-          <!-- Informações do projeto -->
           <div class="nexus-card p-3 mb-3">
             <div class="fw-semibold text-white mb-2">Informações</div>
             <div class="d-flex flex-column gap-2">
@@ -110,7 +106,6 @@
             </div>
           </div>
 
-          <!-- Posições -->
           <div class="nexus-card p-3" th:if="${project.maxPositions != null}">
             <div class="fw-semibold text-white mb-2">Posições</div>
             <div class="d-flex align-items-center gap-3">
@@ -128,19 +123,16 @@
             </div>
           </div>
 
-        </div><!-- /col-lg-4 -->
+        </div>
 
-        <!-- Right column -->
         <div class="col-lg-8">
 
-          <!-- Descrição -->
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">Descrição do projeto</div>
             <p style="color:#94a3b8;font-size:0.875rem;line-height:1.7;margin-bottom:0"
                th:text="${project.description != null ? project.description : 'Nenhuma descrição cadastrada.'}">—</p>
           </div>
 
-          <!-- Skills exigidas -->
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">Skills exigidas</div>
             <div class="d-flex flex-wrap gap-2" th:if="${project.requiredSkills != null and !#lists.isEmpty(project.requiredSkills)}">
@@ -152,7 +144,6 @@
             </div>
           </div>
 
-          <!-- Dados da empresa -->
           <div class="nexus-card p-4">
             <div class="fw-semibold text-white mb-3">Dados da empresa</div>
             <div class="row g-3">
@@ -187,8 +178,8 @@
             </div>
           </div>
 
-        </div><!-- /col-lg-8 -->
-      </div><!-- /row -->
+        </div>
+      </div>
 
     </div>
   </div>

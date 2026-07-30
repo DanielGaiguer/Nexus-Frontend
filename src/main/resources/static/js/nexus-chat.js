@@ -1,12 +1,5 @@
-/**
- * nexus-chat.js — Lógica da tela de chat individual (/chat/{matchId}).
- * Depende de nexus-chat-socket.js (createChatSocket) e da variável
- * global NEXUS_CHAT injetada pelo template chat/chat.html.
- */
 (function () {
   var cfg = window.NEXUS_CHAT || {};
-  // Fonte de verdade para o estado do match — injetada pelo servidor
-  // (Opção B: histórico sempre acessível, envio bloqueado se encerrado)
   var matchActive = window.NEXUS_MATCH_ACTIVE !== false;
   var messagesEl = document.getElementById('chatMessages');
   var inputEl = document.getElementById('chatInput');
@@ -147,7 +140,6 @@
 
     updateConnectionUi();
 
-    // Enquanto não conectar, mostra "Conectando..." e reavalia periodicamente
     var pollConnection = setInterval(function () {
       updateConnectionUi();
       if (!chat.isConnected) {
@@ -205,8 +197,6 @@
     loadHistory();
     applyInputDisabledState();
 
-    // Se o match está encerrado, o histórico ainda é buscado acima,
-    // mas a conexão STOMP nunca é iniciada — só leitura.
     if (matchActive) {
       connectSocket();
     }

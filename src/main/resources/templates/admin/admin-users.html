@@ -11,19 +11,16 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
 
-      <!-- Header -->
       <div class="mb-4">
         <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Gerenciamento de Usuários</h1>
         <p style="color:#64748b;font-size:0.875rem"
            th:text="${#lists.size(users)} + ' usuários cadastrados na plataforma'">0</p>
       </div>
 
-      <!-- Search + type filter -->
       <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
         <div style="position:relative;flex:1;min-width:220px;max-width:360px">
           <i class="ti ti-search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
@@ -47,7 +44,6 @@
         </div>
       </div>
 
-      <!-- Table -->
       <div class="nexus-card p-0">
         <div class="table-responsive">
           <table class="nexus-table" style="border-spacing:0" id="usersTable">
@@ -65,7 +61,6 @@
                   class="user-row"
                   th:data-email="${u.email}"
                   th:data-type="${u.type}">
-                <!-- Avatar + name derived from email -->
                 <td>
                   <div class="d-flex align-items-center gap-2">
                     <div class="nexus-avatar-initials nexus-avatar-sm"
@@ -128,7 +123,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL TOGGLE USER ═════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="toggleUserModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">

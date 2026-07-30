@@ -60,4 +60,17 @@ public class PublicService {
             return Collections.emptyList();
         }
     }
+
+    // Histórico de oportunidades encerradas da empresa (vagas e projetos), rota pública
+    public List<ProjectDTO> getCompanyClosedProjects(Long companyId) {
+        try {
+            ProjectDTO[] res = restClient.get()
+                    .uri("/public/company/{id}/projects/closed", companyId)
+                    .retrieve()
+                    .body(ProjectDTO[].class);
+            return res != null ? Arrays.asList(res) : Collections.emptyList();
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
 }

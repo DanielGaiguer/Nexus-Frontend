@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head('Matches')}"></head>
 <style>
-/* Card de convite pendente maior, para acomodar o anel de score ampliado */
 #pane-invites .nexus-match-card {
   padding: 1.75rem 2rem;
 }
@@ -17,7 +16,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
@@ -25,13 +23,11 @@
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Header -->
       <div class="mb-4">
         <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Meus Matches</h1>
         <p style="color:#64748b;font-size:0.875rem">Gerencie convites e veja seus matches confirmados</p>
       </div>
 
-      <!-- Tabs -->
       <div class="nexus-tabs mb-4">
         <button class="nexus-tab active" id="tab-invites" onclick="switchTab('invites')">
           Convites Pendentes
@@ -43,10 +39,8 @@
         </button>
       </div>
 
-      <!-- ── ABA: CONVITES PENDENTES ── -->
       <div id="pane-invites">
 
-        <!-- Empty -->
         <div th:if="${#lists.isEmpty(invites)}"
              class="nexus-card p-5 text-center">
           <i class="ti ti-mail-opened" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
@@ -54,18 +48,15 @@
           <div style="color:#475569;font-size:0.875rem">Quando empresas demonstrarem interesse, os convites aparecerão aqui.</div>
         </div>
 
-        <!-- List -->
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(invites)}">
           <div th:each="inv : ${invites}" class="nexus-match-card">
             <div class="d-flex align-items-start gap-3 mb-4 flex-wrap">
-              <!-- Avatar -->
               <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
                    th:with="n=${inv.project.company.companyName},
                             h=${n.hashCode()},
                             hue=${(h%360)<0?(h%360)+360:h%360}"
                    th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
                    th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
-              <!-- Info -->
               <div class="flex-fill">
                 <div class="fw-semibold text-white" style="font-size:1rem" th:text="${inv.project.title}">Projeto</div>
                 <span th:if="${inv.project?.opportunityType == 'JOB'}"
@@ -112,7 +103,6 @@
                     </span>
                   </span>
                 </div>
-                <!-- Skills exigidas — ajuda a diferenciar vagas com o mesmo título -->
                 <div th:if="${inv.project?.requiredSkills != null and !#lists.isEmpty(inv.project.requiredSkills)}"
                      class="d-flex flex-wrap gap-1 mt-1">
                   <span th:each="sk : ${inv.project.requiredSkills}"
@@ -130,7 +120,6 @@
                         th:text="${#strings.trim(b)}">Benefício</span>
                 </div>
               </div>
-              <!-- Score ring -->
               <div th:with="s=${inv.getScoreAsInt()},
                             c=${s>=85?'high':(s>=70?'medium':'low')}">
                 <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
@@ -152,7 +141,6 @@
               </div>
             </div>
 
-            <!-- Score breakdown bars -->
             <div class="row g-3 mb-4" style="font-size:0.78rem" th:if="${inv.scoreBreakdown != null}">
               <div class="col-6">
                 <div class="d-flex justify-content-between mb-1">
@@ -192,16 +180,13 @@
               </div>
             </div>
 
-            <!-- Actions: right-aligned, half-width buttons -->
             <div class="d-flex justify-content-end gap-2 mt-3">
-              <!-- Recusar (abre modal) -->
               <button type="button"
                       class="nexus-btn nexus-btn-danger-outline reject-trigger"
                       style="width:25%;min-width:140px;justify-content:center"
                       th:data-id="${inv.id}">
                 <i class="ti ti-x"></i> Recusar
               </button>
-              <!-- Aceitar -->
               <form th:action="@{/pro/matches/{id}/accept(id=${inv.id})}" method="post"
                     style="width:25%;min-width:160px">
                 <button type="submit" class="nexus-btn nexus-btn-success w-100" style="justify-content:center">
@@ -211,12 +196,10 @@
             </div>
           </div>
         </div>
-      </div><!-- /#pane-invites -->
+      </div>
 
-      <!-- ── ABA: MATCHES CONFIRMADOS ── -->
       <div id="pane-confirmed" style="display:none">
 
-        <!-- Empty -->
         <div th:if="${#lists.isEmpty(confirmed)}"
              class="nexus-card p-5 text-center">
           <i class="ti ti-heart-handshake" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
@@ -226,7 +209,6 @@
           </div>
         </div>
 
-        <!-- List -->
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(confirmed)}">
           <div th:each="m : ${confirmed}" class="nexus-match-card confirmed">
             <div class="d-flex align-items-start gap-3 flex-wrap">
@@ -248,7 +230,6 @@
                 </span>
                 <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.4rem" th:text="${m.project.company.companyName}">Empresa</div>
 
-                <!-- Contador de expiração do match (30 dias desde a confirmação) -->
                 <div th:with="daysRemaining=${m.getDaysRemaining()}" style="margin-bottom:0.5rem">
                   <div th:if="${m.active != null and !m.active or daysRemaining <= 0}"
                        style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.2);
@@ -262,7 +243,6 @@
                   </div>
                 </div>
 
-                <!-- Skills exigidas — ajuda a diferenciar vagas com o mesmo título -->
                 <div th:if="${m.project?.requiredSkills != null and !#lists.isEmpty(m.project.requiredSkills)}"
                      class="d-flex flex-wrap gap-1 mb-2">
                   <span th:each="sk : ${m.project.requiredSkills}"
@@ -270,7 +250,6 @@
                         style="font-size:0.68rem;padding:0.15em 0.5em"
                         th:text="${sk.name}">Skill</span>
                 </div>
-                <!-- Contatos liberados -->
                 <div class="d-flex flex-column gap-1">
                   <div style="color:#6b6eff;font-size:0.82rem" th:if="${m.project.company.phone != null}">
                     <i class="ti ti-phone me-1"></i>
@@ -294,7 +273,6 @@
                         th:data-id="${m.id}">
                   <i class="ti ti-clock-history"></i> Ver histórico
                 </button>
-                <!-- Avaliar -->
                 <a th:href="@{/pro/matches/{id}/review(id=${m.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                   <i class="ti ti-star"></i> Avaliar
@@ -309,13 +287,12 @@
             </div>
           </div>
         </div>
-      </div><!-- /#pane-confirmed -->
+      </div>
 
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL RECUSAR ════════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="rejectModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -330,98 +307,84 @@
       <form id="rejectForm" method="post">
         <div class="modal-body">
           <div class="rejection-grid">
-            <!-- TOO_LOW_BUDGET -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="TOO_LOW_BUDGET">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Orçamento muito baixo
               </div>
             </label>
-            <!-- UNDESIRED_TECHNOLOGY -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="UNDESIRED_TECHNOLOGY">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Tecnologia indesejada
               </div>
             </label>
-            <!-- DISTANCE_TOO_LARGE -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="DISTANCE_TOO_LARGE">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Distância muito grande
               </div>
             </label>
-            <!-- NO_REMOTE_OPTION -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="NO_REMOTE_OPTION">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Não é remoto
               </div>
             </label>
-            <!-- RELOCATION_NOT_ACCEPTED -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="RELOCATION_NOT_ACCEPTED">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Não aceito me mudar
               </div>
             </label>
-            <!-- TIMEZONE_INCOMPATIBILITY -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="TIMEZONE_INCOMPATIBILITY">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Fuso horário incompatível
               </div>
             </label>
-            <!-- NOT_AVAILABLE_TIMELINE -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="NOT_AVAILABLE_TIMELINE">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Sem disponibilidade no prazo
               </div>
             </label>
-            <!-- IMMEDIATE_START_REQUIRED -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="IMMEDIATE_START_REQUIRED">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Início imediato exigido
               </div>
             </label>
-            <!-- CANNOT_MEET_SCHEDULE -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="CANNOT_MEET_SCHEDULE">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Não consigo cumprir a agenda
               </div>
             </label>
-            <!-- CULTURE_MISMATCH -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="CULTURE_MISMATCH">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Cultura não combina
               </div>
             </label>
-            <!-- WORK_MODEL_MISMATCH -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="WORK_MODEL_MISMATCH">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Modelo de trabalho não combina
               </div>
             </label>
-            <!-- DEADLINE_TOO_SHORT -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="DEADLINE_TOO_SHORT">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Prazo muito curto
               </div>
             </label>
-            <!-- COST_BENEFIT_INADEQUATE -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="COST_BENEFIT_INADEQUATE">
               <div class="rejection-option-inner">
                 <i class="ti ti-check"></i>Custo-benefício inadequado
               </div>
             </label>
-            <!-- OTHER -->
             <label class="rejection-option">
               <input type="checkbox" name="reasons" value="OTHER">
               <div class="rejection-option-inner">
@@ -441,7 +404,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL HISTÓRICO ══════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="historyModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -467,7 +429,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL ENTRAR EM CONTATO ═════════════════════════════ -->
 <div class="modal fade nexus-modal" id="contactModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -511,7 +472,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL CANCELAR MATCH ══════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="cancelMatchModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -542,7 +502,6 @@
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
-// Tab switch
 function switchTab(tab) {
   document.getElementById('pane-invites').style.display   = tab === 'invites'   ? 'block' : 'none';
   document.getElementById('pane-confirmed').style.display = tab === 'confirmed' ? 'block' : 'none';
@@ -550,12 +509,10 @@ function switchTab(tab) {
   document.getElementById('tab-confirmed').classList.toggle('active', tab === 'confirmed');
 }
 
-// Open reject modal
 document.querySelectorAll('.reject-trigger').forEach(function(btn) {
   btn.addEventListener('click', function() {
     var id = this.dataset.id;
     document.getElementById('rejectForm').action = '/pro/matches/' + id + '/reject';
-    // Reset checkboxes
     document.querySelectorAll('#rejectForm input[type=checkbox]').forEach(function(cb) {
       cb.checked = false;
     });
@@ -564,7 +521,6 @@ document.querySelectorAll('.reject-trigger').forEach(function(btn) {
   });
 });
 
-// Enable confirm button when at least one reason selected
 document.querySelectorAll('#rejectForm input[type=checkbox]').forEach(function(cb) {
   cb.addEventListener('change', function() {
     var any = Array.from(document.querySelectorAll('#rejectForm input[type=checkbox]:checked')).length > 0;
@@ -692,9 +648,8 @@ document.querySelectorAll('.contact-trigger').forEach(function(btn) {
 });
 </script>
 
-<!-- Abre a janela de contato automaticamente quando este match acabou de ser confirmado -->
 <script th:inline="javascript">
-var justConfirmedMatchId = /*[[${justConfirmedMatchId}]]*/ null;
+var justConfirmedMatchId =  null;
 if (justConfirmedMatchId) {
   switchTab('confirmed');
   var justConfirmedBtn = document.querySelector('.contact-trigger[data-id="' + justConfirmedMatchId + '"]');

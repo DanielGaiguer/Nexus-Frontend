@@ -1,7 +1,3 @@
-/**
- * nexus-chat-list.js — Lógica da tela de listagem de conversas (/chat).
- * Sem WebSocket aqui — só fetch inicial + polling leve a cada 30s.
- */
 (function () {
   var container = document.getElementById('chatListContainer');
   var emptyState = document.getElementById('chatListEmpty');
@@ -58,8 +54,6 @@
   }
 
   function renderChat(chat) {
-    // Opção B: matches encerrados continuam aparecendo na lista, só com
-    // visual reduzido — nada aqui exclui pelo matchActive/daysUntilExpiration.
     var isEnded = chat.matchActive === false || chat.daysUntilExpiration === -1;
     var isExpiringSoon = !isEnded && chat.daysUntilExpiration != null && chat.daysUntilExpiration <= 7;
 
@@ -108,7 +102,6 @@
     if (chats.length === 0) {
       emptyState.style.display = allChats.length === 0 ? '' : 'none';
       if (allChats.length > 0) {
-        // Busca sem resultado, mas há conversas — não mostra o empty state genérico
         var noResult = document.createElement('div');
         noResult.className = 'nexus-chatlist-empty';
         noResult.textContent = 'Nenhuma conversa encontrada.';
@@ -149,7 +142,6 @@
         applyFilter();
       })
       .catch(function () {
-        // Falha silenciosa no polling — mantém a última lista renderizada
       });
   }
 

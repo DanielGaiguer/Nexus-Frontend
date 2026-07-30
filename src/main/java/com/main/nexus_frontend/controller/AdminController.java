@@ -372,6 +372,10 @@ public class AdminController {
                 .filter(m -> "MATCHED".equals(m.getStatus()) && Boolean.FALSE.equals(m.getActive()))
                 .collect(Collectors.toList());
 
+        List<ProjectDTO> closedProjects = projects.stream()
+                .filter(p -> "CLOSED".equals(p.getStatus()))
+                .collect(Collectors.toList());
+
         long totalProjects = projects.size();
         long openProjects = projects.stream()
                 .filter(p -> "OPEN".equals(p.getStatus()))
@@ -392,6 +396,7 @@ public class AdminController {
         model.addAttribute("companyId", id);
         model.addAttribute("dashboard", dashboard);
         model.addAttribute("projects", projects);
+        model.addAttribute("closedProjects", closedProjects);
         model.addAttribute("confirmed", confirmed);
         model.addAttribute("pending", pending);
         model.addAttribute("previousProjects", previousProjects);

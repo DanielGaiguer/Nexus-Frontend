@@ -1,41 +1,19 @@
-/**
- * nexus-map.js — Inicialização e controle do mapa Leaflet para Nexus
- * Suporta pins de profissionais, empresas e oportunidades.
- *
- * Variáveis esperadas injetadas pelo template via th:inline="javascript":
- *   var PROFESSIONALS  = [...];
- *   var COMPANIES      = [...];
- *   var OPPORTUNITIES  = [...];
- *   var CENTER_LAT     = -23.5505;
- *   var CENTER_LNG     = -46.6333;
- *
- * Opcional — pin vermelho fixo com a localização do usuário logado
- * (omitido no mapa do admin, que não tem uma localização própria):
- *   var MY_LAT = -23.5505;
- *   var MY_LNG = -46.6333;
- */
 
 (function() {
   'use strict';
 
-  // ── Guardar referências globais dos layers ────────────────
   var map;
   var layerPros     = null;
   var layerCos      = null;
   var layerOpps     = null;
-  var layerClusters = null; // marcadores agrupados (mesma localização/CEP)
+  var layerClusters = null;
 
   var currentRadius     = (typeof DEFAULT_RADIUS !== 'undefined') ? DEFAULT_RADIUS : 50;
-  var currentType       = 'all';      // 'all' | 'professionals' | 'companies' | 'opportunities'
-  var currentOppType    = '';         // '' | 'PROJECT' | 'JOB'
+  var currentType       = 'all';
+  var currentOppType    = '';
 
-  // Zoom mínimo a partir do qual pontos coincidentes deixam de ser
-  // mostrados como um único "cluster" numerado e passam a ser espalhados
-  // individualmente. Abaixo disso, mesmo com o espalhamento em metros,
-  // a separação em pixels seria pequena demais para notar sem dar zoom.
   var CLUSTER_ZOOM_THRESHOLD = 17;
 
-  // ── Haversine distance (km) ───────────────────────────────
   function distanceKm(lat1, lng1, lat2, lng2) {
     var R = 6371;
     var dLat = (lat2 - lat1) * Math.PI / 180;
@@ -46,7 +24,6 @@
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
-  // ── Criar ícone div personalizado ─────────────────────────
   function makePin(color, iconClass) {
     var html =
       '<div style="width:36px;height:36px;border-radius:50%;' +
@@ -58,13 +35,12 @@
     return L.divIcon({ className:'', iconSize:[36,36], iconAnchor:[18,36], popupAnchor:[0,-38], html:html });
   }
 
-  var PIN_PRO  = null; // inicializado depois do DOM
+  var PIN_PRO  = null;
   var PIN_CO   = null;
   var PIN_PROJ = null;
   var PIN_JOB  = null;
-  var PIN_ME   = null; // pin vermelho — localização do usuário logado
+  var PIN_ME   = null;
 
-  // ── Ícone de cluster (vários cadastros na mesma localização) ──
   function makeClusterPin(count) {
     var size = count > 9 ? 44 : 38;
     var html =
@@ -81,7 +57,6 @@
     });
   }
 
-  // ── Tradução de campos ────────────────────────────────────
   function translateWorkMode(wm) {
     var m = { 'REMOTE':'Remoto', 'ONSITE':'Presencial', 'HYBRID':'Híbrido' };
     return m[wm] || wm || '—';
@@ -91,7 +66,6 @@
     return t === 'JOB' ? 'Vaga de emprego' : 'Projeto';
   }
 
-  // ── Popup de profissional ─────────────────────────────────
   function popupPro(p) {
     var baseUrl = document.querySelector('meta[name="nexus-map-professional-base"]');
     var detailBase = baseUrl ? baseUrl.content : '';
@@ -115,7 +89,6 @@
       '</div>';
   }
 
-  // ── Popup de empresa ──────────────────────────────────────
   function popupCo(c) {
     var baseUrl = document.querySelector('meta[name="nexus-map-company-base"]');
     var detailBase = baseUrl ? baseUrl.content : '';
@@ -140,13 +113,11 @@
       '</div>';
   }
 
-  // ── Popup de oportunidade ─────────────────────────────────
   function popupOpp(o) {
     var typeColor = o.opportunityType === 'JOB' ? '#86efac' : '#a5b4fc';
     var typeBg    = o.opportunityType === 'JOB' ? 'rgba(34,197,94,0.12)' : 'rgba(107,110,255,0.12)';
     var typeLabel = o.opportunityType === 'JOB' ? 'Vaga de emprego' : 'Projeto';
 
-    // URL de detalhe — rota diferente por papel (lida de uma meta tag injetada pelo template)
     var baseUrl = document.querySelector('meta[name="nexus-map-base"]');
     var detailBase = baseUrl ? baseUrl.content : '/public/opportunity';
     var detailUrl  = detailBase + '/' + o.id;
@@ -179,14 +150,10 @@
       '</div>';
   }
 
-  // ── Agrupa marcadores que caem em coordenadas praticamente idênticas ──
-  // (ex: dois cadastros com o mesmo CEP)
   function groupByCoord(items) {
     var groups = {};
     var order = [];
     items.forEach(function(it) {
-      // ~11m de tolerância — suficiente para agrupar o mesmo CEP sem
-      // confundir endereços vizinhos distintos
       var key = it.lat.toFixed(4) + ',' + it.lng.toFixed(4);
       if (!groups[key]) { groups[key] = []; order.push(key); }
       groups[key].push(it);
@@ -194,8 +161,6 @@
     return order.map(function(key) { return groups[key]; });
   }
 
-  // ── Espalha os itens de um grupo num pequeno círculo ao redor do ponto
-  // original, para que nenhum pin fique escondido atrás de outro.
   function spreadGroup(group) {
     if (group.length < 2) return;
 
@@ -227,11 +192,9 @@
     }
   }
 
-  // ── Renderizar markers ────────────────────────────────────
   function renderMarkers() {
     if (!map) return;
 
-    // Limpa layers anteriores
     if (layerPros)     { map.removeLayer(layerPros);     layerPros     = null; }
     if (layerCos)      { map.removeLayer(layerCos);      layerCos      = null; }
     if (layerOpps)     { map.removeLayer(layerOpps);     layerOpps     = null; }
@@ -245,11 +208,8 @@
     var centerLat = (typeof CENTER_LAT !== 'undefined') ? CENTER_LAT : -23.5505;
     var centerLng = (typeof CENTER_LNG !== 'undefined') ? CENTER_LNG : -46.6333;
 
-    // Coleta todos os pontos visíveis (de qualquer tipo) antes de desenhar,
-    // para poder detectar coordenadas coincidentes entre si.
     var pending = [];
 
-    // Profissionais
     if (currentType === 'all' || currentType === 'professionals') {
       var pros = (typeof PROFESSIONALS !== 'undefined') ? PROFESSIONALS : [];
       pros.forEach(function(p) {
@@ -259,7 +219,6 @@
       });
     }
 
-    // Empresas
     if (currentType === 'all' || currentType === 'companies') {
       var cos = (typeof COMPANIES !== 'undefined') ? COMPANIES : [];
       cos.forEach(function(c) {
@@ -269,13 +228,11 @@
       });
     }
 
-    // Oportunidades
     if (currentType === 'all' || currentType === 'opportunities') {
       var opps = (typeof OPPORTUNITIES !== 'undefined') ? OPPORTUNITIES : [];
       opps.forEach(function(o) {
         if (!o.latitude || !o.longitude) return;
         if (distanceKm(centerLat, centerLng, o.latitude, o.longitude) > currentRadius) return;
-        // Filtro de subtipo
         if (currentOppType && o.opportunityType !== currentOppType) return;
         pending.push({ kind: 'opp', lat: o.latitude, lng: o.longitude, data: o });
       });
@@ -291,9 +248,6 @@
         else cntOpps++;
       });
 
-      // Zoom ainda afastado e há mais de um cadastro no mesmo ponto:
-      // mostra um único pin numerado, bem visível, em vez de espalhar
-      // marcadores que ficariam separados por poucos pixels.
       if (group.length > 1 && zoom < CLUSTER_ZOOM_THRESHOLD) {
         var lat = group[0].lat, lng = group[0].lng;
         L.marker([lat, lng], { icon: makeClusterPin(group.length) })
@@ -341,7 +295,6 @@
       : 'Mostrando todos, sem limite de distância';
   }
 
-  // ── API pública: chamada pelos botões do HTML ─────────────
   window.setRadius = function(r, btn) {
     currentRadius = r;
     document.querySelectorAll('.radius-btn').forEach(function(b) {
@@ -358,13 +311,11 @@
   window.setTypeFilter = function(type, el) {
     currentType = type;
 
-    // Destaca a opção ativa
     document.querySelectorAll('.type-filter-option').forEach(function(l) {
       l.style.background = '';
     });
     if (el) el.style.background = 'rgba(107,110,255,0.1)';
 
-    // Mostra ou esconde o sub-select de tipo de oportunidade
     var subSelect = document.getElementById('oppTypeSubSelect');
     if (subSelect) {
       subSelect.style.display = type === 'opportunities' ? 'block' : 'none';
@@ -378,12 +329,10 @@
     renderMarkers();
   };
 
-  // ── Inicialização ─────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function() {
     var centerLat = (typeof CENTER_LAT !== 'undefined') ? CENTER_LAT : -23.5505;
     var centerLng = (typeof CENTER_LNG !== 'undefined') ? CENTER_LNG : -46.6333;
 
-    // Inicia os pins depois do DOM (Leaflet usa classes CSS)
     PIN_PRO  = makePin('#6b6eff', 'ti-user');
     PIN_CO   = makePin('#f59e0b', 'ti-building');
     PIN_PROJ = makePin('#a78bfa', 'ti-briefcase');
@@ -403,9 +352,6 @@
       subdomains: 'abcd', maxZoom: 19, noWrap: true
     }).addTo(map);
 
-    // Pin vermelho fixo com a localização do usuário logado (profissional/empresa).
-    // Fica de fora do ciclo de renderMarkers() — não é afetado por filtros,
-    // zoom ou raio, e não entra nas contagens de resultados visíveis.
     var myLat = (typeof MY_LAT !== 'undefined') ? MY_LAT : null;
     var myLng = (typeof MY_LNG !== 'undefined') ? MY_LNG : null;
     if (myLat != null && myLng != null) {
@@ -417,7 +363,6 @@
        .addTo(map);
     }
 
-    // Popup style
     var style = document.createElement('style');
     style.textContent =
       '.nexus-popup .leaflet-popup-content-wrapper{' +
@@ -430,14 +375,11 @@
       '.nexus-tooltip::before{border-top-color:rgba(9,14,31,0.97)}';
     document.head.appendChild(style);
 
-    // Ativa "Ambos" como padrão
     var defaultEl = document.querySelector('.type-filter-option[data-type="all"]');
     if (defaultEl) defaultEl.style.background = 'rgba(107,110,255,0.1)';
 
     renderMarkers();
 
-    // Re-renderiza ao dar zoom, para alternar entre o pin agrupado
-    // (numerado) e os marcadores individuais espalhados.
     map.on('zoomend', renderMarkers);
   });
 

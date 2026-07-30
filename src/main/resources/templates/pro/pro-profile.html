@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
@@ -19,7 +18,6 @@
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Header -->
       <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
         <div>
           <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Meu Perfil</h1>
@@ -35,10 +33,8 @@
 
       <div class="row g-3">
 
-        <!-- Left column -->
         <div class="col-lg-4">
 
-          <!-- Avatar + name card -->
           <div class="nexus-card p-4 text-center mb-3">
 
             <div class="nexus-avatar-wrapper mx-auto mb-3"
@@ -46,7 +42,6 @@
                  onclick="document.getElementById('photoInput').click()"
                  title="Alterar foto de perfil">
 
-              <!-- Foto real -->
               <th:block th:if="${profile.profilePhotoUrl != null and !#strings.isEmpty(profile.profilePhotoUrl)}">
                 <img id="currentProfilePhoto"
                      th:src="${profile.profilePhotoUrl}"
@@ -55,7 +50,6 @@
                      alt="Foto de perfil">
               </th:block>
 
-              <!-- Iniciais (fallback) -->
               <th:block th:unless="${profile.profilePhotoUrl != null and !#strings.isEmpty(profile.profilePhotoUrl)}">
                 <div id="currentProfilePhoto"
                      class="nexus-avatar-xl"
@@ -68,24 +62,20 @@
                 </div>
               </th:block>
 
-              <!-- Overlay de hover -->
               <div class="nexus-avatar-photo-overlay">
                 <i class="ti ti-camera"></i>
               </div>
 
-              <!-- Botão de editar -->
               <div class="nexus-avatar-edit-btn">
                 <i class="ti ti-pencil"></i>
               </div>
 
             </div>
 
-            <!-- Input de arquivo oculto -->
             <input type="file" id="photoInput"
                    accept="image/jpeg,image/png,image/webp"
                    style="display:none">
 
-            <!-- Botão de remover foto (só aparece se tiver foto) -->
             <div th:if="${profile.profilePhotoUrl != null and !#strings.isEmpty(profile.profilePhotoUrl)}"
                  class="mb-2">
               <button type="button"
@@ -106,7 +96,6 @@
                 <span th:case="*">Profissional</span>
               </span>
             </div>
-            <!-- Estrelas reputação -->
             <div class="d-flex align-items-center justify-content-center gap-1 mt-2" th:if="${profile.reputation != null}">
               <th:block th:each="i : ${#numbers.sequence(1,5)}">
                 <i th:class="${i <= profile.reputation} ? 'ti ti-star-filled' : 'ti ti-star'"
@@ -117,7 +106,6 @@
             </div>
           </div>
 
-          <!-- Disponibilidade -->
           <div class="nexus-card p-3 mb-3">
             <form th:action="@{/pro/profile/availability}" method="post">
               <div class="d-flex align-items-center justify-content-between">
@@ -136,10 +124,9 @@
               </div>
             </form>
           </div>
-          
+
           <div id="completenessWidget" class="mb-3"></div>
 
-          <!-- Currículo -->
           <div class="nexus-card p-3 mb-3">
             <div class="fw-semibold text-white mb-2">Currículo</div>
             <div th:if="${profile.resume != null}" class="d-flex align-items-center gap-2 mb-2">
@@ -167,7 +154,6 @@
             </div>
           </div>
 
-          <!-- Score médio -->
           <div class="nexus-card p-3 mb-3" th:if="${avgScore != null and avgScore > 0}">
             <div class="nexus-section-title">Score Médio</div>
             <div class="d-flex align-items-baseline gap-2">
@@ -177,7 +163,6 @@
             </div>
           </div>
 
-          <!-- Contato -->
           <div class="nexus-card p-3">
             <div class="fw-semibold text-white mb-2">Contato</div>
             <div class="d-flex flex-column gap-2">
@@ -213,7 +198,6 @@
             </div>
           </div>
 
-          <!-- Análise de qualidade (indicador auxiliar, não confundir com a nota de estrelas acima) -->
           <div class="nexus-card p-4" style="margin-top:1rem">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div class="fw-semibold text-white" style="font-size:0.875rem">Análise de qualidade</div>
@@ -227,7 +211,6 @@
             </div>
 
             <th:block th:if="${reputation.totalReviews != null}">
-              <!-- Índice geral (escala 0-100, ponderada por confiança — indicador interno do matching, não é a nota de estrelas) -->
               <div class="text-center mb-4"
                    th:with="score=${reputation.overallScore != null ? reputation.overallScore : 0.0},
                             color=${score >= 80 ? '#22c55e' : (score >= 60 ? '#f59e0b' : '#ef4444')}">
@@ -236,7 +219,6 @@
                      th:text="${#numbers.formatDecimal(score,1,0)} + ' / 100'">0</div>
               </div>
 
-              <!-- Confiança -->
               <div class="mb-4" th:if="${reputation.confidencePercent != null}">
                 <div class="d-flex justify-content-between mb-1">
                   <span style="color:#64748b;font-size:0.72rem">Confiança</span>
@@ -249,7 +231,6 @@
                 </div>
               </div>
 
-              <!-- Indicadores -->
               <div class="d-flex flex-column gap-3 mb-4">
                 <div th:if="${reputation.technicalCompetence != null}">
                   <div class="d-flex justify-content-between mb-1">
@@ -308,7 +289,6 @@
                 </div>
               </div>
 
-              <!-- Satisfação + Recomendação -->
               <div class="d-flex flex-column gap-3">
                 <div style="background:rgba(107,110,255,0.06);border:1px solid rgba(107,110,255,0.15);
                             border-radius:10px;padding:0.85rem"
@@ -332,12 +312,10 @@
             </th:block>
           </div>
 
-        </div><!-- /col-lg-4 -->
+        </div>
 
-        <!-- Right column -->
         <div class="col-lg-8">
 
-          <!-- Dados pessoais -->
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">Dados pessoais</div>
             <div class="row g-3">
@@ -361,7 +339,6 @@
             </div>
           </div>
 
-          <!-- Pretensão salarial -->
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">Pretensão salarial</div>
             <div class="row g-3" th:if="${profile.expectedSalaryCLT != null or profile.expectedSalaryPJ != null
@@ -390,7 +367,6 @@
             </div>
           </div>
 
-          <!-- Skills -->
           <div class="nexus-card p-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div class="fw-semibold text-white">Skills</div>
@@ -412,14 +388,13 @@
             </div>
           </div>
 
-        </div><!-- /col-lg-8 -->
-      </div><!-- /row -->
+        </div>
+      </div>
 
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL EDITAR PERFIL ══════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="editModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -459,7 +434,6 @@
                 <option value="SENIOR"     th:selected="${profile.experienceLevel == 'SENIOR'}">Sênior</option>
               </select>
             </div>
-            <!-- Tipos de projeto -->
             <div class="col-12">
               <label class="nexus-label">Tipos de oportunidade aceitos</label>
               <div class="d-flex gap-3 flex-wrap">
@@ -484,7 +458,6 @@
               </div>
             </div>
 
-            <!-- Regime de contratação e pretensões -->
             <div class="col-12">
               <label class="nexus-label">Quero receber oportunidades de</label>
               <div class="d-flex gap-3 flex-wrap">
@@ -546,7 +519,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL SKILLS ══════════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="skillsModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -559,7 +531,6 @@
           <p style="color:#64748b;font-size:0.875rem;margin-bottom:1rem">
             Selecione as skills que você domina. Elas impactam diretamente o componente de Skills no score de compatibilidade.
           </p>
-          <!-- Skills do catálogo (allSkills vem do model como List de objetos com id e name) -->
           <label class="nexus-label mb-2">Suas skills</label>
           <select class="nexus-select" name="skillIds" id="proSkills" multiple
                   data-placeholder="Buscar e selecionar skills..."
@@ -573,9 +544,6 @@
                style="color:#475569;font-size:0.875rem">
             Catálogo de skills não disponível. Contate o administrador.
           </div>
-          <!-- O Tom Select global limita o dropdown a max-width:280px (pensado para
-               os filtros compactos de tabelas) — aqui, dentro do modal de skills,
-               queremos que ele ocupe a largura toda disponível. -->
           <style>
             #skillsModal .ts-wrapper.nexus-select {
               max-width: 100% !important;
@@ -591,7 +559,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL ADICIONAR LINKEDIN ══════════════════════════════ -->
 <div class="modal fade nexus-modal" id="addLinkedinModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -623,7 +590,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL CONFIRMAR REMOÇÃO DE FOTO ═══════════════════════ -->
 <div class="modal fade nexus-modal" id="removePhotoModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -651,7 +617,6 @@
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
-// Validação do formulário de edição de perfil
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('editProfileForm');
   if (!form) return;
@@ -665,12 +630,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- ══ Cropper.js CDN ══ -->
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
-<!-- ══ Modal de crop ══════════════════════════════════════════ -->
 <div class="nexus-crop-modal" id="cropModal">
   <div class="nexus-crop-container">
     <div class="d-flex align-items-center justify-content-between mb-3">
@@ -700,7 +663,6 @@ document.addEventListener('DOMContentLoaded', function() {
       </button>
     </div>
 
-    <!-- Status do upload -->
     <div id="uploadStatus" style="display:none;margin-top:0.75rem"
          class="nexus-alert nexus-alert-info">
       <i class="ti ti-loader" style="animation:spin 1s linear infinite"></i>
@@ -721,7 +683,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 var nexusCropper = null;
 
-// Abre modal quando o usuário seleciona um arquivo
 document.getElementById('photoInput').addEventListener('change', function(event) {
   var file = event.target.files[0];
   if (!file) return;
@@ -747,7 +708,6 @@ document.getElementById('photoInput').addEventListener('change', function(event)
     });
   };
   reader.readAsDataURL(file);
-  // Reseta o input para permitir selecionar o mesmo arquivo de novo
   this.value = '';
 });
 
@@ -756,7 +716,6 @@ function closeCropModal() {
   if (nexusCropper) { nexusCropper.destroy(); nexusCropper = null; }
 }
 
-// Confirma o crop e envia para o backend
 document.getElementById('confirmCropBtn').addEventListener('click', function() {
   if (!nexusCropper) return;
 
@@ -779,24 +738,19 @@ document.getElementById('confirmCropBtn').addEventListener('click', function() {
     var formData = new FormData();
     formData.append('file', blob, 'profile.jpg');
 
-    // Para o projeto MVC com sessão server-side, não precisamos de token no header —
-    // a sessão já está no cookie. Chamamos o endpoint proxy do próprio frontend.
     fetch('/pro/profile/photo', {
       method: 'POST',
       body: formData
-      // Não definir Content-Type — browser coloca o boundary correto automaticamente
     })
     .then(function(res) {
       if (!res.ok) return res.text().then(function(t) { throw new Error(t || 'Erro ' + res.status); });
       return res.text();
     })
     .then(function(photoUrl) {
-      // Atualiza a foto na página sem reload
       var current = document.getElementById('currentProfilePhoto');
       if (current.tagName === 'IMG') {
         current.src = photoUrl;
       } else {
-        // Era um div de iniciais — substituir por img
         var img = document.createElement('img');
         img.id        = 'currentProfilePhoto';
         img.src       = photoUrl;
@@ -805,12 +759,9 @@ document.getElementById('confirmCropBtn').addEventListener('click', function() {
         img.alt       = 'Foto de perfil';
         current.parentNode.replaceChild(img, current);
       }
-      // Mostra botão de remover
       var removeBtn = document.getElementById('removePhotoBtn');
       if (removeBtn) removeBtn.style.display = '';
-      // Fecha o modal
       closeCropModal();
-      // Toast de sucesso
       nexusToast('Foto de perfil atualizada!', 'success');
     })
     .catch(function(err) {
@@ -823,7 +774,6 @@ document.getElementById('confirmCropBtn').addEventListener('click', function() {
   }, 'image/jpeg', 0.9);
 });
 
-// Remove a foto de perfil (confirmação via #removePhotoModal)
 document.getElementById('confirmRemovePhotoBtn').addEventListener('click', function() {
   var btn = this;
   btn.disabled = true;
@@ -831,7 +781,6 @@ document.getElementById('confirmRemovePhotoBtn').addEventListener('click', funct
   fetch('/pro/profile/photo', { method: 'DELETE' })
   .then(function(res) {
     if (!res.ok) throw new Error('Erro ao remover');
-    // Volta para as iniciais
     window.location.reload();
   })
   .catch(function() {
@@ -842,30 +791,27 @@ document.getElementById('confirmRemovePhotoBtn').addEventListener('click', funct
 });
 </script>
 <script th:inline="javascript">
-/*<![CDATA[*/
 var PROFILE_DATA = {
-  name:             /*[[${profile.name}]]*/ '',
-  phone:            /*[[${profile.phone}]]*/ '',
-  cep:              /*[[${profile.cep}]]*/ '',
-  profilePhotoUrl:  /*[[${profile.profilePhotoUrl}]]*/ '',
-  skills:           /*[[${profile.skills}]]*/ [],
-  projects:         /*[[${portfolioCount != null ? portfolioCount : 0}]]*/ 0,
-  experienceLevel:  /*[[${profile.experienceLevel}]]*/ '',
-  preferredOpportunityTypes: /*[[${profile.preferredOpportunityTypes}]]*/ [],
-  salaryFilled:     /*[[${profile.expectedSalaryCLT != null or profile.expectedSalaryPJ != null or profile.freelanceMinExpectation != null}]]*/ false,
-  preferredTypes:   /*[[${profile.preferredTypes}]]*/ [],
-  linkedinUrl:      /*[[${profile.linkedinUrl}]]*/ '',
-  expectedSalaryCLT:         /*[[${profile.expectedSalaryCLT}]]*/ null,
-  expectedSalaryPJ:          /*[[${profile.expectedSalaryPJ}]]*/ null,
-  freelanceMinExpectation:   /*[[${profile.freelanceMinExpectation}]]*/ null,
-  freelanceMaxExpectation:   /*[[${profile.freelanceMaxExpectation}]]*/ null
+  name:              '',
+  phone:             '',
+  cep:               '',
+  profilePhotoUrl:   '',
+  skills:            [],
+  projects:          0,
+  experienceLevel:   '',
+  preferredOpportunityTypes:  [],
+  salaryFilled:      false,
+  preferredTypes:    [],
+  linkedinUrl:       '',
+  expectedSalaryCLT:          null,
+  expectedSalaryPJ:           null,
+  freelanceMinExpectation:    null,
+  freelanceMaxExpectation:    null
 };
-// Adapta projects para array compatível com o critério de minLength
 if (typeof PROFILE_DATA.projects === 'number') {
   PROFILE_DATA.projects = new Array(PROFILE_DATA.projects);
 }
 NexusCompleteness.render(PROFILE_DATA, document.getElementById('completenessWidget'), false);
-/*]]>*/
 </script>
 <script>
 document.getElementById('addLinkedinForm').addEventListener('submit', function(e) {
@@ -892,7 +838,6 @@ document.getElementById('addLinkedinForm').addEventListener('submit', function(e
   fetch('/pro/profile', { method: 'POST', body: formData })
     .then(function(res) {
       if (!res.ok) throw new Error('Não foi possível salvar o link do LinkedIn.');
-      // Só redireciona para o login do LinkedIn depois que a URL foi salva
       window.location.href = '/auth/linkedin/link';
     })
     .catch(function(err) {
@@ -904,17 +849,13 @@ document.getElementById('addLinkedinForm').addEventListener('submit', function(e
 });
 </script>
 <script th:inline="javascript">
-/*<![CDATA[*/
 
-// Dados fixos do perfil (não mudam sem salvar)
-var INITIAL_SKILLS_COUNT  = /*[[${profile.skills != null ? #lists.size(profile.skills) : 0}]]*/ 0;
-var INITIAL_PROJECTS_COUNT = /*[[${portfolioCount != null ? portfolioCount : 0}]]*/ 0;
-var INITIAL_REPUTATION     = /*[[${profile.reputation != null ? profile.reputation : 0}]]*/ 0;
-var INITIAL_AVAILABLE      = /*[[${profile.available != null ? profile.available : true}]]*/ true;
-var AVG_PROJECT_BUDGET     = /*[[${avgProjectBudget != null ? avgProjectBudget : 10000}]]*/ 10000;
-// avgProjectBudget deve vir do controller: média dos minimumBudget das vagas abertas
+var INITIAL_SKILLS_COUNT  =  0;
+var INITIAL_PROJECTS_COUNT =  0;
+var INITIAL_REPUTATION     =  0;
+var INITIAL_AVAILABLE      =  true;
+var AVG_PROJECT_BUDGET     =  10000;
 
-// Estado local do modal (atualiza conforme usuário edita)
 var simSkills    = INITIAL_SKILLS_COUNT;
 var simAvailable = INITIAL_AVAILABLE;
 
@@ -938,24 +879,20 @@ NexusScoreSimulator.init({
   avgProjectBudget: AVG_PROJECT_BUDGET
 });
 
-// Roda o simulador ao mudar campos no modal
 ['editMinSalary','editMaxSalary'].forEach(function(id) {
   var el = document.getElementById(id);
   if (el) el.addEventListener('input', function() { NexusScoreSimulator.simulate(); });
 });
 
-// Toggle de disponibilidade (fora do modal também recalcula)
 var availToggle = document.querySelector('[name="available"]');
 if (availToggle) {
   availToggle.addEventListener('change', function() { NexusScoreSimulator.simulate(); });
 }
 
-// Quando o modal de skills fecha após salvar, atualiza o count
 document.getElementById('editModal').addEventListener('shown.bs.modal', function() {
   NexusScoreSimulator.simulate();
 });
 
-/*]]>*/
 </script>
 </body>
 </html>

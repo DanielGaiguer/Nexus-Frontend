@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head('Comparar Candidatos')}"></head>
 <style>
-/* ── Layout da tabela comparativa ── */
 .comparison-table {
   width:100%;
   border-collapse:separate;
@@ -10,7 +9,6 @@
   table-layout:fixed;
 }
 
-/* Coluna de atributos */
 .comparison-table .col-attr {
   width:210px;
   min-width:170px;
@@ -48,7 +46,6 @@
   font-size:0.78rem;
 }
 
-/* Colunas de candidatos */
 .comparison-table .col-candidate {
   padding:0.75rem 1.1rem;
   border-bottom:1px solid rgba(255,255,255,0.04);
@@ -69,7 +66,6 @@
   background:rgba(107,110,255,0.05);
 }
 
-/* Header da coluna de candidato */
 .candidate-col-header {
   padding:1.5rem 1rem 1.1rem;
   text-align:center;
@@ -77,8 +73,6 @@
   background:rgba(13,19,41,0.85);
 }
 
-/* Destaque: melhor candidato — sempre a 1ª coluna de dados, pois os
-   candidatos já chegam ordenados por score final decrescente */
 .comparison-table thead th:nth-child(2) {
   background:linear-gradient(180deg,rgba(107,110,255,0.16),rgba(13,19,41,0.85) 65%);
   box-shadow:inset 0 3px 0 0 #6b6eff;
@@ -92,7 +86,6 @@
   background:rgba(107,110,255,0.1) !important;
 }
 
-/* Mini barra de score */
 .score-mini-bar {
   height:5px;
   background:rgba(255,255,255,0.06);
@@ -106,13 +99,11 @@
   transition:width 0.6s ease;
 }
 
-/* Chip de skill */
 .skill-chip-match   { background:rgba(34,197,94,0.12); color:#22c55e;
                        border:1px solid rgba(34,197,94,0.25); }
 .skill-chip-missing { background:rgba(239,68,68,0.12); color:#ef4444;
                        border:1px solid rgba(239,68,68,0.25); }
 
-/* Status badge do match */
 .match-status-waiting  { color:#f59e0b; }
 .match-status-matched  { color:#22c55e; }
 .match-status-rejected { color:#ef4444; }
@@ -128,7 +119,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
@@ -136,14 +126,12 @@
         <i class="ti ti-alert-triangle"></i><span th:text="${warningMsg}"></span>
       </div>
 
-      <!-- Back -->
       <a th:href="@{/company/projects/{id}/ranking(id=${comparison != null ? comparison.projectId : 0})}"
          class="text-decoration-none d-inline-flex align-items-center gap-1 mb-3"
          style="color:#64748b;font-size:0.875rem">
         <i class="ti ti-arrow-left"></i> Voltar ao ranking
       </a>
 
-      <!-- Hero header -->
       <div class="nexus-card p-4 mb-4"
            style="background:linear-gradient(135deg,rgba(107,110,255,0.12),rgba(13,19,41,0.9))">
         <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
@@ -160,7 +148,6 @@
                th:if="${comparison != null}"
                th:text="${#lists.size(comparison.candidates)} + ' candidatos selecionados, ordenados por score de compatibilidade'">—</p>
           </div>
-          <!-- Info do projeto -->
           <div class="d-flex gap-2 flex-wrap" th:if="${comparison != null}">
             <span class="nexus-status-badge info" style="font-size:0.78rem">
               <i class="ti ti-map-pin me-1"></i>
@@ -183,7 +170,6 @@
                 <span th:case="*" th:text="${comparison.experienceLevelRequired}">—</span>
               </span>
             </span>
-            <!-- Remuneração: PROJECT usa orçamento, JOB usa salário mensal -->
             <span class="nexus-status-badge success" style="font-size:0.78rem"
                   th:if="${comparison.opportunityType != 'JOB' and comparison.minimumBudget != null and comparison.maximumBudget != null}">
               <i class="ti ti-currency-dollar me-1"></i>
@@ -203,7 +189,6 @@
         </div>
       </div>
 
-      <!-- Empty state -->
       <div th:if="${comparison == null or #lists.isEmpty(comparison.candidates)}"
            class="nexus-card p-5 text-center">
         <i class="ti ti-scale-off"
@@ -216,7 +201,6 @@
 
       <th:block th:unless="${comparison == null or #lists.isEmpty(comparison.candidates)}">
 
-      <!-- ── Skills exigidas pelo projeto ── -->
       <div class="nexus-card p-3 mb-4">
         <div style="color:#64748b;font-size:0.72rem;font-weight:700;
                     text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.6rem">
@@ -230,12 +214,10 @@
              style="color:#475569;font-size:0.8rem">Nenhuma skill específica exigida.</div>
       </div>
 
-      <!-- ── Tabela comparativa ── -->
       <div class="nexus-card p-0"
            style="overflow:hidden;overflow-x:auto">
         <table class="comparison-table">
 
-          <!-- HEADER: foto + nome de cada candidato -->
           <thead>
             <tr>
               <th class="col-attr"
@@ -247,7 +229,6 @@
                   th:class="${cStat.index == 0} ? 'candidate-col-header best-candidate' : 'candidate-col-header'"
                   style="border-bottom:1px solid rgba(255,255,255,0.06)">
 
-                <!-- Avatar -->
                 <div class="d-flex justify-content-center mb-2">
                   <th:block th:if="${c.profilePhotoUrl != null and !#strings.isEmpty(c.profilePhotoUrl)}">
                     <img th:src="${c.profilePhotoUrl}"
@@ -265,13 +246,11 @@
                   </th:block>
                 </div>
 
-                <!-- Nome -->
                 <div class="fw-semibold text-white" style="font-size:0.9rem"
                      th:text="${c.name}">—</div>
                 <div style="color:#64748b;font-size:0.75rem"
                      th:text="${(c.city != null ? c.city : '') + (c.state != null ? ', ' + c.state : '')}">—</div>
 
-                <!-- Badge "melhor score" -->
                 <div th:if="${cStat.index == 0}"
                      style="margin-top:0.4rem">
                   <span class="nexus-status-badge success" style="font-size:0.68rem">
@@ -284,7 +263,6 @@
 
           <tbody>
 
-            <!-- ── BLOCO: SCORE FINAL ── -->
             <tr class="group-row">
               <td class="col-attr group-header"><i class="ti ti-trophy"></i>Score Final</td>
               <td th:each="c : ${comparison.candidates}"
@@ -311,8 +289,6 @@
               </td>
             </tr>
 
-            <!-- ── Sub-scores ── -->
-            <!-- Skills -->
             <tr>
               <td class="col-attr sub">Skills</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -331,7 +307,6 @@
               </td>
             </tr>
 
-            <!-- Orçamento -->
             <tr>
               <td class="col-attr sub">Orçamento</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -350,7 +325,6 @@
               </td>
             </tr>
 
-            <!-- Histórico -->
             <tr>
               <td class="col-attr sub">Histórico</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -369,7 +343,6 @@
               </td>
             </tr>
 
-            <!-- Reputação -->
             <tr>
               <td class="col-attr sub">Reputação</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -388,7 +361,6 @@
               </td>
             </tr>
 
-            <!-- Disponibilidade -->
             <tr>
               <td class="col-attr sub">Disponibilidade</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -402,7 +374,6 @@
               </td>
             </tr>
 
-            <!-- Experiência -->
             <tr>
               <td class="col-attr sub">Experiência</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -418,7 +389,6 @@
               </td>
             </tr>
 
-            <!-- Distância (só se não for null em pelo menos um) -->
             <tr th:if="${comparison.workMode != 'REMOTE'}">
               <td class="col-attr sub">Distância</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -434,7 +404,6 @@
               </td>
             </tr>
 
-            <!-- Ajuste de Reputação -->
             <tr>
               <td class="col-attr sub">Ajuste Reputação</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -450,7 +419,6 @@
               </td>
             </tr>
 
-            <!-- ── BLOCO: SKILLS ── -->
             <tr class="group-row">
               <td class="col-attr group-header"><i class="ti ti-list-check"></i>Skills Compatíveis</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -467,7 +435,6 @@
               </td>
             </tr>
 
-            <!-- Skills presentes -->
             <tr>
               <td class="col-attr sub">Skills que possui</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate"
@@ -483,7 +450,6 @@
               </td>
             </tr>
 
-            <!-- Skills faltantes -->
             <tr>
               <td class="col-attr sub">Skills faltantes</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate"
@@ -499,13 +465,11 @@
               </td>
             </tr>
 
-            <!-- ── BLOCO: PERFIL ── -->
             <tr class="group-row">
               <td class="col-attr group-header"><i class="ti ti-user"></i>Perfil</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate"></td>
             </tr>
 
-            <!-- Nível de experiência -->
             <tr>
               <td class="col-attr sub">Nível de experiência</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -527,7 +491,6 @@
               </td>
             </tr>
 
-            <!-- Pretensão salarial -->
             <tr>
               <td class="col-attr sub">Pretensão salarial</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate"
@@ -538,7 +501,6 @@
                         th:text="'–R$'+${#numbers.formatDecimal(c.maximumSalary/1000,1,1)}+'k'"></span>
                 </span>
                 <span th:unless="${c.minimumSalary != null}" style="color:#334155">—</span>
-                <!-- Indicador se está dentro do orçamento do projeto -->
                 <div style="font-size:0.7rem;margin-top:2px"
                      th:if="${c.minimumSalary != null and ceiling != null}">
                   <span th:if="${c.minimumSalary <= ceiling}"
@@ -549,14 +511,12 @@
               </td>
             </tr>
 
-            <!-- Projetos anteriores -->
             <tr>
               <td class="col-attr sub">Projetos anteriores</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
                 <span class="tabular fw-semibold text-white"
                       th:text="${c.previousProjectsCount ?: 0}">0</span>
                 <span style="color:#475569;font-size:0.75rem"> projeto(s)</span>
-                <!-- Barra proporcional (10 = máximo no score) -->
                 <div class="score-mini-bar" style="max-width:60px;margin:4px auto 0"
                      th:with="ppCount=${c.previousProjectsCount ?: 0},
                               ppPct=${ppCount > 10 ? 100 : ppCount * 10}">
@@ -566,13 +526,11 @@
               </td>
             </tr>
 
-            <!-- ── BLOCO: REPUTAÇÃO ── -->
             <tr class="group-row">
               <td class="col-attr group-header"><i class="ti ti-star"></i>Reputação</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate"></td>
             </tr>
 
-            <!-- Estrelas de reputação -->
             <tr>
               <td class="col-attr sub">Avaliação média</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -588,7 +546,6 @@
               </td>
             </tr>
 
-            <!-- Total de avaliações + confiança -->
             <tr>
               <td class="col-attr sub">Avaliações (confiança)</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -604,7 +561,6 @@
               </td>
             </tr>
 
-            <!-- Disponibilidade -->
             <tr>
               <td class="col-attr sub">Disponível agora</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -619,13 +575,11 @@
               </td>
             </tr>
 
-            <!-- ── BLOCO: STATUS E AÇÃO ── -->
             <tr class="group-row">
               <td class="col-attr group-header"><i class="ti ti-flag-3"></i>Status &amp; Ação</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate"></td>
             </tr>
 
-            <!-- Status do match -->
             <tr>
               <td class="col-attr sub">Status do match</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
@@ -657,14 +611,12 @@
               </td>
             </tr>
 
-            <!-- Botão de ação -->
             <tr>
               <td class="col-attr sub">Ação</td>
               <td th:each="c : ${comparison.candidates}"
                   class="col-candidate"
                   style="padding-top:0.85rem;padding-bottom:0.85rem">
 
-                <!-- Demonstrar interesse (WAITING) -->
                 <form th:if="${c.matchStatus == 'WAITING'}"
                       th:action="@{/company/matches/{id}/interest(id=${c.matchId})}"
                       method="post">
@@ -674,7 +626,6 @@
                   </button>
                 </form>
 
-                <!-- Aceitar (PROFESSIONAL_INTERESTED) -->
                 <form th:if="${c.matchStatus == 'PROFESSIONAL_INTERESTED'}"
                       th:action="@{/company/matches/{id}/accept(id=${c.matchId})}"
                       method="post">
@@ -684,19 +635,16 @@
                   </button>
                 </form>
 
-                <!-- Já confirmado -->
                 <span th:if="${c.matchStatus == 'MATCHED'}"
                       style="color:#22c55e;font-size:0.8rem;font-weight:600">
                   <i class="ti ti-heart-handshake me-1"></i>Match ativo
                 </span>
 
-                <!-- Rejeitado -->
                 <span th:if="${c.matchStatus == 'REJECTED'}"
                       style="color:#334155;font-size:0.8rem">
                   Finalizado
                 </span>
 
-                <!-- Interesse já enviado -->
                 <span th:if="${c.matchStatus == 'COMPANY_INTERESTED'}"
                       style="color:#6b6eff;font-size:0.8rem;font-weight:600">
                   <i class="ti ti-clock me-1"></i>Aguardando resposta
@@ -707,7 +655,7 @@
 
           </tbody>
         </table>
-      </div><!-- /card tabela -->
+      </div>
 
       </th:block>
     </div>

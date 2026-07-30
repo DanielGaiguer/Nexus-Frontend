@@ -1,6 +1,3 @@
-/**
- * nexus-validation.js — Utilitários de validação com mensagens em português
- */
 
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email || '').trim());
@@ -23,9 +20,6 @@ function validatePassword(password) {
   return (password || '').length >= 6;
 }
 
-/**
- * Retorna uma mensagem de erro legível para um campo, ou null se válido.
- */
 function getFieldError(name, value) {
   var v = (value || '').trim();
   switch (name) {
@@ -64,10 +58,6 @@ function getFieldError(name, value) {
   }
 }
 
-/**
- * Exibe inline o erro de um campo específico.
- * O campo deve ter um irmão seguinte com class="field-error-msg" para exibir o texto.
- */
 function showFieldError(inputEl, message) {
   var errEl = inputEl.parentElement.querySelector('.field-error-msg');
   if (!errEl) {
@@ -90,9 +80,6 @@ function showFieldError(inputEl, message) {
   }
 }
 
-/**
- * Valida um input ao perder o foco e ao digitar.
- */
 function attachInlineValidation(inputEl) {
   function validate() {
     var err = getFieldError(inputEl.name, inputEl.value);
@@ -100,15 +87,10 @@ function attachInlineValidation(inputEl) {
   }
   inputEl.addEventListener('blur',  validate);
   inputEl.addEventListener('input', function() {
-    // Limpa o erro enquanto digita (só mostra de novo no blur)
     showFieldError(inputEl, null);
   });
 }
 
-/**
- * attachSubmitGuard — desabilita o botão de submit até validatorFn() retornar true.
- * Re-avalia a cada evento "input".
- */
 function attachSubmitGuard(formEl, validatorFn) {
   if (!formEl) return;
   var btn = formEl.querySelector('[type="submit"]');
@@ -121,10 +103,6 @@ function attachSubmitGuard(formEl, validatorFn) {
   check();
 }
 
-/**
- * initFormValidation — inicializa validação inline em todos os campos
- * de um formulário que tenham o atributo name reconhecido.
- */
 function initFormValidation(formEl) {
   if (!formEl) return;
   var fields = formEl.querySelectorAll('input[name]');

@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Header -->
       <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
         <div>
           <h1 class="fw-bold mb-1"
@@ -21,7 +20,6 @@
           <p style="color:#64748b;font-size:0.875rem"
              th:text="${#lists.size(projects)} + ' projetos publicados na plataforma'">0 projetos</p>
         </div>
-        <!-- Stat pills rápidas -->
         <div class="d-flex gap-2 flex-wrap">
           <span class="nexus-status-badge success" style="font-size:0.8rem;padding:0.35rem 0.85rem">
             <i class="ti ti-circle-filled me-1" style="font-size:0.55rem"></i>
@@ -34,11 +32,9 @@
         </div>
       </div>
 
-      <!-- ── Filtros ── -->
       <div class="nexus-card p-3 mb-4">
         <div class="row g-3 align-items-end">
 
-          <!-- Busca por título / empresa -->
           <div class="col-12 col-md-4">
             <label class="nexus-label">Buscar</label>
             <div style="position:relative">
@@ -50,7 +46,6 @@
             </div>
           </div>
 
-          <!-- Status -->
           <div class="col-6 col-md-2">
             <label class="nexus-label">Status</label>
             <select class="nexus-select" id="filterStatus" onchange="applyFilters()">
@@ -61,7 +56,6 @@
             </select>
           </div>
 
-          <!-- Tipo de oportunidade -->
           <div class="col-6 col-md-2">
             <label class="nexus-label">Oportunidade</label>
             <select class="nexus-select" id="filterOpportunityType" onchange="onOpportunityTypeChange()">
@@ -71,7 +65,6 @@
             </select>
           </div>
 
-          <!-- Modalidade -->
           <div class="col-6 col-md-2">
             <label class="nexus-label">Modalidade</label>
             <select class="nexus-select" id="filterModality" onchange="applyFilters()">
@@ -82,7 +75,6 @@
             </select>
           </div>
 
-          <!-- Nível de experiência -->
           <div class="col-6 col-md-2">
             <label class="nexus-label">Experiência</label>
             <select class="nexus-select" id="filterExpLevel" multiple onchange="applyFilters()">
@@ -94,7 +86,6 @@
             </select>
           </div>
 
-          <!-- Limpar -->
           <div class="col-6 col-md-2">
             <button type="button" class="nexus-btn nexus-btn-ghost w-80"
                     onclick="clearFilters()">
@@ -104,7 +95,6 @@
 
         </div>
 
-        <!-- Linha condicional: tipo de contrato — só para Vagas -->
         <div class="row g-3 align-items-end mt-1" id="jobContractRow" style="display:none">
           <div class="col-6 col-md-3">
             <label class="nexus-label">Tipo de contrato</label>
@@ -129,7 +119,6 @@
           </div>
         </div>
 
-        <!-- Linha condicional: orçamento — só para Projetos -->
         <div class="row g-3 align-items-end mt-1" id="projectBudgetRow" style="display:none">
           <div class="col-6 col-md-3">
             <label class="nexus-label">Orçamento mín. (R$)</label>
@@ -144,7 +133,6 @@
         </div>
       </div>
 
-      <!-- Contagem visível -->
       <div class="d-flex align-items-center justify-content-between mb-3">
         <div style="color:#64748b;font-size:0.82rem">
           Exibindo <span id="visibleCount" class="fw-semibold text-white">0</span>
@@ -152,7 +140,6 @@
         </div>
       </div>
 
-      <!-- ── Empty state ── -->
       <div th:if="${#lists.isEmpty(projects)}"
            class="nexus-card p-5 text-center">
         <i class="ti ti-folder-off"
@@ -163,7 +150,6 @@
         </div>
       </div>
 
-      <!-- ── Feed de projetos ── -->
       <div class="d-flex flex-column gap-3" id="projectFeed"
            th:unless="${#lists.isEmpty(projects)}">
 
@@ -181,7 +167,6 @@
              th:data-maxsalary="${proj.monthlySalaryMax}"
              th:data-explevel="${proj.experienceLevel}">
 
-          <!-- Top row: título + status -->
           <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
             <div class="flex-fill">
               <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
@@ -194,7 +179,6 @@
                 </span>
               </div>
 
-              <!-- Empresa (admin vê isso) -->
               <div class="d-flex align-items-center gap-2">
                 <div th:if="${proj.company != null}"
                      class="nexus-avatar-initials"
@@ -211,7 +195,6 @@
               </div>
             </div>
 
-            <!-- Posições (admin também vê) -->
             <div class="text-end flex-shrink-0"
                  th:if="${proj.maxPositions != null}">
               <div style="color:#64748b;font-size:0.72rem">Posições</div>
@@ -221,11 +204,9 @@
             </div>
           </div>
 
-          <!-- Descrição -->
           <p style="color:#94a3b8;font-size:0.875rem;line-height:1.6;margin-bottom:0.75rem"
              th:text="${proj.description}">—</p>
 
-          <!-- Meta row -->
           <div class="d-flex gap-4 flex-wrap mb-3" style="font-size:0.8rem;color:#64748b">
             <span th:if="${proj.opportunityType != 'JOB'}">
               <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
@@ -277,17 +258,15 @@
             </span>
           </div>
 
-          <!-- Skills -->
           <div class="d-flex flex-wrap gap-2"
                th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
             <span th:each="sk : ${proj.requiredSkills}"
                   class="nexus-chip nexus-chip-tech" th:text="${sk.name}">Skill</span>
           </div>
 
-        </div><!-- /.project-item -->
-      </div><!-- /#projectFeed -->
+        </div>
+      </div>
 
-      <!-- Sem resultados após filtro -->
       <div id="noResults"
            class="nexus-card p-5 text-center"
            style="display:none">
@@ -306,7 +285,6 @@
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
-// Alterna Projetos/Vagas — revela a linha de filtro certa (contrato+salário ou orçamento)
 function onOpportunityTypeChange() {
   var oppType = document.getElementById('filterOpportunityType').value;
 
@@ -323,7 +301,6 @@ function onOpportunityTypeChange() {
   onContractTypeChange();
 }
 
-// Salário só faz sentido para vagas CLT ou PJ
 function onContractTypeChange() {
   var ct = document.getElementById('filterContractType').value;
   var showSalary = (ct === 'CLT' || ct === 'PJ');
@@ -408,7 +385,6 @@ function clearFilters() {
   applyFilters();
 }
 
-// Inicializa contagem
 document.addEventListener('DOMContentLoaded', function() {
   applyFilters();
 });

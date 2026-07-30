@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
@@ -19,14 +18,12 @@
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Greeting -->
       <div class="mb-4">
         <h1 class="fw-bold mb-1" style="font-size:2rem;letter-spacing:-0.02em;color:#fff"
             th:text="${companyName}">Empresa</h1>
         <p style="color:#64748b;font-size:0.9rem">Visão geral da sua empresa no Nexus</p>
       </div>
 
-      <!-- Stat cards -->
       <div class="row g-3 mb-4">
         <div class="col-sm-6 col-lg-3">
           <div class="nexus-stat-card">
@@ -67,10 +64,8 @@
         </div>
       </div>
 
-      <!-- Projetos e Vagas recentes -->
       <div class="d-flex flex-column gap-3">
 
-        <!-- Projetos recentes -->
         <div>
           <div class="nexus-card p-0">
             <div class="d-flex align-items-center justify-content-between p-3 pb-2">
@@ -86,7 +81,6 @@
               </a>
             </div>
 
-            <!-- Empty -->
             <div th:if="${#lists.isEmpty(recentProjects)}"
                  class="d-flex flex-column align-items-center py-5 text-center px-3">
               <i class="ti ti-folder-off" style="font-size:2.5rem;color:#334155;margin-bottom:0.75rem"></i>
@@ -96,7 +90,6 @@
               </a>
             </div>
 
-            <!-- Table -->
             <div class="table-responsive" th:unless="${#lists.isEmpty(recentProjects)}">
               <table class="nexus-table" style="border-spacing:0">
                 <thead>
@@ -151,7 +144,6 @@
           </div>
         </div>
 
-        <!-- Vagas recentes -->
         <div>
           <div class="nexus-card p-0">
             <div class="d-flex align-items-center justify-content-between p-3 pb-2">
@@ -167,7 +159,6 @@
               </a>
             </div>
 
-            <!-- Empty -->
             <div th:if="${#lists.isEmpty(recentJobs)}"
                  class="d-flex flex-column align-items-center py-5 text-center px-3">
               <i class="ti ti-building-off" style="font-size:2.5rem;color:#334155;margin-bottom:0.75rem"></i>
@@ -177,7 +168,6 @@
               </a>
             </div>
 
-            <!-- Table -->
             <div class="table-responsive" th:unless="${#lists.isEmpty(recentJobs)}">
               <table class="nexus-table" style="border-spacing:0">
                 <thead>

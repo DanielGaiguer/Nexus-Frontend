@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
@@ -19,7 +18,6 @@
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Header -->
       <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
         <div>
           <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Perfil da Empresa</h1>
@@ -33,10 +31,8 @@
 
       <div class="row g-3">
 
-        <!-- Left col -->
         <div class="col-lg-4">
 
-          <!-- Avatar + nome -->
           <div class="nexus-card p-4 text-center mb-3">
             <div class="nexus-avatar-wrapper mx-auto mb-3"
                  style="width:96px;height:96px"
@@ -82,7 +78,6 @@
             </div>
             <div class="fw-bold text-white" style="font-size:1.15rem" th:text="${profile.companyName}">Empresa</div>
             <div style="color:#64748b;font-size:0.85rem;margin-top:2px">Empresa de Software</div>
-            <!-- Reputação estrelas -->
             <div class="d-flex align-items-center justify-content-center gap-1 mt-2"
                  th:if="${profile.reputation != null}">
               <th:block th:each="i : ${#numbers.sequence(1,5)}">
@@ -96,7 +91,6 @@
                  th:if="${profile.reputation != null}">
               Baseado em avaliações de profissionais
             </div>
-            <!-- Status badge -->
             <div class="mt-3">
               <span th:switch="${profile.status}"
                     class="nexus-status-badge">
@@ -113,7 +107,6 @@
             </div>
           </div>
 
-          <!-- Contato -->
           <div class="nexus-card p-3 mb-3">
             <div class="fw-semibold text-white mb-2">Contato</div>
             <div class="d-flex flex-column gap-2">
@@ -153,7 +146,6 @@
             </div>
           </div>
 
-          <!-- Análise de qualidade (indicador auxiliar, não confundir com a nota de estrelas acima) -->
           <div class="nexus-card p-4" style="margin-top:1rem">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div class="fw-semibold text-white" style="font-size:0.875rem">Análise de qualidade</div>
@@ -167,7 +159,6 @@
             </div>
 
             <th:block th:if="${reputation.totalReviews != null}">
-              <!-- Índice geral (escala 0-100, indicador interno do matching — não é a nota de estrelas) -->
               <div class="text-center mb-4"
                    th:with="score=${reputation.overallScore != null ? reputation.overallScore : 0.0},
                             color=${score >= 80 ? '#22c55e' : (score >= 60 ? '#f59e0b' : '#ef4444')}">
@@ -176,7 +167,6 @@
                      th:text="${#numbers.formatDecimal(score,1,0)} + ' / 100'">0</div>
               </div>
 
-              <!-- Confiança -->
               <div class="mb-4" th:if="${reputation.confidencePercent != null}">
                 <div class="d-flex justify-content-between mb-1">
                   <span style="color:#64748b;font-size:0.72rem">Confiança</span>
@@ -189,7 +179,6 @@
                 </div>
               </div>
 
-              <!-- Indicadores -->
               <div class="d-flex flex-column gap-3 mb-4">
                 <div th:if="${reputation.communication != null}">
                   <div class="d-flex justify-content-between mb-1">
@@ -237,7 +226,6 @@
                 </div>
               </div>
 
-              <!-- Satisfação + Recomendação -->
               <div class="d-flex flex-column gap-3">
                 <div style="background:rgba(107,110,255,0.06);border:1px solid rgba(107,110,255,0.15);
                             border-radius:10px;padding:0.85rem"
@@ -261,12 +249,10 @@
             </th:block>
           </div>
 
-        </div><!-- /col-lg-4 -->
+        </div>
 
-        <!-- Right col -->
         <div class="col-lg-8">
 
-          <!-- Dados da empresa -->
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">Dados da empresa</div>
             <div class="row g-3">
@@ -294,14 +280,12 @@
             </div>
           </div>
 
-          <!-- Descrição -->
           <div class="nexus-card p-4 mb-3" th:if="${profile.description != null}">
             <div class="fw-semibold text-white mb-2">Descrição</div>
             <p style="color:#94a3b8;font-size:0.875rem;line-height:1.7;margin:0"
                th:text="${profile.description}">—</p>
           </div>
 
-          <!-- Métricas -->
           <div class="row g-3">
             <div class="col-4">
               <div class="nexus-card p-3 text-center">
@@ -322,18 +306,17 @@
                 <div class="nexus-stat-label mt-1">Taxa de sucesso</div>
               </div>
             </div>
-              
+
             <div id="completenessWidgetCo" class="mb-3"></div>
           </div>
 
-        </div><!-- /col-lg-8 -->
-      </div><!-- /row -->
+        </div>
+      </div>
 
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL EDITAR ══════════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="editCompanyModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -394,7 +377,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL ADICIONAR LINKEDIN ══════════════════════════════ -->
 <div class="modal fade nexus-modal" id="addLinkedinModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -426,7 +408,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL CONFIRMAR REMOÇÃO DE FOTO ═══════════════════════ -->
 <div class="modal fade nexus-modal" id="removeCompanyPhotoModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -498,7 +479,6 @@ document.addEventListener('DOMContentLoaded', function() {
       </button>
     </div>
 
-    <!-- Status do upload -->
     <div id="uploadStatus" style="display:none;margin-top:0.75rem"
          class="nexus-alert nexus-alert-info">
       <i class="ti ti-loader" style="animation:spin 1s linear infinite"></i>
@@ -559,7 +539,6 @@ document.getElementById('confirmCropBtn').addEventListener('click', function() {
     var formData = new FormData();
     formData.append('file', blob, 'profile.jpg');
 
-    // Rota diferente — empresa
     fetch('/company/profile/photo', { method: 'POST', body: formData })
     .then(function(res) {
       if (!res.ok) return res.text().then(function(t) { throw new Error(t); });
@@ -593,7 +572,6 @@ document.getElementById('confirmCropBtn').addEventListener('click', function() {
   }, 'image/jpeg', 0.9);
 });
 
-// Remove a foto da empresa (confirmação via #removeCompanyPhotoModal)
 document.getElementById('confirmRemoveCompanyPhotoBtn').addEventListener('click', function() {
   var btn = this;
   btn.disabled = true;
@@ -611,20 +589,18 @@ document.getElementById('confirmRemoveCompanyPhotoBtn').addEventListener('click'
 });
 </script>
 <script th:inline="javascript">
-/*<![CDATA[*/
 var CO_DATA = {
-  companyName:     /*[[${profile.companyName}]]*/ '',
-  phone:           /*[[${profile.phone}]]*/ '',
-  cep:             /*[[${profile.cep}]]*/ '',
-  profilePhotoUrl: /*[[${profile.profilePhotoUrl}]]*/ '',
-  description:     /*[[${profile.description}]]*/ '',
-  taxId:           /*[[${profile.taxId}]]*/ '',
-  email:           /*[[${profile.email}]]*/ '',
-  city:            /*[[${profile.city}]]*/ '',
-  linkedinUrl:     /*[[${profile.linkedinUrl}]]*/ ''
+  companyName:      '',
+  phone:            '',
+  cep:              '',
+  profilePhotoUrl:  '',
+  description:      '',
+  taxId:            '',
+  email:            '',
+  city:             '',
+  linkedinUrl:      ''
 };
 NexusCompleteness.render(CO_DATA, document.getElementById('completenessWidgetCo'), true);
-/*]]>*/
 </script>
 <script>
 document.getElementById('addLinkedinForm').addEventListener('submit', function(e) {
@@ -645,7 +621,6 @@ document.getElementById('addLinkedinForm').addEventListener('submit', function(e
   fetch('/company/profile', { method: 'POST', body: formData })
     .then(function(res) {
       if (!res.ok) throw new Error('Não foi possível salvar o link do LinkedIn.');
-      // Só redireciona para o login do LinkedIn depois que a URL foi salva
       window.location.href = '/auth/linkedin/link';
     })
     .catch(function(err) {

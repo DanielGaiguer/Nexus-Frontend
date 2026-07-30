@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Header -->
       <div class="d-flex align-items-start justify-content-between mb-4 gap-3 flex-wrap">
         <div>
           <a href="/admin/users"
@@ -32,10 +31,8 @@
 
       <div class="row g-3">
 
-        <!-- Left column -->
         <div class="col-lg-4">
 
-          <!-- Avatar + name card -->
           <div class="nexus-card p-4 text-center mb-3">
             <div class="mx-auto mb-3" style="width:96px;height:96px">
               <th:block th:if="${profile.profilePhotoUrl != null and !#strings.isEmpty(profile.profilePhotoUrl)}">
@@ -63,7 +60,6 @@
                 <span th:case="*" class="nexus-status" th:text="${profile.status}">—</span>
               </span>
             </div>
-            <!-- Estrelas reputação -->
             <div class="d-flex align-items-center justify-content-center gap-1 mt-2" th:if="${profile.reputation != null}">
               <th:block th:each="i : ${#numbers.sequence(1,5)}">
                 <i th:class="${i <= profile.reputation} ? 'ti ti-star-filled' : 'ti ti-star'"
@@ -74,7 +70,6 @@
             </div>
           </div>
 
-          <!-- Status da empresa -->
           <div class="nexus-card p-3 mb-3">
             <div class="d-flex align-items-center gap-2">
               <i class="ti ti-shield-check" th:style="${profile.status == 'APPROVED'} ? 'color:#22c55e' : (${profile.status == 'PENDING'} ? 'color:#f59e0b' : 'color:#ef4444')"></i>
@@ -92,7 +87,6 @@
             </div>
           </div>
 
-          <!-- Contato -->
           <div class="nexus-card p-3">
             <div class="fw-semibold text-white mb-2">Contato</div>
             <div class="d-flex flex-column gap-2">
@@ -131,7 +125,6 @@
             </div>
           </div>
 
-          <!-- Análise de qualidade (indicador auxiliar, não confundir com a nota de estrelas acima) -->
           <div class="nexus-card p-4" style="margin-top:1rem">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div class="fw-semibold text-white" style="font-size:0.875rem">Análise de qualidade</div>
@@ -145,7 +138,6 @@
             </div>
 
             <th:block th:if="${reputation.totalReviews != null}">
-              <!-- Índice geral (escala 0-100, indicador interno do matching — não é a nota de estrelas) -->
               <div class="text-center mb-4"
                    th:with="score=${reputation.overallScore != null ? reputation.overallScore : 0.0},
                             color=${score >= 80 ? '#22c55e' : (score >= 60 ? '#f59e0b' : '#ef4444')}">
@@ -154,7 +146,6 @@
                      th:text="${#numbers.formatDecimal(score,1,0)} + ' / 100'">0</div>
               </div>
 
-              <!-- Confiança -->
               <div class="mb-4" th:if="${reputation.confidencePercent != null}">
                 <div class="d-flex justify-content-between mb-1">
                   <span style="color:#64748b;font-size:0.72rem">Confiança</span>
@@ -167,7 +158,6 @@
                 </div>
               </div>
 
-              <!-- Indicadores -->
               <div class="d-flex flex-column gap-3 mb-4">
                 <div th:if="${reputation.communication != null}">
                   <div class="d-flex justify-content-between mb-1">
@@ -215,7 +205,6 @@
                 </div>
               </div>
 
-              <!-- Satisfação + Recomendação -->
               <div class="d-flex flex-column gap-3">
                 <div style="background:rgba(107,110,255,0.06);border:1px solid rgba(107,110,255,0.15);
                             border-radius:10px;padding:0.85rem"
@@ -239,12 +228,10 @@
             </th:block>
           </div>
 
-        </div><!-- /col-lg-4 -->
+        </div>
 
-        <!-- Right column -->
         <div class="col-lg-8">
 
-          <!-- Dashboard da empresa -->
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">
               <i class="ti ti-chart-bar me-2" style="color:#6b6eff"></i>Dashboard
@@ -290,14 +277,40 @@
             </div>
           </div>
 
-          <!-- Descrição -->
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">Descrição</div>
             <p style="color:#94a3b8;font-size:0.875rem;line-height:1.6;margin-bottom:0"
                th:text="${profile.description != null ? profile.description : 'Nenhuma descrição cadastrada.'}">—</p>
           </div>
 
-          <!-- Projetos -->
+          <div class="nexus-card p-4 mb-3">
+            <div class="fw-semibold text-white mb-3">
+              <i class="ti ti-history me-2" style="color:#94a3b8"></i>Oportunidades fechadas
+              <span class="badge ms-2" th:text="${#lists.size(closedProjects)}" style="font-size:0.7rem;background:rgba(100,116,139,0.15);color:#94a3b8">0</span>
+            </div>
+            <div th:if="${#lists.isEmpty(closedProjects)}" style="color:#475569;font-size:0.875rem">
+              Nenhuma oportunidade encerrada ainda.
+            </div>
+            <div class="d-flex flex-column gap-2" th:unless="${#lists.isEmpty(closedProjects)}">
+              <div th:each="proj : ${closedProjects}"
+                   class="d-flex align-items-center justify-content-between flex-wrap gap-2 p-3"
+                   style="background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04)">
+                <div class="d-flex align-items-center gap-2">
+                  <span th:if="${proj.opportunityType == 'JOB'}"
+                        style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;border-radius:5px;background:rgba(34,197,94,0.1);color:#86efac;border:1px solid rgba(34,197,94,0.2)">Vaga</span>
+                  <span th:unless="${proj.opportunityType == 'JOB'}"
+                        style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;border-radius:5px;background:rgba(107,110,255,0.1);color:#a5b4fc;border:1px solid rgba(107,110,255,0.2)">Projeto</span>
+                  <span class="fw-semibold text-white" style="font-size:0.875rem" th:text="${proj.title}">Título</span>
+                </div>
+                <a th:href="@{/admin/company/{companyId}/project/{projectId}(companyId=${companyId},projectId=${proj.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                   style="font-size:0.78rem">
+                  <i class="ti ti-eye me-1"></i>Ver detalhes
+                </a>
+              </div>
+            </div>
+          </div>
+
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">
               <i class="ti ti-folder me-2" style="color:#6b6eff"></i>Projetos
@@ -356,7 +369,6 @@
             </div>
           </div>
 
-          <!-- Matches confirmados -->
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">
               <i class="ti ti-heart-handshake me-2" style="color:#22c55e"></i>Matches confirmados
@@ -386,7 +398,6 @@
             </div>
           </div>
 
-          <!-- Matches pendentes -->
           <div class="nexus-card p-4">
             <div class="fw-semibold text-white mb-3">
               <i class="ti ti-clock me-2" style="color:#f59e0b"></i>Matches pendentes
@@ -416,7 +427,6 @@
             </div>
           </div>
 
-          <!-- Projetos anteriores -->
           <div class="nexus-card p-4 mt-3">
             <div class="fw-semibold text-white mb-3">
               <i class="ti ti-history me-2" style="color:#6b6eff"></i>Projetos anteriores
@@ -446,8 +456,8 @@
             </div>
           </div>
 
-        </div><!-- /col-lg-8 -->
-      </div><!-- /row -->
+        </div>
+      </div>
 
     </div>
   </div>

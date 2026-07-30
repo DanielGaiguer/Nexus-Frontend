@@ -12,7 +12,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Header -->
       <div class="mb-4">
         <a th:if="${professionalId != null}"
            th:href="@{/admin/professional/{id}(id=${professionalId})}"
@@ -27,12 +26,10 @@
         </p>
       </div>
 
-      <!-- Flash -->
       <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Empty state -->
       <div th:if="${analytics == null}" class="nexus-card p-5 text-center">
         <i class="ti ti-chart-off"
            style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
@@ -44,7 +41,6 @@
 
       <th:block th:unless="${analytics == null}">
 
-      <!-- ══ ROW 1 — 6 KPIs ════════════════════════════════════ -->
       <div class="row g-3 mb-3">
 
         <div class="col-6 col-lg-4">
@@ -120,12 +116,10 @@
           </div>
         </div>
 
-      </div><!-- /row 1 -->
+      </div>
 
-      <!-- ══ ROW 2 — Gráfico de linha multi-série + Distribuição de score ══ -->
       <div class="row g-3 mb-3">
 
-        <!-- Linha: total / confirmados / rejeitados por mês -->
         <div class="col-lg-8">
           <div class="nexus-card p-4 h-100">
             <div class="d-flex align-items-start justify-content-between mb-3">
@@ -135,7 +129,6 @@
                   Total, confirmados e rejeitados
                 </div>
               </div>
-              <!-- Legenda manual -->
               <div class="d-flex gap-3" style="font-size:0.72rem">
                 <span class="d-flex align-items-center gap-1">
                   <span style="width:18px;height:2px;background:#6b6eff;display:inline-block;border-radius:2px"></span>
@@ -155,7 +148,6 @@
           </div>
         </div>
 
-        <!-- Barras horizontais: distribuição de score -->
         <div class="col-lg-4">
           <div class="nexus-card p-4 h-100">
             <div class="fw-semibold text-white mb-1">Distribuição de Score</div>
@@ -166,12 +158,10 @@
           </div>
         </div>
 
-      </div><!-- /row 2 -->
+      </div>
 
-      <!-- ══ ROW 3 — Aceitação por empresa + Skills ════════════ -->
       <div class="row g-3 mb-3">
 
-        <!-- Barras agrupadas: aceitação por empresa -->
         <div class="col-lg-7">
           <div class="nexus-card p-4 h-100">
             <div class="fw-semibold text-white mb-1">Aceitação por Empresa</div>
@@ -182,7 +172,6 @@
           </div>
         </div>
 
-        <!-- Donut: skills mais presentes nos matches -->
         <div class="col-lg-5">
           <div class="nexus-card p-4 h-100">
             <div class="fw-semibold text-white mb-1">Minhas Skills Mais Demandadas</div>
@@ -190,16 +179,14 @@
               Tecnologias mais presentes nos seus matches
             </div>
             <div id="skillChart" style="height:200px"></div>
-            <!-- Lista de skills com categoria (abaixo do gráfico) -->
             <div id="skillLegend"
                  class="d-flex flex-wrap gap-2 mt-2"
                  style="max-height:80px;overflow-y:auto"></div>
           </div>
         </div>
 
-      </div><!-- /row 3 -->
+      </div>
 
-      <!-- ══ ROW 4 — Reputação ══════════════════════════════════ -->
       <div class="nexus-card p-4 mb-3"
            th:if="${analytics.reputationSummary != null}">
 
@@ -212,7 +199,6 @@
               avaliações recebidas
             </div>
           </div>
-          <!-- Badge de confiança -->
           <div style="text-align:right">
             <div class="nexus-status-badge info" style="font-size:0.75rem;padding:0.3rem 0.7rem">
               <i class="ti ti-shield-check me-1"></i>
@@ -228,7 +214,6 @@
 
         <div class="row g-3">
 
-          <!-- Gauge de reputação geral -->
           <div class="col-lg-3 d-flex flex-column align-items-center justify-content-center">
             <div id="repGauge" style="height:160px;width:100%"></div>
             <div class="tabular fw-bold text-center"
@@ -236,7 +221,6 @@
                  th:text="${#numbers.formatDecimal(analytics.reputationSummary.overallReputation ?: 0,1,0)}">0</div>
             <div style="color:#475569;font-size:0.72rem;text-align:center">Índice de qualidade (0–100)</div>
 
-            <!-- Barra de confiança -->
             <div style="width:100%;margin-top:0.75rem">
               <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:4px">
                 <div style="height:100%;border-radius:4px;background:#6b6eff"
@@ -249,15 +233,12 @@
             </div>
           </div>
 
-          <!-- Radar / barras dos indicadores -->
           <div class="col-lg-5">
             <div id="radarChart" style="height:220px"></div>
           </div>
 
-          <!-- Cards de satisfação e recomendação -->
           <div class="col-lg-4 d-flex flex-column gap-3 justify-content-center">
 
-            <!-- Total de reviews -->
             <div style="background:rgba(107,110,255,0.06);border:1px solid rgba(107,110,255,0.15);
                         border-radius:10px;padding:0.85rem">
               <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
@@ -266,7 +247,6 @@
                    th:text="${analytics.reputationSummary.totalReviews ?: 0}">0</div>
             </div>
 
-            <!-- Satisfação média -->
             <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);
                         border-radius:10px;padding:0.85rem">
               <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
@@ -275,7 +255,6 @@
                 <span class="tabular fw-bold" style="font-size:1.5rem;color:#f59e0b"
                       th:text="${#numbers.formatDecimal((analytics.reputationSummary.satisfactionAverage ?: 0) * 20,1,1)}">0</span>
                 <span style="color:#64748b;font-size:0.8rem">/ 100</span>
-                <!-- Estrelas -->
                 <div class="ms-1">
                   <th:block th:each="i : ${#numbers.sequence(1,5)}">
                     <i th:class="${i <= (analytics.reputationSummary.satisfactionAverage ?: 0) ?
@@ -286,7 +265,6 @@
               </div>
             </div>
 
-            <!-- Taxa de recomendação -->
             <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);
                         border-radius:10px;padding:0.85rem">
               <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
@@ -297,9 +275,8 @@
 
           </div>
         </div>
-      </div><!-- /reputação -->
+      </div>
 
-      <!-- ══ ROW 5 — Tabela completa de empresas ════════════════ -->
       <div class="nexus-card p-0"
            th:if="${analytics.acceptanceRatePerCompany != null
                    and !#lists.isEmpty(analytics.acceptanceRatePerCompany)}">
@@ -362,24 +339,21 @@
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 
 <script th:inline="javascript">
-/*<![CDATA[*/
 
-// ── Dados injetados pelo controller ─────────────────────────
-var MONTHLY       = /*[[${monthlyMatches}]]*/ [];
-var SCORE_DIST    = /*[[${scoreDistribution}]]*/ [];
-var COMPANY_RATES = /*[[${companyRates}]]*/ [];
-var SKILL_DEM     = /*[[${skillDemand}]]*/ [];
+var MONTHLY       =  [];
+var SCORE_DIST    =  [];
+var COMPANY_RATES =  [];
+var SKILL_DEM     =  [];
 
 var REP = {
-  overall:     /*[[${analytics?.reputationSummary?.overallReputation ?: 0}]]*/ 0,
-  confidence:  /*[[${analytics?.reputationSummary?.confidenceScore ?: 0}]]*/ 0,
-  communication:   /*[[${analytics?.reputationSummary?.communication ?: 0}]]*/ 0,
-  reliability:     /*[[${analytics?.reputationSummary?.reliability ?: 0}]]*/ 0,
-  punctuality:     /*[[${analytics?.reputationSummary?.punctuality ?: 0}]]*/ 0,
-  professionalism: /*[[${analytics?.reputationSummary?.professionalism ?: 0}]]*/ 0
+  overall:      0,
+  confidence:   0,
+  communication:    0,
+  reliability:      0,
+  punctuality:      0,
+  professionalism:  0
 };
 
-// ── Paleta ───────────────────────────────────────────────────
 var C = {
   primary:   '#6b6eff',
   secondary: '#a78bfa',
@@ -400,7 +374,6 @@ function tooltipStyle() {
   };
 }
 
-// Retorna cor baseada num valor 0-100
 function valueColor(v) {
   if (v >= 80) return C.success;
   if (v >= 60) return C.primary;
@@ -413,7 +386,6 @@ function emptyMsg(el) {
     'justify-content:center;color:#334155;font-size:0.875rem">Sem dados disponíveis</div>';
 }
 
-// ── 1. LINHA MULTI-SÉRIE — matches por mês ───────────────────
 (function() {
   var el = document.getElementById('lineChart');
   if (!el) return;
@@ -471,7 +443,6 @@ function emptyMsg(el) {
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-// ── 2. BARRAS HORIZONTAIS — distribuição de score ────────────
 (function() {
   var el = document.getElementById('scoreBarChart');
   if (!el) return;
@@ -519,7 +490,6 @@ function emptyMsg(el) {
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-// ── 3. BARRAS AGRUPADAS — aceitação por empresa ──────────────
 (function() {
   var el = document.getElementById('companyChart');
   if (!el) return;
@@ -588,7 +558,6 @@ function emptyMsg(el) {
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-// ── 4. DONUT — skills mais presentes nos matches ─────────────
 (function() {
   var el  = document.getElementById('skillChart');
   var leg = document.getElementById('skillLegend');
@@ -597,7 +566,6 @@ function emptyMsg(el) {
 
   var chart = echarts.init(el, null, { renderer:'canvas', backgroundColor: C.bg });
 
-  // Cores por categoria
   var catColors = {
     'Backend':  C.primary,
     'Frontend': C.accent,
@@ -637,7 +605,6 @@ function emptyMsg(el) {
   });
   window.addEventListener('resize', function() { chart.resize(); });
 
-  // Legenda com categoria abaixo do gráfico
   if (leg) {
     leg.innerHTML = top8.map(function(d, i) {
       var color = catColors[d.category] || fallbackPalette[i % fallbackPalette.length];
@@ -651,7 +618,6 @@ function emptyMsg(el) {
   }
 })();
 
-// ── 5. GAUGE — reputação geral ───────────────────────────────
 (function() {
   var el = document.getElementById('repGauge');
   if (!el) return;
@@ -678,7 +644,6 @@ function emptyMsg(el) {
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-// ── 6. RADAR — indicadores de reputação ─────────────────────
 (function() {
   var el = document.getElementById('radarChart');
   if (!el) return;
@@ -692,7 +657,6 @@ function emptyMsg(el) {
     { name:'Profissionalismo',max:100 }
   ];
 
-  // Os indicadores já vêm em escala 0–100 (ReputationMetrics), direto no eixo do radar.
   var values = [
     REP.communication    || 0,
     REP.reliability      || 0,
@@ -733,7 +697,6 @@ function emptyMsg(el) {
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-/*]]>*/
 </script>
 
 </body>

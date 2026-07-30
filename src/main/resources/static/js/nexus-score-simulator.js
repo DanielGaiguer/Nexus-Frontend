@@ -1,34 +1,10 @@
-/**
- * Simulador de score em tempo real — completamente client-side.
- *
- * Simula o cenário 1 da fórmula (REMOTE, sem experiência):
- *   Score = Skills*0.35 + Orçamento*0.25 + Histórico*0.20 + Reputação*0.10 + Disponibilidade*0.10
- *
- * Os valores reais de orçamento, skills, histórico e reputação vêm do estado
- * atual do formulário + dados do perfil já carregados.
- *
- * Uso:
- *   NexusScoreSimulator.init({
- *     containerEl:   document.getElementById('scoreSimContainer'),
- *     getSkills:     function() { return numSkillsSelected; },        // nº de skills marcadas
- *     getMinSalary:  function() { return parseFloat(minEl.value); },
- *     getMaxSalary:  function() { return parseFloat(maxEl.value); },
- *     getHistory:    function() { return numProjects; },              // nº de projetos anteriores
- *     getReputation: function() { return reputationValue; },          // 0-5
- *     getAvailable:  function() { return availableCheckbox.checked; },
- *     // Orçamento médio estimado das vagas abertas (pode ser um valor fixo do model)
- *     avgProjectBudget: 10000
- *   });
- */
 var NexusScoreSimulator = (function() {
 
   var _opts = null;
 
   function calcSkillScore(numSkills) {
-    // Simula: profissional com N skills, projeto exige em média 4
-    // proporção = min(numSkills, 4) / 4
     if (numSkills === 0) return 0;
-    var assumed = 4; // skills exigidas médias
+    var assumed = 4;
     return Math.min((numSkills / assumed) * 100, 100);
   }
 
@@ -49,7 +25,7 @@ var NexusScoreSimulator = (function() {
   }
 
   function calcReputationScore(reputation) {
-    if (!reputation) return 50; // neutro para quem não tem avaliações
+    if (!reputation) return 50;
     return (reputation / 5.0) * 100;
   }
 

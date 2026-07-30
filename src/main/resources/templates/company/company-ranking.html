@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head('Ranking')}"></head>
 <style>
-/* Checkbox de seleção no card do ranking */
 .candidate-checkbox-wrapper {
   position:absolute;top:1rem;left:1rem;z-index:2;
 }
@@ -17,7 +16,6 @@
   background:rgba(107,110,255,0.04) !important;
 }
 
-/* Botão flutuante de comparar */
 #compareFloatingBtn {
   position:fixed;bottom:2rem;right:2rem;z-index:1050;
   display:none;
@@ -38,19 +36,16 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
 
-      <!-- Back -->
       <a th:href="@{/company/projects}"
          class="text-decoration-none d-inline-flex align-items-center gap-1 mb-4"
          style="color:#64748b;font-size:0.875rem">
         <i class="ti ti-arrow-left"></i> Voltar para projetos
       </a>
 
-      <!-- Hero header -->
       <div class="nexus-card p-4 mb-4"
            style="background:linear-gradient(135deg,rgba(107,110,255,0.12),rgba(13,19,41,0.9))">
         <div style="color:#6b6eff;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem">
@@ -76,19 +71,16 @@
         </div>
       </div>
 
-      <!-- ══ FILTROS ═══════════════════════════════════════════ -->
       <div class="nexus-card p-3 mb-4">
         <form method="get" th:action="@{/company/projects/{id}/ranking(id=${project.id})}">
           <div class="row g-3 align-items-end">
 
-            <!-- Cidade -->
             <div class="col-6 col-md-3 col-lg-2">
               <label class="nexus-label">Cidade</label>
               <input type="text" name="city" class="nexus-input" placeholder="Ex: São Paulo"
                      th:value="${filterCity}">
             </div>
 
-            <!-- UF -->
             <div class="col-6 col-md-2 col-lg-2">
               <label class="nexus-label">UF</label>
               <select name="uf" class="nexus-select">
@@ -123,7 +115,6 @@
               </select>
             </div>
 
-            <!-- Nível de experiência -->
             <div class="col-6 col-md-3 col-lg-2">
               <label class="nexus-label">Experiência</label>
               <select name="experienceLevel" class="nexus-select">
@@ -136,7 +127,6 @@
               </select>
             </div>
 
-            <!-- Disponibilidade -->
             <div class="col-6 col-md-2 col-lg-2">
               <label class="nexus-label">Disponibilidade</label>
               <select name="available" class="nexus-select">
@@ -146,7 +136,6 @@
               </select>
             </div>
 
-            <!-- Faixa salarial -->
             <div class="col-6 col-md-3 col-lg-2">
               <label class="nexus-label">Salário mín.</label>
               <input type="number" name="minSalary" class="nexus-input" placeholder="R$ 0"
@@ -158,14 +147,12 @@
                      th:value="${filterMaxSalary}">
             </div>
 
-            <!-- Skill -->
             <div class="col-6 col-md-3 col-lg-2">
               <label class="nexus-label">Skill</label>
               <input type="text" name="skill" class="nexus-input" placeholder="Ex: Java"
                      th:value="${filterSkill}">
             </div>
 
-            <!-- Botões -->
             <div class="col-12 col-md-3 col-lg-2 d-flex gap-2">
               <button type="submit" class="nexus-btn nexus-btn-primary flex-fill">
                 <i class="ti ti-search"></i> Filtrar
@@ -180,7 +167,6 @@
         </form>
       </div>
 
-      <!-- Empty -->
       <div th:if="${#lists.isEmpty(ranking)}"
            class="nexus-card p-5 text-center">
         <i class="ti ti-users-off" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
@@ -190,14 +176,12 @@
         </div>
       </div>
 
-      <!-- Ranking list -->
       <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(ranking)}">
         <div th:each="item,iStat : ${ranking}"
             class="nexus-card p-4 ranking-card-selectable"
             th:id="'card-' + ${item.id}"
             th:data-matchid="${item.id}">
 
-            <!-- Checkbox de seleção -->
             <div class="candidate-checkbox-wrapper">
                <input type="checkbox"
                       class="candidate-checkbox"
@@ -206,16 +190,12 @@
             </div>
             <div style="padding-left:1.75rem">
 
-
-
                 <div class="d-flex align-items-start gap-3 flex-wrap">
 
-                <!-- Position number -->
                 <div class="fw-bold text-center flex-shrink-0"
                      style="font-size:1.4rem;color:#334155;width:32px;padding-top:4px"
                      th:text="'#' + ${iStat.count}">#1</div>
 
-                <!-- Avatar -->
                 <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
                      th:with="n=${item.professional != null ? item.professional.name : 'P'},
                               h=${n.hashCode()},
@@ -223,13 +203,11 @@
                      th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
                      th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
 
-                <!-- Info -->
                 <div class="flex-fill">
                   <div class="fw-semibold text-white"
                        th:text="${item.professional != null ? item.professional.name : 'Profissional'}">Nome</div>
                   <div style="color:#64748b;font-size:0.8rem">Profissional</div>
 
-                  <!-- Score breakdown -->
                   <div class="row g-2 mt-2" style="font-size:0.75rem" th:if="${item.scoreBreakdown != null}">
                     <div class="col-6 col-md-3">
                       <div class="d-flex justify-content-between mb-1">
@@ -278,7 +256,6 @@
                   </div>
                 </div>
 
-                <!-- Score ring + action -->
                 <div class="d-flex flex-column align-items-center gap-2 flex-shrink-0">
                   <div th:with="s=${item.getScoreAsInt()},
                                 c=${s>=85?'high':(s>=70?'medium':'low')}">
@@ -300,7 +277,6 @@
                     </div>
                   </div>
 
-                  <!-- Action: interest or status badge -->
                   <th:block th:switch="${item.status}">
                     <th:block th:case="'WAITING'">
                       <div class="d-flex flex-column gap-2 align-items-center ranking-action-btn">
@@ -374,7 +350,6 @@
 </div>
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
-<!-- Botão flutuante -->
 <div id="compareFloatingBtn">
   <button onclick="openComparison()"
           class="nexus-btn nexus-btn-primary"
@@ -391,8 +366,7 @@
 </div>
 
 <script th:inline="javascript">
-/*<![CDATA[*/
-var PROJECT_ID = /*[[${project.id}]]*/ 0;
+var PROJECT_ID =  0;
 var selectedIds = [];
 
 function toggleSelection(cb) {
@@ -423,11 +397,9 @@ function openComparison() {
     nexusToast('Selecione ao menos 2 candidatos para comparar.', 'error');
     return;
   }
-  // Monta URL com os IDs como query params
   var params = 'projectId=' + PROJECT_ID + '&matchIds=' + selectedIds.join(',');
   window.location.href = '/company/comparison?' + params;
 }
-/*]]>*/
 </script>
 </body>
 </html>

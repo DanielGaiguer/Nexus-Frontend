@@ -24,10 +24,8 @@
   <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 
-<!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
 <th:block th:fragment="shell">
   <aside class="nexus-sidebar">
-    <!-- Logo -->
     <div class="navbar-brand">
       <a th:href="@{/}" class="d-flex align-items-center gap-2 text-decoration-none">
         <div class="nexus-logo-icon">
@@ -37,7 +35,6 @@
       </a>
     </div>
 
-    <!-- Role label -->
     <div class="nexus-sidebar-role" th:switch="${session.userRole}">
       <span th:case="'PROFESSIONAL'">Profissional</span>
       <span th:case="'COMPANY'">Empresa</span>
@@ -45,7 +42,6 @@
       <span th:case="*">Usuário</span>
     </div>
 
-    <!-- Nav PROFESSIONAL -->
     <ul class="navbar-nav" th:if="${session.userRole == 'PROFESSIONAL'}">
       <li class="nav-item">
         <a class="nav-link" th:href="@{/pro/dashboard}"
@@ -109,7 +105,6 @@
       </li>
     </ul>
 
-    <!-- Nav COMPANY -->
     <ul class="navbar-nav" th:if="${session.userRole == 'COMPANY'}">
       <li class="nav-item">
         <a class="nav-link" th:href="@{/company/dashboard}"
@@ -163,7 +158,6 @@
       </li>
     </ul>
 
-    <!-- Nav ADMIN -->
     <ul class="navbar-nav" th:if="${session.userRole == 'ADMIN'}">
       <li class="nav-item">
         <a class="nav-link" th:href="@{/admin/dashboard}"
@@ -209,7 +203,6 @@
         </li>
     </ul>
 
-    <!-- Sidebar footer -->
     <div class="nexus-sidebar-footer">
         <th:block th:if="${session.profilePhotoUrl != null and !#strings.isEmpty(session.profilePhotoUrl)}">
           <img th:src="${session.profilePhotoUrl}"
@@ -237,12 +230,10 @@
   </aside>
 </th:block>
 
-<!-- ══ TOPBAR ════════════════════════════════════════════════ -->
 <th:block th:fragment="topbar">
 <header class="nexus-topbar">
   <div class="container-xl h-100 d-flex align-items-center justify-content-end gap-3">
 
-    <!-- Notifications -->
     <div class="position-relative" id="notifBtnWrapper">
       <button class="nexus-icon-btn"
               id="notifToggleBtn"
@@ -254,7 +245,6 @@
               style="display:none">0</span>
       </button>
 
-      <!-- Painel de notificações -->
       <div id="notifPanel"
            style="display:none;position:absolute;top:calc(100% + 8px);right:0;
                   width:340px;background:rgba(9,14,31,0.98);
@@ -262,7 +252,6 @@
                   border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,0.5);
                   z-index:9000;overflow:hidden">
 
-        <!-- Header do painel -->
         <div style="display:flex;align-items:center;justify-content:space-between;
                     padding:0.85rem 1rem 0.6rem;
                     border-bottom:1px solid rgba(255,255,255,0.05)">
@@ -274,10 +263,8 @@
           </button>
         </div>
 
-        <!-- Lista de notificações -->
         <div id="notifList"
              style="max-height:380px;overflow-y:auto">
-          <!-- Preenchido por JS -->
           <div id="notifLoading"
                style="padding:2rem;text-align:center;color:#334155;font-size:0.875rem">
             <i class="ti ti-loader"
@@ -287,7 +274,6 @@
           </div>
         </div>
 
-        <!-- Footer -->
         <div style="padding:0.6rem 1rem;border-top:1px solid rgba(255,255,255,0.05);
                     text-align:center">
           <span style="color:#334155;font-size:0.75rem">
@@ -298,12 +284,10 @@
       </div>
     </div>
 
-    <!-- User dropdown -->
     <div class="dropdown">
       <a href="#" class="d-flex align-items-center gap-2 text-decoration-none"
          data-bs-toggle="dropdown">
 
-        <!-- Avatar: foto real se existir, iniciais se não -->
         <th:block th:if="${session.profilePhotoUrl != null and !#strings.isEmpty(session.profilePhotoUrl)}">
           <img th:src="${session.profilePhotoUrl}"
                style="width:32px;height:32px;border-radius:50%;object-fit:cover;
@@ -344,7 +328,6 @@
 </header>
 </th:block>
 
-<!-- ══ SCRIPTS ══════════════════════════════════════════════ -->
 <th:block th:fragment="scripts">
   <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/js/tabler.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
@@ -352,7 +335,6 @@
   <script th:src="@{/js/nexus-common.js}"></script>
 </th:block>
 
-<!-- ══ SCRIPTS MAP (inclui Leaflet) ════════════════════════ -->
 <th:block th:fragment="scripts-map">
   <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/js/tabler.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>

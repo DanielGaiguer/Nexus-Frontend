@@ -1,5 +1,4 @@
 :root {
-  /* ─── Legacy tokens (used by public pages) ─── */
   --bg-deep: #040613;
   --bg-surface: #090e1f;
   --bg-card: #0d1329;
@@ -27,7 +26,6 @@
   --radius-xl: 18px;
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* ─── Nexus brand tokens ─── */
   --nexus-primary: #6b6eff;
   --nexus-secondary: #a78bfa;
   --nexus-accent: #67e8f9;
@@ -40,11 +38,7 @@
   --nexus-danger: #ef4444;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   Authenticated pages — Tabler Core integration
-   ═══════════════════════════════════════════════════════════════ */
 .nexus-app {
-  /* ─── Map Nexus tokens → Tabler tokens ─── */
   --tblr-primary: var(--nexus-primary);
   --tblr-secondary: var(--nexus-secondary);
   --tblr-success: var(--nexus-success);
@@ -114,7 +108,6 @@
 .nexus-app .navbar-expand-md .navbar-nav .nav-link {
   padding: 0.5rem 0.75rem;
 }
-/* ─── Tabular numerals for money, scores, dates, IDs ─── */
 .nexus-app [data-tabular-nums],
 .nexus-app .h1, .nexus-app .h2, .nexus-app .h3,
 .nexus-app .h4, .nexus-app .h5, .nexus-app .h6,
@@ -131,7 +124,6 @@
   }
 }
 
-/* ─── Public header ─── */
 * { box-sizing: border-box; }
 body {
   background: var(--bg-deep);
@@ -145,7 +137,6 @@ body {
 a { color: var(--primary-light); text-decoration: none; transition: color .2s; }
 a:hover { color: #fff; }
 
-/* ─── Header ─── */
 .nexus-header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
   background: rgba(4, 6, 19, 0.88);
@@ -171,7 +162,6 @@ a:hover { color: #fff; }
   background: rgba(107, 110, 255, 0.08);
 }
 
-/* ─── Buttons ─── */
 .btn {
   font-weight: 600; font-size: 0.9rem;
   padding: 0.6rem 1.5rem;
@@ -206,7 +196,6 @@ a:hover { color: #fff; }
 .btn-lg { padding: 0.75rem 2rem; font-size: 1rem; }
 .btn-sm { padding: 0.4rem 1rem; font-size: 0.85rem; }
 
-/* ─── Cards ─── */
 .card {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
@@ -220,7 +209,6 @@ a:hover { color: #fff; }
   box-shadow: 0 12px 40px rgba(0,0,0,0.5);
 }
 
-/* ─── Forms ─── */
 .form-label {
   color: var(--text-secondary);
   font-size: 0.85rem;
@@ -258,7 +246,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 }
 .input-group .form-control:focus { border-left: none; }
 
-/* ─── Badges ─── */
 .badge-glow {
   background: linear-gradient(135deg, rgba(107,110,255,0.12), rgba(107,110,255,0.06));
   color: var(--text-accent);
@@ -280,7 +267,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   font-weight: 600;
 }
 
-/* ─── Hero ─── */
 .nexus-hero {
   position: relative;
   min-height: calc(100vh - 72px);
@@ -304,7 +290,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   background-clip: text;
 }
 
-/* ─── Match Preview ─── */
 .match-preview-card {
   background: linear-gradient(145deg, rgba(13,19,41,0.95), rgba(13,19,41,0.8));
   border: 1px solid var(--border-color);
@@ -332,7 +317,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   font-size: 1.4rem; color: var(--primary-light);
 }
 
-/* ─── Steps ─── */
 .step-number {
   width: 44px; height: 44px;
   border-radius: 50%;
@@ -342,7 +326,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   box-shadow: 0 4px 15px rgba(107,110,255,0.3);
 }
 
-/* ─── Formula ─── */
 .formula-box {
   background: rgba(0,0,0,0.35);
   border: 1px solid var(--border-color);
@@ -353,7 +336,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   color: var(--text-accent); font-size: 0.9rem; line-height: 1.8;
 }
 
-/* ─── CTA ─── */
 .cta-glow {
   position: absolute;
   top: -50%; left: 50%;
@@ -363,7 +345,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   pointer-events: none;
 }
 
-/* ─── Auth Pages ─── */
 .auth-page {
   background-image:
     radial-gradient(ellipse at 50% 0%, rgba(107, 110, 255, 0.06) 0%, transparent 60%);
@@ -377,11 +358,9 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   box-shadow: 0 8px 24px rgba(107,110,255,0.25);
 }
 
-/* ─── Footer ─── */
 .nexus-footer a { color: var(--text-muted); font-size: 0.85rem; }
 .nexus-footer a:hover { color: var(--text-accent); }
 
-/* ─── Alerts ─── */
 .alert {
   border-radius: var(--radius-md);
   border: none;
@@ -397,7 +376,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   border-radius: var(--radius-md);
 }
 
-/* ─── Misc ─── */
 .bg-surface { background-color: var(--bg-surface) !important; }
 .bg-card { background-color: var(--bg-card) !important; }
 .section-title {
@@ -405,24 +383,16 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   letter-spacing: -0.02em;
 }
 
-/* ─── Scrollbar ─── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: #1a1f3a; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--bg-elevated); }
 
-/* ─── Responsive ─── */
 @media (max-width: 768px) {
   .section-title { font-size: 1.5rem; }
   .hero-title { font-size: 2.5rem !important; }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   Nexus — Authenticated area styles
-   Complementa o style.css público, só afeta .nexus-app
-   ═══════════════════════════════════════════════════════════ */
-
-/* ── Tabler token overrides ── */
 .nexus-app,
 html[data-bs-theme="dark"] {
   --tblr-primary: #6b6eff;
@@ -448,7 +418,6 @@ body.nexus-app {
   padding-top: 0;
 }
 
-/* ── Sidebar ── */
 .nexus-sidebar {
   width: 210px;
   background: rgba(4,6,19,0.95) !important;
@@ -543,7 +512,6 @@ body.nexus-app {
   border-radius: 20px;
 }
 
-/* Sidebar footer */
 .nexus-sidebar-footer {
   display: flex;
   align-items: center;
@@ -562,7 +530,6 @@ body.nexus-app {
   color: #64748b;
 }
 
-/* ── Topbar ── */
 .nexus-topbar {
   background: rgba(4,6,19,0.85) !important;
   backdrop-filter: blur(20px);
@@ -574,7 +541,6 @@ body.nexus-app {
   z-index: 1020;
 }
 
-/* ── Page layout ── */
 .page-wrapper {
   flex: 1;
   margin-left: 210px;
@@ -600,7 +566,6 @@ body.nexus-app {
   }
 }
 
-/* ── Avatar with initials ── */
 .nexus-avatar-initials {
   width: 36px;
   height: 36px;
@@ -618,7 +583,6 @@ body.nexus-app {
 .nexus-avatar-lg { width: 48px; height: 48px; font-size: 1.1rem; }
 .nexus-avatar-xl { width: 80px; height: 80px; font-size: 1.75rem; border-radius: 50%; }
 
-/* ── Cards ── */
 .nexus-card {
   background: rgba(13,19,41,0.9);
   border: 1px solid rgba(107,110,255,0.1);
@@ -630,7 +594,6 @@ body.nexus-app {
   border-color: rgba(107,110,255,0.22);
 }
 
-/* Stat card */
 .nexus-stat-card {
   background: rgba(13,19,41,0.9);
   border: 1px solid rgba(107,110,255,0.1);
@@ -675,7 +638,6 @@ body.nexus-app {
   letter-spacing: 0.04em;
 }
 
-/* ── Score badge / ring ── */
 .nexus-score-ring {
   position: relative;
   width: 64px;
@@ -719,7 +681,6 @@ body.nexus-app {
   margin-top: 1px;
 }
 
-/* Score badge inline */
 .nexus-score-badge {
   display: inline-flex;
   align-items: center;
@@ -733,7 +694,6 @@ body.nexus-app {
 .nexus-score-badge.medium { background: rgba(245,158,11,0.15);  color: #f59e0b; }
 .nexus-score-badge.low    { background: rgba(239,68,68,0.15);   color: #ef4444; }
 
-/* ── Status dot / badge ── */
 .nexus-status {
   display: inline-flex;
   align-items: center;
@@ -770,7 +730,6 @@ body.nexus-app {
 .nexus-status-badge.info    { background: rgba(6,182,212,0.12);  color: #67e8f9; }
 .nexus-status-badge.purple  { background: rgba(167,139,250,0.12);color: #a78bfa; }
 
-/* ── Skill chip ── */
 .nexus-chip {
   display: inline-flex;
   align-items: center;
@@ -790,7 +749,6 @@ body.nexus-app {
   color: #67e8f9;
 }
 
-/* ── Score breakdown bars ── */
 .nexus-breakdown-bar {
   height: 4px;
   border-radius: 4px;
@@ -805,7 +763,6 @@ body.nexus-app {
   transition: width 0.6s ease;
 }
 
-/* ── Tabs (pill style) ── */
 .nexus-tabs {
   display: flex;
   gap: 4px;
@@ -845,7 +802,6 @@ body.nexus-app {
   margin-left: 4px;
 }
 
-/* ── Alerts ── */
 .nexus-alert {
   display: flex;
   align-items: center;
@@ -861,7 +817,6 @@ body.nexus-app {
 .nexus-alert-info    { background: rgba(107,110,255,0.1); color: #a5b4fc; border: 1px solid rgba(107,110,255,0.2); }
 .nexus-alert-warning { background: rgba(245,158,11,0.1); color: #fde68a; border: 1px solid rgba(245,158,11,0.2); }
 
-/* ── Buttons ── */
 .nexus-btn {
   display: inline-flex;
   align-items: center;
@@ -916,7 +871,6 @@ body.nexus-app {
 
 .nexus-btn-sm { padding: 0.35rem 0.85rem; font-size: 0.8rem; border-radius: 7px; }
 
-/* ── Forms ── */
 .nexus-input {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(107,110,255,0.15);
@@ -966,7 +920,6 @@ body.nexus-app {
   box-shadow: 0 0 0 3px rgba(107,110,255,0.12);
 }
 
-/* ── Tom Select dark theme ── */
 .ts-wrapper select.nexus-select {
   display: none !important;
   visibility: hidden !important;
@@ -1052,7 +1005,6 @@ body.nexus-app {
   color: #ef4444 !important;
 }
 
-/* Arrow indicator */
 .ts-wrapper.nexus-select::after {
   content: '';
   position: absolute;
@@ -1072,12 +1024,10 @@ body.nexus-app {
   transform: translateY(-50%) rotate(180deg) !important;
 }
 
-/* Hide Tom Select's default caret */
 .ts-wrapper.nexus-select .ts-caret {
   display: none !important;
 }
 
-/* Dropdown */
 .ts-dropdown {
   background: #0d1329 !important;
   border: 1px solid rgba(107,110,255,0.15) !important;
@@ -1134,7 +1084,6 @@ body.nexus-app {
   min-height: 90px;
 }
 
-/* ── Toggle switch ── */
 .nexus-toggle {
   position: relative;
   display: inline-flex;
@@ -1172,7 +1121,6 @@ body.nexus-app {
   transform: translateX(18px);
 }
 
-/* ── Modal ── */
 .nexus-modal .modal-content {
   background: rgba(9,14,31,0.98);
   border: 1px solid rgba(107,110,255,0.15);
@@ -1190,8 +1138,6 @@ body.nexus-app {
   padding: 1rem 1.5rem;
 }
 
-/* Garante que modais longos (ex: editar perfil) nunca ultrapassem a tela —
-   o cabeçalho e o rodapé ficam fixos e só o corpo rola. */
 .nexus-modal .modal-dialog {
   max-height: calc(100vh - 3.5rem);
   margin-top: 1.75rem;
@@ -1202,12 +1148,18 @@ body.nexus-app {
   display: flex;
   flex-direction: column;
 }
+.nexus-modal .modal-content > form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
 .nexus-modal .modal-body {
   overflow-y: auto;
   flex: 1 1 auto;
+  min-height: 0;
 }
 
-/* ── Rejection options (checkbox cards) ── */
 .rejection-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1252,7 +1204,6 @@ body.nexus-app {
 
 .rejection-option input:checked + .rejection-option-inner i { opacity: 1; }
 
-/* ── Dropdown ── */
 .nexus-dropdown {
   background: rgba(9,14,31,0.98);
   border: 1px solid rgba(107,110,255,0.15);
@@ -1278,7 +1229,6 @@ body.nexus-app {
   margin: 0.3rem 0;
 }
 
-/* ── Table ── */
 .nexus-table {
   width: 100%;
   border-collapse: separate;
@@ -1308,7 +1258,6 @@ body.nexus-app {
   background: rgba(107,110,255,0.07);
 }
 
-/* ── Match card (convite) ── */
 .nexus-match-card {
   background: rgba(13,19,41,0.9);
   border: 1px solid rgba(107,110,255,0.12);
@@ -1321,10 +1270,8 @@ body.nexus-app {
   border-color: rgba(34,197,94,0.2);
 }
 
-/* Tabular numerals everywhere numeric */
 .tabular { font-variant-numeric: tabular-nums; }
 
-/* ── Topbar icon button ── */
 .nexus-icon-btn {
   width: 36px;
   height: 36px;
@@ -1353,7 +1300,6 @@ body.nexus-app {
   line-height: 1.4;
 }
 
-/* ── Section titles ── */
 .nexus-section-title {
   font-size: 0.7rem;
   font-weight: 700;
@@ -1363,7 +1309,6 @@ body.nexus-app {
   margin-bottom: 0.75rem;
 }
 
-/* ── Quick action card (dashboard bottom row) ── */
 .nexus-quick-card {
   background: rgba(13,19,41,0.9);
   border: 1px solid rgba(107,110,255,0.1);
@@ -1391,7 +1336,6 @@ body.nexus-app {
   flex-shrink: 0;
 }
 
-/* ── Foto de perfil circular ── */
 .nexus-profile-photo {
   width: 80px;
   height: 80px;
@@ -1409,7 +1353,6 @@ body.nexus-app {
   border: 3px solid rgba(107,110,255,0.3);
 }
 
-/* Wrapper do avatar no perfil — posiciona o botão de editar em cima */
 .nexus-avatar-wrapper {
   position: relative;
   display: inline-block;
@@ -1435,7 +1378,6 @@ body.nexus-app {
 .nexus-avatar-edit-btn:hover { background: #8b8eff; }
 .nexus-avatar-edit-btn i { color: #fff; font-size: 0.7rem; }
 
-/* Remove overlay ao hover no avatar wrapper */
 .nexus-avatar-wrapper:hover .nexus-avatar-photo-overlay {
   opacity: 1;
 }
@@ -1457,7 +1399,6 @@ body.nexus-app {
   font-size: 1.1rem;
 }
 
-/* ── Modal de crop ── */
 .nexus-crop-modal {
   display: none;
   position: fixed;
@@ -1494,13 +1435,11 @@ body.nexus-app {
   display: block;
 }
 
-/* Máscara circular na caixa de crop */
 .cropper-view-box,
 .cropper-face {
   border-radius: 50% !important;
 }
 
-/* Remove a linha azul quadrada da caixa de crop */
 .cropper-dashed { display: none !important; }
 .cropper-point  { border-radius: 50%; }
 
@@ -1509,7 +1448,6 @@ body.nexus-app {
   50%       { opacity: 0.55; }
 }
 
-/* ── Toggle de tipo de oportunidade (PROJECT / JOB) ── */
 .opportunity-type-toggle {
   display: flex;
   background: rgba(13,19,41,0.9);
@@ -1543,7 +1481,6 @@ body.nexus-app {
   box-shadow: 0 4px 12px rgba(107,110,255,0.3);
 }
 
-/* Badge de tipo de oportunidade */
 .nexus-badge-project {
   background: rgba(107,110,255,0.12);
   color: #a5b4fc;
@@ -1568,12 +1505,10 @@ body.nexus-app {
   letter-spacing: 0.05em;
 }
 
-/* Campos condicionais no formulário */
 .fields-project,
 .fields-job { transition: opacity 0.2s; }
 .fields-hidden { display: none !important; }
 
-/* Chips de benefícios */
 .benefit-chip {
   display: inline-flex;
   align-items: center;

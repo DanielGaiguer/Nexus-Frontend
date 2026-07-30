@@ -74,9 +74,11 @@ public class PublicController {
         try {
             CompanyDTO company = publicService.getCompany(id);
             List<ProjectDTO> openProjects = publicService.getCompanyOpenProjects(id);
+            List<ProjectDTO> closedProjects = publicService.getCompanyClosedProjects(id);
 
             model.addAttribute("company", company);
             model.addAttribute("openProjects", openProjects);
+            model.addAttribute("closedProjects", closedProjects);
 
             try {
                 model.addAttribute("reputation", reputationService.getCompany(null, id));

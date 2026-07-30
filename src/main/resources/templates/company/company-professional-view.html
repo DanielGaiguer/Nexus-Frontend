@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4" style="max-width:920px">
 
-      <!-- Back -->
       <div class="mb-4">
         <a href="javascript:history.back()"
            class="d-inline-flex align-items-center gap-1 text-decoration-none"
@@ -22,10 +21,8 @@
 
       <div class="row g-3">
 
-        <!-- Left col -->
         <div class="col-lg-4">
 
-          <!-- Avatar + nome -->
           <div class="nexus-card p-4 text-center mb-3">
             <div class="nexus-avatar-xl mx-auto mb-3"
                  th:with="n=${professional.name != null ? professional.name : 'P'},
@@ -53,7 +50,6 @@
               </span>
             </div>
 
-            <!-- Reputação estrelas -->
             <div class="d-flex align-items-center justify-content-center gap-1 mt-2"
                  th:if="${professional.reputation != null and professional.reputation > 0}">
               <th:block th:each="i : ${#numbers.sequence(1,5)}">
@@ -64,7 +60,6 @@
                     th:text="${#numbers.formatDecimal(professional.reputation,1,1)}">0.0</span>
             </div>
 
-            <!-- Badges -->
             <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap mt-3">
               <span th:if="${professional.available != null and professional.available}"
                     class="nexus-status-badge success">
@@ -81,7 +76,6 @@
             </div>
           </div>
 
-          <!-- Contato -->
           <div class="nexus-card p-3 mb-3">
             <div class="fw-semibold text-white mb-2 d-flex align-items-center gap-2">
               <i class="ti ti-lock-open" style="color:#22c55e" th:if="${contact != null}"></i>
@@ -109,7 +103,6 @@
             </div>
           </div>
 
-          <!-- Reputação -->
           <div class="nexus-card p-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div class="fw-semibold text-white" style="font-size:0.875rem">Reputação</div>
@@ -126,7 +119,6 @@
 
             <th:block th:if="${professional.reputationDetails != null and professional.reputationDetails.totalReviews != null}"
                       th:with="rep=${professional.reputationDetails}">
-              <!-- Índice geral (escala 0-100, indicador interno do matching — não é a nota de estrelas) -->
               <div class="text-center mb-4"
                    th:with="score=${rep.overallScore != null ? rep.overallScore : 0.0},
                             color=${score >= 80 ? '#22c55e' : (score >= 60 ? '#f59e0b' : '#ef4444')}">
@@ -135,7 +127,6 @@
                      th:text="${#numbers.formatDecimal(score,1,0)} + ' / 100'">0</div>
               </div>
 
-              <!-- Confiança -->
               <div class="mb-4" th:if="${rep.confidencePercent != null}">
                 <div class="d-flex justify-content-between mb-1">
                   <span style="color:#64748b;font-size:0.72rem">Confiança</span>
@@ -148,7 +139,6 @@
                 </div>
               </div>
 
-              <!-- Indicadores -->
               <div class="d-flex flex-column gap-3 mb-4">
                 <div th:if="${rep.technicalCompetence != null}">
                   <div class="d-flex justify-content-between mb-1">
@@ -197,7 +187,6 @@
                 </div>
               </div>
 
-              <!-- Satisfação + Recomendação -->
               <div class="d-flex flex-column gap-3">
                 <div style="background:rgba(107,110,255,0.06);border:1px solid rgba(107,110,255,0.15);border-radius:10px;padding:0.85rem"
                      th:if="${rep.satisfactionAverage != null}">
@@ -217,12 +206,10 @@
             </th:block>
           </div>
 
-        </div><!-- /col-lg-4 -->
+        </div>
 
-        <!-- Right col -->
         <div class="col-lg-8">
 
-          <!-- Skills -->
           <div th:if="${professional.skills != null and !professional.skills.isEmpty()}" class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3" style="font-size:0.9rem">
               <i class="ti ti-code me-2" style="color:#6b6eff"></i>Skills
@@ -234,7 +221,6 @@
             </div>
           </div>
 
-          <!-- Previous projects -->
           <div th:if="${professional.previousProjects != null and !professional.previousProjects.isEmpty()}" class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3" style="font-size:0.9rem">
               <i class="ti ti-folder me-2" style="color:#6b6eff"></i>Projetos anteriores
@@ -255,7 +241,7 @@
             </div>
           </div>
 
-        </div><!-- /col-lg-8 -->
+        </div>
 
       </div>
     </div>

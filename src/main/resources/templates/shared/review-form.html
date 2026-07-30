@@ -11,12 +11,10 @@
   <div class="page-body">
     <div class="container-xl py-4" style="max-width:680px">
 
-      <!-- Flash -->
       <div th:if="${errorMsg}" class="nexus-alert nexus-alert-danger mb-4">
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Back -->
       <a th:href="${session.userRole == 'PROFESSIONAL'} ? '/pro/matches' : '/company/matches'"
          class="text-decoration-none d-inline-flex align-items-center gap-1 mb-4"
          style="color:#64748b;font-size:0.875rem">
@@ -35,11 +33,9 @@
                           '/company/matches/' + ${match.id} + '/review'"
               method="post" id="reviewForm">
 
-          <!-- Hidden authorType -->
           <input type="hidden" name="authorType"
                  th:value="${session.userRole == 'PROFESSIONAL'} ? 'PROFESSIONAL' : 'COMPANY'">
 
-          <!-- Star rating -->
           <div class="mb-4">
             <label class="nexus-label mb-2">Avaliação geral *</label>
             <div class="d-flex gap-2 align-items-center">
@@ -58,7 +54,6 @@
             </div>
           </div>
 
-          <!-- Positive reasons -->
           <div class="mb-4">
             <label class="nexus-label mb-2">Pontos positivos</label>
             <div class="d-flex flex-wrap gap-2">
@@ -80,7 +75,6 @@
             </div>
           </div>
 
-          <!-- Negative reasons -->
           <div class="mb-4">
             <label class="nexus-label mb-2">Pontos negativos</label>
             <div class="d-flex flex-wrap gap-2">
@@ -101,7 +95,6 @@
             </div>
           </div>
 
-          <!-- Comment -->
           <div class="mb-4">
             <label class="nexus-label">Comentário <span style="color:#475569">(opcional)</span></label>
             <textarea class="nexus-input nexus-textarea" name="comment"
@@ -127,7 +120,6 @@
 <script>
 var ratingLabels = ['','Ruim','Abaixo do esperado','Regular','Bom','Excelente'];
 
-// Star interaction
 document.querySelectorAll('.star-radio').forEach(function(radio) {
   radio.addEventListener('change', function() {
     var val = parseInt(this.value);
@@ -146,7 +138,6 @@ document.querySelectorAll('.star-radio').forEach(function(radio) {
   });
 });
 
-// Positive reasons toggle
 document.querySelectorAll('.pos-cb').forEach(function(cb) {
   cb.addEventListener('change', function() {
     this.nextElementSibling.style.background  = this.checked ? 'rgba(34,197,94,0.15)' : '';
@@ -155,7 +146,6 @@ document.querySelectorAll('.pos-cb').forEach(function(cb) {
   });
 });
 
-// Negative reasons toggle
 document.querySelectorAll('.neg-cb').forEach(function(cb) {
   cb.addEventListener('change', function() {
     this.nextElementSibling.style.background  = this.checked ? 'rgba(239,68,68,0.12)' : '';
@@ -164,13 +154,11 @@ document.querySelectorAll('.neg-cb').forEach(function(cb) {
   });
 });
 
-// Enable submit only when rating is selected
 function checkSubmit() {
   var rated = document.querySelector('.star-radio:checked');
   document.getElementById('reviewSubmitBtn').disabled = !rated;
 }
 
-// Chip click = check hidden radio/checkbox
 document.querySelectorAll('.star-icon').forEach(function(icon) {
   icon.addEventListener('click', function() {
     var val = this.dataset.val;

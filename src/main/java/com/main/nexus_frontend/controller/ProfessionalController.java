@@ -258,6 +258,7 @@ public class ProfessionalController {
         String token = (String) session.getAttribute("token");
         CompanyDTO company = companyService.getPublicProfile(id);
         model.addAttribute("company", company);
+        model.addAttribute("closedProjects", companyService.getCompanyClosedProjects(id));
 
         ContactInfoDTO contact = null;
         try {

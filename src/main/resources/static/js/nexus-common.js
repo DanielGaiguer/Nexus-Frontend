@@ -1,14 +1,4 @@
-/**
- * nexus-common.js — Shared utilities for authenticated pages
- */
 
-/**
- * fetch wrapper for /app-api/** proxy endpoints.
- * Handles HTTP errors with a standardized toast notification.
- * @param {string} url - path relative to /app-api/ (e.g. '/matches/1/accept')
- * @param {object} [options] - fetch options (method, headers, body, etc.)
- * @returns {Promise<any>} parsed JSON response
- */
 async function nexusFetch(url, options = {}) {
     const fullUrl = url.startsWith('/app-api') ? url : '/app-api' + url;
     const defaultHeaders = { 'Content-Type': 'application/json' };
@@ -37,11 +27,6 @@ async function nexusFetch(url, options = {}) {
     }
 }
 
-/**
- * Show a Bootstrap toast notification.
- * @param {string} message - text to display
- * @param {'success'|'error'} [type='success'] - toast style
- */
 function nexusToast(message, type) {
     type = type || 'success';
     var container = document.getElementById('nexus-toast-container');
@@ -68,7 +53,6 @@ function nexusToast(message, type) {
     }, 4000);
 }
 
-/* ── Tom Select: estiliza todos os <select class="nexus-select"> ── */
 document.addEventListener('DOMContentLoaded', function() {
   if (typeof TomSelect === 'undefined') return;
 
@@ -137,14 +121,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-/**
- * Inicializa contagens regressivas de prazo em todos os elementos
- * com o atributo data-deadline="yyyy-MM-dd"
- * Uso no HTML: <span data-deadline="2026-09-30" class="nexus-deadline"></span>
- */
 function initDeadlines() {
   document.querySelectorAll('[data-deadline]').forEach(function(el) {
-    var raw      = el.dataset.deadline; // "yyyy-MM-dd"
+    var raw      = el.dataset.deadline;
     var deadline = new Date(raw + 'T23:59:59');
     var now      = new Date();
     var diffMs   = deadline - now;
@@ -153,32 +132,27 @@ function initDeadlines() {
     el.innerHTML = '';
 
     if (diffMs < 0) {
-      // Prazo encerrado
       el.innerHTML =
         '<span style="color:#ef4444;font-size:0.75rem;font-weight:600">' +
         '<i class="ti ti-clock-x" style="font-size:0.7rem;margin-right:2px"></i>' +
         'Prazo encerrado</span>';
     } else if (diffDays <= 3) {
-      // Urgente
       el.innerHTML =
         '<span style="color:#ef4444;font-size:0.75rem;font-weight:600;' +
         'animation:urgentPulse 1.5s ease-in-out infinite">' +
         '<i class="ti ti-flame" style="font-size:0.7rem;margin-right:2px"></i>' +
         'Encerra em ' + diffDays + ' dia' + (diffDays !== 1 ? 's' : '') + '</span>';
     } else if (diffDays <= 7) {
-      // Atenção
       el.innerHTML =
         '<span style="color:#f59e0b;font-size:0.75rem;font-weight:600">' +
         '<i class="ti ti-clock-hour-4" style="font-size:0.7rem;margin-right:2px"></i>' +
         'Encerra em ' + diffDays + ' dias</span>';
     } else if (diffDays <= 30) {
-      // Normal
       el.innerHTML =
         '<span style="color:#64748b;font-size:0.75rem">' +
         '<i class="ti ti-calendar" style="font-size:0.7rem;margin-right:2px"></i>' +
         'Encerra em ' + diffDays + ' dias</span>';
     } else {
-      // Distante
       var opts = { day:'2-digit', month:'short', year:'numeric' };
       el.innerHTML =
         '<span style="color:#64748b;font-size:0.75rem">' +
@@ -190,11 +164,8 @@ function initDeadlines() {
 
 document.addEventListener('DOMContentLoaded', initDeadlines);
 
-// ── Notificações ─────────────────────────────────────────────
-
 var notifPanelOpen = false;
 
-// Ícones por tipo de notificação
 var NOTIF_ICONS = {
   NEW_INVITE:                'ti-mail',
   NEW_INTEREST_RECEIVED:     'ti-send',
@@ -232,7 +203,6 @@ function toggleNotifPanel() {
   if (notifPanelOpen) loadNotifications();
 }
 
-// Fecha o painel ao clicar fora
 document.addEventListener('click', function(e) {
   var wrapper = document.getElementById('notifBtnWrapper');
   if (notifPanelOpen && wrapper && !wrapper.contains(e.target)) {
@@ -302,17 +272,14 @@ function renderNotifications(notifications) {
 function handleNotifClick(el) {
   var id  = el.dataset.id;
   var url = el.dataset.url;
-  // Marca como lida
   if (id) {
     fetch('/notifications/' + id + '/read', { method:'POST' })
     .then(function() { loadBadgeCount(); })
     .catch(function() {});
-    // Atualiza visual imediatamente
     el.style.background = 'transparent';
     var dot = el.querySelector('[style*="border-radius:50%"]');
     if (dot) dot.remove();
   }
-  // Navega se tiver URL
   if (url && url !== 'null' && url !== '') {
     document.getElementById('notifPanel').style.display = 'none';
     notifPanelOpen = false;
@@ -353,7 +320,7 @@ function formatTimeAgo(dateStr) {
   if (!dateStr) return '';
   var now  = new Date();
   var date = new Date(dateStr);
-  var diff = Math.floor((now - date) / 1000); // segundos
+  var diff = Math.floor((now - date) / 1000);
   if (diff < 60)   return 'agora mesmo';
   if (diff < 3600) return Math.floor(diff/60) + ' min atrás';
   if (diff < 86400) return Math.floor(diff/3600) + 'h atrás';
@@ -361,19 +328,15 @@ function formatTimeAgo(dateStr) {
   return days === 1 ? 'ontem' : days + ' dias atrás';
 }
 
-// Carrega o badge ao abrir qualquer página autenticada
 document.addEventListener('DOMContentLoaded', function() {
   var badge = document.getElementById('notifBadge');
   if (badge) loadBadgeCount();
 });
 
-// Polling a cada 60s para manter o badge atualizado sem precisar recarregar
 setInterval(function() {
   var badge = document.getElementById('notifBadge');
   if (badge) loadBadgeCount();
 }, 60000);
-
-// ── Badge de mensagens não lidas (chat) ─────────────────────────
 
 function loadChatUnreadTotal() {
   fetch('/app-api/chat/unread-total')
@@ -398,14 +361,11 @@ document.addEventListener('DOMContentLoaded', function() {
     loadChatUnreadTotal();
   }
 
-  // Ao entrar num chat individual, o markAllAsReadInMatch roda no back —
-  // espera 1s para o badge refletir a leitura antes de reconsultar
   if (/^\/chat\/\d+$/.test(window.location.pathname)) {
     setTimeout(loadChatUnreadTotal, 1000);
   }
 });
 
-// Polling a cada 30s para manter o badge de chat atualizado
 setInterval(function() {
   if (document.querySelector('.chat-unread-badge')) {
     loadChatUnreadTotal();

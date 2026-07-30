@@ -8,7 +8,6 @@
 <main style="min-height:calc(100vh - 72px);padding:2.5rem 0 4rem">
   <div class="container" style="max-width:860px">
 
-    <!-- Back -->
     <a href="javascript:history.back()"
        class="d-inline-flex align-items-center gap-1 text-decoration-none mb-4"
        style="color:#64748b;font-size:0.875rem;transition:color 0.2s"
@@ -17,13 +16,11 @@
       <i class="ti ti-arrow-left"></i> Voltar
     </a>
 
-    <!-- ══ CARD HERO: avatar + nome ══════════════════════════ -->
     <div class="card border-0 p-4 mb-3"
          style="background:linear-gradient(145deg,rgba(9,14,31,0.97),rgba(13,19,41,0.97));
                 border-radius:16px !important">
       <div class="d-flex align-items-start gap-4 flex-wrap">
 
-        <!-- Avatar -->
         <div style="flex-shrink:0">
           <th:block th:if="${professional.profilePhotoUrl != null
                             and !#strings.isEmpty(professional.profilePhotoUrl)}">
@@ -44,7 +41,6 @@
           </th:block>
         </div>
 
-        <!-- Info principal -->
         <div class="flex-fill">
           <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
             <div>
@@ -61,7 +57,6 @@
                   <span th:case="*">Profissional de TI</span>
                 </span>
               </div>
-              <!-- Disponibilidade -->
               <span th:if="${professional.available}"
                     style="display:inline-flex;align-items:center;gap:4px;font-size:0.78rem;
                            font-weight:600;color:#22c55e;background:rgba(34,197,94,0.1);
@@ -80,7 +75,6 @@
               </span>
             </div>
 
-            <!-- Botão de match (só para COMPANY) -->
             <div th:if="${session.userRole == 'COMPANY'}">
               <button type="button"
                       id="matchBtn"
@@ -97,15 +91,12 @@
         </div>
 
       </div>
-    </div><!-- /hero -->
+    </div>
 
-    <!-- ══ GRID: dados + skills ══════════════════════════════ -->
     <div class="row g-3 mb-3">
 
-      <!-- Coluna esquerda: dados + reputação -->
       <div class="col-lg-5">
 
-        <!-- Localização e experiência -->
         <div class="card border-0 p-4 mb-3"
              style="background:rgba(13,19,41,0.9);border-radius:14px !important;
                     border:1px solid rgba(107,110,255,0.1) !important">
@@ -146,13 +137,11 @@
           </div>
         </div>
 
-        <!-- Reputação -->
         <div class="card border-0 p-4"
              style="background:rgba(13,19,41,0.9);border-radius:14px !important;
                     border:1px solid rgba(107,110,255,0.1) !important">
           <div style="color:#475569;font-size:0.72rem;text-transform:uppercase;
                       letter-spacing:0.05em;margin-bottom:0.75rem">Reputação</div>
-          <!-- Estrelas -->
           <div class="d-flex align-items-center gap-2 mb-2"
                th:if="${professional.reputation != null}">
             <div class="d-flex gap-1">
@@ -166,7 +155,6 @@
                   th:text="${#numbers.formatDecimal(professional.reputation,1,1)}">0.0</span>
             <span style="color:#475569;font-size:0.8rem">/ 5</span>
           </div>
-          <!-- Análise de qualidade (indicador auxiliar interno, escala 0-100 — não é a nota de estrelas acima) -->
           <th:block th:if="${reputation != null}">
             <div style="color:#334155;font-size:0.68rem;text-transform:uppercase;
                         letter-spacing:0.05em;margin:0.75rem 0 0.5rem">Análise de qualidade</div>
@@ -201,12 +189,10 @@
                style="color:#334155;font-size:0.85rem">Sem avaliações ainda</div>
         </div>
 
-      </div><!-- /col esq -->
+      </div>
 
-      <!-- Coluna direita: skills + projetos anteriores -->
       <div class="col-lg-7">
 
-        <!-- Skills -->
         <div class="card border-0 p-4 mb-3"
              th:if="${professional.skills != null and !#lists.isEmpty(professional.skills)}"
              style="background:rgba(13,19,41,0.9);border-radius:14px !important;
@@ -225,7 +211,6 @@
           </div>
         </div>
 
-        <!-- Projetos anteriores -->
         <div class="card border-0 p-4"
              th:if="${previousProjects != null and !#lists.isEmpty(previousProjects)}"
              style="background:rgba(13,19,41,0.9);border-radius:14px !important;
@@ -257,13 +242,12 @@
           </div>
         </div>
 
-      </div><!-- /col dir -->
-    </div><!-- /row -->
+      </div>
+    </div>
 
-  </div><!-- /container -->
+  </div>
 </main>
 
-<!-- ══ MODAL DE MATCH (empresa → profissional) ═══════════════ -->
 <div id="matchModal"
      style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);
             z-index:9999;align-items:center;justify-content:center;padding:1rem"
@@ -272,7 +256,6 @@
               border-radius:18px;width:100%;max-width:520px;padding:2rem;
               position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.6)">
 
-    <!-- Fechar -->
     <button onclick="closeMatchModal()"
             style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.06);
                    border:1px solid rgba(255,255,255,0.08);border-radius:8px;
@@ -280,7 +263,6 @@
       <i class="ti ti-x"></i>
     </button>
 
-    <!-- Step 1: escolher projeto -->
     <div id="stepSelectProject">
       <div class="fw-semibold text-white mb-1" style="font-size:1.05rem">
         <i class="ti ti-heart-handshake" style="color:#6b6eff;margin-right:6px"></i>
@@ -291,7 +273,6 @@
         <strong class="text-white" th:text="${professional.name}">Profissional</strong>
       </div>
 
-      <!-- Lista de projetos da empresa -->
       <div class="d-flex flex-column gap-2" id="projectsList">
         <div th:each="proj : ${companyProjects}"
              class="project-option"
@@ -319,7 +300,6 @@
             <i class="ti ti-chevron-right" style="color:#334155;font-size:1rem"></i>
           </div>
         </div>
-        <!-- Empty -->
         <div th:if="${companyProjects == null or #lists.isEmpty(companyProjects)}"
              style="text-align:center;padding:1.5rem;color:#334155;font-size:0.875rem">
           <i class="ti ti-folder-off" style="font-size:2rem;display:block;margin-bottom:0.5rem"></i>
@@ -328,7 +308,6 @@
       </div>
     </div>
 
-    <!-- Step 2: resultado do score -->
     <div id="stepScoreResult" style="display:none">
       <div class="d-flex align-items-center gap-2 mb-3">
         <button onclick="backToProjects()"
@@ -340,7 +319,6 @@
         <div class="fw-semibold text-white" style="font-size:1rem">Score de Compatibilidade</div>
       </div>
 
-      <!-- Score em destaque -->
       <div style="text-align:center;padding:1.5rem 0;margin-bottom:1rem;
                   border-bottom:1px solid rgba(255,255,255,0.06)">
         <div id="scoreValue"
@@ -349,7 +327,6 @@
         <div style="color:#64748b;font-size:0.8rem;margin-top:4px">
           Compatibilidade com <span id="scoreProjectName" style="color:#e2e8f0">—</span>
         </div>
-        <!-- Barra de progresso -->
         <div style="height:6px;background:rgba(255,255,255,0.05);border-radius:4px;
                     max-width:280px;margin:0.75rem auto 0">
           <div id="scoreBar"
@@ -357,13 +334,10 @@
         </div>
       </div>
 
-      <!-- Breakdown por componente -->
       <div id="scoreBreakdown" class="d-flex flex-column gap-2 mb-3"></div>
 
-      <!-- Ação: demonstrar interesse -->
       <div id="matchActionArea"></div>
 
-      <!-- Loading -->
       <div id="scoreLoading" style="text-align:center;padding:2rem;display:none">
         <i class="ti ti-loader"
            style="animation:spin 1s linear infinite;font-size:1.75rem;color:#6b6eff"></i>
@@ -375,14 +349,13 @@
     </div>
 
   </div>
-</div><!-- /matchModal -->
+</div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
 <script th:inline="javascript">
-/*<![CDATA[*/
-var PROFESSIONAL_ID = /*[[${professional.id}]]*/ 0;
+var PROFESSIONAL_ID =  0;
 var selectedProjectId    = null;
 var selectedProjectTitle = null;
 
@@ -417,7 +390,6 @@ function fetchScore(projectId) {
   document.getElementById('scoreBar').style.width            = '0%';
   document.getElementById('scoreProjectName').textContent    = selectedProjectTitle;
 
-  // Chama o proxy do frontend que vai fazer o POST /api/comparison/candidates
   fetch('/company/score-preview', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -450,7 +422,6 @@ function renderScore(data) {
   document.getElementById('scoreBar').style.width      = score + '%';
   document.getElementById('scoreBar').style.background = color;
 
-  // Breakdown
   var breakdown = data.scoreBreakdown || {};
   var labels = {
     skills:'Skills', budget:'Orçamento', history:'Histórico',
@@ -478,7 +449,6 @@ function renderScore(data) {
       '</div>';
   });
 
-  // Botão de demonstrar interesse (se o match ainda não foi feito)
   var matchId = data.matchId;
   var matchStatus = data.matchStatus;
   var actionArea = document.getElementById('matchActionArea');
@@ -505,7 +475,6 @@ function renderScore(data) {
   }
 }
 
-// Hover nos cards de projeto
 document.querySelectorAll('.project-option').forEach(function(el) {
   el.addEventListener('mouseenter', function() {
     this.style.background    = 'rgba(107,110,255,0.08)';
@@ -516,7 +485,6 @@ document.querySelectorAll('.project-option').forEach(function(el) {
     this.style.borderColor   = 'rgba(255,255,255,0.08)';
   });
 });
-/*]]>*/
 </script>
 
 <style>

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head('Painel Admin')}"></head>
-<!-- ECharts via CDN (Tabler usa ele internamente, mas carregamos direto para controle total) -->
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <body class="nexus-app">
 
@@ -13,7 +12,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- ── Cabeçalho ── -->
       <div class="mb-4">
         <h1 class="fw-bold mb-1"
             style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">
@@ -22,10 +20,8 @@
         <p style="color:#64748b;font-size:0.875rem">Visão geral em tempo real da plataforma Nexus</p>
       </div>
 
-      <!-- ══ ROW 1 — 4 stat cards principais ══════════════════ -->
       <div class="row g-3 mb-3">
 
-        <!-- Usuários totais -->
         <div class="col-6 col-lg-3">
           <div class="nexus-stat-card">
             <div>
@@ -48,7 +44,6 @@
           </div>
         </div>
 
-        <!-- Projetos -->
         <div class="col-6 col-lg-3">
           <div class="nexus-stat-card">
             <div>
@@ -67,7 +62,6 @@
           </div>
         </div>
 
-        <!-- Matches -->
         <div class="col-6 col-lg-3">
           <div class="nexus-stat-card">
             <div>
@@ -86,7 +80,6 @@
           </div>
         </div>
 
-        <!-- Pendentes -->
         <div class="col-6 col-lg-3">
           <div class="nexus-stat-card">
             <div>
@@ -105,12 +98,10 @@
           </div>
         </div>
 
-      </div><!-- /row 1 -->
+      </div>
 
-      <!-- ══ ROW 2 — Score médio + composição de usuários ═══ -->
       <div class="row g-3 mb-3">
 
-        <!-- Score médio de match — Gauge -->
         <div class="col-lg-4">
           <div class="nexus-card p-4 h-100 d-flex flex-column">
             <div class="fw-semibold text-white mb-1">Score Médio de Match</div>
@@ -127,7 +118,6 @@
           </div>
         </div>
 
-        <!-- Composição de usuários — Donut -->
         <div class="col-lg-4">
           <div class="nexus-card p-4 h-100 d-flex flex-column">
             <div class="fw-semibold text-white mb-1">Composição de Usuários</div>
@@ -152,7 +142,6 @@
           </div>
         </div>
 
-        <!-- Taxa de confirmação — Radial / Progress rings -->
         <div class="col-lg-4">
           <div class="nexus-card p-4 h-100 d-flex flex-column">
             <div class="fw-semibold text-white mb-1">Funil de Matches</div>
@@ -160,7 +149,6 @@
               Do total gerado aos confirmados
             </div>
 
-            <!-- Total matches -->
             <div class="mb-3">
               <div class="d-flex justify-content-between mb-1">
                 <span style="color:#94a3b8;font-size:0.82rem">Total de matches</span>
@@ -172,7 +160,6 @@
               </div>
             </div>
 
-            <!-- Confirmed -->
             <div class="mb-3">
               <div class="d-flex justify-content-between mb-1">
                 <span style="color:#94a3b8;font-size:0.82rem">Confirmados</span>
@@ -185,7 +172,6 @@
               </div>
             </div>
 
-            <!-- Projetos abertos -->
             <div class="mb-3">
               <div class="d-flex justify-content-between mb-1">
                 <span style="color:#94a3b8;font-size:0.82rem">Projetos ativos</span>
@@ -198,7 +184,6 @@
               </div>
             </div>
 
-            <!-- Taxa de conversão -->
             <div class="mt-auto pt-2" style="border-top:1px solid rgba(255,255,255,0.06)">
               <div class="d-flex align-items-center justify-content-between">
                 <span style="color:#64748b;font-size:0.8rem">Taxa de conversão</span>
@@ -213,12 +198,10 @@
           </div>
         </div>
 
-      </div><!-- /row 2 -->
+      </div>
 
-      <!-- ══ ROW 3 — Gráfico de barras (matches por mês) + empresas pendentes ═══ -->
       <div class="row g-3 mb-3">
 
-        <!-- Bar chart: matches por mês -->
         <div class="col-lg-7">
           <div class="nexus-card p-4 h-100">
             <div class="d-flex align-items-center justify-content-between mb-3">
@@ -231,7 +214,6 @@
           </div>
         </div>
 
-        <!-- Pending companies panel -->
         <div class="col-lg-5">
           <div class="nexus-card p-0 h-100">
             <div class="d-flex align-items-center justify-content-between p-3 pb-2">
@@ -283,9 +265,8 @@
           </div>
         </div>
 
-      </div><!-- /row 3 -->
+      </div>
 
-      <!-- ══ ROW 4 — Tabela últimas empresas ══════════════════ -->
       <div class="nexus-card p-0">
         <div class="d-flex align-items-center justify-content-between p-3 pb-0">
           <div class="fw-semibold text-white">Últimas empresas cadastradas</div>
@@ -329,7 +310,6 @@
                   </span>
                 </td>
               </tr>
-              <!-- empty -->
               <tr th:if="${latestCompanies == null or #lists.isEmpty(latestCompanies)}">
                 <td colspan="4" class="text-center" style="color:#334155;padding:2rem">
                   Nenhuma empresa cadastrada ainda
@@ -338,7 +318,7 @@
             </tbody>
           </table>
         </div>
-      </div><!-- /row 4 -->
+      </div>
 
     </div>
   </div>
@@ -346,18 +326,12 @@
 
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 
-<!-- ══ ECharts — inicialização de todos os gráficos ═════════ -->
 <script th:inline="javascript">
-/*<![CDATA[*/
 
-// Dados injetados pelo controller
-var TOTAL_PROFESSIONALS = /*[[${dashboard.totalProfessionals}]]*/ 0;
-var TOTAL_COMPANIES     = /*[[${dashboard.totalCompanies}]]*/ 0;
-var AVG_SCORE           = /*[[${dashboard.averageMatchScore}]]*/ 0;
-var MONTHLY_DATA        = /*[[${monthlyData}]]*/ [];
-// monthlyData deve ser um array JSON tipo:
-// [{"label":"Jan","value":12},{"label":"Fev","value":18},...]
-// Se o backend não expuser isso ainda, o controller pode gerar mock (ver prompt do opencode)
+var TOTAL_PROFESSIONALS =  0;
+var TOTAL_COMPANIES     =  0;
+var AVG_SCORE           =  0;
+var MONTHLY_DATA        =  [];
 
 var ECHARTS_BG     = 'transparent';
 var COLOR_PRIMARY  = '#6b6eff';
@@ -368,7 +342,6 @@ var COLOR_SECONDARY = '#a78bfa';
 var TEXT_MUTED     = '#475569';
 var TEXT_SECONDARY = '#64748b';
 
-// ── 1. GAUGE — Score médio ───────────────────────────────────
 (function() {
   var chart = echarts.init(document.getElementById('gaugeChart'), null, {
     renderer: 'canvas', backgroundColor: ECHARTS_BG
@@ -413,7 +386,6 @@ var TEXT_SECONDARY = '#64748b';
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-// ── 2. DONUT — Composição de usuários ───────────────────────
 (function() {
   var chart = echarts.init(document.getElementById('donutChart'), null, {
     renderer: 'canvas', backgroundColor: ECHARTS_BG
@@ -464,17 +436,15 @@ var TEXT_SECONDARY = '#64748b';
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-// ── 3. BAR — Matches por mês ────────────────────────────────
 (function() {
   var chart = echarts.init(document.getElementById('barChart'), null, {
     renderer: 'canvas', backgroundColor: ECHARTS_BG
   });
 
-  // Se monthlyDataJson vier vazio, gera placeholder de 6 meses
   var raw = MONTHLY_DATA;
   if (!raw || raw.length === 0) {
     var months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    var now = new Date().getMonth(); // 0-indexed
+    var now = new Date().getMonth();
     raw = [];
     for (var i = 5; i >= 0; i--) {
       raw.push({ label: months[(now - i + 12) % 12], value: 0 });
@@ -537,7 +507,6 @@ var TEXT_SECONDARY = '#64748b';
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-/*]]>*/
 </script>
 
 </body>

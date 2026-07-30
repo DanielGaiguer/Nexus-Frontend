@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
@@ -19,7 +18,6 @@
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Greeting -->
       <div class="mb-4">
         <h1 class="fw-bold mb-1" style="font-size:2rem;letter-spacing:-0.02em;color:#fff;">
           Olá, <span th:text="${userName}">Profissional</span> 👋
@@ -29,9 +27,7 @@
         </p>
       </div>
 
-      <!-- Stat cards -->
       <div class="row g-3 mb-4">
-        <!-- Convites pendentes -->
         <div class="col-6 col-lg-3">
           <div class="nexus-stat-card h-100">
             <div>
@@ -43,7 +39,6 @@
             </div>
           </div>
         </div>
-        <!-- Matches confirmados -->
         <div class="col-6 col-lg-3">
           <div class="nexus-stat-card h-100">
             <div>
@@ -55,7 +50,6 @@
             </div>
           </div>
         </div>
-        <!-- Score médio -->
         <div class="col-6 col-lg-3">
           <div class="nexus-stat-card h-100">
             <div>
@@ -67,7 +61,6 @@
             </div>
           </div>
         </div>
-        <!-- Projetos entregues -->
         <div class="col-6 col-lg-3">
           <div class="nexus-stat-card h-100">
             <div>
@@ -81,10 +74,8 @@
         </div>
       </div>
 
-      <!-- Two-column: convites + confirmados -->
       <div class="row g-3 mb-4">
 
-        <!-- Últimos convites -->
         <div class="col-lg-6">
           <div class="nexus-card p-0 h-100">
             <div class="d-flex align-items-center justify-content-between p-3 pb-2">
@@ -98,7 +89,6 @@
               </a>
             </div>
 
-            <!-- Empty -->
             <div th:if="${#lists.isEmpty(recentInvites)}"
                  class="d-flex flex-column align-items-center justify-content-center py-5 text-center px-3">
               <i class="ti ti-mail-opened" style="font-size:2.5rem;color:#334155;margin-bottom:0.75rem"></i>
@@ -108,25 +98,21 @@
               </a>
             </div>
 
-            <!-- List -->
             <div th:unless="${#lists.isEmpty(recentInvites)}">
               <div th:each="inv,iStat : ${recentInvites}"
                    th:classappend="${!iStat.last} ? 'border-bottom' : ''"
                    style="border-color:rgba(107,110,255,0.08)!important"
                    class="d-flex align-items-center gap-3 p-3">
-                <!-- Avatar empresa -->
                 <div class="nexus-avatar-initials nexus-avatar-lg"
                      th:with="n=${inv.project.company.companyName},
                               h=${n.hashCode()},
                               hue=${(h%360)<0?(h%360)+360:h%360}"
                      th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
                      th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
-                <!-- Info -->
                 <div class="flex-fill overflow-hidden">
                   <div class="fw-semibold text-white text-truncate" th:text="${inv.project.title}">Projeto</div>
                   <div style="color:#64748b;font-size:0.8rem" th:text="${inv.project.company.companyName}">Empresa</div>
                 </div>
-                <!-- Score ring -->
                 <div th:with="s=${inv.getScoreAsInt()},
                               c=${s>=85?'high':(s>=70?'medium':'low')},
                               dash=${s*1.25}">
@@ -144,14 +130,12 @@
                     </div>
                   </div>
                 </div>
-                <!-- Ver -->
                 <a th:href="@{/pro/matches}" class="nexus-btn nexus-btn-ghost nexus-btn-sm flex-shrink-0">Ver</a>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Matches confirmados -->
         <div class="col-lg-6">
           <div class="nexus-card p-0 h-100">
             <div class="d-flex align-items-center justify-content-between p-3 pb-2">
@@ -165,14 +149,12 @@
               </a>
             </div>
 
-            <!-- Empty -->
             <div th:if="${#lists.isEmpty(recentConfirmed)}"
                  class="d-flex flex-column align-items-center justify-content-center py-5 text-center px-3">
               <i class="ti ti-heart-handshake" style="font-size:2.5rem;color:#334155;margin-bottom:0.75rem"></i>
               <div style="color:#475569;font-size:0.875rem">Nenhum match confirmado ainda</div>
             </div>
 
-            <!-- List -->
             <div th:unless="${#lists.isEmpty(recentConfirmed)}">
               <div th:each="m,iStat : ${recentConfirmed}"
                    th:classappend="${!iStat.last} ? 'border-bottom' : ''"
@@ -187,7 +169,6 @@
                 <div class="flex-fill overflow-hidden">
                   <div class="fw-semibold text-white text-truncate" th:text="${m.project.title}">Projeto</div>
                   <div style="font-size:0.78rem" th:text="${m.project.company.companyName}">Empresa</div>
-                  <!-- email revelado se disponível -->
                   <div th:if="${m.project.company.contactEmail != null}"
                        style="color:#6b6eff;font-size:0.75rem"
                        th:text="${m.project.company.contactEmail}">email</div>
@@ -199,7 +180,6 @@
         </div>
       </div>
 
-      <!-- Quick actions row -->
       <div class="row g-3">
         <div class="col-md-4 d-flex">
           <a th:href="@{/pro/profile}" class="nexus-quick-card w-100">

@@ -32,31 +32,47 @@ public class AuthController {
     @GetMapping("/login")
     public String loginPage(
             @RequestParam(required = false) String linkedinError,
+            @RequestParam(required = false) String redirect,
             Model model) {
         model.addAttribute("loginRequest", new LoginRequestDTO("", ""));
         model.addAttribute("linkedinError", linkedinError);
+        model.addAttribute("redirect", redirect);
         return "login";
     }
 
     @PostMapping("/login")
     public String login(LoginRequestDTO request,
+                        @RequestParam(required = false) String redirect,
                         HttpSession session,
                         Model model) {
         try {
             LoginResponseDTO response = authService.login(request);
             populateSession(session, response);
+            if (isSafeRedirect(redirect)) {
+                return "redirect:" + redirect;
+            }
             return redirectForRole(response.getRole());
 
         } catch (NexusAuthException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("loginRequest", request);
+            model.addAttribute("redirect", redirect);
             return "login";
         } catch (Exception e) {
             model.addAttribute("error",
                 "Não foi possível conectar ao servidor. Tente novamente em instantes.");
             model.addAttribute("loginRequest", request);
+            model.addAttribute("redirect", redirect);
             return "login";
         }
+    }
+
+    // Só aceita caminhos internos (evita open redirect para domínios externos)
+    private boolean isSafeRedirect(String redirect) {
+        return redirect != null
+                && redirect.startsWith("/")
+                && !redirect.startsWith("//")
+                && !redirect.contains("://");
     }
 
     private void populateSession(HttpSession session, LoginResponseDTO response) {
@@ -96,8 +112,12 @@ public class AuthController {
     // perfil (vínculo de conta já logada).
 
     @GetMapping("/linkedin/login")
-    public String linkedInLogin() {
-        return "redirect:" + apiBaseUrl + "/auth/linkedin/login";
+    public String linkedInLogin(@RequestParam(required = false) String redirect) {
+        String url = apiBaseUrl + "/auth/linkedin/login";
+        if (isSafeRedirect(redirect)) {
+            url += "?redirect=" + java.net.URLEncoder.encode(redirect, java.nio.charset.StandardCharsets.UTF_8);
+        }
+        return "redirect:" + url;
     }
 
     @GetMapping("/linkedin/register")
@@ -121,9 +141,13 @@ public class AuthController {
             @RequestParam String email,
             @RequestParam String name,
             @RequestParam String role,
+            @RequestParam(required = false) String redirect,
             HttpSession session) {
         LoginResponseDTO response = new LoginResponseDTO(userId, email, name, role, token);
         populateSession(session, response);
+        if (isSafeRedirect(redirect)) {
+            return "redirect:" + redirect;
+        }
         return redirectForRole(role);
     }
 

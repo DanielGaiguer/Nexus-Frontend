@@ -2,13 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head('Matches')}"></head>
 <style>
-/* Cards maiores, para acomodar o anel de score ampliado */
 #pane-received .nexus-match-card,
 #pane-sent .nexus-match-card,
 #pane-confirmed .nexus-match-card {
   padding: 1.75rem 2rem;
 }
-/* Largura fixa e igual para os botões de ação empilhados */
 .match-action-btn { width: 190px; }
 </style>
 <body class="nexus-app">
@@ -21,7 +19,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
@@ -29,13 +26,11 @@
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Header -->
       <div class="mb-4">
         <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Matches</h1>
         <p style="color:#64748b;font-size:0.875rem">Gerencie convites recebidos e seus matches confirmados</p>
       </div>
 
-      <!-- Tabs -->
       <div class="nexus-tabs mb-4">
         <button class="nexus-tab active" id="tab-received" onclick="switchTab('received')">
           Convites Recebidos
@@ -55,7 +50,6 @@
         </button>
       </div>
 
-      <!-- ── ABA: CONVITES RECEBIDOS ── -->
       <div id="pane-received">
 
         <div th:if="${#lists.isEmpty(receivedInterests)}"
@@ -70,7 +64,6 @@
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(receivedInterests)}">
           <div th:each="m : ${receivedInterests}" class="nexus-match-card">
             <div class="d-flex align-items-start gap-3 flex-wrap mb-3">
-              <!-- Avatar profissional -->
               <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
                    th:with="n=${m.professional != null ? m.professional.name : 'P'},
                             h=${n.hashCode()},
@@ -86,7 +79,6 @@
                   <i class="ti ti-briefcase"></i> Ver oportunidade
                 </a>
               </div>
-              <!-- Score ring -->
               <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
                 <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
                   <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
@@ -104,7 +96,6 @@
               </div>
             </div>
 
-            <!-- Actions -->
             <div class="row g-2">
               <div class="col-6">
                 <button type="button"
@@ -123,9 +114,8 @@
             </div>
           </div>
         </div>
-      </div><!-- /#pane-received -->
+      </div>
 
-      <!-- ── ABA: CONVITES ENVIADOS ── -->
       <div id="pane-sent" style="display:none">
 
         <div th:if="${#lists.isEmpty(sentInvites)}"
@@ -140,7 +130,6 @@
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(sentInvites)}">
           <div th:each="m : ${sentInvites}" class="nexus-match-card">
             <div class="d-flex align-items-start gap-3 flex-wrap">
-              <!-- Avatar profissional -->
               <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
                    th:with="n=${m.professional != null ? m.professional.name : 'P'},
                             h=${n.hashCode()},
@@ -156,7 +145,6 @@
                   <i class="ti ti-briefcase"></i> Ver oportunidade
                 </a>
               </div>
-              <!-- Score ring -->
               <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
                 <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
                   <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
@@ -192,9 +180,8 @@
             </div>
           </div>
         </div>
-      </div><!-- /#pane-sent -->
+      </div>
 
-      <!-- ── ABA: CONFIRMADOS ── -->
       <div id="pane-confirmed" style="display:none">
 
         <div th:if="${#lists.isEmpty(confirmed)}"
@@ -221,7 +208,6 @@
                 <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.5rem"
                      th:text="${m.project.title}">Projeto</div>
 
-                <!-- Contador de expiração do match (30 dias desde a confirmação) -->
                 <div th:with="daysRemaining=${m.getDaysRemaining()}" style="margin-bottom:0.5rem">
                   <div th:if="${m.active != null and !m.active or daysRemaining <= 0}"
                        style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.2);
@@ -239,13 +225,11 @@
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm">
                   <i class="ti ti-briefcase"></i> Ver oportunidade
                 </a>
-                <!-- Contatos revelados -->
                 <div style="color:#6b6eff;font-size:0.82rem;margin-top:0.5rem">
                   <i class="ti ti-phone me-1"></i>
                   <span th:text="${m.professional != null ? m.professional.phone : '—'}">Telefone</span>
                 </div>
               </div>
-              <!-- Score ring -->
               <div style="align-self:center" th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
                 <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
                   <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
@@ -291,9 +275,8 @@
             </div>
           </div>
         </div>
-      </div><!-- /#pane-confirmed -->
+      </div>
 
-      <!-- ── ABA: PROJETOS ANTERIORES ── -->
       <div id="pane-previous" style="display:none">
 
         <div th:if="${#lists.isEmpty(previousProjects)}"
@@ -330,7 +313,6 @@
                   <i class="ti ti-briefcase"></i> Ver oportunidade
                 </a>
               </div>
-              <!-- Score ring -->
               <div style="align-self:center" th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
                 <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
                   <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
@@ -360,13 +342,12 @@
             </div>
           </div>
         </div>
-      </div><!-- /#pane-previous -->
+      </div>
 
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL RECUSAR (empresa) ══════════════════════════════ -->
 <div class="modal fade nexus-modal" id="companyRejectModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -455,7 +436,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL CANCELAR MATCH ═════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="cancelMatchModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -484,7 +464,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL ENTRAR EM CONTATO ═════════════════════════════ -->
 <div class="modal fade nexus-modal" id="contactModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -528,7 +507,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL HISTÓRICO ══════════════════════════════════════ -->
 <div class="modal fade nexus-modal" id="historyModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -703,9 +681,8 @@ document.querySelectorAll('.contact-trigger').forEach(function(btn) {
 });
 </script>
 
-<!-- Abre a janela de contato automaticamente quando este match acabou de ser confirmado -->
 <script th:inline="javascript">
-var justConfirmedMatchId = /*[[${justConfirmedMatchId}]]*/ null;
+var justConfirmedMatchId =  null;
 if (justConfirmedMatchId) {
   switchTab('confirmed');
   var justConfirmedBtn = document.querySelector('.contact-trigger[data-id="' + justConfirmedMatchId + '"]');

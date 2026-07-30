@@ -5,14 +5,12 @@
 <th:block th:replace="~{fragments/app-shell :: app-layout('dashboard', ~{this :: content})}">
 <th:block th:fragment="content">
 
-    <!-- Saudação -->
     <div class="mb-4">
         <p class="text-muted mb-1" style="font-size:0.9rem;">Olá,</p>
         <h2 class="fw-bold mb-0" style="font-size:1.75rem;letter-spacing:-0.02em;"
             th:text="${userName}">Profissional</h2>
     </div>
 
-    <!-- Stat cards -->
     <div class="row g-3 mb-4">
         <div class="col-md-4">
             <th:block th:replace="~{fragments/components :: stat-card('Convites pendentes', ${invitesCount}, 'mail', 'accent')}"></th:block>
@@ -25,7 +23,6 @@
         </div>
     </div>
 
-    <!-- Últimos convites recebidos -->
     <div class="card mb-4">
         <div class="card-header d-flex align-items-center justify-content-between">
             <h3 class="card-title fw-semibold mb-0">Últimos convites recebidos</h3>
@@ -34,11 +31,9 @@
             </a>
         </div>
         <div class="card-body p-0">
-            <!-- Empty state -->
             <th:block th:if="${#lists.isEmpty(recentInvites)}">
                 <th:block th:replace="~{fragments/components :: empty-state('mail-open', 'Nenhum convite pendente', 'Quando empresas demonstrarem interesse, os convites aparecerão aqui.', 'Ver oportunidades', '/pro/opportunities')}"></th:block>
             </th:block>
-            <!-- Lista de convites -->
             <th:block th:unless="${#lists.isEmpty(recentInvites)}">
                 <div class="list-group list-group-flush">
                     <div class="list-group-item d-flex align-items-center gap-3 py-3"
@@ -59,7 +54,6 @@
         </div>
     </div>
 
-    <!-- Matches confirmados recentes -->
     <div class="card">
         <div class="card-header d-flex align-items-center justify-content-between">
             <h3 class="card-title fw-semibold mb-0">Matches confirmados recentes</h3>
@@ -68,11 +62,9 @@
             </a>
         </div>
         <div class="card-body p-0">
-            <!-- Empty state -->
             <th:block th:if="${#lists.isEmpty(recentConfirmed)}">
                 <th:block th:replace="~{fragments/components :: empty-state('heart-handshake', 'Nenhum match ainda', 'Quando houver compatibilidade mútua, os matches confirmados aparecerão aqui.', 'Ver oportunidades', '/pro/opportunities')}"></th:block>
             </th:block>
-            <!-- Lista de confirmados -->
             <th:block th:unless="${#lists.isEmpty(recentConfirmed)}">
                 <div class="list-group list-group-flush">
                     <div class="list-group-item d-flex align-items-center gap-3 py-3"

@@ -8,7 +8,6 @@
 <main style="min-height:calc(100vh - 72px);padding:2.5rem 0 4rem">
   <div class="container" style="max-width:860px">
 
-    <!-- Back -->
     <a href="javascript:history.back()"
        class="d-inline-flex align-items-center gap-1 text-decoration-none mb-4"
        style="color:#64748b;font-size:0.875rem;transition:color 0.2s"
@@ -17,13 +16,11 @@
       <i class="ti ti-arrow-left"></i> Voltar
     </a>
 
-    <!-- ══ HERO ═══════════════════════════════════════════════ -->
     <div class="card border-0 p-4 mb-3"
          style="background:linear-gradient(145deg,rgba(9,14,31,0.97),rgba(13,19,41,0.97));
                 border-radius:16px !important">
       <div class="d-flex align-items-start gap-4 flex-wrap">
 
-        <!-- Logo -->
         <div style="flex-shrink:0">
           <th:block th:if="${company.profilePhotoUrl != null
                             and !#strings.isEmpty(company.profilePhotoUrl)}">
@@ -44,7 +41,6 @@
           </th:block>
         </div>
 
-        <!-- Info -->
         <div class="flex-fill">
           <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
             <div>
@@ -56,7 +52,6 @@
                 <i class="ti ti-map-pin" style="color:#6b6eff;margin-right:4px"></i>
                 <span th:text="${company.city+(company.uf!=null?', '+company.uf:'')}">Cidade</span>
               </div>
-              <!-- Reputação resumida -->
               <div class="d-flex align-items-center gap-1"
                    th:if="${company.reputation != null}">
                 <th:block th:each="i : ${#numbers.sequence(1,5)}">
@@ -69,7 +64,6 @@
               </div>
             </div>
 
-            <!-- Botão de match (só para PROFESSIONAL) -->
             <div th:if="${session.userRole == 'PROFESSIONAL'}">
               <button type="button"
                       onclick="document.getElementById('matchModal').style.display='flex'"
@@ -84,12 +78,10 @@
           </div>
         </div>
       </div>
-    </div><!-- /hero -->
+    </div>
 
-    <!-- ══ DADOS + REPUTAÇÃO ══════════════════════════════════ -->
     <div class="row g-3 mb-3">
 
-      <!-- Dados da empresa -->
       <div class="col-lg-5">
         <div class="card border-0 p-4 h-100"
              style="background:rgba(13,19,41,0.9);border-radius:14px !important;
@@ -118,7 +110,6 @@
                    th:text="${company.taxId}">—</div>
             </div>
 
-            <!-- Stats de projetos e matches -->
             <div class="row g-2 mt-1">
               <div class="col-6">
                 <div style="background:rgba(107,110,255,0.06);border:1px solid rgba(107,110,255,0.12);
@@ -144,7 +135,6 @@
         </div>
       </div>
 
-      <!-- Reputação detalhada -->
       <div class="col-lg-7">
         <div class="card border-0 p-4 h-100"
              style="background:rgba(13,19,41,0.9);border-radius:14px !important;
@@ -153,7 +143,6 @@
                       letter-spacing:0.05em;margin-bottom:0.75rem">Reputação</div>
 
           <th:block th:if="${reputation != null}">
-            <!-- Score geral -->
             <div class="d-flex align-items-center gap-3 mb-3">
               <div style="font-size:2.5rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums"
                    th:with="s=${reputation.overallScore ?: 0}"
@@ -163,7 +152,6 @@
                 <div style="color:#e2e8f0;font-size:0.85rem;font-weight:600">Score geral</div>
                 <div style="color:#475569;font-size:0.75rem"
                      th:text="'Baseado em ' + ${reputation.totalReviews ?: 0} + ' avaliação(ões)'">—</div>
-                <!-- Confiança -->
                 <div style="height:3px;background:rgba(255,255,255,0.05);border-radius:4px;
                             width:100px;margin-top:5px">
                   <div style="height:100%;border-radius:4px;background:#6b6eff"
@@ -174,7 +162,6 @@
               </div>
             </div>
 
-            <!-- Indicadores -->
             <div class="d-flex flex-column gap-2">
               <th:block th:each="ind : ${ {
                 {'Comunicação',    reputation.communication},
@@ -219,9 +206,41 @@
         </div>
       </div>
 
-    </div><!-- /row -->
+    </div>
 
-    <!-- ══ OPORTUNIDADES ABERTAS ═══════════════════════════════ -->
+    <div class="card border-0 p-4 mb-3"
+         style="background:rgba(13,19,41,0.9);border-radius:14px !important;
+                border:1px solid rgba(107,110,255,0.1) !important">
+      <div style="color:#475569;font-size:0.72rem;text-transform:uppercase;
+                  letter-spacing:0.05em;margin-bottom:0.75rem">
+        <i class="ti ti-history" style="color:#94a3b8;margin-right:4px"></i>
+        Oportunidades fechadas (<span th:text="${closedProjects != null ? #lists.size(closedProjects) : 0}">0</span>)
+      </div>
+      <div th:if="${closedProjects == null or #lists.isEmpty(closedProjects)}"
+           style="color:#334155;font-size:0.85rem">
+        Nenhuma oportunidade encerrada ainda.
+      </div>
+      <div class="d-flex flex-column gap-2" th:unless="${closedProjects == null or #lists.isEmpty(closedProjects)}">
+        <div th:each="proj : ${closedProjects}"
+             class="d-flex align-items-center justify-content-between flex-wrap gap-2"
+             style="padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+          <div class="d-flex align-items-center gap-2">
+            <span th:if="${proj.opportunityType == 'JOB'}"
+                  style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;
+                         border-radius:5px;background:rgba(34,197,94,0.1);
+                         color:#86efac;border:1px solid rgba(34,197,94,0.2)">Vaga</span>
+            <span th:unless="${proj.opportunityType == 'JOB'}"
+                  style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;
+                         border-radius:5px;background:rgba(107,110,255,0.1);
+                         color:#a5b4fc;border:1px solid rgba(107,110,255,0.2)">Projeto</span>
+            <span class="fw-medium text-white" style="font-size:0.875rem" th:text="${proj.title}">Título</span>
+          </div>
+          <span style="color:#64748b;font-size:0.78rem" th:if="${proj.createdAt != null}"
+                th:text="${#temporals.format(proj.createdAt, 'MM/yyyy')}">00/0000</span>
+        </div>
+      </div>
+    </div>
+
     <div class="card border-0 p-4"
          th:if="${openProjects != null and !#lists.isEmpty(openProjects)}"
          style="background:rgba(13,19,41,0.9);border-radius:14px !important;
@@ -239,7 +258,6 @@
              th:classappend="${pStat.last} ? 'border-bottom-0 pb-0' : ''">
           <div class="d-flex align-items-start justify-content-between gap-2 flex-wrap">
             <div class="flex-fill">
-              <!-- Tipo + título -->
               <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                 <span th:if="${proj.opportunityType == 'JOB'}"
                       style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;
@@ -252,7 +270,6 @@
                 <span class="fw-semibold text-white" style="font-size:0.9rem"
                       th:text="${proj.title}">Título</span>
               </div>
-              <!-- Remuneração + modalidade -->
               <div class="d-flex gap-3 flex-wrap" style="font-size:0.78rem;color:#64748b">
                 <span th:if="${proj.opportunityType != 'JOB' and proj.minimumBudget != null}"
                       style="font-variant-numeric:tabular-nums;color:#6b6eff;font-weight:500"
@@ -275,7 +292,6 @@
                   </span>
                 </span>
               </div>
-              <!-- Skills -->
               <div class="d-flex flex-wrap gap-1 mt-2"
                    th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
                 <span th:each="sk : ${proj.requiredSkills}"
@@ -286,7 +302,6 @@
                       th:text="${sk.name}">Skill</span>
               </div>
             </div>
-            <!-- Link para detalhe -->
             <a th:href="@{/public/opportunity/{id}(id=${proj.id})}"
                style="flex-shrink:0;background:rgba(107,110,255,0.08);
                       border:1px solid rgba(107,110,255,0.2);color:#a5b4fc;
@@ -299,7 +314,6 @@
       </div>
     </div>
 
-    <!-- ══ PROJETOS ANTERIORES ═════════════════════════════════ -->
     <div class="card border-0 p-4 mt-3"
          th:if="${company.previousProjects != null and !#lists.isEmpty(company.previousProjects)}"
          style="background:rgba(13,19,41,0.9);border-radius:14px !important;
@@ -320,10 +334,9 @@
       </div>
     </div>
 
-  </div><!-- /container -->
+  </div>
 </main>
 
-<!-- ══ MODAL DE MATCH (profissional → empresa) ═══════════════ -->
 <div id="matchModal"
      style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);
             z-index:9999;align-items:center;justify-content:center;padding:1rem"
@@ -339,7 +352,6 @@
       <i class="ti ti-x"></i>
     </button>
 
-    <!-- Step 1: escolher oportunidade -->
     <div id="stepSelectProject">
       <div class="fw-semibold text-white mb-1" style="font-size:1.05rem">
         <i class="ti ti-sparkles" style="color:#6b6eff;margin-right:6px"></i>
@@ -376,7 +388,6 @@
             <i class="ti ti-chevron-right" style="color:#334155;font-size:1rem"></i>
           </div>
         </div>
-        <!-- Empty -->
         <div th:if="${openProjects == null or #lists.isEmpty(openProjects)}"
              style="text-align:center;padding:1.5rem;color:#334155;font-size:0.875rem">
           <i class="ti ti-folder-off" style="font-size:2rem;display:block;margin-bottom:0.5rem"></i>
@@ -385,7 +396,6 @@
       </div>
     </div>
 
-    <!-- Step 2: resultado -->
     <div id="stepScoreResult" style="display:none">
       <div class="d-flex align-items-center gap-2 mb-3">
         <button onclick="backToProjects()"
@@ -432,8 +442,7 @@
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
 <script th:inline="javascript">
-/*<![CDATA[*/
-var COMPANY_ID = /*[[${company.id}]]*/ 0;
+var COMPANY_ID =  0;
 var selectedProjectId    = null;
 var selectedProjectTitle = null;
 
@@ -468,7 +477,6 @@ function fetchScore(projectId) {
   document.getElementById('scoreBar').style.width            = '0%';
   document.getElementById('scoreProjectName').textContent    = selectedProjectTitle;
 
-  // Proxy: profissional consultando seu score em uma vaga
   fetch('/pro/score-preview', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -528,7 +536,6 @@ function renderScore(data, projectId) {
       '</div>';
   });
 
-  // Botão de interesse
   var matchStatus = data.matchStatus;
   var actionArea  = document.getElementById('matchActionArea');
   if (matchStatus === 'WAITING' || matchStatus == null) {
@@ -564,7 +571,6 @@ document.querySelectorAll('.project-option').forEach(function(el) {
     this.style.borderColor = 'rgba(255,255,255,0.08)';
   });
 });
-/*]]>*/
 </script>
 
 <style>@keyframes spin { to { transform: rotate(360deg); } }</style>

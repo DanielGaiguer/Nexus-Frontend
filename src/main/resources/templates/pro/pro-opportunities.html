@@ -11,7 +11,6 @@
   <div class="page-body">
     <div class="container-xl py-4">
 
-      <!-- Flash -->
       <div th:if="${successMsg}" class="nexus-alert nexus-alert-success mb-4">
         <i class="ti ti-circle-check"></i><span th:text="${successMsg}"></span>
       </div>
@@ -19,13 +18,11 @@
         <i class="ti ti-alert-circle"></i><span th:text="${errorMsg}"></span>
       </div>
 
-      <!-- Header -->
       <div class="mb-4">
         <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Oportunidades para você</h1>
         <p style="color:#64748b;font-size:0.875rem">Projetos compatíveis com seu perfil — demonstre interesse para gerar um match</p>
       </div>
 
-      <!-- Filters (client-side) -->
       <div class="d-flex gap-3 flex-wrap mb-3" style="align-items:flex-start">
         <div style="position:relative;flex:1;min-width:220px;max-width:360px">
           <i class="ti ti-search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
@@ -48,7 +45,6 @@
         </select>
       </div>
 
-      <!-- Filtro por tipo de oportunidade — revela a faixa de valores certa -->
       <div class="d-flex gap-3 flex-wrap mb-4" style="align-items:flex-start">
         <div class="nexus-tabs opptype-tabs">
           <button class="nexus-tab active" onclick="filterOppType('')">Todas</button>
@@ -83,7 +79,6 @@
         </div>
       </div>
 
-      <!-- Empty state -->
       <div th:if="${#lists.isEmpty(opportunities)}"
            class="nexus-card p-5 text-center">
         <i class="ti ti-sparkles" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
@@ -93,7 +88,6 @@
         </div>
       </div>
 
-      <!-- Sem resultados após filtro -->
       <div th:unless="${#lists.isEmpty(opportunities)}"
            id="noOppResults"
            class="nexus-card p-5 text-center" style="display:none">
@@ -101,7 +95,6 @@
         <div class="fw-semibold text-white mb-1">Lamentamos, não encontramos nenhuma oportunidade com esses filtros</div>
       </div>
 
-      <!-- Opportunity cards -->
       <div class="d-flex flex-column gap-3" id="opportunityList">
         <div th:each="opp : ${opportunities}"
              class="nexus-match-card"
@@ -116,14 +109,12 @@
              th:data-title="${opp.project != null ? #strings.toLowerCase(opp.project.title) : ''}"
              th:data-company="${opp.project != null and opp.project.company != null ? #strings.toLowerCase(opp.project.company.companyName) : ''}">
           <div class="d-flex align-items-start gap-3 flex-wrap">
-            <!-- Avatar empresa -->
             <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
                  th:with="n=${opp.project != null and opp.project.company != null ? opp.project.company.companyName : 'E'},
                           h=${n.hashCode()},
                           hue=${(h%360)<0?(h%360)+360:h%360}"
                  th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
                  th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
-            <!-- Info -->
             <div class="flex-fill">
               <div class="fw-semibold text-white mb-2" style="font-size:1rem"
                    th:text="${opp.project != null ? opp.project.title : 'Projeto'}">Projeto</div>
@@ -172,7 +163,6 @@
                   </span>
                 </span>
               </div>
-              <!-- Skills exigidas — ajuda a diferenciar vagas com o mesmo título -->
               <div th:if="${opp.project?.requiredSkills != null and !#lists.isEmpty(opp.project.requiredSkills)}"
                    class="d-flex flex-wrap gap-1 mt-1">
                 <span th:each="sk : ${opp.project.requiredSkills}"
@@ -190,7 +180,6 @@
                       th:text="${#strings.trim(b)}">Benefício</span>
               </div>
             </div>
-            <!-- Score ring -->
             <div th:with="s=${opp.getScoreAsInt()},
                           c=${s>=85?'high':(s>=70?'medium':'low')}">
               <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
@@ -212,7 +201,6 @@
             </div>
           </div>
 
-          <!-- Action -->
           <div class="mt-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
             <span th:if="${opp.professionalStatus == 'PROFESSIONAL_INTERESTED'}"
                   class="nexus-status-badge info">
@@ -242,7 +230,6 @@ function filterOpp(modality) {
   applyOppFilters();
 }
 
-// Alterna Projetos/Vagas — revela a faixa de valores certa para cada tipo
 function filterOppType(oppType) {
   currentOppType = oppType;
   document.querySelectorAll('.opptype-tabs .nexus-tab').forEach(function(t) { t.classList.remove('active'); });
@@ -261,7 +248,6 @@ function filterOppType(oppType) {
   onContractTypeChange();
 }
 
-// Salário só faz sentido para vagas CLT ou PJ
 function onContractTypeChange() {
   var ct = document.getElementById('filterContractType').value;
   var showSalary = currentOppType === 'JOB' && (ct === 'CLT' || ct === 'PJ');
