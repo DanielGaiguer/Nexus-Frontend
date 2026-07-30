@@ -468,6 +468,24 @@ body.nexus-app {
   overflow-y: auto;
 }
 
+.nexus-sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.nexus-sidebar-nav .navbar-nav {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.nexus-sidebar-nav .nexus-sidebar-nav-bottom {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
 .nexus-sidebar .nav-item {
   margin-bottom: 2px;
 }

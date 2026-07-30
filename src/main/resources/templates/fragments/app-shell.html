@@ -42,149 +42,157 @@
       <span th:case="*">Usuário</span>
     </div>
 
-    <ul class="navbar-nav" th:if="${session.userRole == 'PROFESSIONAL'}">
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/pro/dashboard}"
-           th:classappend="${activePage == 'dashboard'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-layout-dashboard"></i></span>
-          <span>Dashboard</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/pro/profile}"
-           th:classappend="${activePage == 'profile'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-user"></i></span>
-          <span>Meu Perfil</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/pro/portfolio}"
-           th:classappend="${activePage == 'portfolio'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-briefcase"></i></span>
-          <span>Portfólio</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/pro/matches}"
-           th:classappend="${activePage == 'matches'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-heart-handshake"></i></span>
-          <span>Matches</span>
-          <span class="nexus-badge-count ms-auto"
-                th:if="${invitesCount != null and invitesCount > 0}"
-                th:text="${invitesCount}">0</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/chat}"
-           th:classappend="${activePage == 'chat'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-message-circle"></i></span>
-          <span>Conversas</span>
-          <span class="nexus-badge-count ms-auto chat-unread-badge" style="display:none">0</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/pro/analytics}"
-           th:classappend="${activePage == 'analytics'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-chart-dots"></i></span>
-          <span>Analytics</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/pro/opportunities}"
-           th:classappend="${activePage == 'opportunities'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-sparkles"></i></span>
-          <span>Oportunidades</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/pro/map}"
-           th:classappend="${activePage == 'map'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>
-          <span>Mapa</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/pro/companies}"
-           th:classappend="${activePage == 'companies'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-building"></i></span>
-          <span>Empresas</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/pro/professionals}"
-           th:classappend="${activePage == 'professionals'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-users"></i></span>
-          <span>Profissionais</span>
-        </a>
-      </li>
-    </ul>
+    <div class="nexus-sidebar-nav" th:if="${session.userRole == 'PROFESSIONAL'}">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/pro/dashboard}"
+             th:classappend="${activePage == 'dashboard'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-layout-dashboard"></i></span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/pro/opportunities}"
+             th:classappend="${activePage == 'opportunities'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-sparkles"></i></span>
+            <span>Oportunidades</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/pro/matches}"
+             th:classappend="${activePage == 'matches'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-heart-handshake"></i></span>
+            <span>Matches</span>
+            <span class="nexus-badge-count ms-auto"
+                  th:if="${invitesCount != null and invitesCount > 0}"
+                  th:text="${invitesCount}">0</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/chat}"
+             th:classappend="${activePage == 'chat'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-message-circle"></i></span>
+            <span>Conversas</span>
+            <span class="nexus-badge-count ms-auto chat-unread-badge" style="display:none">0</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/pro/companies}"
+             th:classappend="${activePage == 'companies'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-building"></i></span>
+            <span>Empresas</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/pro/professionals}"
+             th:classappend="${activePage == 'professionals'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-users"></i></span>
+            <span>Profissionais</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/pro/map}"
+             th:classappend="${activePage == 'map'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>
+            <span>Mapa</span>
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav nexus-sidebar-nav-bottom">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/pro/analytics}"
+             th:classappend="${activePage == 'analytics'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-chart-dots"></i></span>
+            <span>Analytics</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/pro/portfolio}"
+             th:classappend="${activePage == 'portfolio'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-briefcase"></i></span>
+            <span>Portfólio</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/pro/profile}"
+             th:classappend="${activePage == 'profile'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-user"></i></span>
+            <span>Meu Perfil</span>
+          </a>
+        </li>
+      </ul>
+    </div>
 
-    <ul class="navbar-nav" th:if="${session.userRole == 'COMPANY'}">
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/company/dashboard}"
-           th:classappend="${activePage == 'dashboard'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-layout-dashboard"></i></span>
-          <span>Dashboard</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/company/profile}"
-           th:classappend="${activePage == 'profile'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-building"></i></span>
-          <span>Perfil</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/company/projects}"
-           th:classappend="${activePage == 'projects'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-folder"></i></span>
-          <span>Projetos</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/company/matches}"
-           th:classappend="${activePage == 'matches'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-heart-handshake"></i></span>
-          <span>Matches</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/chat}"
-           th:classappend="${activePage == 'chat'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-message-circle"></i></span>
-          <span>Conversas</span>
-          <span class="nexus-badge-count ms-auto chat-unread-badge" style="display:none">0</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/company/analytics}"
-           th:classappend="${activePage == 'analytics'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-chart-dots"></i></span>
-          <span>Analytics</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/company/map}"
-           th:classappend="${activePage == 'map'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>
-          <span>Mapa</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/company/companies}"
-           th:classappend="${activePage == 'companies'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-building"></i></span>
-          <span>Empresas</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/company/professionals}"
-           th:classappend="${activePage == 'professionals'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-users"></i></span>
-          <span>Profissionais</span>
-        </a>
-      </li>
-    </ul>
+    <div class="nexus-sidebar-nav" th:if="${session.userRole == 'COMPANY'}">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/company/dashboard}"
+             th:classappend="${activePage == 'dashboard'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-layout-dashboard"></i></span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/company/projects}"
+             th:classappend="${activePage == 'projects'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-folder"></i></span>
+            <span>Oportunidades</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/company/matches}"
+             th:classappend="${activePage == 'matches'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-heart-handshake"></i></span>
+            <span>Matches</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/chat}"
+             th:classappend="${activePage == 'chat'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-message-circle"></i></span>
+            <span>Conversas</span>
+            <span class="nexus-badge-count ms-auto chat-unread-badge" style="display:none">0</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/company/professionals}"
+             th:classappend="${activePage == 'professionals'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-users"></i></span>
+            <span>Profissionais</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/company/companies}"
+             th:classappend="${activePage == 'companies'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-building"></i></span>
+            <span>Empresas</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/company/map}"
+             th:classappend="${activePage == 'map'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>
+            <span>Mapa</span>
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav nexus-sidebar-nav-bottom">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/company/analytics}"
+             th:classappend="${activePage == 'analytics'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-chart-dots"></i></span>
+            <span>Analytics</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/company/profile}"
+             th:classappend="${activePage == 'profile'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-building"></i></span>
+            <span>Perfil</span>
+          </a>
+        </li>
+      </ul>
+    </div>
 
     <ul class="navbar-nav" th:if="${session.userRole == 'ADMIN'}">
       <li class="nav-item">
@@ -198,7 +206,7 @@
         <a class="nav-link" th:href="@{/admin/approvals}"
            th:classappend="${activePage == 'approvals'} ? ' active'">
           <span class="nav-link-icon"><i class="ti ti-checklist"></i></span>
-          <span>Empresas</span>
+          <span>Pendentes</span>
         </a>
       </li>
       <li class="nav-item">
@@ -208,13 +216,6 @@
           <span>Skills</span>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/admin/users}"
-           th:classappend="${activePage == 'users'} ? ' active'">
-          <span class="nav-link-icon"><i class="ti ti-users"></i></span>
-          <span>Usuários</span>
-        </a>
-      </li>
         <li class="nav-item">
           <a class="nav-link" th:href="@{/admin/projects}"
              th:classappend="${activePage == 'projects'} ? ' active'">
@@ -222,13 +223,13 @@
             <span>Oportunidades</span>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/admin/map}"
-             th:classappend="${activePage == 'map'} ? ' active'">
-            <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>
-            <span>Mapa</span>
-          </a>
-        </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/admin/users}"
+           th:classappend="${activePage == 'users'} ? ' active'">
+          <span class="nav-link-icon"><i class="ti ti-users"></i></span>
+          <span>Usuários</span>
+        </a>
+      </li>
         <li class="nav-item">
           <a class="nav-link" th:href="@{/admin/companies}"
              th:classappend="${activePage == 'companies'} ? ' active'">
@@ -241,6 +242,13 @@
              th:classappend="${activePage == 'professionals'} ? ' active'">
             <span class="nav-link-icon"><i class="ti ti-users"></i></span>
             <span>Profissionais</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/admin/map}"
+             th:classappend="${activePage == 'map'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-map-pin"></i></span>
+            <span>Mapa</span>
           </a>
         </li>
     </ul>
