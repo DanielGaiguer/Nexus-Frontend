@@ -18,6 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Controller
@@ -143,14 +145,22 @@ public class AdminController {
         return "redirect:/admin/approvals";
     }
 
+    private static final List<String> DEFAULT_SKILL_CATEGORIES = List.of(
+            "Backend", "Frontend", "Mobile", "DevOps", "Database", "Data", "API");
+
     @GetMapping("/skills")
     public String skills(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         List<SkillDTO> skills = adminService.getSkills(token);
         Map<String, List<SkillDTO>> skillsByCategory = skills.stream()
                 .collect(Collectors.groupingBy(SkillDTO::getCategory));
+
+        Set<String> allCategories = new TreeSet<>(DEFAULT_SKILL_CATEGORIES);
+        allCategories.addAll(skillsByCategory.keySet());
+
         model.addAttribute("skills", skills);
         model.addAttribute("skillsByCategory", skillsByCategory);
+        model.addAttribute("allCategories", allCategories);
         model.addAttribute("activePage", "skills");
         return "admin/admin-skills";
     }
@@ -159,11 +169,13 @@ public class AdminController {
     public String createSkill(
             @RequestParam String name,
             @RequestParam String category,
+            @RequestParam(required = false) String newCategory,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
+        String finalCategory = (newCategory != null && !newCategory.isBlank()) ? newCategory.trim() : category;
         try {
-            adminService.createSkill(token, name, category);
+            adminService.createSkill(token, name, finalCategory);
             redirectAttributes.addFlashAttribute("successMsg", "Skill criada com sucesso!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao criar skill: " + e.getMessage());
