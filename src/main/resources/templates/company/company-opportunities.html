@@ -21,10 +21,10 @@
       <div class="mb-4">
         <h1 class="fw-bold mb-1"
             style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">
-          Oportunidades para você
+          Oportunidades da plataforma
         </h1>
         <p style="color:#64748b;font-size:0.875rem"
-           th:text="${#lists.size(opportunities)} + ' oportunidades compatíveis com seu perfil'">0 oportunidades</p>
+           th:text="${#lists.size(opportunities)} + ' oportunidades publicadas por outras empresas'">0 oportunidades</p>
       </div>
 
       <div class="nexus-card p-3 mb-4">
@@ -151,194 +151,166 @@
 
       <div th:if="${#lists.isEmpty(opportunities)}"
            class="nexus-card p-5 text-center">
-        <i class="ti ti-sparkles"
+        <i class="ti ti-folder-off"
            style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
-        <div class="fw-semibold text-white mb-1">Nenhuma oportunidade disponível</div>
+        <div class="fw-semibold text-white mb-1">Nenhuma oportunidade na plataforma</div>
         <div style="color:#475569;font-size:0.875rem">
-          Quando projetos compatíveis com seu perfil surgirem, aparecerão aqui.
+          As oportunidades publicadas pelas empresas aparecerão aqui.
         </div>
       </div>
 
       <div class="d-flex flex-column gap-3" id="projectFeed"
            th:unless="${#lists.isEmpty(opportunities)}">
 
-        <div th:each="opp : ${opportunities}"
+        <div th:each="proj : ${opportunities}"
              class="nexus-card p-4 project-item"
              style="cursor:pointer"
-             th:onclick="'window.location.href=\'/public/opportunity/' + ${opp.project != null ? opp.project.id : 0} + '\''"
-             th:data-title="${opp.project != null ? opp.project.title : ''}"
-             th:data-company="${opp.project != null and opp.project.companyName != null ? opp.project.companyName : ''}"
-             th:data-modality="${opp.project != null ? opp.project.modality : ''}"
-             th:data-opportunitytype="${opp.project != null ? opp.project.opportunityType : ''}"
-             th:data-contracttype="${opp.project != null ? opp.project.contractType : ''}"
-             th:data-minbudget="${opp.project != null ? opp.project.minimumBudget : ''}"
-             th:data-maxbudget="${opp.project != null ? opp.project.maximumBudget : ''}"
-             th:data-minsalary="${opp.project != null ? opp.project.monthlySalaryMin : ''}"
-             th:data-maxsalary="${opp.project != null ? opp.project.monthlySalaryMax : ''}"
-             th:data-explevel="${opp.project != null ? opp.project.experienceLevel : ''}"
-             th:data-createdat="${opp.project != null and opp.project.createdAt != null ? #temporals.format(opp.project.createdAt,'yyyy-MM-dd') : ''}"
-             th:data-type="${opp.project != null ? opp.project.type : ''}"
-             th:data-skills="${opp.project != null and opp.project.requiredSkills != null ? #strings.arrayJoin(opp.project.requiredSkills.![name], '|') : ''}">
+             th:onclick="'window.location.href=\'/public/opportunity/' + ${proj.id} + '\''"
+             th:data-title="${proj.title}"
+             th:data-company="${proj.companyName != null ? proj.companyName : ''}"
+             th:data-modality="${proj.modality}"
+             th:data-opportunitytype="${proj.opportunityType}"
+             th:data-contracttype="${proj.contractType}"
+             th:data-minbudget="${proj.minimumBudget}"
+             th:data-maxbudget="${proj.maximumBudget}"
+             th:data-minsalary="${proj.monthlySalaryMin}"
+             th:data-maxsalary="${proj.monthlySalaryMax}"
+             th:data-explevel="${proj.experienceLevel}"
+             th:data-createdat="${#temporals.format(proj.createdAt,'yyyy-MM-dd')}"
+             th:data-type="${proj.type}"
+             th:data-skills="${proj.requiredSkills != null ? #strings.arrayJoin(proj.requiredSkills.![name], '|') : ''}">
 
-          <div class="d-flex align-items-stretch justify-content-between gap-3">
+          <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
             <div class="flex-fill">
-
-              <div class="d-flex align-items-start justify-content-between gap-3 mb-2 flex-wrap">
-                <div class="flex-fill">
-                  <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                    <span class="fw-semibold text-white" style="font-size:1rem"
-                          th:text="${opp.project != null ? opp.project.title : 'Projeto'}">Título</span>
-                    <span th:if="${opp.project != null and opp.project.opportunityType == 'JOB'}"
-                          style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;border-radius:5px;background:rgba(34,197,94,0.1);color:#86efac;border:1px solid rgba(34,197,94,0.2)">Vaga</span>
-                    <span th:unless="${opp.project != null and opp.project.opportunityType == 'JOB'}"
-                          style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;border-radius:5px;background:rgba(107,110,255,0.1);color:#a5b4fc;border:1px solid rgba(107,110,255,0.2)">Projeto</span>
-                    <span th:if="${opp.project != null}" th:switch="${opp.project.status}">
-                      <span th:case="'OPEN'"      class="nexus-status success">Aberto</span>
-                      <span th:case="'CLOSED'"    class="nexus-status danger">Encerrado</span>
-                      <span th:case="'CANCELLED'" class="nexus-status danger">Cancelado</span>
-                    </span>
-                    <span th:if="${opp.professionalStatus == 'PROFESSIONAL_INTERESTED'}"
-                          class="nexus-status-badge info">
-                      <i class="ti ti-check me-1"></i>Interesse demonstrado
-                    </span>
-                  </div>
-
-                  <div class="d-flex align-items-center gap-2">
-                    <img th:if="${opp.project != null and opp.project.company != null and opp.project.company.profilePhotoUrl != null and !#strings.isEmpty(opp.project.company.profilePhotoUrl)}"
-                         th:src="${opp.project.company.profilePhotoUrl}"
-                         style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0"
-                         alt="Logo da empresa">
-                    <div th:if="${opp.project != null and opp.project.companyName != null and (opp.project.company == null or opp.project.company.profilePhotoUrl == null or #strings.isEmpty(opp.project.company.profilePhotoUrl))}"
-                         class="nexus-avatar-initials"
-                         th:with="n=${opp.project.companyName},
-                                  h=${n.hashCode()},
-                                  hue=${(h%360)<0?(h%360)+360:h%360}"
-                         th:style="'background:hsl('+${hue}+',50%,38%);width:22px;height:22px;font-size:0.6rem;flex-shrink:0'"
-                         th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
-                    <span style="color:#64748b;font-size:0.82rem"
-                          th:text="${opp.project != null and opp.project.companyName != null ? opp.project.companyName : 'Empresa desconhecida'}">Empresa</span>
-                    <span th:if="${opp.project != null and opp.project.createdAt != null}" style="color:#334155;font-size:0.75rem">·</span>
-                    <span th:if="${opp.project != null and opp.project.createdAt != null}" style="color:#475569;font-size:0.78rem"
-                          th:text="'Criado em ' + ${#temporals.format(opp.project.createdAt,'dd/MM/yyyy')}">—</span>
-                  </div>
-                </div>
-              </div>
-
-              <p style="color:#94a3b8;font-size:0.875rem;line-height:1.6;margin-bottom:0.75rem"
-                 th:text="${opp.project != null ? opp.project.description : '—'}">—</p>
-
-              <div class="d-flex gap-4 flex-wrap mb-3" style="font-size:0.8rem;color:#64748b">
-                <span th:if="${opp.project != null and opp.project.opportunityType != 'JOB'}">
-                  <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
-                  <span class="tabular"
-                        th:text="'R$'+${#numbers.formatDecimal(opp.project.minimumBudget,1,'COMMA',0,'POINT')}
-                                 +'–R$'+${#numbers.formatDecimal(opp.project.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
-                </span>
-                <span th:if="${opp.project != null and opp.project.opportunityType == 'JOB' and opp.project.monthlySalaryMin != null}">
-                  <i class="ti ti-currency-dollar" style="color:#22c55e"></i>
-                  <span class="tabular"
-                        th:text="'R$'+${#numbers.formatDecimal(opp.project.monthlySalaryMin,1,'COMMA',0,'POINT')}
-                                 +'/mês'">—</span>
-                  <span th:if="${opp.project.monthlySalaryMax != null}"
-                        class="tabular"
-                        th:text="'–R$'+${#numbers.formatDecimal(opp.project.monthlySalaryMax,1,'COMMA',0,'POINT')}">—</span>
-                </span>
-                <span th:if="${opp.project != null}">
-                  <i class="ti ti-map-pin" style="color:#6b6eff"></i>
-                  <span th:switch="${opp.project.modality}">
-                    <span th:case="'REMOTE'">Remoto</span>
-                    <span th:case="'ONSITE'">Presencial</span>
-                    <span th:case="'HYBRID'">Híbrido</span>
-                    <span th:case="*" th:text="${opp.project.modality}">—</span>
-                  </span>
-                </span>
-                <span th:if="${opp.project != null and opp.project.type != null}">
-                  <i class="ti ti-briefcase" style="color:#6b6eff"></i>
-                  <span th:switch="${opp.project.type}">
-                    <span th:case="'FREELANCE'">Freelance</span>
-                    <span th:case="'FULL_TIME'">Tempo integral</span>
-                    <span th:case="'PART_TIME'">Meio período</span>
-                    <span th:case="*" th:text="${opp.project.type}">—</span>
-                  </span>
-                  <span th:if="${opp.project.opportunityType == 'JOB' and opp.project.contractType != null}">
-                    ·
-                    <span th:switch="${opp.project.contractType}">
-                      <span th:case="'CLT'">CLT</span>
-                      <span th:case="'PJ'">PJ</span>
-                      <span th:case="'FREELANCER'">Freelancer</span>
-                      <span th:case="'INTERNSHIP'">Estágio</span>
-                      <span th:case="'TEMPORARY'">Temporário</span>
-                      <span th:case="*" th:text="${opp.project.contractType}">—</span>
-                    </span>
-                  </span>
-                </span>
-                <span th:if="${opp.project != null and opp.project.opportunityType != 'JOB'}">
-                  <i class="ti ti-calendar" style="color:#6b6eff"></i>
-                  <span th:if="${opp.project.deadline != null}"
-                        th:text="'Entrega prevista: ' + ${#temporals.format(opp.project.deadline,'dd/MM/yyyy')}">—</span>
-                  <span th:unless="${opp.project.deadline != null}" style="color:#475569">Prazo não informado</span>
-                </span>
-                <span th:if="${opp.project != null and opp.project.opportunityType == 'JOB'}">
-                  <i class="ti ti-calendar" style="color:#6b6eff"></i>
-                  <span th:if="${opp.project.startDate != null}"
-                        th:text="'Início previsto: ' + ${#temporals.format(opp.project.startDate,'dd/MM/yyyy')}">—</span>
-                  <span th:unless="${opp.project.startDate != null}" style="color:#475569">Início não informado</span>
-                </span>
-                <span th:if="${opp.project != null and opp.project.experienceLevel != null}">
-                  <i class="ti ti-award" style="color:#a78bfa"></i>
-                  <span th:switch="${opp.project.experienceLevel}">
-                    <span th:case="'INTERNSHIP'">Estágio</span>
-                    <span th:case="'TRAINEE'">Trainee</span>
-                    <span th:case="'JUNIOR'">Júnior</span>
-                    <span th:case="'PLENO'">Pleno</span>
-                    <span th:case="'SENIOR'">Sênior</span>
-                    <span th:case="*" th:text="${opp.project.experienceLevel}">—</span>
-                  </span>
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <span class="fw-semibold text-white" style="font-size:1rem"
+                      th:text="${proj.title}">Título</span>
+                <span th:if="${proj.opportunityType == 'JOB'}"
+                      style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;border-radius:5px;background:rgba(34,197,94,0.1);color:#86efac;border:1px solid rgba(34,197,94,0.2)">Vaga</span>
+                <span th:unless="${proj.opportunityType == 'JOB'}"
+                      style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;border-radius:5px;background:rgba(107,110,255,0.1);color:#a5b4fc;border:1px solid rgba(107,110,255,0.2)">Projeto</span>
+                <span th:switch="${proj.status}">
+                  <span th:case="'OPEN'"      class="nexus-status success">Aberto</span>
+                  <span th:case="'CLOSED'"    class="nexus-status danger">Encerrado</span>
+                  <span th:case="'CANCELLED'" class="nexus-status danger">Cancelado</span>
                 </span>
               </div>
 
-              <div class="d-flex flex-wrap gap-2 mb-3"
-                   th:if="${opp.project != null and opp.project.requiredSkills != null and !#lists.isEmpty(opp.project.requiredSkills)}">
-                <span th:each="sk : ${opp.project.requiredSkills}"
-                      class="nexus-chip nexus-chip-tech" th:text="${sk.name}">Skill</span>
+              <div class="d-flex align-items-center gap-2">
+                <img th:if="${proj.company != null and proj.company.profilePhotoUrl != null and !#strings.isEmpty(proj.company.profilePhotoUrl)}"
+                     th:src="${proj.company.profilePhotoUrl}"
+                     style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0"
+                     alt="Logo da empresa">
+                <div th:if="${proj.companyName != null and (proj.company == null or proj.company.profilePhotoUrl == null or #strings.isEmpty(proj.company.profilePhotoUrl))}"
+                     class="nexus-avatar-initials"
+                     th:with="n=${proj.companyName},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,38%);width:22px;height:22px;font-size:0.6rem;flex-shrink:0'"
+                     th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
+                <span style="color:#64748b;font-size:0.82rem"
+                      th:text="${proj.companyName != null ? proj.companyName : 'Empresa desconhecida'}">Empresa</span>
+                <span style="color:#334155;font-size:0.75rem">·</span>
+                <span style="color:#475569;font-size:0.78rem"
+                      th:text="'Criado em ' + ${#temporals.format(proj.createdAt,'dd/MM/yyyy')}">—</span>
               </div>
-
-              <div class="d-flex flex-wrap gap-2 mb-3"
-                   th:if="${opp.project != null and opp.project.opportunityType == 'JOB'
-                           and opp.project.benefits != null
-                           and !#strings.isEmpty(opp.project.benefits)}">
-                <span th:each="b : ${#strings.listSplit(opp.project.benefits, ',')}"
-                      class="benefit-chip" th:text="${#strings.trim(b)}">Benefício</span>
-              </div>
-
             </div>
 
-            <div th:with="s=${opp.getScoreAsInt()},
-                          c=${s>=85?'high':(s>=70?'medium':'low')}"
-                 class="flex-shrink-0 d-flex flex-column align-items-center" style="height:100%">
-              <div class="mb-5" style="position:relative;width:110px;height:110px">
-                <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
-                  <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
-                  <circle cx="55" cy="55" r="46"
-                          th:class="'nexus-score-ring-fill ' + ${c}"
-                          stroke-width="5"
-                          stroke-dasharray="207.35"
-                          th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
-                </svg>
-                <div class="nexus-score-ring-label">
-                  <span class="nexus-score-ring-pct" th:text="${s}+'%'" style="font-size: 24px;">0%</span>
-                  <span class="nexus-score-ring-tag"
-                        th:text="${s>=85?'Alto':(s>=70?'Médio':'Baixo')}"
-                        th:style="${s>=85?'color:#22c55e':(s>=70?'color:#f59e0b':'color:#ef4444')}">Alto</span>
-                </div>
-              </div>
-              <a th:if="${opp.project != null and opp.project.companyId != null}"
-                 th:href="@{/pro/company/{id}(id=${opp.project.companyId})}"
-                 onclick="event.stopPropagation()"
-                 class="nexus-btn nexus-btn-ghost nexus-btn-sm mt-auto mb-1">
-                <i class="ti ti-building"></i> Ver empresa
-              </a>
+            <div class="text-end flex-shrink-0"
+                 th:if="${proj.maxPositions != null}">
+              <div style="color:#64748b;font-size:0.72rem">Posições</div>
+              <div class="tabular fw-semibold"
+                   style="color:#a5b4fc;font-size:0.9rem"
+                   th:text="${proj.filledPositions} + '/' + ${proj.maxPositions}">0/1</div>
             </div>
+          </div>
+
+          <p style="color:#94a3b8;font-size:0.875rem;line-height:1.6;margin-bottom:0.75rem"
+             th:text="${proj.description}">—</p>
+
+          <div class="d-flex gap-4 flex-wrap mb-3" style="font-size:0.8rem;color:#64748b">
+            <span th:if="${proj.opportunityType != 'JOB'}">
+              <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
+              <span class="tabular"
+                    th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}
+                             +'–R$'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+            </span>
+            <span th:if="${proj.opportunityType == 'JOB' and proj.monthlySalaryMin != null}">
+              <i class="ti ti-currency-dollar" style="color:#22c55e"></i>
+              <span class="tabular"
+                    th:text="'R$'+${#numbers.formatDecimal(proj.monthlySalaryMin,1,'COMMA',0,'POINT')}
+                             +'/mês'">—</span>
+              <span th:if="${proj.monthlySalaryMax != null}"
+                    class="tabular"
+                    th:text="'–R$'+${#numbers.formatDecimal(proj.monthlySalaryMax,1,'COMMA',0,'POINT')}">—</span>
+            </span>
+            <span>
+              <i class="ti ti-map-pin" style="color:#6b6eff"></i>
+              <span th:switch="${proj.modality}">
+                <span th:case="'REMOTE'">Remoto</span>
+                <span th:case="'ONSITE'">Presencial</span>
+                <span th:case="'HYBRID'">Híbrido</span>
+                <span th:case="*" th:text="${proj.modality}">—</span>
+              </span>
+            </span>
+            <span th:if="${proj.type != null}">
+              <i class="ti ti-briefcase" style="color:#6b6eff"></i>
+              <span th:switch="${proj.type}">
+                <span th:case="'FREELANCE'">Freelance</span>
+                <span th:case="'FULL_TIME'">Tempo integral</span>
+                <span th:case="'PART_TIME'">Meio período</span>
+                <span th:case="*" th:text="${proj.type}">—</span>
+              </span>
+              <span th:if="${proj.opportunityType == 'JOB' and proj.contractType != null}">
+                ·
+                <span th:switch="${proj.contractType}">
+                  <span th:case="'CLT'">CLT</span>
+                  <span th:case="'PJ'">PJ</span>
+                  <span th:case="'FREELANCER'">Freelancer</span>
+                  <span th:case="'INTERNSHIP'">Estágio</span>
+                  <span th:case="'TEMPORARY'">Temporário</span>
+                  <span th:case="*" th:text="${proj.contractType}">—</span>
+                </span>
+              </span>
+            </span>
+            <span th:if="${proj.opportunityType != 'JOB'}">
+              <i class="ti ti-calendar" style="color:#6b6eff"></i>
+              <span th:if="${proj.deadline != null}"
+                    th:text="'Entrega prevista: ' + ${#temporals.format(proj.deadline,'dd/MM/yyyy')}">—</span>
+              <span th:unless="${proj.deadline != null}" style="color:#475569">Prazo não informado</span>
+            </span>
+            <span th:if="${proj.opportunityType == 'JOB'}">
+              <i class="ti ti-calendar" style="color:#6b6eff"></i>
+              <span th:if="${proj.startDate != null}"
+                    th:text="'Início previsto: ' + ${#temporals.format(proj.startDate,'dd/MM/yyyy')}">—</span>
+              <span th:unless="${proj.startDate != null}" style="color:#475569">Início não informado</span>
+            </span>
+            <span th:if="${proj.experienceLevel != null}">
+              <i class="ti ti-award" style="color:#a78bfa"></i>
+              <span th:switch="${proj.experienceLevel}">
+                <span th:case="'INTERNSHIP'">Estágio</span>
+                <span th:case="'TRAINEE'">Trainee</span>
+                <span th:case="'JUNIOR'">Júnior</span>
+                <span th:case="'PLENO'">Pleno</span>
+                <span th:case="'SENIOR'">Sênior</span>
+                <span th:case="*" th:text="${proj.experienceLevel}">—</span>
+              </span>
+            </span>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 mb-3"
+               th:if="${proj.requiredSkills != null and !#lists.isEmpty(proj.requiredSkills)}">
+            <span th:each="sk : ${proj.requiredSkills}"
+                  class="nexus-chip nexus-chip-tech" th:text="${sk.name}">Skill</span>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a th:if="${proj.companyId != null}"
+               th:href="@{/public/company/{id}(id=${proj.companyId})}"
+               onclick="event.stopPropagation()"
+               class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+              <i class="ti ti-building"></i> Ver empresa
+            </a>
           </div>
 
         </div>

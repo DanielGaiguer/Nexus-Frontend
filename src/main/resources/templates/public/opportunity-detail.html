@@ -83,43 +83,6 @@
 
                 <div class="row g-3">
 
-                    <div class="col-lg-8">
-
-                        <div class="card card-bg border-0 p-4 mb-3">
-                            <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
-                                <i class="ti ti-article me-2" style="color:var(--primary)"></i>Descrição
-                            </h5>
-                            <p style="color:#94a3b8;font-size:0.875rem;line-height:1.7;margin-bottom:0"
-                               th:text="${project.description != null ? project.description : 'Nenhuma descrição cadastrada.'}">—</p>
-                        </div>
-
-                        <div class="card card-bg border-0 p-4 mb-3">
-                            <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
-                                <i class="ti ti-code me-2" style="color:var(--primary)"></i>Skills exigidas
-                            </h5>
-                            <div class="d-flex flex-wrap gap-2"
-                                 th:if="${project.requiredSkills != null and !project.requiredSkills.isEmpty()}">
-                                <span th:each="sk : ${project.requiredSkills}"
-                                      class="nexus-chip nexus-chip-tech"
-                                      th:text="${sk.name}">Skill</span>
-                            </div>
-                            <p th:unless="${project.requiredSkills != null and !project.requiredSkills.isEmpty()}"
-                               style="color:#475569;font-size:0.875rem;margin-bottom:0">
-                                Nenhuma skill exigida.
-                            </p>
-                        </div>
-
-                        <div class="card card-bg border-0 p-4 mb-3"
-                             th:if="${project.benefits != null and !project.benefits.isEmpty()}">
-                            <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
-                                <i class="ti ti-gift me-2" style="color:var(--primary)"></i>Benefícios
-                            </h5>
-                            <p style="color:#94a3b8;font-size:0.875rem;line-height:1.7;margin-bottom:0"
-                               th:text="${project.benefits}">—</p>
-                        </div>
-
-                    </div>
-
                     <div class="col-lg-4">
 
                         <div class="card card-bg border-0 p-4 mb-3">
@@ -262,6 +225,44 @@
                         </div>
 
                     </div>
+
+                    <div class="col-lg-8">
+
+                        <div class="card card-bg border-0 p-4 mb-3">
+                            <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
+                                <i class="ti ti-article me-2" style="color:var(--primary)"></i>Descrição
+                            </h5>
+                            <p style="color:#94a3b8;font-size:0.875rem;line-height:1.7;margin-bottom:0"
+                               th:text="${project.description != null ? project.description : 'Nenhuma descrição cadastrada.'}">—</p>
+                        </div>
+
+                        <div class="card card-bg border-0 p-4 mb-3">
+                            <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
+                                <i class="ti ti-code me-2" style="color:var(--primary)"></i>Skills exigidas
+                            </h5>
+                            <div class="d-flex flex-wrap gap-2"
+                                 th:if="${project.requiredSkills != null and !project.requiredSkills.isEmpty()}">
+                                <span th:each="sk : ${project.requiredSkills}"
+                                      class="nexus-chip nexus-chip-tech"
+                                      th:text="${sk.name}">Skill</span>
+                            </div>
+                            <p th:unless="${project.requiredSkills != null and !project.requiredSkills.isEmpty()}"
+                               style="color:#475569;font-size:0.875rem;margin-bottom:0">
+                                Nenhuma skill exigida.
+                            </p>
+                        </div>
+
+                        <div class="card card-bg border-0 p-4 mb-3"
+                             th:if="${project.benefits != null and !project.benefits.isEmpty()}">
+                            <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
+                                <i class="ti ti-gift me-2" style="color:var(--primary)"></i>Benefícios
+                            </h5>
+                            <p style="color:#94a3b8;font-size:0.875rem;line-height:1.7;margin-bottom:0"
+                               th:text="${project.benefits}">—</p>
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>

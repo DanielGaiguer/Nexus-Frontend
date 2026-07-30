@@ -401,7 +401,10 @@ public class ProfessionalController {
     public String opportunities(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         List<MatchDTO> opportunities = professionalService.getOpportunities(token);
+        List<SkillDTO> allSkills = professionalService.getAllSkills(token);
+
         model.addAttribute("opportunities", opportunities);
+        model.addAttribute("allSkills", allSkills);
         model.addAttribute("activePage", "opportunities");
         return "pro/pro-opportunities";
     }

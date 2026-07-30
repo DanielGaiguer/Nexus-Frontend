@@ -146,9 +146,23 @@ public class CompanyController {
     public String projects(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         List<ProjectDTO> projects = projectService.getProjects(token);
+        List<SkillDTO> allSkills = companyService.getSkills(token);
         model.addAttribute("projects", projects);
+        model.addAttribute("allSkills", allSkills);
         model.addAttribute("activePage", "projects");
         return "company/company-projects";
+    }
+
+    @GetMapping("/opportunities")
+    public String opportunities(HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        List<ProjectDTO> opportunities = companyService.getAllOpportunities(token);
+        List<SkillDTO> allSkills = companyService.getSkills(token);
+
+        model.addAttribute("opportunities", opportunities);
+        model.addAttribute("allSkills", allSkills);
+        model.addAttribute("activePage", "opportunities");
+        return "company/company-opportunities";
     }
 
     @GetMapping("/projects/new")

@@ -267,12 +267,14 @@ public class AdminController {
             Model model) {
         String token = (String) session.getAttribute("token");
         List<ProjectDTO> projects = adminService.getAllProjects(token);
+        List<SkillDTO> allSkills = adminService.getSkills(token);
 
         long openCount   = projects.stream().filter(p -> "OPEN".equals(p.getStatus())).count();
         long closedCount = projects.stream()
                 .filter(p -> "CLOSED".equals(p.getStatus()) || "CANCELLED".equals(p.getStatus())).count();
 
         model.addAttribute("projects",   projects);
+        model.addAttribute("allSkills",  allSkills);
         model.addAttribute("openCount",  openCount);
         model.addAttribute("closedCount", closedCount);
         model.addAttribute("filterOpportunityType", opportunityType != null ? opportunityType : "");

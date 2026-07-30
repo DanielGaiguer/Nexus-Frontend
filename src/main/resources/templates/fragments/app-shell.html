@@ -136,7 +136,7 @@
           <a class="nav-link" th:href="@{/company/projects}"
              th:classappend="${activePage == 'projects'} ? ' active'">
             <span class="nav-link-icon"><i class="ti ti-folder"></i></span>
-            <span>Oportunidades</span>
+            <span style="flex:1;min-width:0;font-size:0.8rem;line-height:1.15;white-space:normal">Minhas oportunidades</span>
           </a>
         </li>
         <li class="nav-item">
@@ -166,6 +166,13 @@
              th:classappend="${activePage == 'companies'} ? ' active'">
             <span class="nav-link-icon"><i class="ti ti-building"></i></span>
             <span>Empresas</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/company/opportunities}"
+             th:classappend="${activePage == 'opportunities'} ? ' active'">
+            <span class="nav-link-icon"><i class="ti ti-sparkles"></i></span>
+            <span>Oportunidades</span>
           </a>
         </li>
         <li class="nav-item">

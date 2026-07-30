@@ -168,6 +168,21 @@ public class CompanyService {
                 .body(ContactInfoDTO.class);
     }
 
+    // Vitrine com todas as oportunidades da plataforma, para a company navegar o mercado
+    public List<ProjectDTO> getAllOpportunities(String token) {
+        ProjectDTO[] response = restClient.get()
+                .uri("/company/opportunities")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Erro ao buscar oportunidades");
+                })
+                .body(ProjectDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
     public void removePhoto(String token) {
         restClient.method(org.springframework.http.HttpMethod.DELETE)
                 .uri("/company/profile/photo")
