@@ -8,11 +8,13 @@ public class RegisterProfessionalRequestDTO{
     private String cep;
     private Double expectedSalaryCLT;
     private Double expectedSalaryPJ;
+    private Double freelanceMinExpectation;
+    private Double freelanceMaxExpectation;
 
     public RegisterProfessionalRequestDTO() {
     }
 
-    public RegisterProfessionalRequestDTO(String email, String password, String name, String phone, String cep, Double expectedSalaryCLT, Double expectedSalaryPJ) {
+    public RegisterProfessionalRequestDTO(String email, String password, String name, String phone, String cep, Double expectedSalaryCLT, Double expectedSalaryPJ, Double freelanceMinExpectation, Double freelanceMaxExpectation) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -20,6 +22,8 @@ public class RegisterProfessionalRequestDTO{
         this.cep = cep;
         this.expectedSalaryCLT = expectedSalaryCLT;
         this.expectedSalaryPJ = expectedSalaryPJ;
+        this.freelanceMinExpectation = freelanceMinExpectation;
+        this.freelanceMaxExpectation = freelanceMaxExpectation;
     }
 
     public String getEmail() {
@@ -78,6 +82,21 @@ public class RegisterProfessionalRequestDTO{
         this.expectedSalaryPJ = expectedSalaryPJ;
     }
 
+    public Double getFreelanceMinExpectation() {
+        return freelanceMinExpectation;
+    }
+
+    public void setFreelanceMinExpectation(Double freelanceMinExpectation) {
+        this.freelanceMinExpectation = freelanceMinExpectation;
+    }
+
+    public Double getFreelanceMaxExpectation() {
+        return freelanceMaxExpectation;
+    }
+
+    public void setFreelanceMaxExpectation(Double freelanceMaxExpectation) {
+        this.freelanceMaxExpectation = freelanceMaxExpectation;
+    }
 
 }
 

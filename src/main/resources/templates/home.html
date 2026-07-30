@@ -354,13 +354,23 @@
             font-size: 22px;
             color: var(--nexus-white);
         }
-        .mv-score-value::after { content: '%'; }
         .mv-score-label {
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             color: var(--nexus-muted);
         }
+
+        .match-visualizer-hero { max-width: 380px; }
+        .match-visualizer-hero .mv-card { padding: 22px 26px; gap: 20px; }
+        .match-visualizer-hero .mv-icon { width: 50px; height: 50px; border-radius: 15px; }
+        .match-visualizer-hero .mv-icon svg { width: 24px; height: 24px; }
+        .match-visualizer-hero .mv-card-title { font-size: 16px; }
+        .match-visualizer-hero .mv-card-sub { font-size: 15px; margin-top: 4px; }
+        .match-visualizer-hero .mv-connector { height: 180px; width: 4px; }
+        .match-visualizer-hero .mv-score { width: 140px; height: 140px; }
+        .match-visualizer-hero .mv-score-value { font-size: 32px; }
+        .match-visualizer-hero .mv-score-label { font-size: 12px; }
 
         @keyframes floatDown { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
         @keyframes floatUp { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
@@ -526,17 +536,25 @@
             text-align: center;
             overflow: hidden;
         }
-        .cta-visual-decor {
+        .nx-cta-final .section-title { font-size: clamp(30px, 5vw, 48px); margin-bottom: 14px; }
+        .cta-wordmark-decor {
             position: absolute;
             inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0.15;
+            opacity: 0.10;
             pointer-events: none;
         }
-        .cta-visual-decor .match-visualizer { transform: scale(1.4); }
-        .nx-cta-final .section-title { font-size: clamp(30px, 5vw, 48px); margin-bottom: 14px; }
+        .cta-wordmark-decor span {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+            font-size: clamp(60px, 11vw, 160px);
+            line-height: 1;
+            color: var(--nexus-white);
+            white-space: nowrap;
+        }
+        .cta-wordmark-decor .dot { color: var(--nexus-accent); }
         .nx-cta-final p { color: var(--nexus-muted); font-size: 16.5px; margin-bottom: 36px; }
         .cta-final-actions { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
 
@@ -643,7 +661,7 @@
                     </p>
                     <div class="hero-actions hero-fade" style="animation-delay:0.3s;">
                         <a class="btn-nx btn-nx-filled btn-nx-lg" th:href="@{/auth/register/professional}" href="/auth/register/professional">Encontrar projetos</a>
-                        <a class="btn-nx btn-nx-ghost btn-nx-lg" th:href="@{/auth/register/company}" href="/auth/register/company">Publicar vaga</a>
+                        <a class="btn-nx btn-nx-ghost btn-nx-lg" th:href="@{/auth/register/company}" href="/auth/register/company">Publicar Oportunidades</a>
                     </div>
                     <div class="hero-proof hero-fade" style="animation-delay:0.4s;">
                         <span>▪ +2.400 profissionais cadastrados</span>
@@ -655,7 +673,7 @@
                 </div>
 
                 <div>
-                    <div class="match-visualizer" role="img" aria-label="Visualizador de score de compatibilidade: 94% de match entre empresa e profissional">
+                    <div class="match-visualizer match-visualizer-hero" role="img" aria-label="Visualizador de score de compatibilidade: 94% de match entre empresa e profissional">
                         <div class="mv-card mv-card-company">
                             <div class="mv-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -684,7 +702,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <div class="mv-card-title">Marina Torres</div>
+                                <div class="mv-card-title">Daniel Gaiguer</div>
                                 <div class="mv-card-sub">Backend · 6 anos exp.</div>
                             </div>
                         </div>
@@ -859,32 +877,7 @@
     </section>
 
     <section class="nx-cta-final" id="cta-final">
-        <div class="cta-visual-decor" aria-hidden="true">
-            <div class="match-visualizer">
-                <div class="mv-card mv-card-company">
-                    <div class="mv-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="4" y="2" width="16" height="20" rx="1"></rect>
-                        </svg>
-                    </div>
-                    <div><div class="mv-card-title">Empresa</div></div>
-                </div>
-                <div class="mv-connector">
-                    <div class="mv-score">
-                        <span class="mv-score-value">94</span>
-                        <span class="mv-score-label">match</span>
-                    </div>
-                </div>
-                <div class="mv-card mv-card-pro">
-                    <div class="mv-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="8" r="4"></circle>
-                        </svg>
-                    </div>
-                    <div><div class="mv-card-title">Profissional</div></div>
-                </div>
-            </div>
-        </div>
+        <div class="cta-wordmark-decor" aria-hidden="true"><span>nexus<span class="dot">.</span></span></div>
         <div class="nx-container" style="position:relative;">
             <h2 class="section-title">Seu próximo projeto começa aqui.</h2>
             <p>Cadastro gratuito. Sem cartão de crédito.</p>
@@ -929,7 +922,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            © 2025 Nexus. Todos os direitos reservados.
+            © 2026 Nexus. Todos os direitos reservados.
         </div>
     </div>
 </footer>

@@ -91,6 +91,13 @@
                                     </div>
                                 </div>
 
+                                <div class="form-check mb-3">
+                                    <input type="checkbox" class="form-check-input" id="allowCepUsageCompany" name="allowCepUsage" value="true">
+                                    <label class="form-check-label small" for="allowCepUsageCompany" style="color:var(--text-secondary);">
+                                        Permitir o uso do da minha localização para encontrar oportunidades mais pr&oacute;ximas e melhorar a relev&acirc;ncia dos resultados.
+                                    </label>
+                                </div>
+
                                 <button type="submit" class="btn btn-primary btn-glow w-100 py-2 mt-2">
                                     <i class="ti ti-building-plus me-2"></i>Solicitar cadastro
                                 </button>
@@ -123,7 +130,27 @@
     <div th:replace="~{fragments/scripts :: scripts}"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            initFormValidation(document.querySelector('form'));
+            var form = document.querySelector('form');
+            if (!form) return;
+            initFormValidation(form);
+            attachSubmitGuard(form, function() {
+                var companyName = form.querySelector('[name="companyName"]').value.trim();
+                var email       = form.querySelector('[name="email"]').value.trim();
+                var password    = form.querySelector('[name="password"]').value;
+                var taxId       = form.querySelector('[name="taxId"]').value.trim();
+                var phone       = form.querySelector('[name="phone"]').value.trim();
+                var cep         = form.querySelector('[name="cep"]').value.trim();
+                var cepConsent  = form.querySelector('[name="allowCepUsage"]').checked;
+
+                var companyNameOk = !getFieldError('companyName', companyName);
+                var emailOk       = !getFieldError('email', email);
+                var passwordOk    = !getFieldError('password', password);
+                var taxIdOk       = !taxId || validateCNPJ(taxId);
+                var phoneOk       = !phone || validatePhone(phone);
+                var cepOk         = !cep || validateCEP(cep);
+
+                return companyNameOk && emailOk && passwordOk && taxIdOk && phoneOk && cepOk && cepConsent;
+            });
         });
     </script>
 
