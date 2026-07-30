@@ -328,10 +328,10 @@
 
 <script th:inline="javascript">
 
-var TOTAL_PROFESSIONALS =  0;
-var TOTAL_COMPANIES     =  0;
-var AVG_SCORE           =  0;
-var MONTHLY_DATA        =  [];
+var TOTAL_PROFESSIONALS = /*[[${dashboard.totalProfessionals}]]*/ 0;
+var TOTAL_COMPANIES     = /*[[${dashboard.totalCompanies}]]*/ 0;
+var AVG_SCORE           = /*[[${dashboard.averageMatchScore}]]*/ 0;
+var MONTHLY_DATA        = /*[[${monthlyData}]]*/ [];
 
 var ECHARTS_BG     = 'transparent';
 var COLOR_PRIMARY  = '#6b6eff';

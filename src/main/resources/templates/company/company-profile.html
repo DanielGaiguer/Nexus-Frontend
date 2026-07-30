@@ -590,15 +590,15 @@ document.getElementById('confirmRemoveCompanyPhotoBtn').addEventListener('click'
 </script>
 <script th:inline="javascript">
 var CO_DATA = {
-  companyName:      '',
-  phone:            '',
-  cep:              '',
-  profilePhotoUrl:  '',
-  description:      '',
-  taxId:            '',
-  email:            '',
-  city:             '',
-  linkedinUrl:      ''
+  companyName:      /*[[${profile.companyName}]]*/ '',
+  phone:            /*[[${profile.phone}]]*/ '',
+  cep:              /*[[${profile.cep}]]*/ '',
+  profilePhotoUrl:  /*[[${profile.profilePhotoUrl}]]*/ '',
+  description:      /*[[${profile.description}]]*/ '',
+  taxId:            /*[[${profile.taxId}]]*/ '',
+  email:            /*[[${profile.email}]]*/ '',
+  city:             /*[[${profile.city}]]*/ '',
+  linkedinUrl:      /*[[${profile.linkedinUrl}]]*/ ''
 };
 NexusCompleteness.render(CO_DATA, document.getElementById('completenessWidgetCo'), true);
 </script>

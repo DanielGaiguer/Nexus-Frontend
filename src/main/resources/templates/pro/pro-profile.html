@@ -792,21 +792,21 @@ document.getElementById('confirmRemovePhotoBtn').addEventListener('click', funct
 </script>
 <script th:inline="javascript">
 var PROFILE_DATA = {
-  name:              '',
-  phone:             '',
-  cep:               '',
-  profilePhotoUrl:   '',
-  skills:            [],
-  projects:          0,
-  experienceLevel:   '',
-  preferredOpportunityTypes:  [],
-  salaryFilled:      false,
-  preferredTypes:    [],
-  linkedinUrl:       '',
-  expectedSalaryCLT:          null,
-  expectedSalaryPJ:           null,
-  freelanceMinExpectation:    null,
-  freelanceMaxExpectation:    null
+  name:              /*[[${profile.name}]]*/ '',
+  phone:             /*[[${profile.phone}]]*/ '',
+  cep:               /*[[${profile.cep}]]*/ '',
+  profilePhotoUrl:   /*[[${profile.profilePhotoUrl}]]*/ '',
+  skills:            /*[[${profile.skills}]]*/ [],
+  projects:          /*[[${projectsCount}]]*/ 0,
+  experienceLevel:   /*[[${profile.experienceLevel}]]*/ '',
+  preferredOpportunityTypes:  /*[[${profile.preferredOpportunityTypes}]]*/ [],
+  salaryFilled:      /*[[${profile.expectedSalaryCLT != null or profile.expectedSalaryPJ != null or profile.freelanceMinExpectation != null or profile.freelanceMaxExpectation != null}]]*/ false,
+  preferredTypes:    /*[[${profile.preferredTypes}]]*/ [],
+  linkedinUrl:       /*[[${profile.linkedinUrl}]]*/ '',
+  expectedSalaryCLT:          /*[[${profile.expectedSalaryCLT}]]*/ null,
+  expectedSalaryPJ:           /*[[${profile.expectedSalaryPJ}]]*/ null,
+  freelanceMinExpectation:    /*[[${profile.freelanceMinExpectation}]]*/ null,
+  freelanceMaxExpectation:    /*[[${profile.freelanceMaxExpectation}]]*/ null
 };
 if (typeof PROFILE_DATA.projects === 'number') {
   PROFILE_DATA.projects = new Array(PROFILE_DATA.projects);
@@ -850,11 +850,11 @@ document.getElementById('addLinkedinForm').addEventListener('submit', function(e
 </script>
 <script th:inline="javascript">
 
-var INITIAL_SKILLS_COUNT  =  0;
-var INITIAL_PROJECTS_COUNT =  0;
-var INITIAL_REPUTATION     =  0;
-var INITIAL_AVAILABLE      =  true;
-var AVG_PROJECT_BUDGET     =  10000;
+var INITIAL_SKILLS_COUNT  = /*[[${profile.skills != null ? #lists.size(profile.skills) : 0}]]*/ 0;
+var INITIAL_PROJECTS_COUNT = /*[[${projectsCount}]]*/ 0;
+var INITIAL_REPUTATION     = /*[[${profile.reputation}]]*/ 0;
+var INITIAL_AVAILABLE      = /*[[${profile.available}]]*/ true;
+var AVG_PROJECT_BUDGET     = 10000;
 
 var simSkills    = INITIAL_SKILLS_COUNT;
 var simAvailable = INITIAL_AVAILABLE;

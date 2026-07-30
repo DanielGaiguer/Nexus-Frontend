@@ -649,7 +649,7 @@ document.querySelectorAll('.contact-trigger').forEach(function(btn) {
 </script>
 
 <script th:inline="javascript">
-var justConfirmedMatchId =  null;
+var justConfirmedMatchId = /*[[${justConfirmedMatchId}]]*/ null;
 if (justConfirmedMatchId) {
   switchTab('confirmed');
   var justConfirmedBtn = document.querySelector('.contact-trigger[data-id="' + justConfirmedMatchId + '"]');

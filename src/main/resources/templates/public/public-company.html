@@ -442,7 +442,7 @@
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
 <script th:inline="javascript">
-var COMPANY_ID =  0;
+var COMPANY_ID = /*[[${company.id}]]*/ 0;
 var selectedProjectId    = null;
 var selectedProjectTitle = null;
 

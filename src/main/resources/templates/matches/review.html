@@ -17,7 +17,7 @@
         </div>
         <script th:inline="javascript">
           setTimeout(function() {
-            window.location.href =  '/company/matches';
+            window.location.href = /*[[${session.userRole == 'PROFESSIONAL' ? '/pro/matches' : '/company/matches'}]]*/ '/company/matches';
           }, 2000);
         </script>
       </div>

@@ -329,8 +329,8 @@
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script th:inline="javascript">
 
-var INITIAL_TYPE =  'PROJECT';
-var IS_EDIT =  false;
+var INITIAL_TYPE = /*[[${project != null and project.opportunityType != null ? project.opportunityType : 'PROJECT'}]]*/ 'PROJECT';
+var IS_EDIT = /*[[${editMode}]]*/ false;
 
 function setOpportunityType(type) {
   document.getElementById('opportunityType').value = type;

@@ -340,18 +340,18 @@
 
 <script th:inline="javascript">
 
-var MONTHLY       =  [];
-var SCORE_DIST    =  [];
-var COMPANY_RATES =  [];
-var SKILL_DEM     =  [];
+var MONTHLY       = /*[[${monthlyMatches}]]*/ [];
+var SCORE_DIST    = /*[[${scoreDistribution}]]*/ [];
+var COMPANY_RATES = /*[[${companyRates}]]*/ [];
+var SKILL_DEM     = /*[[${skillDemand}]]*/ [];
 
 var REP = {
-  overall:      0,
-  confidence:   0,
-  communication:    0,
-  reliability:      0,
-  punctuality:      0,
-  professionalism:  0
+  overall:          /*[[${analytics?.reputationSummary?.overallReputation}]]*/ 0,
+  confidence:       /*[[${analytics?.reputationSummary?.confidenceScore}]]*/ 0,
+  communication:    /*[[${analytics?.reputationSummary?.communication}]]*/ 0,
+  reliability:      /*[[${analytics?.reputationSummary?.reliability}]]*/ 0,
+  punctuality:      /*[[${analytics?.reputationSummary?.punctuality}]]*/ 0,
+  professionalism:  /*[[${analytics?.reputationSummary?.professionalism}]]*/ 0
 };
 
 var C = {

@@ -191,11 +191,11 @@
 </div>
 
 <script th:inline="javascript">
-var PROFESSIONALS =  [];
-var COMPANIES =  [];
-var OPPORTUNITIES  =  [];
-var CENTER_LAT =  -23.5505;
-var CENTER_LNG =  -46.6333;
+var PROFESSIONALS = /*[[${professionalsJson}]]*/ [];
+var COMPANIES = /*[[${companiesJson}]]*/ [];
+var OPPORTUNITIES = /*[[${opportunitiesJson}]]*/ [];
+var CENTER_LAT = /*[[${centerLat}]]*/ -23.5505;
+var CENTER_LNG = /*[[${centerLng}]]*/ -46.6333;
 var DEFAULT_RADIUS = Infinity;
 
 function highlightOppType(el) {

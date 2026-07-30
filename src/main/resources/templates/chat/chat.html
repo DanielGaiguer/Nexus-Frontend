@@ -197,17 +197,17 @@
 </div>
 
 <script th:inline="javascript">
-  window.NEXUS_MATCH_ACTIVE =  true;
-  window.NEXUS_DAYS_UNTIL_EXPIRATION =  30;
+  window.NEXUS_MATCH_ACTIVE = /*[[${summary.matchActive}]]*/ true;
+  window.NEXUS_DAYS_UNTIL_EXPIRATION = /*[[${summary.daysUntilExpiration}]]*/ 30;
 
   var NEXUS_CHAT = {
-    matchId:  0,
-    myUserId:  0,
-    matchesUrl:  '/',
-    matchActive:  true,
-    wsBaseUrl:  'http://localhost:8081'
+    matchId: /*[[${matchId}]]*/ 0,
+    myUserId: /*[[${session.userId}]]*/ 0,
+    matchesUrl: /*[[${matchesUrl}]]*/ '/',
+    matchActive: /*[[${summary.matchActive}]]*/ true,
+    wsBaseUrl: /*[[${wsBaseUrl}]]*/ 'http://localhost:8081'
   };
-  window.NEXUS_WS_TOKEN =  null;
+  window.NEXUS_WS_TOKEN = /*[[${wsToken}]]*/ null;
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>

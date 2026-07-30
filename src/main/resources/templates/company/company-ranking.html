@@ -366,7 +366,7 @@
 </div>
 
 <script th:inline="javascript">
-var PROJECT_ID =  0;
+var PROJECT_ID = /*[[${project.id}]]*/ 0;
 var selectedIds = [];
 
 function toggleSelection(cb) {

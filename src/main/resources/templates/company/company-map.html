@@ -212,13 +212,13 @@
 </div>
 
 <script th:inline="javascript">
-var PROFESSIONALS =  [];
-var COMPANIES =  [];
-var OPPORTUNITIES  =  [];
-var CENTER_LAT =  -23.5505;
-var CENTER_LNG =  -46.6333;
-var MY_LAT =  null;
-var MY_LNG =  null;
+var PROFESSIONALS = /*[[${professionalsJson}]]*/ [];
+var COMPANIES = /*[[${companiesJson}]]*/ [];
+var OPPORTUNITIES = /*[[${opportunitiesJson}]]*/ [];
+var CENTER_LAT = /*[[${userLat}]]*/ -23.5505;
+var CENTER_LNG = /*[[${userLng}]]*/ -46.6333;
+var MY_LAT = /*[[${myLat}]]*/ null;
+var MY_LNG = /*[[${myLng}]]*/ null;
 
 function highlightOppType(el) {
   document.querySelectorAll('.opp-type-opt').forEach(function(o) {

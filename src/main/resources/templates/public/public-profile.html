@@ -355,7 +355,7 @@
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
 <script th:inline="javascript">
-var PROFESSIONAL_ID =  0;
+var PROFESSIONAL_ID = /*[[${professional.id}]]*/ 0;
 var selectedProjectId    = null;
 var selectedProjectTitle = null;
 

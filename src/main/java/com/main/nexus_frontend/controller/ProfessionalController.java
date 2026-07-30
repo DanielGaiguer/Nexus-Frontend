@@ -88,9 +88,17 @@ public class ProfessionalController {
                         .average()
                         .orElse(0.0);
 
+        int projectsCount;
+        try {
+            projectsCount = professionalService.getProjects(token).size();
+        } catch (Exception e) {
+            projectsCount = 0;
+        }
+
         model.addAttribute("profile", profile);
         model.addAttribute("allSkills", allSkills);
         model.addAttribute("avgScore", Math.round(avgScore));
+        model.addAttribute("projectsCount", projectsCount);
         try {
             model.addAttribute("reputation", reputationService.getProfessional(token, profile.getId()));
         } catch (Exception e) {
