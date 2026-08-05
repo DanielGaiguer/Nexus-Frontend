@@ -149,6 +149,7 @@
       <div class="nexus-tabs mb-4">
         <button class="nexus-tab active" id="tab-all" onclick="filterStatus('all')">Todos</button>
         <button class="nexus-tab" id="tab-open" onclick="filterStatus('OPEN')">Aberto</button>
+        <button class="nexus-tab" id="tab-paused" onclick="filterStatus('PAUSED')">Pausado</button>
         <button class="nexus-tab" id="tab-closed" onclick="filterStatus('CLOSED')">Encerrado</button>
         <button class="nexus-tab" id="tab-cancelled" onclick="filterStatus('CANCELLED')">Cancelado</button>
       </div>
@@ -205,8 +206,15 @@
                         th:text="${proj.title}">Título</span>
                   <span th:switch="${proj.status}">
                     <span th:case="'OPEN'"      class="nexus-status success">Aberto</span>
+                    <span th:case="'PAUSED'"    class="nexus-status warning">Pausado — limite de vagas atingido</span>
                     <span th:case="'CLOSED'"    class="nexus-status danger">Encerrado</span>
                     <span th:case="'CANCELLED'" class="nexus-status danger">Cancelado</span>
+                  </span>
+                  <span th:if="${proj.visibleToCompanies != null and !proj.visibleToCompanies}"
+                        title="Não aparece para outras empresas no mapa nem na aba Oportunidades"
+                        style="font-size:0.65rem;font-weight:700;padding:0.15em 0.5em;border-radius:5px;
+                               background:rgba(148,163,184,0.12);color:#94a3b8;border:1px solid rgba(148,163,184,0.25)">
+                    <i class="ti ti-eye-off" style="font-size:0.65rem;margin-right:2px"></i>Oculto p/ empresas
                   </span>
                 </div>
                 <div style="color:#475569;font-size:0.78rem"
@@ -325,6 +333,15 @@
                 <i class="ti ti-refresh"></i> Ativar oportunidade
               </button>
               <button type="button"
+                      th:if="${proj.status == 'PAUSED'}"
+                      class="nexus-btn nexus-btn-sm paused-trigger"
+                      style="background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.35)"
+                      th:data-id="${proj.id}"
+                      th:data-title="${proj.title}"
+                      th:data-max="${proj.maxPositions}">
+                <i class="ti ti-player-pause"></i> Mudar status
+              </button>
+              <button type="button"
                       class="nexus-btn nexus-btn-danger-outline nexus-btn-sm delete-proj-trigger"
                       th:data-id="${proj.id}"
                       th:data-title="${proj.title}">
@@ -367,6 +384,52 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade nexus-modal" id="pausedModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(245,158,11,0.2)">
+        <div class="d-flex align-items-center">
+          <div style="width:4px;height:40px;background:#f59e0b;border-radius:2px;margin-right:0.75rem"></div>
+          <h5 class="modal-title fw-semibold text-white mb-0">Limite de vagas atingido</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="color:#94a3b8">
+          O projeto <strong class="text-white" id="pausedProjTitle">—</strong> preencheu todas as vagas
+          disponíveis e foi pausado automaticamente. Ele não aparece mais para novos profissionais.
+          O que você deseja fazer?
+        </p>
+
+        <form id="pausedResumeForm" method="post" class="mb-3">
+          <label class="nexus-label">Reabrir com mais vagas</label>
+          <div class="d-flex gap-2 align-items-center">
+            <input type="number" class="nexus-input tabular" name="additionalPositions"
+                   id="pausedAdditionalPositions" min="1" value="1" style="max-width:120px">
+            <button type="submit" class="nexus-btn nexus-btn-success">
+              <i class="ti ti-refresh"></i> Reabrir
+            </button>
+          </div>
+          <div style="color:#475569;font-size:0.75rem;margin-top:4px" id="pausedPositionsHint">
+            Limite atual: — vaga(s) — informe quantas vagas extras deseja adicionar
+          </div>
+        </form>
+
+        <form id="pausedCloseForm" method="post">
+          <button type="submit" class="nexus-btn nexus-btn-danger-outline w-100">
+            <i class="ti ti-lock"></i> Encerrar projeto
+          </button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">
+          Responder depois
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -579,6 +642,30 @@ document.querySelectorAll('.reopen-trigger').forEach(function(btn) {
     new bootstrap.Modal(document.getElementById('reopenModal')).show();
   });
 });
+
+function openPausedModal(btn) {
+  var max = parseInt(btn.dataset.max) || 1;
+
+  document.getElementById('pausedProjTitle').textContent = btn.dataset.title;
+  document.getElementById('pausedResumeForm').action = '/company/projects/' + btn.dataset.id + '/resume';
+  document.getElementById('pausedCloseForm').action = '/company/projects/' + btn.dataset.id + '/close';
+  document.getElementById('pausedAdditionalPositions').value = 1;
+  document.getElementById('pausedPositionsHint').textContent =
+    'Limite atual: ' + max + ' vaga(s) — informe quantas vagas extras deseja adicionar';
+
+  new bootstrap.Modal(document.getElementById('pausedModal')).show();
+}
+
+document.querySelectorAll('.paused-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() { openPausedModal(this); });
+});
+
+// Ao entrar em "Meus Projetos" com algum projeto pausado por limite de vagas, abre
+// automaticamente a janela de decisão (encerrar / reabrir / responder depois) para o primeiro.
+var firstPausedTrigger = document.querySelector('.paused-trigger');
+if (firstPausedTrigger) {
+  openPausedModal(firstPausedTrigger);
+}
 </script>
 </body>
 </html>

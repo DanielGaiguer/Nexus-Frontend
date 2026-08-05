@@ -231,18 +231,22 @@
           <div class="d-flex gap-4 flex-wrap mb-3" style="font-size:0.8rem;color:#64748b">
             <span th:if="${proj.opportunityType != 'JOB'}">
               <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
-              <span class="tabular"
+              <span th:if="${proj.salaryVisible and proj.minimumBudget != null}"
+                    class="tabular"
                     th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}
                              +'–R$'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+              <span th:unless="${proj.salaryVisible}">A combinar</span>
             </span>
-            <span th:if="${proj.opportunityType == 'JOB' and proj.monthlySalaryMin != null}">
+            <span th:if="${proj.opportunityType == 'JOB'}">
               <i class="ti ti-currency-dollar" style="color:#22c55e"></i>
-              <span class="tabular"
+              <span th:if="${proj.salaryVisible and proj.monthlySalaryMin != null}"
+                    class="tabular"
                     th:text="'R$'+${#numbers.formatDecimal(proj.monthlySalaryMin,1,'COMMA',0,'POINT')}
                              +'/mês'">—</span>
-              <span th:if="${proj.monthlySalaryMax != null}"
+              <span th:if="${proj.salaryVisible and proj.monthlySalaryMax != null}"
                     class="tabular"
                     th:text="'–R$'+${#numbers.formatDecimal(proj.monthlySalaryMax,1,'COMMA',0,'POINT')}">—</span>
+              <span th:unless="${proj.salaryVisible}">A combinar</span>
             </span>
             <span>
               <i class="ti ti-map-pin" style="color:#6b6eff"></i>

@@ -271,12 +271,14 @@
                       th:text="${proj.title}">Título</span>
               </div>
               <div class="d-flex gap-3 flex-wrap" style="font-size:0.78rem;color:#64748b">
-                <span th:if="${proj.opportunityType != 'JOB' and proj.minimumBudget != null}"
+                <span th:if="${proj.opportunityType != 'JOB' and proj.salaryVisible and proj.minimumBudget != null}"
                       style="font-variant-numeric:tabular-nums;color:#6b6eff;font-weight:500"
                       th:text="'R$'+${#numbers.formatDecimal(proj.minimumBudget,1,'COMMA',0,'POINT')}+'–'+${#numbers.formatDecimal(proj.maximumBudget,1,'COMMA',0,'POINT')}">—</span>
-                <span th:if="${proj.opportunityType == 'JOB' and proj.monthlySalaryMin != null}"
+                <span th:if="${proj.opportunityType == 'JOB' and proj.salaryVisible and proj.monthlySalaryMin != null}"
                       style="font-variant-numeric:tabular-nums;color:#22c55e;font-weight:500"
                       th:text="'R$'+${#numbers.formatDecimal(proj.monthlySalaryMin,1,'COMMA',0,'POINT')}+'/mês'">—</span>
+                <span th:unless="${proj.salaryVisible}"
+                      style="color:#64748b;font-weight:500">A combinar</span>
                 <span th:switch="${proj.modality}">
                   <span th:case="'REMOTE'">Remoto</span>
                   <span th:case="'ONSITE'">Presencial</span>

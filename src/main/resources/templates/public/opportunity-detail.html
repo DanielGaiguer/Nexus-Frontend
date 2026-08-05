@@ -91,19 +91,27 @@
                             </h5>
                             <div class="d-flex flex-column gap-3">
 
-                                <div th:if="${project.monthlySalaryMin != null}">
+                                <div th:if="${project.opportunityType == 'JOB'}">
                                     <div class="nexus-label">Salário mensal</div>
-                                    <div class="tabular fw-semibold" style="color:#6b6eff;font-size:0.95rem">
+                                    <div th:if="${project.salaryVisible and project.monthlySalaryMin != null}"
+                                         class="tabular fw-semibold" style="color:#6b6eff;font-size:0.95rem">
                                         R$ <span th:text="${#numbers.formatDecimal(project.monthlySalaryMin,1,'COMMA',0,'POINT')}">0</span>
                                         – R$ <span th:text="${#numbers.formatDecimal(project.monthlySalaryMax,1,'COMMA',0,'POINT')}">0</span>
                                     </div>
+                                    <div th:unless="${project.salaryVisible}" class="fw-semibold" style="color:#64748b;font-size:0.95rem">
+                                        A combinar
+                                    </div>
                                 </div>
 
-                                <div th:if="${project.minimumBudget != null and project.monthlySalaryMin == null}">
+                                <div th:if="${project.opportunityType != 'JOB'}">
                                     <div class="nexus-label">Faixa de budget</div>
-                                    <div class="tabular fw-semibold" style="color:#6b6eff;font-size:0.95rem">
+                                    <div th:if="${project.salaryVisible and project.minimumBudget != null}"
+                                         class="tabular fw-semibold" style="color:#6b6eff;font-size:0.95rem">
                                         R$ <span th:text="${#numbers.formatDecimal(project.minimumBudget,1,'COMMA',0,'POINT')}">0</span>
                                         – R$ <span th:text="${#numbers.formatDecimal(project.maximumBudget,1,'COMMA',0,'POINT')}">0</span>
+                                    </div>
+                                    <div th:unless="${project.salaryVisible}" class="fw-semibold" style="color:#64748b;font-size:0.95rem">
+                                        A combinar
                                     </div>
                                 </div>
 
@@ -177,6 +185,36 @@
                                         <div th:with="pct=${project.maxPositions > 0 and project.filledPositions != null ? (project.filledPositions * 100 / project.maxPositions) : 0}"
                                              th:style="'width:' + ${pct} + '%;height:100%;background:#6b6eff;border-radius:3px;transition:width .3s'"></div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card card-bg border-0 p-4 mb-3"
+                             th:if="${project.salaryVisibleToProfessionals != null}">
+                            <h5 class="fw-semibold text-light mb-3" style="font-size:1rem">
+                                <i class="ti ti-eye me-2" style="color:var(--primary)"></i>Visibilidade
+                            </h5>
+                            <div class="d-flex flex-column gap-2" style="font-size:0.85rem">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span style="color:#94a3b8">Visível para outras empresas</span>
+                                    <span th:if="${project.visibleToCompanies == null or project.visibleToCompanies}"
+                                          class="fw-semibold" style="color:#22c55e">Sim</span>
+                                    <span th:unless="${project.visibleToCompanies == null or project.visibleToCompanies}"
+                                          class="fw-semibold" style="color:#ef4444">Não</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span style="color:#94a3b8">Salário/orçamento visível para profissionais</span>
+                                    <span th:if="${project.salaryVisibleToProfessionals}"
+                                          class="fw-semibold" style="color:#22c55e">Sim</span>
+                                    <span th:unless="${project.salaryVisibleToProfessionals}"
+                                          class="fw-semibold" style="color:#ef4444">Não</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span style="color:#94a3b8">Salário/orçamento visível para empresas</span>
+                                    <span th:if="${project.salaryVisibleToCompanies}"
+                                          class="fw-semibold" style="color:#22c55e">Sim</span>
+                                    <span th:unless="${project.salaryVisibleToCompanies}"
+                                          class="fw-semibold" style="color:#ef4444">Não</span>
                                 </div>
                             </div>
                         </div>

@@ -230,18 +230,22 @@
               <div class="d-flex gap-4 flex-wrap mb-3" style="font-size:0.8rem;color:#64748b">
                 <span th:if="${opp.project != null and opp.project.opportunityType != 'JOB'}">
                   <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
-                  <span class="tabular"
+                  <span th:if="${opp.project.salaryVisible and opp.project.minimumBudget != null}"
+                        class="tabular"
                         th:text="'R$'+${#numbers.formatDecimal(opp.project.minimumBudget,1,'COMMA',0,'POINT')}
                                  +'–R$'+${#numbers.formatDecimal(opp.project.maximumBudget,1,'COMMA',0,'POINT')}">R$—</span>
+                  <span th:unless="${opp.project.salaryVisible}">A combinar</span>
                 </span>
-                <span th:if="${opp.project != null and opp.project.opportunityType == 'JOB' and opp.project.monthlySalaryMin != null}">
+                <span th:if="${opp.project != null and opp.project.opportunityType == 'JOB'}">
                   <i class="ti ti-currency-dollar" style="color:#22c55e"></i>
-                  <span class="tabular"
+                  <span th:if="${opp.project.salaryVisible and opp.project.monthlySalaryMin != null}"
+                        class="tabular"
                         th:text="'R$'+${#numbers.formatDecimal(opp.project.monthlySalaryMin,1,'COMMA',0,'POINT')}
                                  +'/mês'">—</span>
-                  <span th:if="${opp.project.monthlySalaryMax != null}"
+                  <span th:if="${opp.project.salaryVisible and opp.project.monthlySalaryMax != null}"
                         class="tabular"
                         th:text="'–R$'+${#numbers.formatDecimal(opp.project.monthlySalaryMax,1,'COMMA',0,'POINT')}">—</span>
+                  <span th:unless="${opp.project.salaryVisible}">A combinar</span>
                 </span>
                 <span th:if="${opp.project != null}">
                   <i class="ti ti-map-pin" style="color:#6b6eff"></i>

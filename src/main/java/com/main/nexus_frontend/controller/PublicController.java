@@ -72,9 +72,10 @@ public class PublicController {
     @GetMapping("/company/{id}")
     public String companyProfile(@PathVariable Long id, HttpSession session, Model model) {
         try {
+            String token = (String) session.getAttribute("token");
             CompanyDTO company = publicService.getCompany(id);
-            List<ProjectDTO> openProjects = publicService.getCompanyOpenProjects(id);
-            List<ProjectDTO> closedProjects = publicService.getCompanyClosedProjects(id);
+            List<ProjectDTO> openProjects = publicService.getCompanyOpenProjects(id, token);
+            List<ProjectDTO> closedProjects = publicService.getCompanyClosedProjects(id, token);
 
             model.addAttribute("company", company);
             model.addAttribute("openProjects", openProjects);
@@ -97,9 +98,10 @@ public class PublicController {
     }
 
     @GetMapping("/opportunity/{id}")
-    public String opportunityDetail(@PathVariable Long id, Model model) {
+    public String opportunityDetail(@PathVariable Long id, HttpSession session, Model model) {
         try {
-            ProjectDTO project = publicOpportunityService.getOpportunity(id);
+            String token = (String) session.getAttribute("token");
+            ProjectDTO project = publicOpportunityService.getOpportunity(id, token);
             CompanyDTO company = project.getCompany();
 
             model.addAttribute("project", project);

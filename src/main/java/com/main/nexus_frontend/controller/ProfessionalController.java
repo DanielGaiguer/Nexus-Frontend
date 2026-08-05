@@ -253,9 +253,13 @@ public class ProfessionalController {
         List<MatchDTO> confirmed = allMatches.stream()
                 .filter(m -> "MATCHED".equals(m.getStatus()))
                 .collect(Collectors.toList());
+        List<MatchDTO> rejected = allMatches.stream()
+                .filter(m -> "REJECTED".equals(m.getStatus()))
+                .collect(Collectors.toList());
 
         model.addAttribute("invites", invites);
         model.addAttribute("confirmed", confirmed);
+        model.addAttribute("rejected", rejected);
         model.addAttribute("activePage", "matches");
         return "pro/pro-matches";
     }

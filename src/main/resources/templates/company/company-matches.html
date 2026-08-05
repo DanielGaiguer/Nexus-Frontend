@@ -48,6 +48,10 @@
           Projetos Anteriores
           <span class="badge" th:text="${#lists.size(previousProjects)}">0</span>
         </button>
+        <button class="nexus-tab" id="tab-rejected" onclick="switchTab('rejected')">
+          Recusados
+          <span class="badge" th:text="${#lists.size(rejected)}">0</span>
+        </button>
       </div>
 
       <div id="pane-received">
@@ -344,6 +348,58 @@
         </div>
       </div>
 
+      <div id="pane-rejected" style="display:none">
+
+        <div th:if="${#lists.isEmpty(rejected)}"
+             class="nexus-card p-5 text-center">
+          <i class="ti ti-mood-empty" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+          <div class="fw-semibold text-white mb-1">Nenhum match recusado</div>
+          <div style="color:#475569;font-size:0.875rem">
+            Convites e interesses recusados por você ou pelo profissional aparecerão aqui.
+          </div>
+        </div>
+
+        <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(rejected)}">
+          <div th:each="m : ${rejected}" class="nexus-match-card">
+            <div class="d-flex align-items-start gap-3 flex-wrap">
+              <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                   th:with="n=${m.professional != null ? m.professional.name : 'P'},
+                            h=${n.hashCode()},
+                            hue=${(h%360)<0?(h%360)+360:h%360}"
+                   th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                   th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              <div class="flex-fill">
+                <div class="fw-semibold text-white"
+                     th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
+                <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.5rem"
+                     th:text="${m.project.title}">Projeto</div>
+                <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);
+                            border-radius:8px;padding:0.4rem 0.7rem;color:#ef4444;font-size:0.78rem;
+                            font-weight:600;display:inline-block;margin-bottom:0.5rem"
+                     th:text="${m.companyStatus != 'REJECTED' and m.professionalStatus != 'REJECTED'}
+                              ? 'Oportunidade encerrada' : 'Recusado'">Recusado</div>
+                <br>
+                <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                  <i class="ti ti-briefcase"></i> Ver oportunidade
+                </a>
+              </div>
+              <div class="d-flex flex-column align-items-center gap-2 match-action-btn">
+                <button type="button"
+                        class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger w-100"
+                        th:data-id="${m.id}">
+                  <i class="ti ti-clock-history"></i> Ver histórico
+                </button>
+                <a th:href="@{/company/matches/{id}/review(id=${m.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
+                  <i class="ti ti-star"></i> Avaliar
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -539,10 +595,12 @@ function switchTab(tab) {
   document.getElementById('pane-sent').style.display      = tab === 'sent'      ? 'block' : 'none';
   document.getElementById('pane-confirmed').style.display = tab === 'confirmed' ? 'block' : 'none';
   document.getElementById('pane-previous').style.display  = tab === 'previous'  ? 'block' : 'none';
+  document.getElementById('pane-rejected').style.display  = tab === 'rejected'  ? 'block' : 'none';
   document.getElementById('tab-received').classList.toggle('active',  tab === 'received');
   document.getElementById('tab-sent').classList.toggle('active',      tab === 'sent');
   document.getElementById('tab-confirmed').classList.toggle('active', tab === 'confirmed');
   document.getElementById('tab-previous').classList.toggle('active',  tab === 'previous');
+  document.getElementById('tab-rejected').classList.toggle('active',  tab === 'rejected');
 }
 
 document.querySelectorAll('.company-reject-trigger').forEach(function(btn) {

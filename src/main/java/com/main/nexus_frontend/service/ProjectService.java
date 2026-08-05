@@ -111,6 +111,19 @@ public class ProjectService {
                 .toBodilessEntity();
     }
 
+    public void resumeProject(String token, Long id, int additionalPositions) {
+        restClient.put()
+                .uri("/projects/{id}/resume?additionalPositions=" + additionalPositions, id)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to resume project");
+                })
+                .toBodilessEntity();
+    }
+
     public void deleteProject(String token, Long id) {
         restClient.delete()
                 .uri("/projects/{id}", id)

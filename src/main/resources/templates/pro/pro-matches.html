@@ -37,6 +37,10 @@
           Matches Confirmados
           <span class="badge" th:text="${#lists.size(confirmed)}">0</span>
         </button>
+        <button class="nexus-tab" id="tab-rejected" onclick="switchTab('rejected')">
+          Recusados
+          <span class="badge" th:text="${#lists.size(rejected)}">0</span>
+        </button>
       </div>
 
       <div id="pane-invites">
@@ -72,15 +76,19 @@
                   <span th:if="${inv.project?.opportunityType != 'JOB'}"
                         style="color:#94a3b8;font-size:0.8rem">
                     <i class="ti ti-currency-dollar" style="color:#6b6eff"></i>
-                    <span class="tabular"
+                    <span th:if="${inv.project.salaryVisible and inv.project.minimumBudget != null}"
+                          class="tabular"
                           th:text="'R$'+${#numbers.formatDecimal(inv.project.minimumBudget,1,'COMMA',0,'POINT')}
                                    +'–'+${#numbers.formatDecimal(inv.project.maximumBudget,1,'COMMA',0,'POINT')}">—</span>
+                    <span th:unless="${inv.project.salaryVisible}">A combinar</span>
                   </span>
-                  <span th:if="${inv.project?.opportunityType == 'JOB' and inv.project?.monthlySalaryMin != null}"
+                  <span th:if="${inv.project?.opportunityType == 'JOB'}"
                         style="color:#94a3b8;font-size:0.8rem">
                     <i class="ti ti-currency-dollar" style="color:#22c55e"></i>
-                    <span class="tabular"
+                    <span th:if="${inv.project.salaryVisible and inv.project.monthlySalaryMin != null}"
+                          class="tabular"
                           th:text="'R$'+${#numbers.formatDecimal(inv.project.monthlySalaryMin,1,'COMMA',0,'POINT')}+'/mês'">—</span>
+                    <span th:unless="${inv.project.salaryVisible}">A combinar</span>
                   </span>
                   <span th:if="${inv.project?.opportunityType == 'JOB' and inv.project?.contractType != null}"
                         style="color:#94a3b8;font-size:0.8rem">
@@ -283,6 +291,49 @@
                         th:data-id="${m.id}">
                   <i class="ti ti-x"></i> Cancelar Match
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="pane-rejected" style="display:none">
+
+        <div th:if="${#lists.isEmpty(rejected)}"
+             class="nexus-card p-5 text-center">
+          <i class="ti ti-mood-empty" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+          <div class="fw-semibold text-white mb-1">Nenhum match recusado</div>
+          <div style="color:#475569;font-size:0.875rem">Convites recusados por você ou pela empresa aparecerão aqui.</div>
+        </div>
+
+        <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(rejected)}">
+          <div th:each="m : ${rejected}" class="nexus-match-card">
+            <div class="d-flex align-items-start gap-3 flex-wrap">
+              <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                   th:with="n=${m.project.company.companyName},
+                            h=${n.hashCode()},
+                            hue=${(h%360)<0?(h%360)+360:h%360}"
+                   th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                   th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
+              <div class="flex-fill">
+                <div class="fw-semibold text-white" th:text="${m.project.title}">Projeto</div>
+                <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.4rem" th:text="${m.project.company.companyName}">Empresa</div>
+                <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);
+                            border-radius:8px;padding:0.4rem 0.7rem;color:#ef4444;font-size:0.78rem;
+                            font-weight:600;display:inline-block"
+                     th:text="${m.companyStatus != 'REJECTED' and m.professionalStatus != 'REJECTED'}
+                              ? 'Oportunidade encerrada pela empresa' : 'Recusado'">Recusado</div>
+              </div>
+              <div class="d-flex flex-column align-items-end gap-2">
+                <button type="button"
+                        class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger"
+                        th:data-id="${m.id}">
+                  <i class="ti ti-clock-history"></i> Ver histórico
+                </button>
+                <a th:href="@{/pro/matches/{id}/review(id=${m.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                  <i class="ti ti-star"></i> Avaliar
+                </a>
               </div>
             </div>
           </div>
@@ -505,8 +556,10 @@
 function switchTab(tab) {
   document.getElementById('pane-invites').style.display   = tab === 'invites'   ? 'block' : 'none';
   document.getElementById('pane-confirmed').style.display = tab === 'confirmed' ? 'block' : 'none';
+  document.getElementById('pane-rejected').style.display  = tab === 'rejected'  ? 'block' : 'none';
   document.getElementById('tab-invites').classList.toggle('active',   tab === 'invites');
   document.getElementById('tab-confirmed').classList.toggle('active', tab === 'confirmed');
+  document.getElementById('tab-rejected').classList.toggle('active',  tab === 'rejected');
 }
 
 document.querySelectorAll('.reject-trigger').forEach(function(btn) {

@@ -27,7 +27,7 @@ public class AuthController {
     @Value("${nexus.api.base-url}")
     private String apiBaseUrl;
 
-    // ── Login ────────────────────────────────────────────────
+    // Login
 
     @GetMapping("/login")
     public String loginPage(

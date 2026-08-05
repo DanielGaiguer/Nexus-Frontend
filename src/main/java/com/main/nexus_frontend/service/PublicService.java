@@ -4,6 +4,7 @@ import com.main.nexus_frontend.model.CompanyDTO;
 import com.main.nexus_frontend.model.ProjectDTO;
 import com.main.nexus_frontend.model.PublicProfessionalDTO;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -48,11 +49,14 @@ public class PublicService {
                 .body(CompanyDTO.class);
     }
 
-    // Projetos abertos da empresa (rota pública)
-    public List<ProjectDTO> getCompanyOpenProjects(Long companyId) {
+    // Projetos abertos da empresa (rota pública). O token é opcional e, quando presente,
+    // permite ao backend identificar se quem está olhando é a própria empresa, outra
+    // empresa, um profissional ou o admin, para aplicar as regras de visibilidade.
+    public List<ProjectDTO> getCompanyOpenProjects(Long companyId, String token) {
         try {
             ProjectDTO[] res = restClient.get()
                     .uri("/public/company/{id}/projects", companyId)
+                    .headers(headers -> addAuthIfPresent(headers, token))
                     .retrieve()
                     .body(ProjectDTO[].class);
             return res != null ? Arrays.asList(res) : Collections.emptyList();
@@ -62,15 +66,22 @@ public class PublicService {
     }
 
     // Histórico de oportunidades encerradas da empresa (vagas e projetos), rota pública
-    public List<ProjectDTO> getCompanyClosedProjects(Long companyId) {
+    public List<ProjectDTO> getCompanyClosedProjects(Long companyId, String token) {
         try {
             ProjectDTO[] res = restClient.get()
                     .uri("/public/company/{id}/projects/closed", companyId)
+                    .headers(headers -> addAuthIfPresent(headers, token))
                     .retrieve()
                     .body(ProjectDTO[].class);
             return res != null ? Arrays.asList(res) : Collections.emptyList();
         } catch (Exception e) {
             return Collections.emptyList();
+        }
+    }
+
+    private void addAuthIfPresent(HttpHeaders headers, String token) {
+        if (token != null && !token.isBlank()) {
+            headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + token);
         }
     }
 }

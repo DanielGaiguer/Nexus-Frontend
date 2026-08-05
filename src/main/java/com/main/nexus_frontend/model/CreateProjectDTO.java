@@ -21,6 +21,9 @@ public class CreateProjectDTO {
     private Integer workloadHoursPerWeek;
     private Double monthlySalaryMin;
     private Double monthlySalaryMax;
+    private Boolean visibleToCompanies;
+    private Boolean salaryVisibleToProfessionals;
+    private Boolean salaryVisibleToCompanies;
 
     public CreateProjectDTO() {}
 
@@ -67,4 +70,13 @@ public class CreateProjectDTO {
 
     public Double getMonthlySalaryMax() { return monthlySalaryMax; }
     public void setMonthlySalaryMax(Double monthlySalaryMax) { this.monthlySalaryMax = monthlySalaryMax; }
+
+    public Boolean getVisibleToCompanies() { return visibleToCompanies; }
+    public void setVisibleToCompanies(Boolean visibleToCompanies) { this.visibleToCompanies = visibleToCompanies; }
+
+    public Boolean getSalaryVisibleToProfessionals() { return salaryVisibleToProfessionals; }
+    public void setSalaryVisibleToProfessionals(Boolean salaryVisibleToProfessionals) { this.salaryVisibleToProfessionals = salaryVisibleToProfessionals; }
+
+    public Boolean getSalaryVisibleToCompanies() { return salaryVisibleToCompanies; }
+    public void setSalaryVisibleToCompanies(Boolean salaryVisibleToCompanies) { this.salaryVisibleToCompanies = salaryVisibleToCompanies; }
 }

@@ -196,6 +196,9 @@ public class CompanyController {
             @RequestParam(required = false) Integer workloadHoursPerWeek,
             @RequestParam(required = false) Double monthlySalaryMin,
             @RequestParam(required = false) Double monthlySalaryMax,
+            @RequestParam(required = false, defaultValue = "true") Boolean visibleToCompanies,
+            @RequestParam(required = false) Boolean salaryVisibleToProfessionals,
+            @RequestParam(required = false) Boolean salaryVisibleToCompanies,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
@@ -233,6 +236,10 @@ public class CompanyController {
             dto.setWorkloadHoursPerWeek(workloadHoursPerWeek);
             dto.setMonthlySalaryMin(monthlySalaryMin);
             dto.setMonthlySalaryMax(monthlySalaryMax);
+            // Checkbox desmarcado não é enviado pelo browser (vem null) — tratamos como false.
+            dto.setVisibleToCompanies(visibleToCompanies);
+            dto.setSalaryVisibleToProfessionals(Boolean.TRUE.equals(salaryVisibleToProfessionals));
+            dto.setSalaryVisibleToCompanies(Boolean.TRUE.equals(salaryVisibleToCompanies));
             projectService.createProject(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto criado com sucesso!");
         } catch (Exception e) {
@@ -261,9 +268,9 @@ public class CompanyController {
             @PathVariable Long id,
             @RequestParam String title,
             @RequestParam String description,
-            @RequestParam Double minimumBudget,
-            @RequestParam Double maximumBudget,
-            @RequestParam String deadline,
+            @RequestParam(required = false) Double minimumBudget,
+            @RequestParam(required = false) Double maximumBudget,
+            @RequestParam(required = false) String deadline,
             @RequestParam String workMode,
             @RequestParam String type,
             @RequestParam(required = false) String experienceLevel,
@@ -277,6 +284,9 @@ public class CompanyController {
             @RequestParam(required = false) Integer workloadHoursPerWeek,
             @RequestParam(required = false) Double monthlySalaryMin,
             @RequestParam(required = false) Double monthlySalaryMax,
+            @RequestParam(required = false, defaultValue = "true") Boolean visibleToCompanies,
+            @RequestParam(required = false) Boolean salaryVisibleToProfessionals,
+            @RequestParam(required = false) Boolean salaryVisibleToCompanies,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
@@ -300,6 +310,10 @@ public class CompanyController {
             dto.setWorkloadHoursPerWeek(workloadHoursPerWeek);
             dto.setMonthlySalaryMin(monthlySalaryMin);
             dto.setMonthlySalaryMax(monthlySalaryMax);
+            // Checkbox desmarcado não é enviado pelo browser (vem null) — tratamos como false.
+            dto.setVisibleToCompanies(visibleToCompanies);
+            dto.setSalaryVisibleToProfessionals(Boolean.TRUE.equals(salaryVisibleToProfessionals));
+            dto.setSalaryVisibleToCompanies(Boolean.TRUE.equals(salaryVisibleToCompanies));
             projectService.updateProject(token, id, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto atualizado com sucesso!");
         } catch (Exception e) {
@@ -335,6 +349,22 @@ public class CompanyController {
             redirectAttributes.addFlashAttribute("successMsg", "Oportunidade reativada com sucesso!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao reativar oportunidade: " + e.getMessage());
+        }
+        return "redirect:/company/projects";
+    }
+
+    @PostMapping("/projects/{id}/resume")
+    public String resumeProject(
+            @PathVariable Long id,
+            @RequestParam Integer additionalPositions,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("token");
+        try {
+            projectService.resumeProject(token, id, additionalPositions);
+            redirectAttributes.addFlashAttribute("successMsg", "Projeto reaberto com mais vagas!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao reabrir projeto: " + e.getMessage());
         }
         return "redirect:/company/projects";
     }
@@ -478,10 +508,14 @@ public class CompanyController {
                 .filter(m -> "MATCHED".equals(m.getStatus()))
                 .collect(Collectors.toList());
         List<MatchDTO> previousProjects = matchService.getPreviousProjects(token);
+        List<MatchDTO> rejected = allMatches.stream()
+                .filter(m -> "REJECTED".equals(m.getStatus()))
+                .collect(Collectors.toList());
         model.addAttribute("receivedInterests", receivedInterests);
         model.addAttribute("sentInvites", sentInvites);
         model.addAttribute("confirmed", confirmed);
         model.addAttribute("previousProjects", previousProjects);
+        model.addAttribute("rejected", rejected);
         model.addAttribute("activePage", "matches");
         return "company/company-matches";
     }
