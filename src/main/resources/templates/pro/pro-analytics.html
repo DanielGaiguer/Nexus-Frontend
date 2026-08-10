@@ -193,26 +193,26 @@
         <div class="d-flex align-items-center justify-content-between mb-3">
           <div>
             <div class="fw-semibold text-white">Reputação Detalhada</div>
-            <div style="color:#64748b;font-size:0.8rem">
+            <div style="color:#64748b;font-size:0.8rem" th:if="${analytics.reputationSummary.totalReviews > 0}">
               Calculada a partir das
-              <span th:text="${analytics.reputationSummary.totalReviews ?: 0}">0</span>
+              <span th:text="${analytics.reputationSummary.totalReviews}">0</span>
               avaliações recebidas
             </div>
           </div>
-          <div style="text-align:right">
+          <div style="text-align:right" th:if="${analytics.reputationSummary.totalReviews > 0}">
             <div class="nexus-status-badge info" style="font-size:0.75rem;padding:0.3rem 0.7rem">
               <i class="ti ti-shield-check me-1"></i>
               <span th:text="${#numbers.formatDecimal(analytics.reputationSummary.confidenceScore ?: 0,1,1)+'% de confiança'}">—</span>
             </div>
             <div style="color:#475569;font-size:0.7rem;margin-top:3px">
               Baseado em
-              <span th:text="${analytics.reputationSummary.totalReviews ?: 0}">0</span>
+              <span th:text="${analytics.reputationSummary.totalReviews}">0</span>
               avaliações
             </div>
           </div>
         </div>
 
-        <div class="row g-3">
+        <div class="row g-3" th:if="${analytics.reputationSummary.totalReviews > 0}">
 
           <div class="col-lg-3 d-flex flex-column align-items-center justify-content-center">
             <div id="repGauge" style="height:160px;width:100%"></div>
@@ -244,7 +244,7 @@
               <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
                           letter-spacing:0.05em;margin-bottom:4px">Total de avaliações</div>
               <div class="tabular fw-bold" style="font-size:1.5rem;color:#a5b4fc"
-                   th:text="${analytics.reputationSummary.totalReviews ?: 0}">0</div>
+                   th:text="${analytics.reputationSummary.totalReviews}">0</div>
             </div>
 
             <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);
@@ -273,6 +273,14 @@
                    th:text="${#numbers.formatDecimal(analytics.reputationSummary.recommendationRate ?: 0,1,1)+'%'}">—</div>
             </div>
 
+          </div>
+        </div>
+
+        <div class="text-center py-4" th:unless="${analytics.reputationSummary.totalReviews > 0}">
+          <i class="ti ti-chart-radar" style="font-size:2rem;color:#334155;display:block;margin-bottom:0.5rem"></i>
+          <div class="fw-semibold text-white mb-1">Ainda sem avaliações suficientes</div>
+          <div style="color:#64748b;font-size:0.85rem">
+            Assim que você receber avaliações, seus indicadores de reputação aparecerão aqui.
           </div>
         </div>
       </div>

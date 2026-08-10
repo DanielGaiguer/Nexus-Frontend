@@ -242,6 +242,10 @@
                                     </template>
                                     <span class="fw-semibold text-light ms-1" th:text="${#numbers.formatDecimal(company.reputation,1,'COMMA',1,'POINT')}">0.0</span>
                                 </div>
+                                <div th:unless="${company.reputation != null and company.reputation > 0}"
+                                     style="color:#94a3b8;font-size:0.85rem">
+                                    Sem avaliações ainda
+                                </div>
                             </div>
                             <div class="d-flex justify-content-start mt-3">
                                 <a th:if="${session.userRole == 'ADMIN'}"

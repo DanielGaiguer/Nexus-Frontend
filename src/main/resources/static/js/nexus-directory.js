@@ -26,16 +26,19 @@
       hueFromName(name) + ',50%,38%)">' + letter + '</div>';
   }
 
+  // reputation null/undefined = ainda sem avaliação — não confundir com nota 0
   function starsHtml(reputation) {
-    var r = reputation || 0;
+    if (reputation === null || reputation === undefined) {
+      return '<span style="color:#64748b;font-size:0.78rem">Sem avaliações ainda</span>';
+    }
     var html = '';
     for (var i = 1; i <= 5; i++) {
-      html += '<i class="ti ' + (i <= Math.round(r) ? 'ti-star-filled' : 'ti-star') +
+      html += '<i class="ti ' + (i <= Math.round(reputation) ? 'ti-star-filled' : 'ti-star') +
         '" style="color:#f59e0b;font-size:0.85rem"></i>';
     }
     return html +
       '<span style="color:#64748b;font-size:0.78rem;margin-left:3px">' +
-      Number(r).toFixed(1) + '</span>';
+      Number(reputation).toFixed(1) + '</span>';
   }
 
   function companyCardHtml(c) {

@@ -91,6 +91,9 @@
                  th:if="${profile.reputation != null}">
               Baseado em avaliações de profissionais
             </div>
+            <div style="color:#64748b;font-size:0.8rem;margin-top:0.4rem" th:unless="${profile.reputation != null}">
+              Sem avaliações ainda
+            </div>
             <div class="mt-3">
               <span th:switch="${profile.status}"
                     class="nexus-status-badge">
@@ -149,16 +152,16 @@
           <div class="nexus-card p-4" style="margin-top:1rem">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div class="fw-semibold text-white" style="font-size:0.875rem">Análise de qualidade</div>
-              <span style="color:#475569;font-size:0.7rem" th:if="${reputation.totalReviews != null}">
+              <span style="color:#475569;font-size:0.7rem" th:if="${reputation.totalReviews != null and reputation.totalReviews > 0}">
                 <span th:text="${reputation.totalReviews}">0</span> avaliação(ões)
               </span>
             </div>
 
-            <div th:if="${reputation.totalReviews == null}" style="color:#475569;font-size:0.8rem">
+            <div th:if="${reputation.totalReviews == null or reputation.totalReviews == 0}" style="color:#475569;font-size:0.8rem">
               Nenhuma avaliação ainda.
             </div>
 
-            <th:block th:if="${reputation.totalReviews != null}">
+            <th:block th:if="${reputation.totalReviews != null and reputation.totalReviews > 0}">
               <div class="text-center mb-4"
                    th:with="score=${reputation.overallScore != null ? reputation.overallScore : 0.0},
                             color=${score >= 80 ? '#22c55e' : (score >= 60 ? '#f59e0b' : '#ef4444')}">

@@ -57,6 +57,10 @@
               <span class="tabular ms-1" style="color:#f59e0b;font-size:0.85rem;font-weight:600"
                     th:text="${#numbers.formatDecimal(company.reputation,1,1)}">0.0</span>
             </div>
+            <div style="color:#64748b;font-size:0.8rem;margin-top:0.4rem"
+                 th:unless="${company.reputation != null and company.reputation > 0}">
+              Sem avaliações ainda
+            </div>
           </div>
 
           <div class="nexus-card p-3 mb-3">
@@ -86,17 +90,17 @@
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div class="fw-semibold text-white" style="font-size:0.875rem">Reputação</div>
               <span style="color:#475569;font-size:0.7rem"
-                    th:if="${company.reputationDetails != null and company.reputationDetails.totalReviews != null}">
+                    th:if="${company.reputationDetails != null and company.reputationDetails.totalReviews != null and company.reputationDetails.totalReviews > 0}">
                 <span th:text="${company.reputationDetails.totalReviews}">0</span> avaliação(ões)
               </span>
             </div>
 
-            <div th:if="${company.reputationDetails == null or company.reputationDetails.totalReviews == null}"
+            <div th:if="${company.reputationDetails == null or company.reputationDetails.totalReviews == null or company.reputationDetails.totalReviews == 0}"
                  style="color:#475569;font-size:0.8rem">
               Nenhuma avaliação ainda.
             </div>
 
-            <th:block th:if="${company.reputationDetails != null and company.reputationDetails.totalReviews != null}"
+            <th:block th:if="${company.reputationDetails != null and company.reputationDetails.totalReviews != null and company.reputationDetails.totalReviews > 0}"
                       th:with="rep=${company.reputationDetails}">
               <div class="text-center mb-4"
                    th:with="score=${rep.overallScore != null ? rep.overallScore : 0.0},

@@ -534,15 +534,15 @@
             <tr>
               <td class="col-attr sub">Avaliação média</td>
               <td th:each="c : ${comparison.candidates}" class="col-candidate">
-                <div class="d-flex align-items-center justify-content-center gap-1">
+                <div class="d-flex align-items-center justify-content-center gap-1" th:if="${c.reputation != null}">
                   <th:block th:each="i : ${#numbers.sequence(1,5)}">
-                    <i th:class="${c.reputation != null and i <= c.reputation}
-                                  ? 'ti ti-star-filled' : 'ti ti-star'"
+                    <i th:class="${i <= c.reputation} ? 'ti ti-star-filled' : 'ti ti-star'"
                        style="color:#f59e0b;font-size:0.8rem"></i>
                   </th:block>
                   <span class="tabular ms-1" style="color:#f59e0b;font-weight:600;font-size:0.85rem"
-                        th:text="${c.reputation != null ? #numbers.formatDecimal(c.reputation,1,1) : '—'}">—</span>
+                        th:text="${#numbers.formatDecimal(c.reputation,1,1)}">—</span>
                 </div>
+                <span th:unless="${c.reputation != null}" style="color:#64748b;font-size:0.78rem">Sem nota</span>
               </td>
             </tr>
 
