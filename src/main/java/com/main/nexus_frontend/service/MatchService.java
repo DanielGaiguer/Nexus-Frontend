@@ -2,6 +2,7 @@ package com.main.nexus_frontend.service;
 
 import com.main.nexus_frontend.model.MatchDTO;
 import com.main.nexus_frontend.model.MatchHistoryDTO;
+import com.main.nexus_frontend.model.PendingStatusCheckDTO;
 import com.main.nexus_frontend.model.ProjectDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -167,6 +168,24 @@ public class MatchService {
                             "Failed to cancel match");
                 })
                 .toBodilessEntity();
+    }
+
+    // Retorna null se a empresa não tem nenhum status check pendente (404 do backend) ou
+    // se a chamada falhar por qualquer motivo — é um recurso auxiliar do dashboard, não
+    // pode derrubar a página inteira.
+    public PendingStatusCheckDTO getPendingStatusCheck(String token) {
+        try {
+            return restClient.get()
+                    .uri("/matches/status-check/pending")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                        throw new ResponseStatusException(HttpStatusCode.valueOf(res.getStatusCode().value()));
+                    })
+                    .body(PendingStatusCheckDTO.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void answerStatusCheck(String token, Long matchId, String outcome) {

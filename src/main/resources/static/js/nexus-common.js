@@ -178,7 +178,8 @@ var NOTIF_ICONS = {
   PROJECT_CLOSED:            'ti-lock',
   PROJECT_CLOSED_BY_ADMIN:   'ti-shield-x',
   COMPLETE_YOUR_PROFILE:     'ti-user-exclamation',
-  NEW_COMPANY_REGISTRATION:  'ti-building-plus'
+  NEW_COMPANY_REGISTRATION:  'ti-building-plus',
+  PROJECT_ADDED_TO_PORTFOLIO: 'ti-briefcase'
 };
 
 var NOTIF_COLORS = {
@@ -193,7 +194,8 @@ var NOTIF_COLORS = {
   PROJECT_CLOSED:            '#f59e0b',
   PROJECT_CLOSED_BY_ADMIN:   '#ef4444',
   COMPLETE_YOUR_PROFILE:     '#f59e0b',
-  NEW_COMPANY_REGISTRATION:  '#6b6eff'
+  NEW_COMPANY_REGISTRATION:  '#6b6eff',
+  PROJECT_ADDED_TO_PORTFOLIO: '#22c55e'
 };
 
 function toggleNotifPanel() {

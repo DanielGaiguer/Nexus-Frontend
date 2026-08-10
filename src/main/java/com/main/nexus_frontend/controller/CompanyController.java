@@ -77,6 +77,9 @@ public class CompanyController {
             model.addAttribute("recentProjects", List.of());
             model.addAttribute("recentJobs", List.of());
         }
+        // Se tiver um match aguardando resposta há 14+ dias, a pergunta abre sozinha
+        // no dashboard — a empresa não precisa ir procurar na notificação.
+        model.addAttribute("pendingStatusCheck", matchService.getPendingStatusCheck(token));
         model.addAttribute("activePage", "dashboard");
         return "company/company-dashboard";
     }

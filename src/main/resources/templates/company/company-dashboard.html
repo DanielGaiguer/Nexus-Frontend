@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head th:replace="~{fragments/app-shell :: head('Dashboard')}"></head>
+<style>
+.outcome-option-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 1rem 1.1rem;
+}
+.outcome-option-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  color: inherit;
+  font-size: 0.95rem;
+}
+.outcome-option-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+#confirmStatusCheckDashBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+</style>
 <body class="nexus-app">
 
 <div th:replace="~{fragments/app-shell :: shell}"></div>
@@ -230,6 +255,90 @@
   </div>
 </div>
 
+<div class="modal fade nexus-modal" id="statusCheckModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(107,110,255,0.15)">
+        <div style="width:4px;height:40px;background:#6b6eff;border-radius:2px;margin-right:0.75rem"></div>
+        <div>
+          <h5 class="modal-title fw-semibold text-white">Como está indo o match?</h5>
+          <div style="color:#64748b;font-size:0.8rem" th:if="${pendingStatusCheck != null}">
+            Seu match com <span th:text="${pendingStatusCheck.professionalName}">profissional</span> no projeto
+            "<span th:text="${pendingStatusCheck.projectTitle}">projeto</span>" completa 30 dias em breve.
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="statusCheckDashForm" method="post"
+            th:action="@{/matches/{id}/status-check(id=${pendingStatusCheck != null ? pendingStatusCheck.matchId : 0})}">
+        <div class="modal-body">
+          <div class="d-flex flex-column gap-3 mb-3">
+            <label class="rejection-option">
+              <input type="radio" name="outcome" value="WORKING_TOGETHER" onchange="onDashboardOutcomeChange()">
+              <div class="rejection-option-inner outcome-option-inner">
+                <div class="outcome-option-title"><span>✅</span> Sim, já estamos trabalhando juntos</div>
+                <div class="outcome-option-desc">O projeto está em andamento.</div>
+              </div>
+            </label>
+
+            <label class="rejection-option">
+              <input type="radio" name="outcome" value="PROJECT_COMPLETED" onchange="onDashboardOutcomeChange()">
+              <div class="rejection-option-inner outcome-option-inner">
+                <div class="outcome-option-title"><span>🏁</span> Sim, e o projeto já foi concluído</div>
+                <div class="outcome-option-desc">Trabalhamos juntos e o projeto terminou.</div>
+              </div>
+            </label>
+
+            <label class="rejection-option">
+              <input type="radio" name="outcome" value="DID_NOT_WORK_OUT" onchange="onDashboardOutcomeChange()">
+              <div class="rejection-option-inner outcome-option-inner">
+                <div class="outcome-option-title"><span>❌</span> Não, o match não deu certo</div>
+                <div class="outcome-option-desc">Não chegamos a trabalhar juntos.</div>
+              </div>
+            </label>
+
+            <label class="rejection-option">
+              <input type="radio" name="outcome" value="NO_CONTACT_YET" onchange="onDashboardOutcomeChange()">
+              <div class="rejection-option-inner outcome-option-inner">
+                <div class="outcome-option-title"><span>⏳</span> Ainda não estabelecemos contato</div>
+                <div class="outcome-option-desc">Ainda não conversamos sobre o projeto.</div>
+              </div>
+            </label>
+          </div>
+
+          <div id="dashboardWorkingTogetherHint"
+               style="display:none;background:rgba(107,110,255,0.08);border:1px solid rgba(107,110,255,0.25);
+                      border-radius:8px;padding:0.6rem 0.85rem;color:#a5b4fc;font-size:0.82rem">
+            ✨ O projeto será adicionado ao portfólio do profissional.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Responder depois</button>
+          <button type="submit" id="confirmStatusCheckDashBtn" class="nexus-btn nexus-btn-primary" disabled>
+            Confirmar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script>
+function onDashboardOutcomeChange() {
+  var selected = document.querySelector('#statusCheckDashForm input[name=outcome]:checked');
+  document.getElementById('confirmStatusCheckDashBtn').disabled = !selected;
+
+  var hint = document.getElementById('dashboardWorkingTogetherHint');
+  hint.style.display = (selected && (selected.value === 'WORKING_TOGETHER' || selected.value === 'PROJECT_COMPLETED'))
+    ? 'block' : 'none';
+}
+</script>
+<script th:inline="javascript">
+var pendingStatusCheck = /*[[${pendingStatusCheck}]]*/ null;
+if (pendingStatusCheck) {
+  new bootstrap.Modal(document.getElementById('statusCheckModal')).show();
+}
+</script>
 </body>
 </html>

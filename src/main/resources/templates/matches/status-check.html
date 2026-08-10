@@ -65,6 +65,14 @@
             </label>
 
             <label class="rejection-option">
+              <input type="radio" name="outcome" value="PROJECT_COMPLETED" onchange="onOutcomeChange()">
+              <div class="rejection-option-inner outcome-option-inner">
+                <div class="outcome-option-title"><span>🏁</span> Sim, e o projeto já foi concluído</div>
+                <div class="outcome-option-desc">Trabalhamos juntos e o projeto terminou.</div>
+              </div>
+            </label>
+
+            <label class="rejection-option">
               <input type="radio" name="outcome" value="DID_NOT_WORK_OUT" onchange="onOutcomeChange()">
               <div class="rejection-option-inner outcome-option-inner">
                 <div class="outcome-option-title"><span>❌</span> Não, o match não deu certo</div>
@@ -104,7 +112,7 @@ function onOutcomeChange() {
   document.getElementById('confirmStatusCheckBtn').disabled = !selected;
 
   var hint = document.getElementById('workingTogetherHint');
-  hint.style.display = (selected && selected.value === 'WORKING_TOGETHER') ? 'block' : 'none';
+  hint.style.display = (selected && (selected.value === 'WORKING_TOGETHER' || selected.value === 'PROJECT_COMPLETED')) ? 'block' : 'none';
 }
 </script>
 </body>
