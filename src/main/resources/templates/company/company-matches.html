@@ -265,10 +265,15 @@
                         th:data-id="${m.id}">
                   <i class="ti ti-clock-history"></i> Ver histórico
                 </button>
-                <a th:href="@{/company/matches/{id}/review(id=${m.id})}"
+                <a th:unless="${reviewedMatchIds.contains(m.id)}"
+                   th:href="@{/company/matches/{id}/review(id=${m.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                   <i class="ti ti-star"></i> Avaliar
                 </a>
+                <span th:if="${reviewedMatchIds.contains(m.id)}"
+                      class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" style="opacity:0.6;pointer-events:none">
+                  <i class="ti ti-circle-check"></i> Avaliado
+                </span>
                 <button type="button"
                         th:if="${m.active == null or m.active}"
                         class="nexus-btn nexus-btn-danger-outline nexus-btn-sm cancel-match-trigger w-100"
@@ -338,10 +343,15 @@
                         th:data-id="${m.id}">
                   <i class="ti ti-clock-history"></i> Ver histórico
                 </button>
-                <a th:href="@{/company/matches/{id}/review(id=${m.id})}"
+                <a th:unless="${reviewedMatchIds.contains(m.id)}"
+                   th:href="@{/company/matches/{id}/review(id=${m.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                   <i class="ti ti-star"></i> Avaliar
                 </a>
+                <span th:if="${reviewedMatchIds.contains(m.id)}"
+                      class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" style="opacity:0.6;pointer-events:none">
+                  <i class="ti ti-circle-check"></i> Avaliado
+                </span>
               </div>
             </div>
           </div>
@@ -390,10 +400,15 @@
                         th:data-id="${m.id}">
                   <i class="ti ti-clock-history"></i> Ver histórico
                 </button>
-                <a th:href="@{/company/matches/{id}/review(id=${m.id})}"
+                <a th:unless="${reviewedMatchIds.contains(m.id)}"
+                   th:href="@{/company/matches/{id}/review(id=${m.id})}"
                    class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                   <i class="ti ti-star"></i> Avaliar
                 </a>
+                <span th:if="${reviewedMatchIds.contains(m.id)}"
+                      class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" style="opacity:0.6;pointer-events:none">
+                  <i class="ti ti-circle-check"></i> Avaliado
+                </span>
               </div>
             </div>
           </div>

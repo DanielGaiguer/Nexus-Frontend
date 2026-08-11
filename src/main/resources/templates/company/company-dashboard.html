@@ -323,6 +323,100 @@
   </div>
 </div>
 
+<div class="modal fade nexus-modal" id="reviewModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width:640px">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(107,110,255,0.15)">
+        <div style="width:4px;height:40px;background:#6b6eff;border-radius:2px;margin-right:0.75rem"></div>
+        <div>
+          <h5 class="modal-title fw-semibold text-white">Avaliar Match</h5>
+          <div style="color:#64748b;font-size:0.8rem" th:if="${pendingReview != null}">
+            Seu match com <span th:text="${pendingReview.otherPartyName}">profissional</span> no projeto
+            "<span th:text="${pendingReview.projectTitle}">projeto</span>" foi encerrado. Compartilhe sua experiência.
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="dashReviewForm" method="post"
+            th:action="@{/company/matches/{id}/review(id=${pendingReview != null ? pendingReview.matchId : 0})}">
+        <div class="modal-body">
+
+          <div class="mb-4">
+            <label class="nexus-label mb-2">Avaliação geral *</label>
+            <div class="d-flex gap-2 align-items-center">
+              <div class="star-group d-flex gap-1">
+                <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                  <label th:for="'dashStar' + ${i}" style="cursor:pointer">
+                    <input type="radio" name="rating" th:id="'dashStar' + ${i}"
+                           th:value="${i}" style="display:none" class="dash-star-radio">
+                    <i class="ti ti-star dash-star-icon"
+                       style="font-size:2rem;color:#334155;transition:color 0.15s"
+                       th:data-val="${i}"></i>
+                  </label>
+                </th:block>
+              </div>
+              <span id="dashRatingLabel" style="color:#64748b;font-size:0.85rem">Selecione uma nota</span>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="nexus-label mb-2">Pontos positivos</label>
+            <div class="d-flex flex-wrap gap-2">
+              <label th:each="r : ${ {'EXCELLENT_COMMUNICATION','HIGH_TECHNICAL_SKILL','DELIVERED_ON_TIME','TEAM_PLAYER','PROACTIVE','EXCEEDED_EXPECTATIONS','RELIABLE','PUNCTUAL','HIGH_CODE_QUALITY','GOOD_PROBLEM_SOLVING'} }"
+                     style="cursor:pointer">
+                <input type="checkbox" name="positiveReasons" th:value="${r}" style="display:none" class="dash-pos-cb">
+                <span class="nexus-chip reason-chip"
+                      th:text="${r == 'EXCELLENT_COMMUNICATION' ? 'Excelente comunicação' :
+                                 r == 'HIGH_TECHNICAL_SKILL'    ? 'Alta competência técnica' :
+                                 r == 'DELIVERED_ON_TIME'       ? 'Entregou no prazo' :
+                                 r == 'TEAM_PLAYER'             ? 'Trabalho em equipe' :
+                                 r == 'PROACTIVE'               ? 'Proativo' :
+                                 r == 'EXCEEDED_EXPECTATIONS'   ? 'Superou expectativas' :
+                                 r == 'RELIABLE'                ? 'Confiável' :
+                                 r == 'PUNCTUAL'                ? 'Pontual' :
+                                 r == 'HIGH_CODE_QUALITY'       ? 'Alta qualidade de código' :
+                                 r == 'GOOD_PROBLEM_SOLVING'    ? 'Boa resolução de problemas' : r}">Motivo</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="nexus-label mb-2">Pontos negativos</label>
+            <div class="d-flex flex-wrap gap-2">
+              <label th:each="r : ${ {'MISSED_DEADLINES','POOR_COMMUNICATION','LOW_CODE_QUALITY','UNPROFESSIONAL','ABSENT','UNRELIABLE','POOR_PROBLEM_SOLVING','DID_NOT_MEET_EXPECTATIONS','OTHER'} }"
+                     style="cursor:pointer">
+                <input type="checkbox" name="negativeReasons" th:value="${r}" style="display:none" class="dash-neg-cb">
+                <span class="nexus-chip reason-chip-neg"
+                      th:text="${r == 'MISSED_DEADLINES'          ? 'Atrasou prazos' :
+                                 r == 'POOR_COMMUNICATION'        ? 'Comunicação ruim' :
+                                 r == 'LOW_CODE_QUALITY'          ? 'Baixa qualidade de código' :
+                                 r == 'UNPROFESSIONAL'            ? 'Pouco profissional' :
+                                 r == 'ABSENT'                    ? 'Ausente' :
+                                 r == 'UNRELIABLE'                ? 'Não confiável' :
+                                 r == 'POOR_PROBLEM_SOLVING'      ? 'Dificuldade para resolver problemas' :
+                                 r == 'DID_NOT_MEET_EXPECTATIONS' ? 'Não atendeu expectativas' :
+                                 r == 'OTHER'                     ? 'Outro' : r}">Motivo</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="nexus-label">Comentário <span style="color:#475569">(opcional)</span></label>
+            <textarea class="nexus-input nexus-textarea" name="comment"
+                      placeholder="Compartilhe mais detalhes sobre sua experiência..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Responder depois</button>
+          <button type="submit" class="nexus-btn nexus-btn-primary" id="dashReviewSubmitBtn" disabled>
+            <i class="ti ti-star"></i> Enviar avaliação
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div th:replace="~{fragments/app-shell :: scripts}"></div>
 <script>
 function onDashboardOutcomeChange() {
@@ -333,11 +427,59 @@ function onDashboardOutcomeChange() {
   hint.style.display = (selected && (selected.value === 'WORKING_TOGETHER' || selected.value === 'PROJECT_COMPLETED'))
     ? 'block' : 'none';
 }
+
+var dashRatingLabels = ['','Ruim','Abaixo do esperado','Regular','Bom','Excelente'];
+
+document.querySelectorAll('.dash-star-radio').forEach(function(radio) {
+  radio.addEventListener('change', function() {
+    var val = parseInt(this.value);
+    document.getElementById('dashRatingLabel').textContent = dashRatingLabels[val] || '';
+    document.querySelectorAll('.dash-star-icon').forEach(function(icon) {
+      var v = parseInt(icon.dataset.val);
+      if (v <= val) {
+        icon.classList.replace('ti-star','ti-star-filled');
+        icon.style.color = '#f59e0b';
+      } else {
+        icon.classList.replace('ti-star-filled','ti-star');
+        icon.style.color = '#334155';
+      }
+    });
+    document.getElementById('dashReviewSubmitBtn').disabled = false;
+  });
+});
+
+document.querySelectorAll('.dash-star-icon').forEach(function(icon) {
+  icon.addEventListener('click', function() {
+    var val = this.dataset.val;
+    document.getElementById('dashStar' + val).checked = true;
+    document.getElementById('dashStar' + val).dispatchEvent(new Event('change'));
+  });
+});
+
+document.querySelectorAll('.dash-pos-cb').forEach(function(cb) {
+  cb.addEventListener('change', function() {
+    this.nextElementSibling.style.background  = this.checked ? 'rgba(34,197,94,0.15)' : '';
+    this.nextElementSibling.style.borderColor = this.checked ? 'rgba(34,197,94,0.4)' : '';
+    this.nextElementSibling.style.color       = this.checked ? '#22c55e' : '';
+  });
+});
+
+document.querySelectorAll('.dash-neg-cb').forEach(function(cb) {
+  cb.addEventListener('change', function() {
+    this.nextElementSibling.style.background  = this.checked ? 'rgba(239,68,68,0.12)' : '';
+    this.nextElementSibling.style.borderColor = this.checked ? 'rgba(239,68,68,0.35)' : '';
+    this.nextElementSibling.style.color       = this.checked ? '#ef4444' : '';
+  });
+});
 </script>
 <script th:inline="javascript">
 var pendingStatusCheck = /*[[${pendingStatusCheck}]]*/ null;
+var pendingReview = /*[[${pendingReview}]]*/ null;
+// Só uma janela por vez — status check tem prioridade por ser mais urgente (match ainda ativo)
 if (pendingStatusCheck) {
   new bootstrap.Modal(document.getElementById('statusCheckModal')).show();
+} else if (pendingReview) {
+  new bootstrap.Modal(document.getElementById('reviewModal')).show();
 }
 </script>
 </body>

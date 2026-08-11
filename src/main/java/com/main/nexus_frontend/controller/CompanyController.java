@@ -80,6 +80,9 @@ public class CompanyController {
         // Se tiver um match aguardando resposta há 14+ dias, a pergunta abre sozinha
         // no dashboard — a empresa não precisa ir procurar na notificação.
         model.addAttribute("pendingStatusCheck", matchService.getPendingStatusCheck(token));
+        // Se tiver um match expirado (30 dias) ainda sem avaliação, a pergunta abre
+        // sozinha no dashboard também.
+        model.addAttribute("pendingReview", reviewService.getPendingForCompany(token));
         model.addAttribute("activePage", "dashboard");
         return "company/company-dashboard";
     }
@@ -519,6 +522,7 @@ public class CompanyController {
         model.addAttribute("confirmed", confirmed);
         model.addAttribute("previousProjects", previousProjects);
         model.addAttribute("rejected", rejected);
+        model.addAttribute("reviewedMatchIds", reviewService.getReviewedMatchIdsForCompany(token));
         model.addAttribute("activePage", "matches");
         return "company/company-matches";
     }

@@ -67,6 +67,9 @@ public class ProfessionalController {
         model.addAttribute("recentInvites", invites.stream().limit(5).collect(Collectors.toList()));
         model.addAttribute("recentConfirmed", confirmed.stream().limit(5).collect(Collectors.toList()));
         model.addAttribute("portfolioCount", projects.size());
+        // Se tiver um match expirado (30 dias) ainda sem avaliação, a pergunta abre
+        // sozinha no dashboard — o profissional não precisa ir procurar na notificação.
+        model.addAttribute("pendingReview", reviewService.getPendingForProfessional(token));
         model.addAttribute("activePage", "dashboard");
 
         return "pro/pro-dashboard";
@@ -284,6 +287,7 @@ public class ProfessionalController {
         model.addAttribute("invites", invites);
         model.addAttribute("confirmed", confirmed);
         model.addAttribute("rejected", rejected);
+        model.addAttribute("reviewedMatchIds", reviewService.getReviewedMatchIdsForProfessional(token));
         model.addAttribute("activePage", "matches");
         return "pro/pro-matches";
     }
