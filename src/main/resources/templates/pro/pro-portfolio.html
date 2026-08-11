@@ -62,13 +62,25 @@
                       th:text="${tech}">Tech</span>
               </div>
             </div>
-            <button type="button"
-                    class="nexus-btn nexus-btn-danger-outline nexus-btn-sm flex-shrink-0 delete-trigger"
-                    style="opacity:0;transition:opacity 0.2s"
-                    th:data-id="${proj.id}"
-                    th:data-title="${proj.title}">
-              <i class="ti ti-trash"></i>
-            </button>
+            <div class="d-flex gap-2 flex-shrink-0">
+              <button type="button"
+                      class="nexus-btn nexus-btn-ghost nexus-btn-sm portfolio-card-action edit-trigger"
+                      style="opacity:0;transition:opacity 0.2s"
+                      th:data-id="${proj.id}"
+                      th:data-title="${proj.title}"
+                      th:data-description="${proj.description}"
+                      th:data-year="${proj.yearOfCompletion}"
+                      th:data-technologies="${proj.technologies != null ? #strings.listJoin(proj.technologies, ',') : ''}">
+                <i class="ti ti-pencil"></i>
+              </button>
+              <button type="button"
+                      class="nexus-btn nexus-btn-danger-outline nexus-btn-sm portfolio-card-action delete-trigger"
+                      style="opacity:0;transition:opacity 0.2s"
+                      th:data-id="${proj.id}"
+                      th:data-title="${proj.title}">
+                <i class="ti ti-trash"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -81,7 +93,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title fw-semibold text-white">Adicionar Projeto</h5>
+        <h5 class="modal-title fw-semibold text-white" id="projModalTitle">Adicionar Projeto</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <form th:action="@{/pro/portfolio}" method="post" id="addProjForm">
@@ -94,7 +106,7 @@
             </div>
             <div class="col-12">
               <label class="nexus-label">Descrição</label>
-              <textarea class="nexus-input nexus-textarea" name="description"
+              <textarea class="nexus-input nexus-textarea" name="description" id="projDescription"
                         placeholder="Descreva o projeto, seus objetivos e resultados"></textarea>
             </div>
             <div class="col-12">
@@ -158,12 +170,10 @@
 <script>
 document.querySelectorAll('.portfolio-card').forEach(function(card) {
   card.addEventListener('mouseenter', function() {
-    var btn = this.querySelector('.delete-trigger');
-    if (btn) btn.style.opacity = '1';
+    card.querySelectorAll('.portfolio-card-action').forEach(function(btn) { btn.style.opacity = '1'; });
   });
   card.addEventListener('mouseleave', function() {
-    var btn = this.querySelector('.delete-trigger');
-    if (btn) btn.style.opacity = '0';
+    card.querySelectorAll('.portfolio-card-action').forEach(function(btn) { btn.style.opacity = '0'; });
   });
 });
 
@@ -174,6 +184,26 @@ document.querySelectorAll('.delete-trigger').forEach(function(btn) {
     document.getElementById('deleteProjTitle').textContent = title;
     document.getElementById('deleteForm').action = '/pro/portfolio/' + id + '/delete';
     new bootstrap.Modal(document.getElementById('deleteModal')).show();
+  });
+});
+
+document.querySelectorAll('.edit-trigger').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var id = this.dataset.id;
+    var techs = this.dataset.technologies ? this.dataset.technologies.split(',').filter(Boolean) : [];
+
+    document.getElementById('projModalTitle').textContent = 'Editar Projeto';
+    document.getElementById('addProjBtn').textContent = 'Salvar alterações';
+    document.getElementById('addProjForm').action = '/pro/portfolio/' + id + '/edit';
+
+    document.getElementById('projTitle').value = this.dataset.title || '';
+    document.getElementById('projDescription').value = this.dataset.description || '';
+    document.getElementById('projYear').value = this.dataset.year || '';
+
+    selectedTechnologies = techs;
+    renderTechTags();
+
+    new bootstrap.Modal(document.getElementById('addProjectModal')).show();
   });
 });
 
@@ -269,6 +299,12 @@ document.addEventListener('DOMContentLoaded', function() {
       if (techInput) techInput.value = '';
       showTechError('');
       renderTechTags();
+
+      // Volta o modal pro modo "adicionar" — quem abriu editando já usou os dados
+      document.getElementById('projModalTitle').textContent = 'Adicionar Projeto';
+      document.getElementById('addProjBtn').textContent = 'Adicionar projeto';
+      document.getElementById('addProjForm').action = '/pro/portfolio';
+      document.getElementById('addProjForm').reset();
     });
   }
 });

@@ -125,6 +125,20 @@ public class ProfessionalService {
                 .toBodilessEntity();
     }
 
+    public void updateProject(String token, Long projectId, PreviousProjectDTO dto) {
+        restClient.put()
+                .uri("/professional/projects/{projectId}", projectId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .body(dto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw new ResponseStatusException(
+                            HttpStatusCode.valueOf(res.getStatusCode().value()),
+                            "Failed to update project");
+                })
+                .toBodilessEntity();
+    }
+
     public void deleteProject(String token, Long projectId) {
         restClient.delete()
                 .uri("/professional/projects/{projectId}", projectId)

@@ -230,6 +230,30 @@ public class ProfessionalController {
         return "redirect:/pro/portfolio";
     }
 
+    @PostMapping("/portfolio/{projectId}/edit")
+    public String editProject(
+            @PathVariable Long projectId,
+            @RequestParam String title,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) List<String> technologies,
+            @RequestParam Integer yearOfCompletion,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("token");
+        try {
+            PreviousProjectDTO dto = new PreviousProjectDTO();
+            dto.setTitle(title);
+            dto.setDescription(description);
+            dto.setTechnologies(technologies != null ? technologies : List.of());
+            dto.setYearOfCompletion(yearOfCompletion);
+            professionalService.updateProject(token, projectId, dto);
+            redirectAttributes.addFlashAttribute("successMsg", "Projeto atualizado com sucesso!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao atualizar projeto: " + e.getMessage());
+        }
+        return "redirect:/pro/portfolio";
+    }
+
     @PostMapping("/portfolio/{projectId}/delete")
     public String deleteProject(
             @PathVariable Long projectId,
