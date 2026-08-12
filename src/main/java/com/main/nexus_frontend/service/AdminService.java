@@ -4,6 +4,7 @@ import com.main.nexus_frontend.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
@@ -105,12 +106,10 @@ public class AdminService {
 
     public void createSkill(String token, String name, String category) {
         restClient.post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/admin/skills")
-                        .queryParam("name", name)
-                        .queryParam("category", category)
-                        .build())
+                .uri("/admin/skills")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new SkillRequestDTO(name, category))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw new ResponseStatusException(
