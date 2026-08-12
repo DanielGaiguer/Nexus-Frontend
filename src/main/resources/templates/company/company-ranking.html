@@ -284,10 +284,6 @@
                            class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                           <i class="ti ti-user"></i> Ver perfil completo
                         </a>
-                        <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" target="_blank">
-                          <i class="ti ti-file-text"></i> Currículo
-                        </a>
                         <form th:action="@{/company/matches/{id}/interest(id=${item.id})}" method="post" class="w-100">
                           <button type="submit" class="nexus-btn nexus-btn-primary nexus-btn-sm w-100">
                             <i class="ti ti-send"></i> Demonstrar interesse
@@ -301,10 +297,6 @@
                            class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                           <i class="ti ti-user"></i> Ver perfil completo
                         </a>
-                        <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" target="_blank">
-                          <i class="ti ti-file-text"></i> Currículo
-                        </a>
                         <span class="nexus-status-badge warning w-100 d-block text-center">Interesse enviado</span>
                       </div>
                     </th:block>
@@ -313,10 +305,6 @@
                         <a th:href="@{/public/professional/{id}(id=${item.professional.id})}"
                            class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
                           <i class="ti ti-user"></i> Ver perfil completo
-                        </a>
-                        <a th:href="@{/company/{id}/resume(id=${item.professional.id})}"
-                           class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" target="_blank">
-                          <i class="ti ti-file-text"></i> Currículo
                         </a>
                         <span class="nexus-status-badge info w-100 d-block text-center">Profissional interessado</span>
                       </div>
