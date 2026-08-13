@@ -17,6 +17,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Autowired
     private NotificationService notificationService;
 
+    // preHandle roda antes do controller
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String uri = request.getRequestURI();
@@ -25,6 +26,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         String token = (session != null) ? (String) session.getAttribute("token") : null;
         String userRole = (session != null) ? (String) session.getAttribute("userRole") : null;
 
+        // Se nao tem token de sessao, redireciona para auth/login
+        // Preservando a URL original como parametro redirect, assim, o usuario volta para a pagina que estava tentando acessar antes de fazer login
         if (token == null) {
             String queryString = request.getQueryString();
             String originalUrl = uri + (queryString != null ? "?" + queryString : "");
@@ -57,6 +60,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         return true;
     }
 
+    //roda depois do controller, antes da renderização
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         if (modelAndView == null) return;
@@ -65,6 +69,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         String token = (session != null) ? (String) session.getAttribute("token") : null;
         if (token == null) return;
 
+        // injeta a contagem de notificações não lidas
         try {
             Integer unreadCount = notificationService.getUnreadCount(token);
             modelAndView.addObject("unreadCount", unreadCount);

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 // Endpoints de dados (JSON) chamados pelo JS vanilla das telas de chat.
-// O navegador nunca fala direto com o backend :8081 — passa sempre por aqui,
+// O navegador nunca fala direto com o backend, passa sempre por aqui,
 // que injeta o JWT da sessão no header Authorization.
 @Controller
 @RequestMapping("/app-api/chat")
@@ -73,7 +73,7 @@ public class ChatBffController {
     }
 
     // Credenciais pra abrir a conexão WebSocket a partir de qualquer página (não só
-    // a tela de chat) — usado pelo conector global que atualiza o badge em tempo real.
+    // a tela de chat). usado pelo conector global que atualiza o badge em tempo real.
     // É o mesmo token de sessão que a página de chat já embute direto no HTML hoje;
     // aqui só fica disponível pra JS de qualquer tela pedir sob demanda.
     @GetMapping("/ws-token")

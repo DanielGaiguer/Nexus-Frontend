@@ -18,6 +18,9 @@ public class WebConfig implements WebMvcConfigurer {
         return new ObjectMapper();
     }
 
+    // Registra o AuthInterceptor para interceptar apenas os caminhos que exigem login (/pro/**, /company/**, /admin/**, /matches/**) 
+    // rotas como /, /auth/**, /public/** ficam de fora, acessíveis livremente. os endpoints de dados JSON dos BFF controllers 
+    // (/app-api/chat/**, /notifications/**) não estão cobertos por este interceptor, eles fazem sua própria checagem manual de sessão dentro do método 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)

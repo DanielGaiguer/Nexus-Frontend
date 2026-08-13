@@ -19,15 +19,15 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+    
     @Autowired
     private ProfessionalService professionalService;
+    
     @Autowired
     private CompanyService companyService;
 
     @Value("${nexus.api.base-url}")
     private String apiBaseUrl;
-
-    // Login
 
     @GetMapping("/login")
     public String loginPage(
@@ -74,6 +74,22 @@ public class AuthController {
                 && !redirect.startsWith("//")
                 && !redirect.contains("://");
     }
+    
+    // Quando o usuário faz login, o AuthService  chama POST /auth/login no backend 
+    // recebe de volta o LoginResponseDTO contendo o JWT, e o AuthController armazena esse token como 
+    // atributo da HttpSession, no Spring é mantida inteiramente do lado do servidor, 
+    // identificada no browser apenas por um cookie de sessão (JSESSIONID), que não contém o token, 
+    // só um identificador opaco. O JWT em si nunca é enviado ao browser em nenhum header, 
+    // cookie, ou corpo de resposta visível ao JavaScript do clientee,
+    // ele fica retido inteiramente na memória do servidor nexus-frontend, associado à sessão daquele usuário
+
+    // Toda vez que uma página protegida precisa de dados do backend, o controller Spring MVC lê 
+    // (String) session.getAttribute("token") e passa esse valor para o service correspondente, 
+    // que o injeta no header Authorization: Bearer {token} da chamada ao backend,
+    // o servidor frontend fala com o servidor backend em nome do usuário, sem que o navegador jamais
+    // veja o token bruto. Esse é o núcleo do padrão BFF (Backend For Frontend): o frontend não é um SPA 
+    // que guarda o token no localStorage ou similar (vulnerável a XSS); é uma aplicação server-side
+    // tradicional que faz o papel de intermediário confiável
 
     private void populateSession(HttpSession session, LoginResponseDTO response) {
         session.setAttribute("token",    response.getToken());

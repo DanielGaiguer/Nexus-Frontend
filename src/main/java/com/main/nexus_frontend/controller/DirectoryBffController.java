@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
-// Endpoints de dados (JSON) chamados pelo JS vanilla das telas de diretório (Empresas/Profissionais).
-// O navegador nunca fala direto com o backend :8081 — passa sempre por aqui.
+// Endpoints de dados (JSON) chamados pelo JS vanilla das telas de diretório (Empresas/Profissionais)
+// O navegador nunca fala direto com o backend, passa sempre por aqui.
 @Controller
 @RequestMapping("/app-api/directory")
 public class DirectoryBffController {

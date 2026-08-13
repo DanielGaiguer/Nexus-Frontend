@@ -51,13 +51,16 @@ public class ChatController {
         }
 
         // Não encontrado na lista de chats disponíveis: match inexistente
-        // ou sem acesso — a listagem já filtra por status MATCHED.
+        // ou sem acesso, a listagem já filtra por status MATCHED.
         if (summary == null) {
             return "redirect:" + matchesUrl;
         }
 
         model.addAttribute("matchId", matchId);
         model.addAttribute("summary", summary);
+        // Somente aqui, o token e colocado no model do frontend, pois deixar ele no backend 
+        // daria uma complexidade significativa. O token e usado como variavel para o webSocket javascript
+        // por isso, precisa ser passado para o model, nessa unica pagina especifica
         model.addAttribute("wsToken", token);
         model.addAttribute("wsBaseUrl", wsBaseUrl);
         model.addAttribute("matchesUrl", matchesUrl);
