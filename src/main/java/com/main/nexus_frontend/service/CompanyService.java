@@ -1,5 +1,6 @@
 package com.main.nexus_frontend.service;
 
+import com.main.nexus_frontend.exception.NexusApiException;
 import com.main.nexus_frontend.model.CompanyDashboardAnalyticsDTO;
 import com.main.nexus_frontend.model.CompanyDashboardDTO;
 import com.main.nexus_frontend.model.CompanyDTO;
@@ -21,7 +22,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CompanyService {
@@ -40,9 +40,10 @@ public class CompanyService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load skills");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(SkillDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -54,9 +55,10 @@ public class CompanyService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load dashboard");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(CompanyDashboardDTO.class);
     }
@@ -67,9 +69,10 @@ public class CompanyService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Erro ao buscar analytics");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(CompanyDashboardAnalyticsDTO.class);
     }
@@ -80,9 +83,10 @@ public class CompanyService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load company profile");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(CompanyProfileDTO.class);
     }
@@ -94,9 +98,10 @@ public class CompanyService {
                 .body(dto)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to update company profile");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -111,7 +116,7 @@ public class CompanyService {
                 }
             });
         } catch (java.io.IOException e) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(500), "Failed to read file");
+            throw new NexusApiException("Não foi possível ler o arquivo enviado. Tente novamente.", 500);
         }
         return restClient.post()
                 .uri("/company/profile/photo")
@@ -120,9 +125,10 @@ public class CompanyService {
                 .body(body)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to upload photo");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(String.class);
     }
@@ -133,9 +139,10 @@ public class CompanyService {
                 .uri("/public/company/{id}", id)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Company not found");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(CompanyDTO.class);
     }
@@ -161,9 +168,10 @@ public class CompanyService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Contact not available");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ContactInfoDTO.class);
     }
@@ -175,9 +183,10 @@ public class CompanyService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Erro ao buscar oportunidades");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProjectDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();

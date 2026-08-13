@@ -1,5 +1,6 @@
 package com.main.nexus_frontend.service;
 
+import com.main.nexus_frontend.exception.NexusApiException;
 import com.main.nexus_frontend.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -7,7 +8,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,9 +30,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load admin dashboard");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(AdminDashboardDTO.class);
     }
@@ -43,9 +44,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load pending companies");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(CompanyProfileDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -57,9 +59,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to approve company");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -70,9 +73,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to reject company");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -83,9 +87,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to close project");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -96,9 +101,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load skills");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(SkillDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -112,9 +118,10 @@ public class AdminService {
                 .body(new SkillRequestDTO(name, category))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to create skill");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -125,9 +132,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to delete skill");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -138,9 +146,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load users");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(UserSummaryDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -152,9 +161,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to toggle user");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -165,9 +175,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Erro ao buscar projetos");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProjectDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -179,9 +190,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load professional profile");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProfessionalProfileDTO.class);
     }
@@ -192,9 +204,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load professional analytics");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProfessionalDashboardAnalyticsDTO.class);
     }
@@ -216,9 +229,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load matches");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(MatchDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -230,9 +244,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load projects");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(PreviousProjectDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -244,9 +259,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load professional dashboard");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProfessionalDashboardDTO.class);
     }
@@ -257,9 +273,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load companies");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(CompanyProfileDTO[].class);
         return response != null ? List.of(response) : List.of();
@@ -271,9 +288,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load company profile");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(CompanyProfileDTO.class);
     }
@@ -284,9 +302,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load company dashboard");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(CompanyDashboardDTO.class);
     }
@@ -297,9 +316,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load company projects");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProjectDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -311,9 +331,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load company matches");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(MatchDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -325,9 +346,10 @@ public class AdminService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load company analytics");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(CompanyDashboardAnalyticsDTO.class);
     }

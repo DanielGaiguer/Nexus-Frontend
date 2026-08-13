@@ -1,5 +1,6 @@
 package com.main.nexus_frontend.controller;
 
+import com.main.nexus_frontend.exception.NexusApiException;
 import com.main.nexus_frontend.model.*;
 import com.main.nexus_frontend.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -142,8 +143,11 @@ public class CompanyController {
             dto.setLinkedinUrl(linkedinUrl != null && !linkedinUrl.isBlank() ? linkedinUrl : null);
             companyService.updateProfile(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Perfil atualizado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao atualizar perfil: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/profile";
     }
@@ -248,8 +252,11 @@ public class CompanyController {
             dto.setSalaryVisibleToCompanies(Boolean.TRUE.equals(salaryVisibleToCompanies));
             projectService.createProject(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto criado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao criar projeto: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/projects";
     }
@@ -322,8 +329,11 @@ public class CompanyController {
             dto.setSalaryVisibleToCompanies(Boolean.TRUE.equals(salaryVisibleToCompanies));
             projectService.updateProject(token, id, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto atualizado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao atualizar projeto: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/projects";
     }
@@ -337,8 +347,11 @@ public class CompanyController {
         try {
             projectService.closeProject(token, id);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto encerrado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao encerrar projeto: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/projects";
     }
@@ -353,8 +366,11 @@ public class CompanyController {
         try {
             projectService.reopenProject(token, id, maxPositions);
             redirectAttributes.addFlashAttribute("successMsg", "Oportunidade reativada com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao reativar oportunidade: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/projects";
     }
@@ -369,8 +385,11 @@ public class CompanyController {
         try {
             projectService.resumeProject(token, id, additionalPositions);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto reaberto com mais vagas!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao reabrir projeto: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/projects";
     }
@@ -384,8 +403,11 @@ public class CompanyController {
         try {
             projectService.deleteProject(token, id);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto excluído com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao excluir projeto: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/projects";
     }
@@ -494,8 +516,11 @@ public class CompanyController {
         try {
             matchService.companyInterest(token, matchId);
             redirectAttributes.addFlashAttribute("successMsg", "Interesse demonstrado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao demonstrar interesse: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/matches";
     }
@@ -537,8 +562,11 @@ public class CompanyController {
             matchService.companyAccept(token, matchId);
             redirectAttributes.addFlashAttribute("successMsg", "Interesse aceito! Match confirmado.");
             redirectAttributes.addFlashAttribute("justConfirmedMatchId", matchId);
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao aceitar: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/matches";
     }
@@ -553,8 +581,11 @@ public class CompanyController {
         try {
             matchService.companyReject(token, matchId, reasons != null ? reasons : List.of());
             redirectAttributes.addFlashAttribute("successMsg", "Interesse recusado.");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao recusar: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/matches";
     }
@@ -638,8 +669,11 @@ public class CompanyController {
             dto.setNegativeReasons(negativeReasons != null ? negativeReasons : List.of());
             reviewService.submit(token, matchId, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Avaliação enviada com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar avaliação: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/matches";
     }

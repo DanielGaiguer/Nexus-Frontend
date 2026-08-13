@@ -1,5 +1,6 @@
 package com.main.nexus_frontend.controller;
 
+import com.main.nexus_frontend.exception.NexusApiException;
 import com.main.nexus_frontend.service.MatchService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -37,8 +37,8 @@ public class MatchStatusCheckController {
             matchService.answerStatusCheck(token, matchId, outcome);
             redirectAttributes.addFlashAttribute("successMsg", "Obrigado pelo feedback!");
             return "redirect:/company/matches";
-        } catch (ResponseStatusException e) {
-            if (e.getStatusCode().value() == 409) {
+        } catch (NexusApiException e) {
+            if (e.getHttpStatus() == 409) {
                 redirectAttributes.addFlashAttribute("successMsg", "Você já respondeu esta pergunta.");
                 return "redirect:/company/matches";
             }

@@ -1,5 +1,6 @@
 package com.main.nexus_frontend.controller;
 
+import com.main.nexus_frontend.exception.NexusApiException;
 import com.main.nexus_frontend.model.*;
 import com.main.nexus_frontend.service.AdminService;
 import com.main.nexus_frontend.service.MapService;
@@ -113,8 +114,11 @@ public class AdminController {
         try {
             adminService.approveCompany(token, id);
             redirectAttributes.addFlashAttribute("successMsg", "Empresa aprovada com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao aprovar empresa: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/admin/approvals";
     }
@@ -128,8 +132,11 @@ public class AdminController {
         try {
             adminService.rejectCompany(token, id);
             redirectAttributes.addFlashAttribute("successMsg", "Empresa rejeitada.");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao rejeitar empresa: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/admin/approvals";
     }
@@ -166,8 +173,11 @@ public class AdminController {
         try {
             adminService.createSkill(token, name, finalCategory);
             redirectAttributes.addFlashAttribute("successMsg", "Skill criada com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao criar skill: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/admin/skills";
     }
@@ -181,8 +191,11 @@ public class AdminController {
         try {
             adminService.deleteSkill(token, id);
             redirectAttributes.addFlashAttribute("successMsg", "Skill removida com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao remover skill: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/admin/skills";
     }
@@ -205,8 +218,11 @@ public class AdminController {
         try {
             adminService.toggleUser(token, id);
             redirectAttributes.addFlashAttribute("successMsg", "Status do usuário alterado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao alterar status: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/admin/users";
     }
@@ -291,8 +307,11 @@ public class AdminController {
         try {
             adminService.closeProject(token, id);
             redirectAttributes.addFlashAttribute("successMsg", "Oportunidade encerrada com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao encerrar oportunidade: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/admin/projects";
     }

@@ -1,5 +1,6 @@
 package com.main.nexus_frontend.controller;
 
+import com.main.nexus_frontend.exception.NexusApiException;
 import com.main.nexus_frontend.model.*;
 import com.main.nexus_frontend.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -152,8 +153,11 @@ public class ProfessionalController {
             dto.setFreelanceMaxExpectation(freelanceMaxExpectation);
             professionalService.updateProfile(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Perfil atualizado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao atualizar perfil: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/profile";
     }
@@ -167,8 +171,11 @@ public class ProfessionalController {
         try {
             professionalService.updateSkills(token, skillIds != null ? skillIds : List.of());
             redirectAttributes.addFlashAttribute("successMsg", "Skills atualizadas com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao atualizar skills: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/profile";
     }
@@ -195,8 +202,11 @@ public class ProfessionalController {
             dto.setAvailable("on".equals(available));
             professionalService.updateProfile(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Disponibilidade atualizada!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao atualizar disponibilidade: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/profile";
     }
@@ -227,8 +237,11 @@ public class ProfessionalController {
             dto.setYearOfCompletion(yearOfCompletion);
             professionalService.addProject(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto adicionado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao adicionar projeto: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/portfolio";
     }
@@ -251,8 +264,11 @@ public class ProfessionalController {
             dto.setYearOfCompletion(yearOfCompletion);
             professionalService.updateProject(token, projectId, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto atualizado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao atualizar projeto: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/portfolio";
     }
@@ -266,8 +282,11 @@ public class ProfessionalController {
         try {
             professionalService.deleteProject(token, projectId);
             redirectAttributes.addFlashAttribute("successMsg", "Projeto removido com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao remover projeto: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/portfolio";
     }
@@ -322,8 +341,11 @@ public class ProfessionalController {
             matchService.professionalAccept(token, matchId);
             redirectAttributes.addFlashAttribute("successMsg", "Convite aceito! Match confirmado.");
             redirectAttributes.addFlashAttribute("justConfirmedMatchId", matchId);
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao aceitar convite: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/matches";
     }
@@ -338,8 +360,11 @@ public class ProfessionalController {
         try {
             matchService.professionalReject(token, matchId, reasons != null ? reasons : List.of());
             redirectAttributes.addFlashAttribute("successMsg", "Convite recusado.");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao recusar convite: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/matches";
     }
@@ -423,8 +448,11 @@ public class ProfessionalController {
             dto.setNegativeReasons(negativeReasons != null ? negativeReasons : List.of());
             reviewService.submit(token, matchId, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Avaliação enviada com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar avaliação: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/matches";
     }
@@ -450,8 +478,11 @@ public class ProfessionalController {
         try {
             professionalService.sendInterest(token, projectId);
             redirectAttributes.addFlashAttribute("successMsg", "Interesse enviado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar interesse: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/public/opportunity/" + projectId;
     }
@@ -533,8 +564,11 @@ public class ProfessionalController {
             }
             professionalService.uploadResume(token, file);
             redirectAttributes.addFlashAttribute("successMsg", "Currículo enviado com sucesso!");
-        } catch (Exception e) {
+        } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar currículo: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/profile";
     }

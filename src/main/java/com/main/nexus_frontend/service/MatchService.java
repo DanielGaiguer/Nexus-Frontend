@@ -1,5 +1,6 @@
 package com.main.nexus_frontend.service;
 
+import com.main.nexus_frontend.exception.NexusApiException;
 import com.main.nexus_frontend.model.MatchDTO;
 import com.main.nexus_frontend.model.MatchHistoryDTO;
 import com.main.nexus_frontend.model.PendingStatusCheckDTO;
@@ -37,9 +38,10 @@ public class MatchService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load match");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(MatchDTO.class);
     }
@@ -51,7 +53,7 @@ public class MatchService {
             try {
                 List<MatchDTO> ranking = projectService.getRanking(token, project.getId());
                 allMatches.addAll(ranking);
-            } catch (ResponseStatusException e) {
+            } catch (NexusApiException e) {
                 // skip projects that fail to load ranking
             }
         }
@@ -68,9 +70,10 @@ public class MatchService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load previous projects");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(MatchDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -82,9 +85,10 @@ public class MatchService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to accept match");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -96,9 +100,10 @@ public class MatchService {
                 .body(reasons)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to reject match");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -109,9 +114,10 @@ public class MatchService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to send interest");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -122,9 +128,10 @@ public class MatchService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to accept match");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -136,9 +143,10 @@ public class MatchService {
                 .body(reasons)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to reject match");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -149,9 +157,10 @@ public class MatchService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to cancel match");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -163,9 +172,10 @@ public class MatchService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to cancel match");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -195,9 +205,10 @@ public class MatchService {
                 .body(Map.of("outcome", outcome))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to answer status check");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -208,9 +219,10 @@ public class MatchService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load match history");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(MatchHistoryDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();

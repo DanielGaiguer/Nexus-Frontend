@@ -1,5 +1,6 @@
 package com.main.nexus_frontend.service;
 
+import com.main.nexus_frontend.exception.NexusApiException;
 import com.main.nexus_frontend.model.CreateProjectDTO;
 import com.main.nexus_frontend.model.MatchDTO;
 import com.main.nexus_frontend.model.ProjectDTO;
@@ -8,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,9 +32,10 @@ public class ProjectService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load projects");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProjectDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -46,9 +47,10 @@ public class ProjectService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load project");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProjectDTO.class);
     }
@@ -60,10 +62,10 @@ public class ProjectService {
                 .body(dto)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to create project"
-                    );
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProjectDTO.class);
     }
@@ -75,9 +77,10 @@ public class ProjectService {
                 .body(dto)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to update project");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProjectDTO.class);
     }
@@ -88,9 +91,10 @@ public class ProjectService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to close project");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -104,9 +108,10 @@ public class ProjectService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to reactivate project");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -117,9 +122,10 @@ public class ProjectService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to resume project");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -130,9 +136,10 @@ public class ProjectService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to delete project");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -159,9 +166,10 @@ public class ProjectService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load ranking");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(MatchDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();

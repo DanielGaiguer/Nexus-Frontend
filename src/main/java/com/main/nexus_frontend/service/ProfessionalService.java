@@ -1,5 +1,6 @@
 package com.main.nexus_frontend.service;
 
+import com.main.nexus_frontend.exception.NexusApiException;
 import com.main.nexus_frontend.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -11,7 +12,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,9 +34,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load profile");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProfessionalProfileDTO.class);
     }
@@ -48,9 +49,10 @@ public class ProfessionalService {
                 .body(dto)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to update profile");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -62,9 +64,10 @@ public class ProfessionalService {
                 .body(skillIds)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to update skills");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -75,9 +78,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load matches");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(MatchDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -89,9 +93,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load invites");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(MatchDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -103,9 +108,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load projects");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(PreviousProjectDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -118,9 +124,10 @@ public class ProfessionalService {
                 .body(dto)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to add project");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -132,9 +139,10 @@ public class ProfessionalService {
                 .body(dto)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to update project");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -145,9 +153,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to delete project");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -158,9 +167,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load opportunities");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(MatchDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -172,9 +182,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to send interest");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -185,9 +196,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to load skills");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(SkillDTO[].class);
         return response != null ? Arrays.asList(response) : Collections.emptyList();
@@ -203,7 +215,7 @@ public class ProfessionalService {
                 }
             });
         } catch (java.io.IOException e) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(500), "Failed to read file");
+            throw new NexusApiException("Não foi possível ler o arquivo enviado. Tente novamente.", 500);
         }
         restClient.post()
                 .uri("/professional/resume")
@@ -212,9 +224,10 @@ public class ProfessionalService {
                 .body(body)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to upload resume");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .toBodilessEntity();
     }
@@ -225,9 +238,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to download resume");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(byte[].class);
     }
@@ -242,7 +256,7 @@ public class ProfessionalService {
                 }
             });
         } catch (java.io.IOException e) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(500), "Failed to read file");
+            throw new NexusApiException("Não foi possível ler o arquivo enviado. Tente novamente.", 500);
         }
         return restClient.post()
                 .uri("/professional/profile/photo")
@@ -251,9 +265,10 @@ public class ProfessionalService {
                 .body(body)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Failed to upload photo");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(String.class);
     }
@@ -272,9 +287,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Erro ao buscar analytics");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ProfessionalDashboardAnalyticsDTO.class);
     }
@@ -285,9 +301,10 @@ public class ProfessionalService {
                 .uri("/public/professional/{id}", id)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Professional not found");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(PublicProfessionalDTO.class);
     }
@@ -299,9 +316,10 @@ public class ProfessionalService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new ResponseStatusException(
-                            HttpStatusCode.valueOf(res.getStatusCode().value()),
-                            "Contact not available");
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
                 })
                 .body(ContactInfoDTO.class);
     }
