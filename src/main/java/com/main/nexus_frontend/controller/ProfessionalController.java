@@ -34,11 +34,7 @@ public class ProfessionalController {
     @Autowired
     private ReputationService reputationService;
     @Autowired
-    private AdminService adminService;
-    @Autowired
     private MapService mapService;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {

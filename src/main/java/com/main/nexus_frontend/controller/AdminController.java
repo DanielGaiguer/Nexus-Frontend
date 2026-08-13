@@ -32,8 +32,6 @@ public class AdminController {
     private MapService mapService;
     @Autowired
     private ReputationService reputationService;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {

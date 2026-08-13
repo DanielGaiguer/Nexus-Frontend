@@ -362,20 +362,10 @@
           <div class="mb-4">
             <label class="nexus-label mb-2">Pontos positivos</label>
             <div class="d-flex flex-wrap gap-2">
-              <label th:each="r : ${ {'EXCELLENT_COMMUNICATION','HIGH_TECHNICAL_SKILL','DELIVERED_ON_TIME','TEAM_PLAYER','PROACTIVE','EXCEEDED_EXPECTATIONS','RELIABLE','PUNCTUAL','HIGH_CODE_QUALITY','GOOD_PROBLEM_SOLVING'} }"
+              <label th:each="r : ${T(com.main.nexus_frontend.model.PositiveReason).values()}"
                      style="cursor:pointer">
-                <input type="checkbox" name="positiveReasons" th:value="${r}" style="display:none" class="dash-pos-cb">
-                <span class="nexus-chip reason-chip"
-                      th:text="${r == 'EXCELLENT_COMMUNICATION' ? 'Excelente comunicação' :
-                                 r == 'HIGH_TECHNICAL_SKILL'    ? 'Alta competência técnica' :
-                                 r == 'DELIVERED_ON_TIME'       ? 'Entregou no prazo' :
-                                 r == 'TEAM_PLAYER'             ? 'Trabalho em equipe' :
-                                 r == 'PROACTIVE'               ? 'Proativo' :
-                                 r == 'EXCEEDED_EXPECTATIONS'   ? 'Superou expectativas' :
-                                 r == 'RELIABLE'                ? 'Confiável' :
-                                 r == 'PUNCTUAL'                ? 'Pontual' :
-                                 r == 'HIGH_CODE_QUALITY'       ? 'Alta qualidade de código' :
-                                 r == 'GOOD_PROBLEM_SOLVING'    ? 'Boa resolução de problemas' : r}">Motivo</span>
+                <input type="checkbox" name="positiveReasons" th:value="${r.name()}" style="display:none" class="dash-pos-cb">
+                <span class="nexus-chip reason-chip" th:text="${r.label}">Motivo</span>
               </label>
             </div>
           </div>
@@ -383,19 +373,10 @@
           <div class="mb-4">
             <label class="nexus-label mb-2">Pontos negativos</label>
             <div class="d-flex flex-wrap gap-2">
-              <label th:each="r : ${ {'MISSED_DEADLINES','POOR_COMMUNICATION','LOW_CODE_QUALITY','UNPROFESSIONAL','ABSENT','UNRELIABLE','POOR_PROBLEM_SOLVING','DID_NOT_MEET_EXPECTATIONS','OTHER'} }"
+              <label th:each="r : ${T(com.main.nexus_frontend.model.NegativeReason).values()}"
                      style="cursor:pointer">
-                <input type="checkbox" name="negativeReasons" th:value="${r}" style="display:none" class="dash-neg-cb">
-                <span class="nexus-chip reason-chip-neg"
-                      th:text="${r == 'MISSED_DEADLINES'          ? 'Atrasou prazos' :
-                                 r == 'POOR_COMMUNICATION'        ? 'Comunicação ruim' :
-                                 r == 'LOW_CODE_QUALITY'          ? 'Baixa qualidade de código' :
-                                 r == 'UNPROFESSIONAL'            ? 'Pouco profissional' :
-                                 r == 'ABSENT'                    ? 'Ausente' :
-                                 r == 'UNRELIABLE'                ? 'Não confiável' :
-                                 r == 'POOR_PROBLEM_SOLVING'      ? 'Dificuldade para resolver problemas' :
-                                 r == 'DID_NOT_MEET_EXPECTATIONS' ? 'Não atendeu expectativas' :
-                                 r == 'OTHER'                     ? 'Outro' : r}">Motivo</span>
+                <input type="checkbox" name="negativeReasons" th:value="${r.name()}" style="display:none" class="dash-neg-cb">
+                <span class="nexus-chip reason-chip-neg" th:text="${r.label}">Motivo</span>
               </label>
             </div>
           </div>
