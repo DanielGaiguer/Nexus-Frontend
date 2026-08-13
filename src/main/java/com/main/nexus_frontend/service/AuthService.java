@@ -15,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 public class AuthService {
 
     private final RestClient restClient;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AuthService(@Value("${nexus.api.base-url}") String baseUrl) {
         this.restClient = RestClient.builder()

@@ -23,12 +23,14 @@
           <h1 class="fw-bold mb-1" style="font-size:1.75rem;letter-spacing:-0.02em;color:#fff">Meu Perfil</h1>
           <p style="color:#64748b;font-size:0.875rem">Mantenha seu perfil atualizado para melhores matches</p>
         </div>
-        <button type="button" class="nexus-btn nexus-btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">
-          <i class="ti ti-pencil"></i> Editar perfil
-        </button>
-        <a href="/pro/profile/export" target="_blank" class="nexus-btn nexus-btn-ghost">
-          <i class="ti ti-file-download"></i> Exportar PDF
-        </a>
+          <div>
+            <button type="button" class="nexus-btn nexus-btn-primary " data-bs-toggle="modal" data-bs-target="#editModal">
+              <i class="ti ti-pencil"></i> Editar perfil
+            </button>
+            <a href="/pro/profile/export" target="_blank" class="nexus-btn nexus-btn-ghost mx-2">
+              <i class="ti ti-file-download"></i> Exportar PDF
+            </a>
+          </div>
       </div>
 
       <div class="row g-3">
@@ -197,6 +199,25 @@
                   <i class="ti ti-brand-linkedin" style="width:16px"></i>
                   Adicionar LinkedIn
                 </button>
+              </div>
+
+              <div id="githubSection">
+                <div class="d-flex align-items-center gap-2" style="color:#94a3b8;font-size:0.85rem"
+                     th:if="${profile.hasGitHub}">
+                  <i class="ti ti-brand-github" style="color:#f0f6fc;width:16px"></i>
+                  <a th:href="${profile.githubUrl}" target="_blank" rel="noopener"
+                     style="color:#94a3b8;text-decoration:none" class="text-truncate">
+                    <span th:text="'@' + ${profile.githubLogin}">@github</span>
+                  </a>
+                </div>
+                <div th:unless="${profile.hasGitHub}">
+                  <a href="/auth/github/link"
+                     class="d-flex align-items-center gap-2 text-decoration-none border-0 bg-transparent p-0"
+                     style="color:#f0f6fc;font-size:0.85rem;font-weight:500">
+                    <i class="ti ti-brand-github" style="width:16px"></i>
+                    Conectar GitHub
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -391,6 +412,34 @@
             </div>
           </div>
 
+          <div class="nexus-card p-4 mt-3" th:if="${profile.hasGitHub}">
+            <div style="color:#94a3b8;font-size:0.72rem;text-transform:uppercase;
+                        letter-spacing:0.05em;margin-bottom:0.75rem">
+              <i class="ti ti-brand-github" style="color:#f0f6fc;margin-right:4px"></i>Atividade no GitHub
+            </div>
+            <a th:href="${profile.githubUrl}" target="_blank" rel="noopener"
+               class="d-block mb-2" style="color:#94a3b8;font-size:0.85rem;text-decoration:none"
+               th:text="'@' + ${profile.githubLogin}">@usuario</a>
+            <div style="background:#161b22;border-radius:10px;padding:0.85rem">
+              <img th:src="@{'https://ghchart.rshah.org/' + ${profile.githubLogin}}"
+                   th:alt="'Gráfico de contribuições do GitHub de ' + ${profile.githubLogin}"
+                   style="width:100%;max-width:720px;display:block;border-radius:6px"
+                   onerror="this.closest('.nexus-card').style.display='none'">
+            </div>
+            <div class="d-flex align-items-center justify-content-end gap-1 mt-2" style="font-size:0.68rem;color:#64748b">
+              <span>Less</span>
+              <span style="width:10px;height:10px;border-radius:2px;background:#161b22;border:1px solid rgba(255,255,255,0.06);display:inline-block"></span>
+              <span style="width:10px;height:10px;border-radius:2px;background:#0e4429;display:inline-block"></span>
+              <span style="width:10px;height:10px;border-radius:2px;background:#006d32;display:inline-block"></span>
+              <span style="width:10px;height:10px;border-radius:2px;background:#26a641;display:inline-block"></span>
+              <span style="width:10px;height:10px;border-radius:2px;background:#39d353;display:inline-block"></span>
+              <span>More</span>
+            </div>
+            <p class="mt-2 mb-0" style="color:#64748b;font-size:0.72rem">
+              Gráfico de contribuições dos últimos 12 meses
+            </p>
+          </div>
+
         </div>
       </div>
 
@@ -505,6 +554,15 @@
                      placeholder="https://www.linkedin.com/in/seu-usuario">
               <div style="color:#475569;font-size:0.75rem;margin-top:4px">
                 Cole aqui o link do seu perfil no LinkedIn
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="nexus-label">GitHub</label>
+              <input type="url" class="nexus-input" name="githubUrl" id="editGithub"
+                     th:value="${profile.githubUrl}"
+                     placeholder="https://github.com/seu-usuario">
+              <div style="color:#475569;font-size:0.75rem;margin-top:4px">
+                Cole aqui o link do seu perfil no GitHub
               </div>
             </div>
 
@@ -806,6 +864,7 @@ var PROFILE_DATA = {
   salaryFilled:      /*[[${profile.expectedSalaryCLT != null or profile.expectedSalaryPJ != null or profile.freelanceMinExpectation != null or profile.freelanceMaxExpectation != null}]]*/ false,
   preferredTypes:    /*[[${profile.preferredTypes}]]*/ [],
   linkedinUrl:       /*[[${profile.linkedinUrl}]]*/ '',
+  githubUrl:         /*[[${profile.githubUrl}]]*/ '',
   expectedSalaryCLT:          /*[[${profile.expectedSalaryCLT}]]*/ null,
   expectedSalaryPJ:           /*[[${profile.expectedSalaryPJ}]]*/ null,
   freelanceMinExpectation:    /*[[${profile.freelanceMinExpectation}]]*/ null,
@@ -826,21 +885,17 @@ document.getElementById('addLinkedinForm').addEventListener('submit', function(e
   btn.disabled = true;
 
   var formData = new FormData();
-  formData.append('name', PROFILE_DATA.name || '');
-  formData.append('phone', PROFILE_DATA.phone || '');
-  formData.append('cep', PROFILE_DATA.cep || '');
-  formData.append('experienceLevel', PROFILE_DATA.experienceLevel || '');
-  (PROFILE_DATA.preferredTypes || []).forEach(function(v) { formData.append('preferredTypes', v); });
-  (PROFILE_DATA.preferredOpportunityTypes || []).forEach(function(v) { formData.append('preferredOpportunityTypes', v); });
-  if (PROFILE_DATA.expectedSalaryCLT != null) formData.append('expectedSalaryCLT', PROFILE_DATA.expectedSalaryCLT);
-  if (PROFILE_DATA.expectedSalaryPJ != null) formData.append('expectedSalaryPJ', PROFILE_DATA.expectedSalaryPJ);
-  if (PROFILE_DATA.freelanceMinExpectation != null) formData.append('freelanceMinExpectation', PROFILE_DATA.freelanceMinExpectation);
-  if (PROFILE_DATA.freelanceMaxExpectation != null) formData.append('freelanceMaxExpectation', PROFILE_DATA.freelanceMaxExpectation);
   formData.append('linkedinUrl', url);
 
-  fetch('/pro/profile', { method: 'POST', body: formData })
+  // Endpoint dedicado (salva só o linkedinUrl em cima do perfil já existente no backend) — só
+  // avança pro OAuth do LinkedIn se o link realmente foi salvo, checado pelo status HTTP real.
+  fetch('/pro/profile/linkedin', { method: 'POST', body: formData })
     .then(function(res) {
-      if (!res.ok) throw new Error('Não foi possível salvar o link do LinkedIn.');
+      if (!res.ok) {
+        return res.text().then(function(msg) {
+          throw new Error(msg || 'Não foi possível salvar o link do LinkedIn.');
+        });
+      }
       window.location.href = '/auth/linkedin/link';
     })
     .catch(function(err) {

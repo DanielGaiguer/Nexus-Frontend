@@ -76,6 +76,8 @@ public class ProfessionalController {
     public String profile(
             @RequestParam(required = false) String linkedinLinked,
             @RequestParam(required = false) String linkedinError,
+            @RequestParam(required = false) String githubLinked,
+            @RequestParam(required = false) String githubError,
             HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         ProfessionalProfileDTO profile = professionalService.getProfile(token);
@@ -105,10 +107,19 @@ public class ProfessionalController {
             model.addAttribute("reputation", new ReputationDTO());
         }
         if ("true".equals(linkedinLinked)) {
-            model.addAttribute("successMsg", "Conta do LinkedIn conectada! Agora informe o link do seu perfil abaixo, em \"Editar\".");
+            boolean hasLinkedinUrl = profile.getLinkedinUrl() != null && !profile.getLinkedinUrl().isBlank();
+            model.addAttribute("successMsg", hasLinkedinUrl
+                    ? "Conta do LinkedIn conectada e link do perfil salvo com sucesso!"
+                    : "Conta do LinkedIn conectada! Agora informe o link do seu perfil abaixo, em \"Editar\".");
         }
         if ("already_linked".equals(linkedinError)) {
             model.addAttribute("errorMsg", "Esta conta do LinkedIn já está vinculada a outro usuário do Nexus.");
+        }
+        if ("true".equals(githubLinked)) {
+            model.addAttribute("successMsg", "Conta do GitHub conectada com sucesso!");
+        }
+        if ("already_linked".equals(githubError)) {
+            model.addAttribute("errorMsg", "Esta conta do GitHub já está vinculada a outro profissional do Nexus.");
         }
         model.addAttribute("activePage", "profile");
         return "pro/pro-profile";
@@ -127,6 +138,7 @@ public class ProfessionalController {
             @RequestParam(required = false) Double freelanceMinExpectation,
             @RequestParam(required = false) Double freelanceMaxExpectation,
             @RequestParam(required = false) String linkedinUrl,
+            @RequestParam(required = false) String githubUrl,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
@@ -140,9 +152,10 @@ public class ProfessionalController {
             dto.setCep(cep);
             dto.setAvailable(currentProfile.getAvailable());
             dto.setPreferredTypes(preferredTypes);
-            dto.setExperienceLevel(experienceLevel);
+            dto.setExperienceLevel(experienceLevel != null && !experienceLevel.isBlank() ? experienceLevel : null);
             dto.setPreferredOpportunityTypes(preferredOpportunityTypes);
             dto.setLinkedinUrl(linkedinUrl != null && !linkedinUrl.isBlank() ? linkedinUrl : null);
+            dto.setGithubUrl(githubUrl != null && !githubUrl.isBlank() ? githubUrl : null);
             dto.setExpectedSalaryCLT(expectedSalaryCLT);
             dto.setExpectedSalaryPJ(expectedSalaryPJ);
             dto.setFreelanceMinExpectation(freelanceMinExpectation);
@@ -156,6 +169,24 @@ public class ProfessionalController {
                     "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/pro/profile";
+    }
+
+    @PostMapping("/profile/linkedin")
+    @ResponseBody
+    public ResponseEntity<String> saveLinkedinUrl(
+            @RequestParam String linkedinUrl,
+            HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        try {
+            ProfessionalProfileDTO currentProfile = professionalService.getProfile(token);
+            currentProfile.setLinkedinUrl(linkedinUrl != null && !linkedinUrl.isBlank() ? linkedinUrl : null);
+            professionalService.updateProfile(token, currentProfile);
+            return ResponseEntity.ok("LinkedIn salvo.");
+        } catch (NexusApiException e) {
+            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Não foi possível salvar o link do LinkedIn.");
+        }
     }
 
     @PostMapping("/profile/skills")
@@ -195,6 +226,8 @@ public class ProfessionalController {
             dto.setExpectedSalaryPJ(currentProfile.getExpectedSalaryPJ());
             dto.setFreelanceMinExpectation(currentProfile.getFreelanceMinExpectation());
             dto.setFreelanceMaxExpectation(currentProfile.getFreelanceMaxExpectation());
+            dto.setLinkedinUrl(currentProfile.getLinkedinUrl());
+            dto.setGithubUrl(currentProfile.getGithubUrl());
             dto.setAvailable("on".equals(available));
             professionalService.updateProfile(token, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Disponibilidade atualizada!");
@@ -653,6 +686,19 @@ public class ProfessionalController {
             return ResponseEntity.ok("Foto removida.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Erro ao remover: " + e.getMessage());
+        }
+    }
+
+    // Chamado via fetch() pela página de perfil — atualiza a seção do GitHub sem recarregar
+    @DeleteMapping("/profile/github")
+    @ResponseBody
+    public ResponseEntity<String> unlinkGithub(HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        try {
+            professionalService.unlinkGithub(token);
+            return ResponseEntity.ok("Conta do GitHub desconectada.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao desconectar: " + e.getMessage());
         }
     }
 }

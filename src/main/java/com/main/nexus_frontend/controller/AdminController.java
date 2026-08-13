@@ -5,7 +5,6 @@ import com.main.nexus_frontend.model.*;
 import com.main.nexus_frontend.service.AdminService;
 import com.main.nexus_frontend.service.MapService;
 import com.main.nexus_frontend.service.ReputationService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

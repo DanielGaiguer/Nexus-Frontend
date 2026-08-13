@@ -18,6 +18,9 @@ public class PublicProfessionalDTO {
     private Double minimumSalary;
     private Double maximumSalary;
     private List<String> preferredTypes;
+    private String githubUrl;
+    private String githubLogin;
+    private boolean hasGitHub;
 
     public PublicProfessionalDTO() {}
 
@@ -65,4 +68,13 @@ public class PublicProfessionalDTO {
 
     public List<String> getPreferredTypes() { return preferredTypes; }
     public void setPreferredTypes(List<String> preferredTypes) { this.preferredTypes = preferredTypes; }
+
+    public String getGithubUrl() { return githubUrl; }
+    public void setGithubUrl(String githubUrl) { this.githubUrl = githubUrl; }
+
+    public String getGithubLogin() { return githubLogin; }
+    public void setGithubLogin(String githubLogin) { this.githubLogin = githubLogin; }
+
+    public boolean isHasGitHub() { return hasGitHub; }
+    public void setHasGitHub(boolean hasGitHub) { this.hasGitHub = hasGitHub; }
 }

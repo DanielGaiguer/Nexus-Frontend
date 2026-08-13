@@ -66,8 +66,8 @@ var NexusScoreSimulator = (function() {
     var pct   = Math.round(value);
     return '<div style="margin-bottom:0.5rem">' +
       '<div style="display:flex;justify-content:space-between;margin-bottom:3px">' +
-        '<span style="color:#64748b;font-size:0.75rem">' + label +
-          ' <span style="color:#334155;font-size:0.68rem">×' + (weight * 100).toFixed(0) + '%</span>' +
+        '<span style="color:#94a3b8;font-size:0.75rem">' + label +
+          ' <span style="color:#64748b;font-size:0.68rem">×' + (weight * 100).toFixed(0) + '%</span>' +
         '</span>' +
         '<span style="color:#e2e8f0;font-size:0.75rem;font-weight:600">' + pct + '</span>' +
       '</div>' +
@@ -98,8 +98,8 @@ var NexusScoreSimulator = (function() {
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">' +
           '<div>' +
             '<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;' +
-            'letter-spacing:0.07em;color:#64748b">Score simulado</div>' +
-            '<div style="font-size:0.65rem;color:#334155;margin-top:1px">' +
+            'letter-spacing:0.07em;color:#94a3b8">Score simulado</div>' +
+            '<div style="font-size:0.65rem;color:#64748b;margin-top:1px">' +
             'baseado nas vagas abertas</div>' +
           '</div>' +
           '<div style="text-align:right">' +
@@ -119,11 +119,6 @@ var NexusScoreSimulator = (function() {
         makeBar('Histórico',     sHist,   0.20) +
         makeBar('Reputação',     sRep,    0.10) +
         makeBar('Disponibilidade', sAvail, 0.10) +
-
-        '<div style="margin-top:0.75rem;padding-top:0.6rem;' +
-        'border-top:1px solid rgba(255,255,255,0.05);' +
-        'font-size:0.7rem;color:#334155;text-align:center">' +
-        '⚡ Simulação baseada no Cenário 1 da fórmula — modalidade remota sem nível de experiência</div>' +
 
       '</div>';
   }

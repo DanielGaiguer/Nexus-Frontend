@@ -27,6 +27,9 @@ public class ProfessionalProfileDTO {
     private List<String> missingFields;
     private String resume;
     private String linkedinUrl;
+    private String githubUrl;
+    private String githubLogin;
+    private boolean hasGitHub;
 
     public ProfessionalProfileDTO() {}
 
@@ -78,4 +81,10 @@ public class ProfessionalProfileDTO {
     public void setResume(String resume) { this.resume = resume; }
     public String getLinkedinUrl() { return linkedinUrl; }
     public void setLinkedinUrl(String linkedinUrl) { this.linkedinUrl = linkedinUrl; }
+    public String getGithubUrl() { return githubUrl; }
+    public void setGithubUrl(String githubUrl) { this.githubUrl = githubUrl; }
+    public String getGithubLogin() { return githubLogin; }
+    public void setGithubLogin(String githubLogin) { this.githubLogin = githubLogin; }
+    public boolean isHasGitHub() { return hasGitHub; }
+    public void setHasGitHub(boolean hasGitHub) { this.hasGitHub = hasGitHub; }
 }

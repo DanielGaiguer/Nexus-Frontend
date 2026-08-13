@@ -281,6 +281,20 @@ public class ProfessionalService {
                 .body(String.class);
     }
 
+    public void unlinkGithub(String token) {
+        restClient.method(org.springframework.http.HttpMethod.DELETE)
+                .uri("/auth/github/unlink")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .body(String.class);
+    }
+
     public ProfessionalDashboardAnalyticsDTO getAnalytics(String token) {
         return restClient.get()
                 .uri("/analytics/professional/dashboard")

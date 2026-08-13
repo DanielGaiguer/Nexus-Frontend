@@ -32,10 +32,12 @@ public class AuthController {
     @GetMapping("/login")
     public String loginPage(
             @RequestParam(required = false) String linkedinError,
+            @RequestParam(required = false) String githubError,
             @RequestParam(required = false) String redirect,
             Model model) {
         model.addAttribute("loginRequest", new LoginRequestDTO("", ""));
         model.addAttribute("linkedinError", linkedinError);
+        model.addAttribute("githubError", githubError);
         model.addAttribute("redirect", redirect);
         return "login";
     }
@@ -152,6 +154,50 @@ public class AuthController {
 
     @GetMapping("/linkedin/complete")
     public String linkedInComplete(
+            @RequestParam String token,
+            @RequestParam Long userId,
+            @RequestParam String email,
+            @RequestParam String name,
+            @RequestParam String role,
+            @RequestParam(required = false) String redirect,
+            HttpSession session) {
+        LoginResponseDTO response = new LoginResponseDTO(userId, email, name, role, token);
+        populateSession(session, response);
+        if (isSafeRedirect(redirect)) {
+            return "redirect:" + redirect;
+        }
+        return redirectForRole(role);
+    }
+
+    // Mesmo desenho do LinkedIn acima: o client_secret nunca sai do backend, o frontend só
+    // redireciona o navegador. Diferente do LinkedIn, o GitHub não tem um cadastro de empresa
+    // separado (é exclusivo de profissionais), então não existe rota /github/register aqui
+
+    @GetMapping("/github/login")
+    public String gitHubLogin(@RequestParam(required = false) String redirect) {
+        String url = apiBaseUrl + "/auth/github/login";
+        if (isSafeRedirect(redirect)) {
+            url += "?redirect=" + java.net.URLEncoder.encode(redirect, java.nio.charset.StandardCharsets.UTF_8);
+        }
+        return "redirect:" + url;
+    }
+
+    @GetMapping("/github/register")
+    public String gitHubRegister() {
+        return "redirect:" + apiBaseUrl + "/auth/github/register";
+    }
+
+    @GetMapping("/github/link")
+    public String gitHubLink(HttpSession session) {
+        Object token = session.getAttribute("token");
+        if (token == null) {
+            return "redirect:/auth/login";
+        }
+        return "redirect:" + apiBaseUrl + "/auth/github/link?token=" + token;
+    }
+
+    @GetMapping("/github/complete")
+    public String gitHubComplete(
             @RequestParam String token,
             @RequestParam Long userId,
             @RequestParam String email,

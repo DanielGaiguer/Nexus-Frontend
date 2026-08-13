@@ -12,6 +12,7 @@ var NexusCompleteness = ( function() {
     { key: 'preferredTypes', label: 'Tipos de oportunidade',   weight: 7,  minLength: 1 },
     { key: 'preferredOpportunityTypes', label: 'Regime desejado (Vaga/Projeto)', weight: 5, minLength: 1 },
     { key: 'linkedinUrl',    label: 'LinkedIn',                weight: 8  },
+    { key: 'githubUrl',      label: 'GitHub',                  weight: 8  },
   ];
 
   var CRITERIA_CO = [
