@@ -152,7 +152,7 @@
             </div>
             <span style="color:#f59e0b;font-size:1rem;font-weight:700;
                          font-variant-numeric:tabular-nums"
-                  th:text="${#numbers.formatDecimal(professional.reputation,1,1)}">0.0</span>
+                  th:text="${#numbers.formatDecimal(T(java.lang.Math).round(professional.reputation*10)/10.0,1,1)}">0.0</span>
             <span style="color:#475569;font-size:0.8rem">/ 5</span>
           </div>
           <th:block th:if="${reputation != null and reputation.totalReviews != null and reputation.totalReviews > 0}">
@@ -182,7 +182,7 @@
                 </div>
               </th:block>
             </div>
-            <div style="color:#475569;font-size:0.72rem;margin-top:8px;text-align:right"
+            <div style="color:#94a3b8;font-size:0.72rem;margin-top:8px;text-align:right"
                  th:text="${reputation.totalReviews + ' avaliação(ões)'}">—</div>
           </th:block>
           <div th:unless="${professional.reputation != null}"

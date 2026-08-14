@@ -7,7 +7,7 @@
 
     <main>
         <section class="py-5">
-            <div class="container" style="max-width:860px;">
+            <div class="container" style="max-width:1040px;">
 
                 <div class="mb-4">
                     <a href="javascript:history.back()"
@@ -25,7 +25,7 @@
                 </div>
 
                 <div class="card card-bg border-0 p-4 mb-4">
-                    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+                    <div class="d-flex align-items-stretch justify-content-between gap-3 flex-wrap">
                       <div class="d-flex align-items-start gap-4 flex-wrap">
 
                         <div class="flex-shrink-0"
@@ -71,13 +71,37 @@
                         </div>
                       </div>
 
-                      <form th:if="${session.userRole == 'PROFESSIONAL'}"
-                            th:action="@{/pro/opportunities/{id}/interest(id=${project.id})}"
-                            method="post" class="flex-shrink-0">
-                          <button type="submit" class="nexus-btn nexus-btn-primary">
-                              <i class="ti ti-send"></i> Demonstrar interesse
-                          </button>
-                      </form>
+                      <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
+                          <form th:if="${session.userRole == 'PROFESSIONAL'}"
+                                th:action="@{/pro/opportunities/{id}/interest(id=${project.id})}"
+                                method="post">
+                              <button type="submit" class="nexus-btn nexus-btn-primary">
+                                  <i class="ti ti-send"></i> Demonstrar interesse
+                              </button>
+                          </form>
+
+                          <div class="text-center mt-4" th:if="${opportunityScore != null}"
+                               th:with="s=${opportunityScore.getScoreAsInt()},
+                                        c=${s>=85?'high':(s>=70?'medium':'low')}">
+                              <div class="fw-semibold text-light mb-2" style="font-size:0.8rem">Score</div>
+                              <div class="mx-auto" style="position:relative;width:85px;height:85px">
+                                  <svg width="85" height="85" viewBox="0 0 85 85" style="transform:rotate(-90deg)">
+                                      <circle cx="42.5" cy="42.5" r="35" class="nexus-score-ring-bg" stroke-width="5"/>
+                                      <circle cx="42.5" cy="42.5" r="35"
+                                              th:class="'nexus-score-ring-fill ' + ${c}"
+                                              stroke-width="5"
+                                              stroke-dasharray="219.91"
+                                              th:stroke-dashoffset="${219.91 - (s/100.0)*219.91}"/>
+                                  </svg>
+                                  <div class="nexus-score-ring-label">
+                                      <span class="nexus-score-ring-pct" th:text="${s}+'%'" style="font-size:18px">0%</span>
+                                      <span class="nexus-score-ring-tag"
+                                            th:text="${s>=85?'Alto':(s>=70?'Médio':'Baixo')}"
+                                            th:style="${s>=85?'color:#22c55e':(s>=70?'color:#f59e0b':'color:#ef4444')}">Alto</span>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
                     </div>
                 </div>
 

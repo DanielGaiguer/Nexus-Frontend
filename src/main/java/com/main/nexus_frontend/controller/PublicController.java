@@ -2,6 +2,7 @@ package com.main.nexus_frontend.controller;
 
 import com.main.nexus_frontend.model.CompanyDTO;
 import com.main.nexus_frontend.model.CompanyStatsDTO;
+import com.main.nexus_frontend.model.MatchDTO;
 import com.main.nexus_frontend.model.ProjectDTO;
 import com.main.nexus_frontend.model.PublicProfessionalDTO;
 import com.main.nexus_frontend.model.ReputationDTO;
@@ -9,6 +10,7 @@ import com.main.nexus_frontend.service.PublicOpportunityService;
 import com.main.nexus_frontend.service.PublicService;
 import com.main.nexus_frontend.service.ReputationService;
 import com.main.nexus_frontend.service.ProjectService;
+import com.main.nexus_frontend.service.ProfessionalService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +38,9 @@ public class PublicController {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private ProfessionalService professionalService;
 
     // Perfil público do profissional
     @GetMapping("/professional/{id}")
@@ -106,6 +111,20 @@ public class PublicController {
 
             model.addAttribute("project", project);
             model.addAttribute("company", company);
+
+            // Score de match só faz sentido pro profissional logado vendo a própria
+            // compatibilidade com essa vaga — mesmo score exibido em /pro/opportunities.
+            if ("PROFESSIONAL".equals(session.getAttribute("userRole"))) {
+                try {
+                    MatchDTO scoreMatch = professionalService.getOpportunities(token).stream()
+                            .filter(o -> o.getProject() != null && id.equals(o.getProject().getId()))
+                            .findFirst()
+                            .orElse(null);
+                    model.addAttribute("opportunityScore", scoreMatch);
+                } catch (Exception e) {
+                    // Sem score disponível — card fica oculto
+                }
+            }
 
             return "public/opportunity-detail";
 

@@ -540,7 +540,7 @@
                        style="color:#f59e0b;font-size:0.8rem"></i>
                   </th:block>
                   <span class="tabular ms-1" style="color:#f59e0b;font-weight:600;font-size:0.85rem"
-                        th:text="${#numbers.formatDecimal(c.reputation,1,1)}">—</span>
+                        th:text="${#numbers.formatDecimal(T(java.lang.Math).round(c.reputation*10)/10.0,1,1)}">—</span>
                 </div>
                 <span th:unless="${c.reputation != null}" style="color:#64748b;font-size:0.78rem">Sem nota</span>
               </td>

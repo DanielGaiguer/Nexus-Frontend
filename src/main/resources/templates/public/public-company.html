@@ -59,7 +59,7 @@
                      style="color:#f59e0b;font-size:0.85rem"></i>
                 </th:block>
                 <span style="color:#f59e0b;font-size:0.85rem;font-weight:600;margin-left:3px"
-                      th:text="${#numbers.formatDecimal(company.reputation,1,1)}">0.0</span>
+                      th:text="${#numbers.formatDecimal(T(java.lang.Math).round(company.reputation*10)/10.0,1,1)}">0.0</span>
                 <span style="color:#475569;font-size:0.78rem">/ 5</span>
               </div>
               <div style="color:#64748b;font-size:0.85rem" th:unless="${company.reputation != null}">
@@ -153,15 +153,17 @@
                    th:text="${#numbers.formatDecimal(reputation.overallScore ?: 0,1,1)}">—</div>
               <div>
                 <div style="color:#e2e8f0;font-size:0.85rem;font-weight:600">Score geral</div>
-                <div style="color:#475569;font-size:0.75rem"
+                <div style="color:#94a3b8;font-size:0.75rem"
                      th:text="'Baseado em ' + ${reputation.totalReviews ?: 0} + ' avaliação(ões)'">—</div>
                 <div style="height:3px;background:rgba(255,255,255,0.05);border-radius:4px;
                             width:100px;margin-top:5px">
                   <div style="height:100%;border-radius:4px;background:#6b6eff"
                        th:style="'width:'+${reputation.confidencePercent ?: 0}+'%'"></div>
                 </div>
-                <div style="color:#334155;font-size:0.68rem;margin-top:2px"
-                     th:text="${#numbers.formatDecimal(reputation.confidencePercent ?: 0,1,0)+'% de confiança'}">—</div>
+                <span style="display:inline-block;margin-top:6px;padding:0.15em 0.55em;
+                             border-radius:20px;background:rgba(107,110,255,0.18);
+                             color:#c4b5fd;font-size:0.68rem;font-weight:600"
+                     th:text="${#numbers.formatDecimal(reputation.confidencePercent ?: 0,1,0)+'% de confiança'}">—</span>
               </div>
             </div>
 

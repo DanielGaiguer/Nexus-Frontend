@@ -66,7 +66,7 @@
                    style="color:#f59e0b;font-size:0.9rem"></i>
               </th:block>
               <span class="tabular ms-1" style="color:#f59e0b;font-size:0.85rem;font-weight:600"
-                    th:text="${#numbers.formatDecimal(profile.reputation,1,1)}">0.0</span>
+                    th:text="${#numbers.formatDecimal(T(java.lang.Math).round(profile.reputation*10)/10.0,1,1)}">0.0</span>
             </div>
             <div style="color:#64748b;font-size:0.8rem;margin-top:0.4rem" th:unless="${profile.reputation != null}">
               Sem avaliações ainda

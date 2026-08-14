@@ -188,15 +188,26 @@
               </div>
             </div>
 
-            <div class="d-flex justify-content-end gap-2 mt-3">
+            <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
+              <a th:href="@{/public/opportunity/{id}(id=${inv.project.id})}"
+                 target="_blank"
+                 class="nexus-btn nexus-btn-ghost"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-briefcase"></i> Ver oportunidade
+              </a>
+              <a th:href="@{/pro/company/{id}(id=${inv.project.company.id})}"
+                 class="nexus-btn nexus-btn-ghost"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-building"></i> Ver empresa
+              </a>
               <button type="button"
                       class="nexus-btn nexus-btn-danger-outline reject-trigger"
-                      style="width:25%;min-width:140px;justify-content:center"
+                      style="width:190px;justify-content:center"
                       th:data-id="${inv.id}">
                 <i class="ti ti-x"></i> Recusar
               </button>
               <form th:action="@{/pro/matches/{id}/accept(id=${inv.id})}" method="post"
-                    style="width:25%;min-width:160px">
+                    style="width:190px">
                 <button type="submit" class="nexus-btn nexus-btn-success w-100" style="justify-content:center">
                   <i class="ti ti-check"></i> Aceitar convite
                 </button>
@@ -269,30 +280,36 @@
                 <span class="nexus-status success">Match Confirmado</span>
                 <button type="button"
                         class="nexus-btn nexus-btn-primary nexus-btn-sm contact-trigger"
+                        style="width:210px;padding:0.3rem 0.85rem;justify-content:center"
                         th:data-id="${m.id}">
                   <i class="ti ti-address-book"></i> Entrar em contato
                 </button>
                 <a th:href="@{/pro/company/{id}(id=${m.project.company.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                   style="width:210px;padding:0.3rem 0.85rem;justify-content:center">
                   <i class="ti ti-building"></i> Ver perfil da empresa
                 </a>
                 <button type="button"
                         class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger"
+                        style="width:210px;padding:0.3rem 0.85rem;justify-content:center"
                         th:data-id="${m.id}">
-                  <i class="ti ti-clock-history"></i> Ver histórico
+                  <i class="ti ti-history"></i> Ver histórico
                 </button>
                 <a th:unless="${reviewedMatchIds.contains(m.id)}"
                    th:href="@{/pro/matches/{id}/review(id=${m.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                   style="width:210px;padding:0.3rem 0.85rem;justify-content:center">
                   <i class="ti ti-star"></i> Avaliar
                 </a>
                 <span th:if="${reviewedMatchIds.contains(m.id)}"
-                      class="nexus-btn nexus-btn-ghost nexus-btn-sm" style="opacity:0.6;pointer-events:none">
+                      class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                      style="width:210px;padding:0.3rem 0.85rem;justify-content:center;opacity:0.6;pointer-events:none">
                   <i class="ti ti-circle-check"></i> Avaliado
                 </span>
                 <button type="button"
                         th:if="${m.active == null or m.active}"
                         class="nexus-btn nexus-btn-danger-outline nexus-btn-sm cancel-match-trigger"
+                        style="width:210px;padding:0.3rem 0.85rem;justify-content:center"
                         th:data-id="${m.id}">
                   <i class="ti ti-x"></i> Cancelar Match
                 </button>
@@ -330,10 +347,16 @@
                               ? 'Oportunidade encerrada pela empresa' : 'Recusado'">Recusado</div>
               </div>
               <div class="d-flex flex-column align-items-end gap-2">
+                <a th:href="@{/pro/company/{id}(id=${m.project.company.id})}"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                   style="width:210px;padding:0.3rem 0.85rem;justify-content:center">
+                  <i class="ti ti-building"></i> Ver empresa
+                </a>
                 <button type="button"
                         class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger"
+                        style="width:210px;padding:0.3rem 0.85rem;justify-content:center"
                         th:data-id="${m.id}">
-                  <i class="ti ti-clock-history"></i> Ver histórico
+                  <i class="ti ti-history"></i> Ver histórico
                 </button>
               </div>
             </div>
