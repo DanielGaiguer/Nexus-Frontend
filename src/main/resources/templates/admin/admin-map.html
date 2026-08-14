@@ -11,11 +11,11 @@
 <div class="page-wrapper">
   <div th:replace="~{fragments/app-shell :: topbar}"></div>
 
-  <div class="page-body" style="padding:0">
+  <div class="page-body" style="padding:0;margin:0;display:flex;min-height:0">
 
-    <div class="d-flex" style="height:calc(100vh - 56px)">
+    <div class="d-flex" style="flex:1;min-height:0">
 
-        <div style="width:300px;flex-shrink:0;background:rgba(4,6,19,0.95);
+        <div style="width:310px;flex-shrink:0;background:rgba(4,6,19,0.95);
                     border-right:1px solid rgba(255,255,255,0.06);
                     overflow-y:auto;display:flex;flex-direction:column;padding:1.25rem">
 
@@ -138,6 +138,114 @@
                     <span style="color:#94a3b8;font-size:0.82rem">Vagas de emprego</span>
                   </label>
 
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="mb-3" style="border-top:1px solid rgba(255,255,255,0.06);padding-top:0.9rem">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="nexus-section-title mb-0">Filtros de oportunidade</div>
+              <button type="button" class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                      style="font-size:0.68rem;padding:0.2rem 0.5rem"
+                      onclick="clearOpportunityFilters()">
+                <i class="ti ti-x"></i> Limpar
+              </button>
+            </div>
+            <div class="d-flex flex-column gap-2" style="max-height:340px;overflow-y:auto;padding-right:4px">
+
+              <div>
+                <label class="nexus-label" style="font-size:0.65rem">Buscar</label>
+                <input type="text" id="mapFilterSearch" class="nexus-input"
+                       style="font-size:0.8rem" placeholder="Título ou empresa..."
+                       oninput="applyOpportunityFilters()">
+              </div>
+
+              <div>
+                <label class="nexus-label" style="font-size:0.65rem">Modalidade</label>
+                <select class="nexus-select" id="mapFilterModality" style="font-size:0.8rem"
+                        onchange="applyOpportunityFilters()">
+                  <option value="">Todas</option>
+                  <option value="REMOTE">Remoto</option>
+                  <option value="ONSITE">Presencial</option>
+                  <option value="HYBRID">Híbrido</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="nexus-label" style="font-size:0.65rem">Experiência</label>
+                <select class="nexus-select" id="mapFilterExpLevel" multiple style="font-size:0.8rem"
+                        onchange="applyOpportunityFilters()">
+                  <option value="INTERNSHIP">Estágio</option>
+                  <option value="TRAINEE">Trainee</option>
+                  <option value="JUNIOR">Júnior</option>
+                  <option value="PLENO">Pleno</option>
+                  <option value="SENIOR">Sênior</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="nexus-label" style="font-size:0.65rem">Data de postagem</label>
+                <input type="date" class="nexus-input" id="mapFilterPostedDate"
+                       style="font-size:0.8rem" onchange="applyOpportunityFilters()">
+              </div>
+
+              <div>
+                <label class="nexus-label" style="font-size:0.65rem">Regime de trabalho</label>
+                <select class="nexus-select" id="mapFilterProjectType" style="font-size:0.8rem"
+                        onchange="applyOpportunityFilters()">
+                  <option value="">Todos</option>
+                  <option value="FREELANCE">Freelance</option>
+                  <option value="FULL_TIME">Tempo integral</option>
+                  <option value="PART_TIME">Meio período</option>
+                </select>
+              </div>
+
+              <div th:if="${allSkills != null and !#lists.isEmpty(allSkills)}">
+                <label class="nexus-label" style="font-size:0.65rem">Skills</label>
+                <select class="nexus-select" id="mapFilterSkills" multiple style="font-size:0.8rem"
+                        data-placeholder="Filtrar por skills..." onchange="applyOpportunityFilters()">
+                  <option th:each="sk : ${allSkills}" th:value="${sk.name}" th:text="${sk.name}">Skill</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="nexus-label" style="font-size:0.65rem">Tipo de contrato</label>
+                <select class="nexus-select" id="mapFilterContractType" style="font-size:0.8rem"
+                        onchange="applyOpportunityFilters()">
+                  <option value="">Todos</option>
+                  <option value="CLT">CLT</option>
+                  <option value="PJ">PJ</option>
+                  <option value="FREELANCER">Freelancer</option>
+                  <option value="INTERNSHIP">Estágio</option>
+                  <option value="TEMPORARY">Temporário</option>
+                </select>
+              </div>
+
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="nexus-label" style="font-size:0.65rem">Salário mín.</label>
+                  <input type="number" class="nexus-input tabular" id="mapFilterMinSalary"
+                         style="font-size:0.8rem" min="0" step="100" oninput="applyOpportunityFilters()">
+                </div>
+                <div class="col-6">
+                  <label class="nexus-label" style="font-size:0.65rem">Salário máx.</label>
+                  <input type="number" class="nexus-input tabular" id="mapFilterMaxSalary"
+                         style="font-size:0.8rem" min="0" step="100" oninput="applyOpportunityFilters()">
+                </div>
+              </div>
+
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="nexus-label" style="font-size:0.65rem">Orçamento mín.</label>
+                  <input type="number" class="nexus-input tabular" id="mapFilterMinBudget"
+                         style="font-size:0.8rem" min="0" step="100" oninput="applyOpportunityFilters()">
+                </div>
+                <div class="col-6">
+                  <label class="nexus-label" style="font-size:0.65rem">Orçamento máx.</label>
+                  <input type="number" class="nexus-input tabular" id="mapFilterMaxBudget"
+                         style="font-size:0.8rem" min="0" step="100" oninput="applyOpportunityFilters()">
                 </div>
               </div>
 

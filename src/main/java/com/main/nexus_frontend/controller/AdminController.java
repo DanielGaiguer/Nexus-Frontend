@@ -262,6 +262,7 @@ public class AdminController {
         model.addAttribute("centerLng", centerLng);
         model.addAttribute("cityFilter", city != null ? city : "");
         model.addAttribute("ufFilter",   uf   != null ? uf   : "");
+        model.addAttribute("allSkills", adminService.getSkills(token));
         model.addAttribute("activePage", "map");
         return "admin/admin-map";
     }

@@ -47,7 +47,8 @@ public class MatchDTO {
     public void setActive(Boolean active) { this.active = active; }
 
     public int getScoreAsInt() {
-        return matchScore != null ? (int) Math.round(matchScore) : 0;
+        if (matchScore == null) return 0;
+        return Math.max(0, Math.min(100, (int) Math.round(matchScore)));
     }
 
     // Dias restantes até completar 30 dias desde createdAt (pode ser negativo se já passou)

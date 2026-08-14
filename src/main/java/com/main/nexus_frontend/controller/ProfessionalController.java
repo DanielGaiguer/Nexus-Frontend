@@ -573,6 +573,7 @@ public class ProfessionalController {
         model.addAttribute("myLng", myLng);
         model.addAttribute("cityFilter", city != null ? city : "");
         model.addAttribute("ufFilter",   uf   != null ? uf   : "");
+        model.addAttribute("allSkills", professionalService.getAllSkills(token));
         model.addAttribute("activePage", "map");
         return "pro/pro-map";
     }

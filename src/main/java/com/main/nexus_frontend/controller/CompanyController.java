@@ -759,6 +759,7 @@ public class CompanyController {
         model.addAttribute("myLng", myLng);
         model.addAttribute("cityFilter", city != null ? city : "");
         model.addAttribute("ufFilter",   uf   != null ? uf   : "");
+        model.addAttribute("allSkills", companyService.getSkills(token));
         model.addAttribute("activePage", "map");
         return "company/company-map";
     }

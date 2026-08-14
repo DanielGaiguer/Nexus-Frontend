@@ -12,6 +12,56 @@
   var currentType       = 'all';
   var currentOppType    = '';
 
+  // Filtros extras de oportunidade, mesmos campos de /admin/projects (e demais telas de
+  // projetos) — só se aplicam a marcadores do tipo "oportunidade", nunca a profissionais/empresas.
+  var oppFilters = {
+    search: '', modality: '', expLevels: [], postedDate: '', projectType: '',
+    skills: [], contractType: '', minSalary: 0, maxSalary: Infinity,
+    minBudget: 0, maxBudget: Infinity
+  };
+
+  function toDateInputValue(dateLike) {
+    if (!dateLike) return '';
+    var d = new Date(dateLike);
+    if (isNaN(d.getTime())) return '';
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    var dd = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + mm + '-' + dd;
+  }
+
+  function matchesOpportunityFilters(o) {
+    var title   = (o.title || '').toLowerCase();
+    var company = (o.companyName || '').toLowerCase();
+    var skills  = (o.requiredSkills || []).map(function(s) { return s.toLowerCase(); });
+
+    var matchSearch      = !oppFilters.search || title.indexOf(oppFilters.search) !== -1
+                            || company.indexOf(oppFilters.search) !== -1;
+    var matchModality     = !oppFilters.modality || o.workMode === oppFilters.modality;
+    var matchContractType = !oppFilters.contractType || o.contractType === oppFilters.contractType;
+    var matchExpLevel     = oppFilters.expLevels.length === 0
+                            || oppFilters.expLevels.indexOf(o.experienceLevel) !== -1;
+    var matchPostedDate   = !oppFilters.postedDate || toDateInputValue(o.createdAt) === oppFilters.postedDate;
+    var matchProjectType  = !oppFilters.projectType || o.projectType === oppFilters.projectType;
+    var matchSkills       = oppFilters.skills.every(function(sk) { return skills.indexOf(sk) !== -1; });
+
+    var matchBudget = true;
+    if (o.opportunityType === 'PROJECT') {
+      var maxB = o.maximumBudget != null ? o.maximumBudget : Infinity;
+      var minB = o.minimumBudget != null ? o.minimumBudget : 0;
+      matchBudget = maxB >= oppFilters.minBudget && minB <= oppFilters.maxBudget;
+    }
+
+    var matchSalary = true;
+    if (o.opportunityType === 'JOB') {
+      var maxS = o.monthlySalaryMax != null ? o.monthlySalaryMax : Infinity;
+      var minS = o.monthlySalaryMin != null ? o.monthlySalaryMin : 0;
+      matchSalary = maxS >= oppFilters.minSalary && minS <= oppFilters.maxSalary;
+    }
+
+    return matchSearch && matchModality && matchContractType && matchExpLevel
+        && matchPostedDate && matchProjectType && matchSkills && matchBudget && matchSalary;
+  }
+
   var CLUSTER_ZOOM_THRESHOLD = 17;
 
   function distanceKm(lat1, lng1, lat2, lng2) {
@@ -234,6 +284,7 @@
         if (!o.latitude || !o.longitude) return;
         if (distanceKm(centerLat, centerLng, o.latitude, o.longitude) > currentRadius) return;
         if (currentOppType && o.opportunityType !== currentOppType) return;
+        if (!matchesOpportunityFilters(o)) return;
         pending.push({ kind: 'opp', lat: o.latitude, lng: o.longitude, data: o });
       });
     }
@@ -327,6 +378,50 @@
   window.setOppTypeFilter = function(type) {
     currentOppType = type;
     renderMarkers();
+  };
+
+  // Lê os campos de filtro extra de oportunidade (mesmos de /admin/projects) e reaplica.
+  window.applyOpportunityFilters = function() {
+    var byId = function(id) { return document.getElementById(id); };
+    var selected = function(id) {
+      var el = byId(id);
+      return el ? Array.from(el.selectedOptions).map(function(o) { return o.value; }) : [];
+    };
+    var num = function(id, fallback) {
+      var v = parseFloat((byId(id) || {}).value);
+      return isNaN(v) ? fallback : v;
+    };
+
+    oppFilters.search       = ((byId('mapFilterSearch') || {}).value || '').trim().toLowerCase();
+    oppFilters.modality     = (byId('mapFilterModality') || {}).value || '';
+    oppFilters.expLevels    = selected('mapFilterExpLevel');
+    oppFilters.postedDate   = (byId('mapFilterPostedDate') || {}).value || '';
+    oppFilters.projectType  = (byId('mapFilterProjectType') || {}).value || '';
+    oppFilters.skills       = selected('mapFilterSkills').map(function(s) { return s.toLowerCase(); });
+    oppFilters.contractType = (byId('mapFilterContractType') || {}).value || '';
+    oppFilters.minSalary    = num('mapFilterMinSalary', 0);
+    oppFilters.maxSalary    = num('mapFilterMaxSalary', Infinity);
+    oppFilters.minBudget    = num('mapFilterMinBudget', 0);
+    oppFilters.maxBudget    = num('mapFilterMaxBudget', Infinity);
+
+    renderMarkers();
+  };
+
+  window.clearOpportunityFilters = function() {
+    ['mapFilterSearch', 'mapFilterPostedDate', 'mapFilterMinSalary', 'mapFilterMaxSalary',
+     'mapFilterMinBudget', 'mapFilterMaxBudget'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    ['mapFilterModality', 'mapFilterProjectType', 'mapFilterContractType'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    ['mapFilterExpLevel', 'mapFilterSkills'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.selectedIndex = -1;
+    });
+    window.applyOpportunityFilters();
   };
 
   document.addEventListener('DOMContentLoaded', function() {

@@ -90,8 +90,8 @@
                     <circle cx="55" cy="55" r="46"
                             th:class="'nexus-score-ring-fill ' + ${c}"
                             stroke-width="5"
-                            stroke-dasharray="207.35"
-                            th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
+                            stroke-dasharray="289.03"
+                            th:stroke-dashoffset="${289.03 - (s/100.0)*289.03}"/>
                   </svg>
                   <div class="nexus-score-ring-label">
                     <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
@@ -100,21 +100,19 @@
               </div>
             </div>
 
-            <div class="row g-2">
-              <div class="col-6">
-                <button type="button"
-                        class="nexus-btn nexus-btn-danger-outline w-100 company-reject-trigger"
-                        th:data-id="${m.id}">
-                  <i class="ti ti-x"></i> Recusar
+            <div class="d-flex justify-content-end gap-2 mt-3">
+              <button type="button"
+                      class="nexus-btn nexus-btn-danger-outline company-reject-trigger"
+                      style="width:25%;min-width:140px;justify-content:center"
+                      th:data-id="${m.id}">
+                <i class="ti ti-x"></i> Recusar
+              </button>
+              <form th:action="@{/company/matches/{id}/accept(id=${m.id})}" method="post"
+                    style="width:25%;min-width:160px">
+                <button type="submit" class="nexus-btn nexus-btn-success w-100" style="justify-content:center">
+                  <i class="ti ti-check"></i> Aceitar
                 </button>
-              </div>
-              <div class="col-6">
-                <form th:action="@{/company/matches/{id}/accept(id=${m.id})}" method="post">
-                  <button type="submit" class="nexus-btn nexus-btn-success w-100">
-                    <i class="ti ti-check"></i> Aceitar
-                  </button>
-                </form>
-              </div>
+              </form>
             </div>
           </div>
         </div>
@@ -156,8 +154,8 @@
                     <circle cx="55" cy="55" r="46"
                             th:class="'nexus-score-ring-fill ' + ${c}"
                             stroke-width="5"
-                            stroke-dasharray="207.35"
-                            th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
+                            stroke-dasharray="289.03"
+                            th:stroke-dashoffset="${289.03 - (s/100.0)*289.03}"/>
                   </svg>
                   <div class="nexus-score-ring-label">
                     <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
@@ -241,8 +239,8 @@
                     <circle cx="55" cy="55" r="46"
                             th:class="'nexus-score-ring-fill ' + ${c}"
                             stroke-width="5"
-                            stroke-dasharray="207.35"
-                            th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
+                            stroke-dasharray="289.03"
+                            th:stroke-dashoffset="${289.03 - (s/100.0)*289.03}"/>
                   </svg>
                   <div class="nexus-score-ring-label">
                     <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
@@ -329,8 +327,8 @@
                     <circle cx="55" cy="55" r="46"
                             th:class="'nexus-score-ring-fill ' + ${c}"
                             stroke-width="5"
-                            stroke-dasharray="207.35"
-                            th:stroke-dashoffset="${207.35 - (s/100.0)*207.35}"/>
+                            stroke-dasharray="289.03"
+                            th:stroke-dashoffset="${289.03 - (s/100.0)*289.03}"/>
                   </svg>
                   <div class="nexus-score-ring-label">
                     <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>

@@ -13,6 +13,22 @@ public class MapOpportunityDTO {
     private Double longitude;
     private String workMode;
     private List<String> requiredSkills;
+    private String experienceLevel;
+    private String projectType;
+    private String contractType;
+    private Double monthlySalaryMin;
+    private Double monthlySalaryMax;
+    private Double minimumBudget;
+    private Double maximumBudget;
+    // String (não LocalDateTime): o Jackson embutido no serializador de
+    // "th:inline=javascript" do Thymeleaf não tem o JavaTimeModule
+    // registrado, então serializar um LocalDateTime aqui lança exceção NO
+    // MEIO do corpo da resposta HTTP (chunked já parcialmente enviado) —
+    // a conexão é abortada e o navegador nunca recebe o restante da página
+    // (TomSelect, Leaflet, nexus-map.js), fazendo todos os filtros do mapa
+    // caírem para o <select> nativo do navegador. String evita o problema
+    // e ainda funciona no `new Date(...)` usado em nexus-map.js.
+    private String createdAt;
 
     public MapOpportunityDTO() {}
 
@@ -94,5 +110,69 @@ public class MapOpportunityDTO {
 
     public void setRequiredSkills(List<String> requiredSkills) {
         this.requiredSkills = requiredSkills;
+    }
+
+    public String getExperienceLevel() {
+        return experienceLevel;
+    }
+
+    public void setExperienceLevel(String experienceLevel) {
+        this.experienceLevel = experienceLevel;
+    }
+
+    public String getProjectType() {
+        return projectType;
+    }
+
+    public void setProjectType(String projectType) {
+        this.projectType = projectType;
+    }
+
+    public String getContractType() {
+        return contractType;
+    }
+
+    public void setContractType(String contractType) {
+        this.contractType = contractType;
+    }
+
+    public Double getMonthlySalaryMin() {
+        return monthlySalaryMin;
+    }
+
+    public void setMonthlySalaryMin(Double monthlySalaryMin) {
+        this.monthlySalaryMin = monthlySalaryMin;
+    }
+
+    public Double getMonthlySalaryMax() {
+        return monthlySalaryMax;
+    }
+
+    public void setMonthlySalaryMax(Double monthlySalaryMax) {
+        this.monthlySalaryMax = monthlySalaryMax;
+    }
+
+    public Double getMinimumBudget() {
+        return minimumBudget;
+    }
+
+    public void setMinimumBudget(Double minimumBudget) {
+        this.minimumBudget = minimumBudget;
+    }
+
+    public Double getMaximumBudget() {
+        return maximumBudget;
+    }
+
+    public void setMaximumBudget(Double maximumBudget) {
+        this.maximumBudget = maximumBudget;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }
