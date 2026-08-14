@@ -1,5 +1,7 @@
 package com.main.nexus_frontend.model;
 
+import java.util.List;
+
 public class AdminDashboardDTO {
     private Integer totalUsers;
     private Integer totalProfessionals;
@@ -8,8 +10,9 @@ public class AdminDashboardDTO {
     private Integer totalOpenProjects;
     private Integer totalMatches;
     private Integer totalConfirmedMatches;
-    private Double  averageMatchScore;
+    private Double  matchConversionRate;
     private Integer pendingCompanies;
+    private List<MonthlyDataDTO> monthlyMatches;
 
     public AdminDashboardDTO() {}
 
@@ -69,12 +72,12 @@ public class AdminDashboardDTO {
         this.totalConfirmedMatches = totalConfirmedMatches;
     }
 
-    public Double getAverageMatchScore() {
-        return averageMatchScore;
+    public Double getMatchConversionRate() {
+        return matchConversionRate;
     }
 
-    public void setAverageMatchScore(Double averageMatchScore) {
-        this.averageMatchScore = averageMatchScore;
+    public void setMatchConversionRate(Double matchConversionRate) {
+        this.matchConversionRate = matchConversionRate;
     }
 
     public Integer getPendingCompanies() {
@@ -85,5 +88,12 @@ public class AdminDashboardDTO {
         this.pendingCompanies = pendingCompanies;
     }
 
+    public List<MonthlyDataDTO> getMonthlyMatches() {
+        return monthlyMatches;
+    }
+
+    public void setMonthlyMatches(List<MonthlyDataDTO> monthlyMatches) {
+        this.monthlyMatches = monthlyMatches;
+    }
 
 }

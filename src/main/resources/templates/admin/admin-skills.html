@@ -30,6 +30,13 @@
         </button>
       </div>
 
+      <div class="mb-3" style="position:relative;max-width:360px">
+        <i class="ti ti-search" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#475569"></i>
+        <input type="text" id="skillSearch" class="nexus-input"
+               placeholder="Buscar por nome ou categoria..."
+               style="padding-left:2.2rem" oninput="applySkillFilters()">
+      </div>
+
       <div class="d-flex flex-wrap gap-2 mb-4">
         <button class="nexus-btn nexus-btn-primary nexus-btn-sm" id="cat-all"
                 onclick="filterCategory('all')">Todas</button>
@@ -56,7 +63,7 @@
             </div>
             <div class="d-flex flex-wrap gap-2">
               <div th:each="sk : ${catEntry.value}"
-                   class="d-flex align-items-center gap-1">
+                   class="d-flex align-items-center gap-1 skill-item" th:data-name="${sk.name}">
                 <span class="nexus-chip" th:text="${sk.name}">Skill</span>
                 <button type="button"
                         class="delete-skill-trigger"
@@ -70,6 +77,12 @@
             </div>
           </div>
         </th:block>
+      </div>
+
+      <div id="skillSearchEmpty" class="nexus-card p-5 text-center" style="display:none">
+        <i class="ti ti-search-off" style="font-size:3rem;color:#334155;display:block;margin-bottom:1rem"></i>
+        <div class="fw-semibold text-white mb-1">Nenhuma skill encontrada</div>
+        <div style="color:#64748b;font-size:0.875rem">Tente buscar por outro nome ou categoria</div>
       </div>
 
       <div th:if="${skills == null or #lists.isEmpty(skills)}"
@@ -201,16 +214,49 @@ function toggleNewCategory() {
   if (typeof refreshSkillFormValidation === 'function') refreshSkillFormValidation();
 }
 
+var currentCategory = 'all';
+
 function filterCategory(cat) {
+  currentCategory = cat;
   document.querySelectorAll('[id^="cat-"]').forEach(function(b) {
     b.classList.remove('nexus-btn-primary');
     b.classList.add('nexus-btn-ghost');
   });
   document.getElementById('cat-' + cat).classList.add('nexus-btn-primary');
   document.getElementById('cat-' + cat).classList.remove('nexus-btn-ghost');
-  document.querySelectorAll('.skill-group').forEach(function(g) {
-    g.style.display = (cat === 'all' || g.dataset.category === cat) ? 'block' : 'none';
+  applySkillFilters();
+}
+
+// Busca por nome ou categoria, combinada com o filtro de categoria dos botões acima.
+// Se o termo bater com o nome da categoria, mostra o grupo inteiro; senão, mostra só
+// as skills daquele grupo cujo nome bate, escondendo o resto.
+function applySkillFilters() {
+  var search = (document.getElementById('skillSearch').value || '').trim().toLowerCase();
+  var anyGroupVisible = false;
+
+  document.querySelectorAll('.skill-group').forEach(function(group) {
+    var categoryButtonMatch = currentCategory === 'all' || group.dataset.category === currentCategory;
+    if (!categoryButtonMatch) {
+      group.style.display = 'none';
+      return;
+    }
+
+    var categoryNameMatch = !search || group.dataset.category.toLowerCase().includes(search);
+    var anyItemVisible = false;
+
+    group.querySelectorAll('.skill-item').forEach(function(item) {
+      var visible = categoryNameMatch || item.dataset.name.toLowerCase().includes(search);
+      item.style.display = visible ? '' : 'none';
+      if (visible) anyItemVisible = true;
+    });
+
+    var groupVisible = categoryNameMatch || anyItemVisible;
+    group.style.display = groupVisible ? 'block' : 'none';
+    if (groupVisible) anyGroupVisible = true;
   });
+
+  document.getElementById('skillSearchEmpty').style.display =
+    (search && !anyGroupVisible) ? 'block' : 'none';
 }
 
 var skillFormTouched = false;

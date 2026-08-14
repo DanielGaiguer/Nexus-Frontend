@@ -42,17 +42,10 @@ public class AdminController {
 
             List<CompanyProfileDTO> pendingCompaniesList = adminService.getPendingCompanies(token);
             model.addAttribute("pendingList", pendingCompaniesList.stream().limit(5).collect(Collectors.toList()));
-            model.addAttribute("latestCompanies", pendingCompaniesList);
+            model.addAttribute("latestCompanies", adminService.getLatestCompanies(token));
 
-            Integer totalMatches = dash.getTotalMatches();
-            List<MonthlyDataDTO> monthlyData = List.of(
-                    new MonthlyDataDTO("Jan", 0),
-                    new MonthlyDataDTO("Fev", 0),
-                    new MonthlyDataDTO("Mar", 0),
-                    new MonthlyDataDTO("Abr", 0),
-                    new MonthlyDataDTO("Mai", 0),
-                    new MonthlyDataDTO("Jun", totalMatches != null ? totalMatches : 0)
-            );
+            List<MonthlyDataDTO> monthlyData = dash.getMonthlyMatches() != null
+                    ? dash.getMonthlyMatches() : List.of();
             model.addAttribute("monthlyData", monthlyData);
         } catch (Exception e) {
             AdminDashboardDTO empty = new AdminDashboardDTO();
@@ -63,7 +56,7 @@ public class AdminController {
             empty.setTotalOpenProjects(0);
             empty.setTotalMatches(0);
             empty.setTotalConfirmedMatches(0);
-            empty.setAverageMatchScore(0.0);
+            empty.setMatchConversionRate(0.0);
             empty.setPendingCompanies(0);
             model.addAttribute("dashboard", empty);
             model.addAttribute("pendingList", List.of());

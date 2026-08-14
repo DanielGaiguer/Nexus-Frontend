@@ -51,13 +51,14 @@
           </div>
         </div>
         <div class="col-6 col-lg-3">
-          <div class="nexus-stat-card h-100">
+          <div class="nexus-stat-card h-100" title="Oportunidades aguardando sua decisão">
             <div>
-              <div class="nexus-stat-value tabular" th:text="${avgScore} + '%'">0%</div>
-              <div class="nexus-stat-label">Score Médio</div>
+              <div class="nexus-stat-value tabular"
+                   th:text="${stats.availableOpportunitiesCount != null ? stats.availableOpportunitiesCount : 0}">0</div>
+              <div class="nexus-stat-label">Vagas Disponíveis</div>
             </div>
-            <div class="nexus-stat-icon primary">
-              <i class="ti ti-trending-up"></i>
+            <div class="nexus-stat-icon accent">
+              <i class="ti ti-briefcase"></i>
             </div>
           </div>
         </div>

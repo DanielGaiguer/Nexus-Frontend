@@ -49,18 +49,19 @@ public class ProfessionalController {
                 .filter(m -> "MATCHED".equals(m.getStatus()))
                 .collect(Collectors.toList());
 
-        double avgScore = allMatches.isEmpty() ? 0.0 :
-                allMatches.stream()
-                        .mapToDouble(m -> m.getMatchScore() != null ? m.getMatchScore() : 0.0)
-                        .average()
-                        .orElse(0.0);
+        ProfessionalStatsDTO stats;
+        try {
+            stats = professionalService.getStats(token);
+        } catch (Exception e) {
+            stats = new ProfessionalStatsDTO();
+        }
 
         model.addAttribute("userName", userName);
         model.addAttribute("invites", invites);
         model.addAttribute("invitesCount", invites.size());
         model.addAttribute("confirmed", confirmed);
         model.addAttribute("confirmedCount", confirmed.size());
-        model.addAttribute("avgScore", Math.round(avgScore));
+        model.addAttribute("stats", stats);
         model.addAttribute("recentInvites", invites.stream().limit(5).collect(Collectors.toList()));
         model.addAttribute("recentConfirmed", confirmed.stream().limit(5).collect(Collectors.toList()));
         model.addAttribute("portfolioCount", projects.size());

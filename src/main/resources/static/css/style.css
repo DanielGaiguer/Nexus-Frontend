@@ -149,7 +149,7 @@ a:hover { color: #fff; }
   font-weight: 700; font-size: 1.25rem; color: #fff;
   letter-spacing: -0.01em;
 }
-.navbar-brand .brand-dot { color: var(--nexus-accent); }
+.brand-dot { color: var(--nexus-accent); }
 .nexus-header .nav-link {
   color: var(--text-secondary) !important;
   font-weight: 500; font-size: 0.9rem;
@@ -436,6 +436,9 @@ body.nexus-app {
   padding: 1.25rem 1rem 0.75rem;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   margin-bottom: 0;
+}
+.nexus-sidebar .navbar-brand span {
+  font-size: 1.4rem;
 }
 
 .nexus-logo-icon {
@@ -1149,6 +1152,12 @@ body.nexus-app {
 .nexus-modal .modal-header {
   border-bottom: 1px solid rgba(255,255,255,0.06);
   padding: 1.25rem 1.5rem;
+}
+/* Cabeçalhos com barra colorida + bloco de título/subtítulo (2º <div> do header) — sem isso,
+   o bloco de título não encolhe e passa por cima do botão de fechar quando o texto é maior. */
+.nexus-modal .modal-header > div:nth-of-type(2) {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .nexus-modal .modal-footer {

@@ -9,6 +9,7 @@ public class CompanyDashboardAnalyticsDTO {
     private List<ProjectAcceptanceRateDTO> acceptanceRatePerProject;
     private List<SkillDemandDTO> mostRequiredSkills;
     private ReputationSummaryDTO reputationSummary;
+    private Double avgDaysToFirstMatch;
 
     public CompanyDashboardAnalyticsDTO() {}
 
@@ -58,6 +59,14 @@ public class CompanyDashboardAnalyticsDTO {
 
     public void setReputationSummary(ReputationSummaryDTO reputationSummary) {
         this.reputationSummary = reputationSummary;
+    }
+
+    public Double getAvgDaysToFirstMatch() {
+        return avgDaysToFirstMatch;
+    }
+
+    public void setAvgDaysToFirstMatch(Double avgDaysToFirstMatch) {
+        this.avgDaysToFirstMatch = avgDaysToFirstMatch;
     }
 
 }

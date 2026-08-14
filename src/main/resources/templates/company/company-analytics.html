@@ -105,14 +105,14 @@
         </div>
 
         <div class="col-6 col-lg-4">
-          <div class="nexus-stat-card">
+          <div class="nexus-stat-card" title="Média de dias da publicação até o primeiro match confirmado">
             <div>
               <div class="nexus-stat-value tabular"
-                   th:text="${analytics.matchSummary != null ?
-                     #numbers.formatDecimal(analytics.matchSummary.averageMatchScore,1,1)+'%' : '—'}">—</div>
-              <div class="nexus-stat-label">Score Médio</div>
+                   th:text="${analytics.avgDaysToFirstMatch != null ?
+                     #numbers.formatDecimal(analytics.avgDaysToFirstMatch,1,1)+' dias' : '—'}">—</div>
+              <div class="nexus-stat-label">Tempo até 1º Match</div>
             </div>
-            <div class="nexus-stat-icon secondary"><i class="ti ti-star"></i></div>
+            <div class="nexus-stat-icon secondary"><i class="ti ti-calendar-time"></i></div>
           </div>
         </div>
 

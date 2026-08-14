@@ -104,16 +104,17 @@
 
         <div class="col-lg-4">
           <div class="nexus-card p-4 h-100 d-flex flex-column">
-            <div class="fw-semibold text-white mb-1">Score Médio de Match</div>
-            <div style="color:#64748b;font-size:0.8rem;margin-bottom:0.75rem">
-              Compatibilidade média entre profissionais e vagas
+            <div class="fw-semibold text-white mb-1">Taxa de Conversão</div>
+            <div style="color:#64748b;font-size:0.8rem;margin-bottom:0.75rem"
+                 title="Matches gerados que viraram conexões reais">
+              Matches gerados que viraram conexões reais
             </div>
             <div id="gaugeChart" style="flex:1;min-height:180px"></div>
             <div class="text-center mt-2">
               <span class="tabular fw-bold"
                     style="font-size:1.5rem;color:#6b6eff"
-                    th:text="${#numbers.formatDecimal(dashboard.averageMatchScore,1,1)} + '%'">0%</span>
-              <div style="color:#475569;font-size:0.75rem">de compatibilidade média</div>
+                    th:text="${#numbers.formatDecimal(dashboard.matchConversionRate,1,1)} + '%'">0%</span>
+              <div style="color:#475569;font-size:0.75rem">dos matches viraram conexão</div>
             </div>
           </div>
         </div>
@@ -330,7 +331,7 @@
 
 var TOTAL_PROFESSIONALS = /*[[${dashboard.totalProfessionals}]]*/ 0;
 var TOTAL_COMPANIES     = /*[[${dashboard.totalCompanies}]]*/ 0;
-var AVG_SCORE           = /*[[${dashboard.averageMatchScore}]]*/ 0;
+var CONVERSION_RATE     = /*[[${dashboard.matchConversionRate}]]*/ 0;
 var MONTHLY_DATA        = /*[[${monthlyData}]]*/ [];
 
 var ECHARTS_BG     = 'transparent';
@@ -347,8 +348,8 @@ var TEXT_SECONDARY = '#64748b';
     renderer: 'canvas', backgroundColor: ECHARTS_BG
   });
 
-  var score = Math.min(Math.max(AVG_SCORE, 0), 100);
-  var color = score >= 85 ? COLOR_SUCCESS : (score >= 70 ? COLOR_WARNING : '#ef4444');
+  var rate = Math.min(Math.max(CONVERSION_RATE, 0), 100);
+  var color = rate >= 85 ? COLOR_SUCCESS : (rate >= 70 ? COLOR_WARNING : '#ef4444');
 
   chart.setOption({
     backgroundColor: ECHARTS_BG,
@@ -379,7 +380,7 @@ var TEXT_SECONDARY = '#64748b';
       splitLine: { show: false },
       axisLabel: { show: false },
       detail: { show: false },
-      data: [{ value: score }]
+      data: [{ value: rate }]
     }]
   });
 

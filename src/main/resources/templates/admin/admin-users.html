@@ -49,7 +49,7 @@
           <table class="nexus-table" style="border-spacing:0" id="usersTable">
             <thead>
               <tr>
-                <th>Usuário</th>
+                <th>Nome</th>
                 <th>E-mail</th>
                 <th>Tipo</th>
                 <th>Status</th>
@@ -59,18 +59,19 @@
             <tbody>
               <tr th:each="u : ${users}"
                   class="user-row"
+                  th:data-name="${u.name}"
                   th:data-email="${u.email}"
                   th:data-type="${u.type}">
                 <td>
                   <div class="d-flex align-items-center gap-2">
                     <div class="nexus-avatar-initials nexus-avatar-sm"
-                         th:with="initials=${#strings.substring(u.email,0,1).toUpperCase()},
-                                  h=${u.email.hashCode()},
+                         th:with="initials=${#strings.substring(u.name,0,1).toUpperCase()},
+                                  h=${u.name.hashCode()},
                                   hue=${(h%360)<0?(h%360)+360:h%360}"
                          th:style="'background:hsl('+${hue}+',50%,38%)'"
                          th:text="${initials}">U</div>
                     <span class="fw-medium text-white" style="font-size:0.875rem"
-                          th:text="${u.email}">—</span>
+                          th:text="${u.name}">—</span>
                   </div>
                 </td>
                 <td style="color:#64748b;font-size:0.82rem" th:text="${u.email}">—</td>
@@ -166,8 +167,10 @@ function applyUserFilters() {
   var search = (document.getElementById('userSearch').value || '').toLowerCase();
   document.querySelectorAll('.user-row').forEach(function(row) {
     var typeMatch  = currentType === 'all' || row.dataset.type === currentType;
-    var emailMatch = !search || (row.dataset.email || '').toLowerCase().includes(search);
-    row.style.display = (typeMatch && emailMatch) ? '' : 'none';
+    var searchMatch = !search
+      || (row.dataset.name || '').toLowerCase().includes(search)
+      || (row.dataset.email || '').toLowerCase().includes(search);
+    row.style.display = (typeMatch && searchMatch) ? '' : 'none';
   });
 }
 

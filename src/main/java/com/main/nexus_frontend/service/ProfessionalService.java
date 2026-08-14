@@ -42,6 +42,20 @@ public class ProfessionalService {
                 .body(ProfessionalProfileDTO.class);
     }
 
+    public ProfessionalStatsDTO getStats(String token) {
+        return restClient.get()
+                .uri("/professional/stats")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .body(ProfessionalStatsDTO.class);
+    }
+
     public void updateProfile(String token, ProfessionalProfileDTO dto) {
         restClient.put()
                 .uri("/professional/profile")

@@ -53,6 +53,21 @@ public class AdminService {
         return response != null ? Arrays.asList(response) : Collections.emptyList();
     }
 
+    public List<CompanyProfileDTO> getLatestCompanies(String token) {
+        CompanyProfileDTO[] response = restClient.get()
+                .uri("/admin/companies/latest")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .body(CompanyProfileDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
     public void approveCompany(String token, Long id) {
         restClient.post()
                 .uri("/admin/companies/{id}/approve", id)
