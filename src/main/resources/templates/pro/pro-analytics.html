@@ -108,9 +108,8 @@
           <div class="nexus-stat-card">
             <div>
               <div class="nexus-stat-value tabular"
-                   th:text="${analytics.matchSummary != null ?
-                     #numbers.formatDecimal(analytics.matchSummary.averageMatchScore,1,1)+'%' : '—'}">—</div>
-              <div class="nexus-stat-label">Score Médio</div>
+                   th:text="${analytics.reputationSummary?.totalReviews ?: 0}">0</div>
+              <div class="nexus-stat-label">Avaliações Recebidas</div>
             </div>
             <div class="nexus-stat-icon secondary"><i class="ti ti-star"></i></div>
           </div>
@@ -285,6 +284,32 @@
         </div>
       </div>
 
+      <div class="row g-3 mb-3">
+
+        <div class="col-lg-6" th:if="${not #lists.isEmpty(analytics.skillGaps)}">
+          <div class="nexus-card p-4 h-100">
+            <div class="fw-semibold text-white mb-1">HardSkills</div>
+            <div style="color:#64748b;font-size:0.8rem;margin-bottom:0.75rem">
+              Indicações de aprendizado baseado em competências técnicas que aprimorariam o seu perfil.
+            </div>
+            <div id="skill-gaps-chart" style="max-width:280px;height:200px;margin:0 auto"></div>
+            <div id="skill-gaps-legend" class="d-flex flex-column gap-2 mt-3"></div>
+          </div>
+        </div>
+
+        <div class="col-lg-6" th:if="${not #lists.isEmpty(analytics.softSkillFeedback)}">
+          <div class="nexus-card p-4 h-100">
+            <div class="fw-semibold text-white mb-1">SoftSkills</div>
+            <div style="color:#64748b;font-size:0.8rem;margin-bottom:0.75rem">
+              Indicações de aprimoramento de habilidades comportamentais baseadas em avaliações recebidas.
+            </div>
+            <div id="soft-skills-chart" style="max-width:280px;height:200px;margin:0 auto"></div>
+            <div id="soft-skills-legend" class="d-flex flex-column gap-2 mt-3"></div>
+          </div>
+        </div>
+
+      </div>
+
       <div class="nexus-card p-0"
            th:if="${analytics.acceptanceRatePerCompany != null
                    and !#lists.isEmpty(analytics.acceptanceRatePerCompany)}">
@@ -303,7 +328,6 @@
                 <th>Pendentes</th>
                 <th>Rejeitados</th>
                 <th>Taxa</th>
-                <th>Score médio</th>
               </tr>
             </thead>
             <tbody>
@@ -326,13 +350,6 @@
                         th:class="'nexus-status-badge ' + ${c}"
                         th:text="${#numbers.formatDecimal(r,1,1)+'%'}">0%</span>
                 </td>
-                <td>
-                  <span th:with="s=${cr.averageScore ?: 0},
-                                 c=${s >= 85 ? '#22c55e' : (s >= 70 ? '#6b6eff' : (s >= 50 ? '#f59e0b' : '#ef4444'))}"
-                        class="tabular fw-semibold"
-                        th:style="'color:' + ${c}"
-                        th:text="${#numbers.formatDecimal(s,1,1)+'%'}">0%</span>
-                </td>
               </tr>
             </tbody>
           </table>
@@ -352,6 +369,8 @@ var MONTHLY       = /*[[${monthlyMatches}]]*/ [];
 var SCORE_DIST    = /*[[${scoreDistribution}]]*/ [];
 var COMPANY_RATES = /*[[${companyRates}]]*/ [];
 var SKILL_DEM     = /*[[${skillDemand}]]*/ [];
+var SKILL_GAPS    = /*[[${analytics?.skillGaps}]]*/ [];
+var SOFT_SKILLS   = /*[[${analytics?.softSkillFeedback}]]*/ [];
 
 var REP = {
   overall:          /*[[${analytics?.reputationSummary?.overallReputation}]]*/ 0,
@@ -373,6 +392,8 @@ var C = {
   bg:        'transparent',
   tooltip:   { bg:'rgba(9,14,31,0.96)', border:'rgba(107,110,255,0.22)' }
 };
+
+var CARD_PALETTE = ['#4F7EFF','#00D9C4','#FF6B6B','#FFA500','#9B59B6','#2ECC71','#E74C3C','#3498DB'];
 
 function tooltipStyle() {
   return {
@@ -516,7 +537,7 @@ function emptyMsg(el) {
     legend: {
       top:0, right:0,
       textStyle:{ color: C.muted, fontSize:10 },
-      data:['Taxa de Aceitação','Score Médio']
+      data:['Taxa de Aceitação']
     },
     tooltip: Object.assign(tooltipStyle(), {
       trigger:'axis',
@@ -526,8 +547,7 @@ function emptyMsg(el) {
         return '<b>' + (cr.companyName||'—') + '</b><br>' +
                '✅ Confirmados: ' + cr.confirmedMatches + '<br>' +
                '❌ Rejeitados: ' + cr.rejectedMatches + '<br>' +
-               '📊 Taxa: ' + (cr.acceptanceRate||0).toFixed(1) + '%<br>' +
-               '⭐ Score médio: ' + (cr.averageScore||0).toFixed(1) + '%';
+               '📊 Taxa: ' + (cr.acceptanceRate||0).toFixed(1) + '%';
       }
     }),
     xAxis:{
@@ -550,15 +570,6 @@ function emptyMsg(el) {
           var v = d.acceptanceRate || 0;
           return { value: +v.toFixed(1),
                    itemStyle:{ color: valueColor(v), borderRadius:[4,4,0,0] } };
-        })
-      },
-      {
-        name:'Score Médio',
-        type:'bar', barMaxWidth:24,
-        data: COMPANY_RATES.map(function(d) {
-          var v = d.averageScore || 0;
-          return { value: +v.toFixed(1),
-                   itemStyle:{ color: C.secondary, borderRadius:[4,4,0,0] } };
         })
       }
     ]
@@ -622,6 +633,92 @@ function emptyMsg(el) {
         '<span style="font-size:0.72rem;color:#94a3b8">' + d.skillName +
         (d.category ? ' <span style="color:#334155">·' + d.category + '</span>' : '') +
         '</span></div>';
+    }).join('');
+  }
+})();
+
+(function() {
+  var el  = document.getElementById('skill-gaps-chart');
+  var leg = document.getElementById('skill-gaps-legend');
+  if (!el) return;
+  if (!SKILL_GAPS || !SKILL_GAPS.length) { emptyMsg(el); return; }
+
+  var chart = echarts.init(el, null, { renderer:'canvas', backgroundColor: C.bg });
+
+  var pieData = SKILL_GAPS.map(function(d, i) {
+    return { value: d.frequency, name: d.skillName,
+             itemStyle:{ color: CARD_PALETTE[i % CARD_PALETTE.length], borderRadius:3,
+                         borderColor:'rgba(9,14,31,0.9)', borderWidth:2 } };
+  });
+
+  chart.setOption({
+    backgroundColor: C.bg,
+    tooltip: Object.assign(tooltipStyle(), {
+      trigger:'item',
+      formatter: function(p) {
+        return '<b>' + p.name + '</b><br>' + p.value + ' vez(es)  (' + p.percent + '%)';
+      }
+    }),
+    series:[{
+      type:'pie', radius:['65%','85%'], center:['50%','50%'],
+      label:{ show:false },
+      emphasis:{ scaleSize:5, label:{ show:true, formatter:'{b}', fontSize:11, color:'#e2e8f0' } },
+      data: pieData
+    }]
+  });
+  window.addEventListener('resize', function() { chart.resize(); });
+
+  if (leg) {
+    leg.innerHTML = SKILL_GAPS.map(function(d, i) {
+      var color = CARD_PALETTE[i % CARD_PALETTE.length];
+      return '<div class="d-flex align-items-center gap-2">' +
+        '<span style="width:10px;height:10px;border-radius:50%;background:' + color + ';flex-shrink:0"></span>' +
+        '<span style="color:#e2e8f0;font-size:0.82rem">' + d.skillName + '</span>' +
+        '<span style="color:#64748b;font-size:0.78rem">(apareceu ' + d.frequency + ' vez' + (d.frequency == 1 ? '' : 'es') + ')</span>' +
+        '</div>';
+    }).join('');
+  }
+})();
+
+(function() {
+  var el  = document.getElementById('soft-skills-chart');
+  var leg = document.getElementById('soft-skills-legend');
+  if (!el) return;
+  if (!SOFT_SKILLS || !SOFT_SKILLS.length) { emptyMsg(el); return; }
+
+  var chart = echarts.init(el, null, { renderer:'canvas', backgroundColor: C.bg });
+
+  var pieData = SOFT_SKILLS.map(function(d, i) {
+    return { value: d.count, name: d.reason,
+             itemStyle:{ color: CARD_PALETTE[i % CARD_PALETTE.length], borderRadius:3,
+                         borderColor:'rgba(9,14,31,0.9)', borderWidth:2 } };
+  });
+
+  chart.setOption({
+    backgroundColor: C.bg,
+    tooltip: Object.assign(tooltipStyle(), {
+      trigger:'item',
+      formatter: function(p) {
+        return '<b>' + p.name + '</b><br>' + p.value + ' menção(ões)  (' + p.percent + '%)';
+      }
+    }),
+    series:[{
+      type:'pie', radius:['65%','85%'], center:['50%','50%'],
+      label:{ show:false },
+      emphasis:{ scaleSize:5, label:{ show:true, formatter:'{b}', fontSize:11, color:'#e2e8f0' } },
+      data: pieData
+    }]
+  });
+  window.addEventListener('resize', function() { chart.resize(); });
+
+  if (leg) {
+    leg.innerHTML = SOFT_SKILLS.map(function(d, i) {
+      var color = CARD_PALETTE[i % CARD_PALETTE.length];
+      return '<div class="d-flex align-items-center gap-2">' +
+        '<span style="width:10px;height:10px;border-radius:50%;background:' + color + ';flex-shrink:0"></span>' +
+        '<span style="color:#e2e8f0;font-size:0.82rem">' + d.reason + '</span>' +
+        '<span style="color:#64748b;font-size:0.78rem">(mencionado ' + d.count + ' vez' + (d.count == 1 ? '' : 'es') + ')</span>' +
+        '</div>';
     }).join('');
   }
 })();

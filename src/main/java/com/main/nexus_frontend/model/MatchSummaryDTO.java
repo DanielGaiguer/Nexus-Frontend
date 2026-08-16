@@ -6,7 +6,6 @@ public class MatchSummaryDTO {
     private Integer pendingMatches;
     private Integer rejectedMatches;
     private Double overallAcceptanceRate;
-    private Double averageMatchScore;
 
     public MatchSummaryDTO() {}
 
@@ -48,14 +47,6 @@ public class MatchSummaryDTO {
 
     public void setOverallAcceptanceRate(Double overallAcceptanceRate) {
         this.overallAcceptanceRate = overallAcceptanceRate;
-    }
-
-    public Double getAverageMatchScore() {
-        return averageMatchScore;
-    }
-
-    public void setAverageMatchScore(Double averageMatchScore) {
-        this.averageMatchScore = averageMatchScore;
     }
 
     // confirmados / (confirmados + rejeitados) — ignora matches pendentes

@@ -8,7 +8,6 @@ public class ProjectAcceptanceRateDTO {
     private Integer confirmedMatches;
     private Integer rejectedMatches;
     private Double acceptanceRate;
-    private Double averageScore;
 
     public ProjectAcceptanceRateDTO() {}
 
@@ -66,14 +65,6 @@ public class ProjectAcceptanceRateDTO {
 
     public void setAcceptanceRate(Double acceptanceRate) {
         this.acceptanceRate = acceptanceRate;
-    }
-
-    public Double getAverageScore() {
-        return averageScore;
-    }
-
-    public void setAverageScore(Double averageScore) {
-        this.averageScore = averageScore;
     }
 
     // confirmados / (confirmados + rejeitados) — ignora matches pendentes

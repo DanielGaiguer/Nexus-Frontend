@@ -116,6 +116,40 @@ public class ProfessionalService {
         return response != null ? Arrays.asList(response) : Collections.emptyList();
     }
 
+    // Espelho de getPendingInvites: interesses que o próprio profissional enviou e que
+    // ainda aguardam resposta da empresa.
+    public List<MatchDTO> getSentInterests(String token) {
+        MatchDTO[] response = restClient.get()
+                .uri("/professional/matches/sent")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .body(MatchDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    // Matches confirmados que já encerraram (expiraram ou foram cancelados depois de
+    // confirmados) — espelho de ProjectService.getPreviousProjects do lado da empresa.
+    public List<MatchDTO> getPreviousMatches(String token) {
+        MatchDTO[] response = restClient.get()
+                .uri("/professional/matches/previous")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .body(MatchDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
     public List<PreviousProjectDTO> getProjects(String token) {
         PreviousProjectDTO[] response = restClient.get()
                 .uri("/professional/projects")

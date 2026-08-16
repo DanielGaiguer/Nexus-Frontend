@@ -74,16 +74,36 @@
                             hue=${(h%360)<0?(h%360)+360:h%360}"
                    th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
                    th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
-              <div class="flex-fill">
+              <div style="flex:0 1 360px;min-width:0;max-width:360px">
                 <div class="fw-semibold text-white"
                      th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
-                <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.5rem" th:text="${m.project.title}">Projeto</div>
-                <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
-                  <i class="ti ti-briefcase"></i> Ver oportunidade
-                </a>
+                <span th:if="${m.project?.opportunityType == 'JOB'}"
+                      class="nexus-badge-job"
+                      style="display:inline-block;margin-top:0.6rem;margin-bottom:0.6rem">
+                  <i class="ti ti-building" style="font-size:0.65rem;margin-right:2px"></i>Vaga
+                </span>
+                <span th:unless="${m.project?.opportunityType == 'JOB'}"
+                      class="nexus-badge-project"
+                      style="display:inline-block;margin-top:0.6rem;margin-bottom:0.6rem">
+                  <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
+                </span>
+                <div class="fw-semibold" style="color:#a5b4fc;font-size:0.95rem" th:text="${m.project.title}">Projeto</div>
+                <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}"
+                     class="mt-2">
+                  <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                              letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
+                  <div class="d-flex flex-wrap gap-1">
+                    <span th:each="sk : ${m.professional.skills}"
+                          class="nexus-chip nexus-chip-tech"
+                          style="font-size:0.68rem;padding:0.15em 0.5em"
+                          th:text="${sk}">Skill</span>
+                  </div>
+                </div>
               </div>
-              <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
+              <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}"
+                   style="flex-shrink:0;margin-left:auto">
+                <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
+                            text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem">Score</div>
                 <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
                   <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
                     <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
@@ -100,15 +120,65 @@
               </div>
             </div>
 
-            <div class="d-flex justify-content-end gap-2 mt-3">
+            <div class="row g-3 mb-4" style="font-size:0.78rem" th:if="${m.scoreBreakdown != null}">
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Skills</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.skills ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.skills ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Orçamento</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.budget ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.budget ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Histórico</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.history ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.history ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Reputação</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.reputation ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.reputation ?: 0}+'%'"></div></div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
+              <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
+                 target="_blank"
+                 class="nexus-btn nexus-btn-ghost"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-briefcase"></i> Ver oportunidade
+              </a>
+              <a th:href="@{/public/professional/{id}(id=${m.professional.id})}"
+                 class="nexus-btn nexus-btn-ghost"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-user"></i> Ver profissional
+              </a>
               <button type="button"
                       class="nexus-btn nexus-btn-danger-outline company-reject-trigger"
-                      style="width:25%;min-width:140px;justify-content:center"
+                      style="width:190px;justify-content:center"
                       th:data-id="${m.id}">
                 <i class="ti ti-x"></i> Recusar
               </button>
               <form th:action="@{/company/matches/{id}/accept(id=${m.id})}" method="post"
-                    style="width:25%;min-width:160px">
+                    style="width:190px">
                 <button type="submit" class="nexus-btn nexus-btn-success w-100" style="justify-content:center">
                   <i class="ti ti-check"></i> Aceitar
                 </button>
@@ -148,6 +218,8 @@
                 </a>
               </div>
               <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
+                <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
+                            text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem">Score</div>
                 <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
                   <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
                     <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
@@ -233,6 +305,8 @@
                 </div>
               </div>
               <div style="align-self:center" th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
+                <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
+                            text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem">Score</div>
                 <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
                   <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
                     <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
@@ -261,7 +335,7 @@
                 <button type="button"
                         class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger w-100"
                         th:data-id="${m.id}">
-                  <i class="ti ti-clock-history"></i> Ver histórico
+                  <i class="ti ti-history"></i> Ver histórico
                 </button>
                 <a th:unless="${reviewedMatchIds.contains(m.id)}"
                    th:href="@{/company/matches/{id}/review(id=${m.id})}"
@@ -321,6 +395,8 @@
                 </a>
               </div>
               <div style="align-self:center" th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
+                <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
+                            text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem">Score</div>
                 <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
                   <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
                     <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
@@ -339,7 +415,7 @@
                 <button type="button"
                         class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger w-100"
                         th:data-id="${m.id}">
-                  <i class="ti ti-clock-history"></i> Ver histórico
+                  <i class="ti ti-history"></i> Ver histórico
                 </button>
                 <a th:unless="${reviewedMatchIds.contains(m.id)}"
                    th:href="@{/company/matches/{id}/review(id=${m.id})}"
@@ -396,7 +472,7 @@
                 <button type="button"
                         class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger w-100"
                         th:data-id="${m.id}">
-                  <i class="ti ti-clock-history"></i> Ver histórico
+                  <i class="ti ti-history"></i> Ver histórico
                 </button>
                 <a th:unless="${reviewedMatchIds.contains(m.id)}"
                    th:href="@{/company/matches/{id}/review(id=${m.id})}"

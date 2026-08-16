@@ -56,7 +56,17 @@ public class ProfessionalController {
             stats = new ProfessionalStatsDTO();
         }
 
+        // Usado pelo card de alerta "conta indisponível" no topo do dashboard.
+        boolean isAvailable = true;
+        try {
+            Boolean available = professionalService.getProfile(token).getAvailable();
+            isAvailable = available == null || available;
+        } catch (Exception e) {
+            // Mantém o padrão (disponível) se não conseguir carregar o perfil
+        }
+
         model.addAttribute("userName", userName);
+        model.addAttribute("isAvailable", isAvailable);
         model.addAttribute("invites", invites);
         model.addAttribute("invitesCount", invites.size());
         model.addAttribute("confirmed", confirmed);
@@ -84,13 +94,6 @@ public class ProfessionalController {
         ProfessionalProfileDTO profile = professionalService.getProfile(token);
         List<SkillDTO> allSkills = professionalService.getAllSkills(token);
 
-        List<MatchDTO> allMatches = professionalService.getMatches(token);
-        double avgScore = allMatches.isEmpty() ? 0.0 :
-                allMatches.stream()
-                        .mapToDouble(m -> m.getMatchScore() != null ? m.getMatchScore() : 0.0)
-                        .average()
-                        .orElse(0.0);
-
         int projectsCount;
         try {
             projectsCount = professionalService.getProjects(token).size();
@@ -100,7 +103,6 @@ public class ProfessionalController {
 
         model.addAttribute("profile", profile);
         model.addAttribute("allSkills", allSkills);
-        model.addAttribute("avgScore", Math.round(avgScore));
         model.addAttribute("projectsCount", projectsCount);
         try {
             model.addAttribute("reputation", reputationService.getProfessional(token, profile.getId()));
@@ -326,15 +328,19 @@ public class ProfessionalController {
         String token = (String) session.getAttribute("token");
         List<MatchDTO> allMatches = professionalService.getMatches(token);
         List<MatchDTO> invites = professionalService.getPendingInvites(token);
+        List<MatchDTO> sent = professionalService.getSentInterests(token);
         List<MatchDTO> confirmed = allMatches.stream()
                 .filter(m -> "MATCHED".equals(m.getStatus()))
                 .collect(Collectors.toList());
+        List<MatchDTO> previousProjects = professionalService.getPreviousMatches(token);
         List<MatchDTO> rejected = allMatches.stream()
                 .filter(m -> "REJECTED".equals(m.getStatus()))
                 .collect(Collectors.toList());
 
         model.addAttribute("invites", invites);
+        model.addAttribute("sent", sent);
         model.addAttribute("confirmed", confirmed);
+        model.addAttribute("previousProjects", previousProjects);
         model.addAttribute("rejected", rejected);
         model.addAttribute("reviewedMatchIds", reviewService.getReviewedMatchIdsForProfessional(token));
         model.addAttribute("activePage", "matches");
@@ -493,10 +499,46 @@ public class ProfessionalController {
         List<MatchDTO> opportunities = professionalService.getOpportunities(token);
         List<SkillDTO> allSkills = professionalService.getAllSkills(token);
 
+        boolean showProfileWarning = false;
+        boolean isAvailable = true;
+        try {
+            ProfessionalProfileDTO profile = professionalService.getProfile(token);
+            showProfileWarning = missingScoreRelevantFields(profile);
+            isAvailable = profile.getAvailable() == null || profile.getAvailable();
+        } catch (Exception e) {
+            // Se o perfil não puder ser carregado, não bloqueia a página nem exibe o aviso.
+        }
+
         model.addAttribute("opportunities", opportunities);
         model.addAttribute("allSkills", allSkills);
+        model.addAttribute("showProfileWarning", showProfileWarning);
+        model.addAttribute("isAvailable", isAvailable);
         model.addAttribute("activePage", "opportunities");
         return "pro/pro-opportunities";
+    }
+
+    // Mesmos campos que pesam no cálculo do score (skills, pretensão salarial do(s)
+    // regime(s) escolhido(s) e localização) — não é a mesma checagem de "perfil completo"
+    // usada em pro-profile (que também exige GitHub/nível de experiência).
+    private boolean missingScoreRelevantFields(ProfessionalProfileDTO profile) {
+        if (profile == null) return true;
+
+        boolean noSkills = profile.getSkills() == null || profile.getSkills().isEmpty();
+        boolean noLocation = profile.getLatitude() == null || profile.getLongitude() == null;
+
+        boolean missingSalary;
+        List<String> types = profile.getPreferredOpportunityTypes();
+        if (types == null || types.isEmpty()) {
+            missingSalary = true;
+        } else {
+            missingSalary = types.stream().anyMatch(type ->
+                    ("JOB".equals(type)
+                            && (profile.getExpectedSalaryCLT() == null || profile.getExpectedSalaryPJ() == null))
+                    || ("PROJECT".equals(type)
+                            && (profile.getFreelanceMinExpectation() == null || profile.getFreelanceMaxExpectation() == null)));
+        }
+
+        return noSkills || noLocation || missingSalary;
     }
 
     @PostMapping("/opportunities/{projectId}/interest")

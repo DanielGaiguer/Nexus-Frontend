@@ -27,6 +27,18 @@
         </p>
       </div>
 
+      <div th:unless="${isAvailable}"
+           class="nexus-alert nexus-alert-info mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <span>
+          <i class="ti ti-info-circle"></i>
+          Sua conta está marcada como indisponível. Vá para Meu Perfil e marque como disponível
+          caso deseje participar do cálculo de compatibilidade com as oportunidades.
+        </span>
+        <a th:href="@{/pro/profile}" class="nexus-btn nexus-btn-primary nexus-btn-sm">
+          <i class="ti ti-user"></i> Meu Perfil
+        </a>
+      </div>
+
       <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
           <div class="nexus-stat-card h-100">

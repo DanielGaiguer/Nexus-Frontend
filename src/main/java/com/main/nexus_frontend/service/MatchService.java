@@ -46,22 +46,66 @@ public class MatchService {
                 .body(MatchDTO.class);
     }
 
-    public List<MatchDTO> getCompanyMatches(String token) {
-        List<MatchDTO> allMatches = new ArrayList<>();
-        List<ProjectDTO> projects = projectService.getProjects(token);
-        for (var project : projects) {
-            try {
-                List<MatchDTO> ranking = projectService.getRanking(token, project.getId());
-                allMatches.addAll(ranking);
-            } catch (NexusApiException e) {
-                // skip projects that fail to load ranking
-            }
-        }
-        return allMatches.stream()
-                .filter(m -> "MATCHED".equals(m.getStatus())
-                        || "PROFESSIONAL_INTERESTED".equals(m.getStatus())
-                        || "COMPANY_INTERESTED".equals(m.getStatus()))
-                .collect(Collectors.toList());
+    // Interesses que profissionais enviaram pras vagas da empresa, aguardando resposta.
+    public List<MatchDTO> getReceivedInterests(String token) {
+        MatchDTO[] response = restClient.get()
+                .uri("/projects/matches/received")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .body(MatchDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    // Convites que a empresa enviou (a partir do ranking), aguardando resposta do profissional.
+    public List<MatchDTO> getSentInvites(String token) {
+        MatchDTO[] response = restClient.get()
+                .uri("/projects/matches/sent")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .body(MatchDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public List<MatchDTO> getConfirmedCompanyMatches(String token) {
+        MatchDTO[] response = restClient.get()
+                .uri("/projects/matches/confirmed")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .body(MatchDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public List<MatchDTO> getRejectedCompanyMatches(String token) {
+        MatchDTO[] response = restClient.get()
+                .uri("/projects/matches/rejected")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .body(MatchDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
     }
 
     public List<MatchDTO> getPreviousProjects(String token) {

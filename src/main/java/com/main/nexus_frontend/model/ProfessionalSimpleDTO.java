@@ -1,11 +1,14 @@
 package com.main.nexus_frontend.model;
 
+import java.util.List;
+
 public class ProfessionalSimpleDTO {
     private Long id;
     private String name;
     private String phone;
     private Double reputation;
     private String profilePhotoUrl;
+    private List<String> skills;
 
     public ProfessionalSimpleDTO() {}
 
@@ -23,4 +26,7 @@ public class ProfessionalSimpleDTO {
 
     public String getProfilePhotoUrl() { return profilePhotoUrl; }
     public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
+
+    public List<String> getSkills() { return skills; }
+    public void setSkills(List<String> skills) { this.skills = skills; }
 }

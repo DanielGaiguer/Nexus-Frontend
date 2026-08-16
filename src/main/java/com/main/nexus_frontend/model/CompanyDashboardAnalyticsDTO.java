@@ -9,7 +9,8 @@ public class CompanyDashboardAnalyticsDTO {
     private List<ProjectAcceptanceRateDTO> acceptanceRatePerProject;
     private List<SkillDemandDTO> mostRequiredSkills;
     private ReputationSummaryDTO reputationSummary;
-    private Double avgDaysToFirstMatch;
+    private List<SoftSkillFeedbackDTO> softSkillFeedback;
+    private List<ProjectStatusDistributionDTO> projectStatusDistribution;
 
     public CompanyDashboardAnalyticsDTO() {}
 
@@ -61,12 +62,20 @@ public class CompanyDashboardAnalyticsDTO {
         this.reputationSummary = reputationSummary;
     }
 
-    public Double getAvgDaysToFirstMatch() {
-        return avgDaysToFirstMatch;
+    public List<SoftSkillFeedbackDTO> getSoftSkillFeedback() {
+        return softSkillFeedback;
     }
 
-    public void setAvgDaysToFirstMatch(Double avgDaysToFirstMatch) {
-        this.avgDaysToFirstMatch = avgDaysToFirstMatch;
+    public void setSoftSkillFeedback(List<SoftSkillFeedbackDTO> softSkillFeedback) {
+        this.softSkillFeedback = softSkillFeedback;
+    }
+
+    public List<ProjectStatusDistributionDTO> getProjectStatusDistribution() {
+        return projectStatusDistribution;
+    }
+
+    public void setProjectStatusDistribution(List<ProjectStatusDistributionDTO> projectStatusDistribution) {
+        this.projectStatusDistribution = projectStatusDistribution;
     }
 
 }

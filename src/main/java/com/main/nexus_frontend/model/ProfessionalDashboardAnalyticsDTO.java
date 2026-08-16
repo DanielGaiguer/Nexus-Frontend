@@ -9,6 +9,8 @@ public class ProfessionalDashboardAnalyticsDTO {
     private List<CompanyAcceptanceRateDTO> acceptanceRatePerCompany;
     private List<SkillDemandDTO> mostRequiredSkills;
     private ReputationSummaryDTO reputationSummary;
+    private List<SkillGapDTO> skillGaps;
+    private List<SoftSkillFeedbackDTO> softSkillFeedback;
 
     public ProfessionalDashboardAnalyticsDTO() {}
 
@@ -58,5 +60,21 @@ public class ProfessionalDashboardAnalyticsDTO {
 
     public void setReputationSummary(ReputationSummaryDTO reputationSummary) {
         this.reputationSummary = reputationSummary;
+    }
+
+    public List<SkillGapDTO> getSkillGaps() {
+        return skillGaps;
+    }
+
+    public void setSkillGaps(List<SkillGapDTO> skillGaps) {
+        this.skillGaps = skillGaps;
+    }
+
+    public List<SoftSkillFeedbackDTO> getSoftSkillFeedback() {
+        return softSkillFeedback;
+    }
+
+    public void setSoftSkillFeedback(List<SoftSkillFeedbackDTO> softSkillFeedback) {
+        this.softSkillFeedback = softSkillFeedback;
     }
 }

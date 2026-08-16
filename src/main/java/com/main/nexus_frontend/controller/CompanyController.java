@@ -524,20 +524,11 @@ public class CompanyController {
     @GetMapping("/matches")
     public String matches(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
-        List<MatchDTO> allMatches = matchService.getCompanyMatches(token);
-        List<MatchDTO> receivedInterests = allMatches.stream()
-                .filter(m -> "PROFESSIONAL_INTERESTED".equals(m.getStatus()))
-                .collect(Collectors.toList());
-        List<MatchDTO> sentInvites = allMatches.stream()
-                .filter(m -> "COMPANY_INTERESTED".equals(m.getStatus()))
-                .collect(Collectors.toList());
-        List<MatchDTO> confirmed = allMatches.stream()
-                .filter(m -> "MATCHED".equals(m.getStatus()))
-                .collect(Collectors.toList());
+        List<MatchDTO> receivedInterests = matchService.getReceivedInterests(token);
+        List<MatchDTO> sentInvites = matchService.getSentInvites(token);
+        List<MatchDTO> confirmed = matchService.getConfirmedCompanyMatches(token);
         List<MatchDTO> previousProjects = matchService.getPreviousProjects(token);
-        List<MatchDTO> rejected = allMatches.stream()
-                .filter(m -> "REJECTED".equals(m.getStatus()))
-                .collect(Collectors.toList());
+        List<MatchDTO> rejected = matchService.getRejectedCompanyMatches(token);
         model.addAttribute("receivedInterests", receivedInterests);
         model.addAttribute("sentInvites", sentInvites);
         model.addAttribute("confirmed", confirmed);
