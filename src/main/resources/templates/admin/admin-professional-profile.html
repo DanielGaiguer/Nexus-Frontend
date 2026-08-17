@@ -34,6 +34,11 @@
         </div>
       </div>
 
+      <script th:inline="javascript">
+        window.PROFILE_TYPE = "professional";
+        window.PROFILE_ID   = /*[[${professionalId}]]*/ null;
+      </script>
+
       <div class="row g-3">
 
         <div class="col-lg-4">
@@ -357,6 +362,8 @@
               Gráfico de contribuições dos últimos 12 meses
             </p>
           </div>
+
+          <div id="reviews-preview-mount" class="mb-3"></div>
 
           <div class="nexus-card p-4 mb-3">
             <div class="fw-semibold text-white mb-3">

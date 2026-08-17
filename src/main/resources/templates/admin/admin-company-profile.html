@@ -29,6 +29,11 @@
         </div>
       </div>
 
+      <script th:inline="javascript">
+        window.PROFILE_TYPE = "company";
+        window.PROFILE_ID   = /*[[${companyId}]]*/ null;
+      </script>
+
       <div class="row g-3">
 
         <div class="col-lg-4">
@@ -434,6 +439,8 @@
               </div>
             </div>
           </div>
+
+          <div id="reviews-preview-mount" class="mb-3"></div>
 
           <div class="nexus-card p-4 mt-3">
             <div class="fw-semibold text-white mb-3">

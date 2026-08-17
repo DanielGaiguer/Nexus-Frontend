@@ -116,11 +116,12 @@ public class AdminController {
     @PostMapping("/companies/{id}/reject")
     public String rejectCompany(
             @PathVariable Long id,
+            @RequestParam String reason,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
         try {
-            adminService.rejectCompany(token, id);
+            adminService.rejectCompany(token, id, reason);
             redirectAttributes.addFlashAttribute("successMsg", "Empresa rejeitada.");
         } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao rejeitar empresa: " + e.getMessage());

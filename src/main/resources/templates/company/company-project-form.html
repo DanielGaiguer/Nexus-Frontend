@@ -288,21 +288,10 @@
 
           <div class="col-12">
             <label class="nexus-label mb-2">Skills exigidas *</label>
-            <select class="nexus-select" name="skillIds" id="projSkills" multiple required
-                    data-placeholder="Buscar e selecionar skills..."
-                    th:if="${allSkills != null and !#lists.isEmpty(allSkills)}">
-              <option th:each="sk : ${allSkills}"
-                      th:value="${sk.id}"
-                      th:text="${sk.name}"
-                      th:selected="${project != null and project.requiredSkills != null
-                                     and project.requiredSkills.![name].contains(sk.name)}">Skill</option>
-            </select>
-            <div th:unless="${allSkills != null and !#lists.isEmpty(allSkills)}"
-                 style="color:#475569;font-size:0.875rem">
-              Catálogo de skills não disponível — contate o administrador.
-            </div>
+            <div id="skill-select-container-opportunity"></div>
+            <div id="skillIds-hidden-inputs-opportunity"></div>
             <div style="color:#475569;font-size:0.72rem;margin-top:4px">
-              Digite para filtrar o catálogo e clique (ou pressione Enter) para adicionar. Selecione ao menos uma.
+              Digite para filtrar o catálogo e clique para adicionar. Selecione ao menos uma (máx. 15).
             </div>
             <div id="skillError"
                  style="color:#ef4444;font-size:0.78rem;margin-top:4px;display:none">
@@ -456,13 +445,13 @@ function setFieldState(ids, active) {
 }
 
 var TODAY = new Date().toISOString().split('T')[0];
+var currentProjectSkillCount = 0;
 
 function revalidate() {
   var type     = document.getElementById('opportunityType').value;
   var title    = (document.getElementById('projTitle').value || '').trim();
   var desc     = (document.getElementById('projDesc').value  || '').trim();
-  var skillsEl = document.getElementById('projSkills');
-  var anySkill = !!skillsEl && skillsEl.selectedOptions.length > 0;
+  var anySkill = currentProjectSkillCount > 0;
   var wm       = document.getElementById('projWorkMode').value;
   var tp       = document.getElementById('projType').value;
   var maxPos   = parseInt(document.getElementById('projMaxPositions').value, 10) || 0;
@@ -499,7 +488,7 @@ function revalidate() {
 }
 
 ['projTitle','projDesc','projMinBudget','projMaxBudget','projDeadline','projMaxPositions','projCep',
- 'projSalaryMin','projSalaryMax','projContractType','projWorkMode','projType','projSkills']
+ 'projSalaryMin','projSalaryMax','projContractType','projWorkMode','projType']
 .forEach(function(id) {
   var el = document.getElementById(id);
   if (el) el.addEventListener('input', revalidate);
@@ -513,6 +502,21 @@ document.addEventListener('DOMContentLoaded', function() {
   revalidate();
 });
 
+window.CURRENT_SKILL_IDS = /*[[${project != null and project.requiredSkills != null ? project.requiredSkills.![id] : {}}]]*/ [];
+
+initSkillSelect({
+  containerId: 'skill-select-container-opportunity',
+  selectedSkillIds: window.CURRENT_SKILL_IDS || [],
+  maxSkills: 15,
+  onSkillsChange: function(skills) {
+    var hiddenWrap = document.getElementById('skillIds-hidden-inputs-opportunity');
+    hiddenWrap.innerHTML = skills.map(function(sk) {
+      return '<input type="hidden" name="skillIds" value="' + sk.id + '">';
+    }).join('');
+    currentProjectSkillCount = skills.length;
+    revalidate();
+  }
+});
 </script>
 </body>
 </html>

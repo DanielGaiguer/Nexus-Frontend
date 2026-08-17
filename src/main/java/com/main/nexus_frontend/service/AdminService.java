@@ -82,10 +82,11 @@ public class AdminService {
                 .toBodilessEntity();
     }
 
-    public void rejectCompany(String token, Long id) {
+    public void rejectCompany(String token, Long id, String reason) {
         restClient.post()
                 .uri("/admin/companies/{id}/reject", id)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .body(java.util.Map.of("reason", reason))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw NexusApiException.from(res);

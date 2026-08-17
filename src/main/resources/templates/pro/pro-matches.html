@@ -254,6 +254,14 @@
                    th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
               <div class="flex-fill">
                 <div class="fw-semibold text-white" style="font-size:1rem" th:text="${inv.project.title}">Projeto</div>
+                <span th:if="${inv.project?.opportunityType == 'JOB'}"
+                      class="nexus-badge-job">
+                  <i class="ti ti-building" style="font-size:0.65rem;margin-right:2px"></i>Vaga
+                </span>
+                <span th:unless="${inv.project?.opportunityType == 'JOB'}"
+                      class="nexus-badge-project">
+                  <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
+                </span>
                 <div style="color:#64748b;font-size:0.85rem" th:text="${inv.project.company.companyName}">Empresa</div>
                 <div th:if="${inv.project?.requiredSkills != null and !#lists.isEmpty(inv.project.requiredSkills)}"
                      class="mt-1">
@@ -286,21 +294,63 @@
               </div>
             </div>
 
-            <div class="d-flex align-items-center justify-content-between mt-3">
+            <div class="row g-3 mb-3" style="font-size:0.78rem" th:if="${inv.scoreBreakdown != null}">
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Skills</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(inv.scoreBreakdown.skills ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${inv.scoreBreakdown.skills ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Orçamento</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(inv.scoreBreakdown.budget ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${inv.scoreBreakdown.budget ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Histórico</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(inv.scoreBreakdown.history ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${inv.scoreBreakdown.history ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Reputação</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(inv.scoreBreakdown.reputation ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${inv.scoreBreakdown.reputation ?: 0}+'%'"></div></div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between mt-3 flex-wrap gap-2">
               <span class="nexus-status-badge warning">
                 <i class="ti ti-clock me-1"></i>Aguardando resposta da empresa
               </span>
-              <div class="d-flex align-items-center gap-2">
+              <div class="d-flex justify-content-end gap-2 flex-wrap">
                 <a th:href="@{/public/opportunity/{id}(id=${inv.project.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                   class="nexus-btn nexus-btn-ghost"
+                   style="width:190px;justify-content:center">
                   <i class="ti ti-briefcase"></i> Ver oportunidade
                 </a>
                 <a th:href="@{/pro/company/{id}(id=${inv.project.company.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                   class="nexus-btn nexus-btn-ghost"
+                   style="width:190px;justify-content:center">
                   <i class="ti ti-building"></i> Ver empresa
                 </a>
                 <button type="button"
-                        class="nexus-btn nexus-btn-danger-outline nexus-btn-sm cancel-match-trigger"
+                        class="nexus-btn nexus-btn-danger-outline cancel-match-trigger"
+                        style="width:190px;justify-content:center"
                         th:data-id="${inv.id}">
                   <i class="ti ti-x"></i> Cancelar interesse
                 </button>
@@ -342,6 +392,12 @@
                 </span>
                 <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.4rem" th:text="${m.project.company.companyName}">Empresa</div>
 
+                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);
+                            border-radius:8px;padding:0.4rem 0.7rem;color:#22c55e;font-size:0.78rem;
+                            font-weight:600;display:inline-block;margin-bottom:0.5rem">
+                  Match Confirmado
+                </div>
+
                 <div th:with="daysRemaining=${m.getDaysRemaining()}" style="margin-bottom:0.5rem">
                   <div th:if="${m.active != null and !m.active or daysRemaining <= 0}"
                        style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.2);
@@ -366,51 +422,101 @@
                           th:text="${sk.name}">Skill</span>
                   </div>
                 </div>
-                <div class="d-flex flex-column gap-1">
-                  <div style="color:#6b6eff;font-size:0.82rem" th:if="${m.project.company.phone != null}">
-                    <i class="ti ti-phone me-1"></i>
-                    <span th:text="${m.project.company.phone}">Telefone</span>
+              </div>
+              <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
+                <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
+                            text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem">Score</div>
+                <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
+                  <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                    <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
+                    <circle cx="55" cy="55" r="46"
+                            th:class="'nexus-score-ring-fill ' + ${c}"
+                            stroke-width="5"
+                            stroke-dasharray="289.03"
+                            th:stroke-dashoffset="${289.03 - (s/100.0)*289.03}"/>
+                  </svg>
+                  <div class="nexus-score-ring-label">
+                    <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
                   </div>
                 </div>
               </div>
-              <div class="d-flex flex-column align-items-end gap-2">
-                <span class="nexus-status success">Match Confirmado</span>
-                <button type="button"
-                        class="nexus-btn nexus-btn-primary nexus-btn-sm contact-trigger"
-                        style="width:210px;padding:0.3rem 0.85rem;justify-content:center"
-                        th:data-id="${m.id}">
-                  <i class="ti ti-address-book"></i> Entrar em contato
-                </button>
-                <a th:href="@{/pro/company/{id}(id=${m.project.company.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm"
-                   style="width:210px;padding:0.3rem 0.85rem;justify-content:center">
-                  <i class="ti ti-building"></i> Ver perfil da empresa
-                </a>
-                <button type="button"
-                        class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger"
-                        style="width:210px;padding:0.3rem 0.85rem;justify-content:center"
-                        th:data-id="${m.id}">
-                  <i class="ti ti-history"></i> Ver histórico
-                </button>
-                <a th:unless="${reviewedMatchIds.contains(m.id)}"
-                   th:href="@{/pro/matches/{id}/review(id=${m.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm"
-                   style="width:210px;padding:0.3rem 0.85rem;justify-content:center">
-                  <i class="ti ti-star"></i> Avaliar
-                </a>
-                <span th:if="${reviewedMatchIds.contains(m.id)}"
-                      class="nexus-btn nexus-btn-ghost nexus-btn-sm"
-                      style="width:210px;padding:0.3rem 0.85rem;justify-content:center;opacity:0.6;pointer-events:none">
-                  <i class="ti ti-circle-check"></i> Avaliado
-                </span>
-                <button type="button"
-                        th:if="${m.active == null or m.active}"
-                        class="nexus-btn nexus-btn-danger-outline nexus-btn-sm cancel-match-trigger"
-                        style="width:210px;padding:0.3rem 0.85rem;justify-content:center"
-                        th:data-id="${m.id}">
-                  <i class="ti ti-x"></i> Cancelar Match
-                </button>
+            </div>
+
+            <div class="row g-3 mb-4" style="font-size:0.78rem" th:if="${m.scoreBreakdown != null}">
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Skills</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.skills ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.skills ?: 0}+'%'"></div></div>
               </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Orçamento</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.budget ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.budget ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Histórico</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.history ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.history ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Reputação</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.reputation ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.reputation ?: 0}+'%'"></div></div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
+              <button type="button"
+                      class="nexus-btn nexus-btn-primary contact-trigger"
+                      style="width:190px;justify-content:center"
+                      th:data-id="${m.id}">
+                <i class="ti ti-address-book"></i> Entrar em contato
+              </button>
+              <a th:href="@{/pro/company/{id}(id=${m.project.company.id})}"
+                 class="nexus-btn nexus-btn-ghost"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-building"></i> Ver perfil da empresa
+              </a>
+              <button type="button"
+                      class="nexus-btn nexus-btn-ghost history-trigger"
+                      style="width:190px;justify-content:center"
+                      th:data-id="${m.id}">
+                <i class="ti ti-history"></i> Ver histórico
+              </button>
+              <a th:unless="${reviewedMatchIds.contains(m.id)}"
+                 th:href="@{/pro/matches/{id}/review(id=${m.id})}"
+                 class="nexus-btn nexus-btn-ghost"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-star"></i> Avaliar
+              </a>
+              <span th:if="${reviewedMatchIds.contains(m.id)}"
+                    class="nexus-btn nexus-btn-ghost"
+                    style="width:190px;justify-content:center;opacity:0.6;pointer-events:none">
+                <i class="ti ti-circle-check"></i> Avaliado
+              </span>
+              <button type="button"
+                      th:if="${m.active == null or m.active}"
+                      class="nexus-btn nexus-btn-danger-outline cancel-match-trigger"
+                      style="width:190px;justify-content:center"
+                      th:data-id="${m.id}">
+                <i class="ti ti-x"></i> Cancelar Match
+              </button>
             </div>
           </div>
         </div>
@@ -438,6 +544,14 @@
                    th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
               <div class="flex-fill">
                 <div class="fw-semibold text-white" th:text="${m.project.title}">Projeto</div>
+                <span th:if="${m.project?.opportunityType == 'JOB'}"
+                      class="nexus-badge-job">
+                  <i class="ti ti-building" style="font-size:0.65rem;margin-right:2px"></i>Vaga
+                </span>
+                <span th:unless="${m.project?.opportunityType == 'JOB'}"
+                      class="nexus-badge-project">
+                  <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
+                </span>
                 <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.4rem" th:text="${m.project.company.companyName}">Empresa</div>
                 <div style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.2);
                             border-radius:8px;padding:0.4rem 0.7rem;color:#94a3b8;font-size:0.78rem;
@@ -457,26 +571,87 @@
                   </div>
                 </div>
               </div>
-              <div class="d-flex flex-column align-items-center gap-2" style="width:210px">
-                <button type="button"
-                        class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger w-100"
-                        th:data-id="${m.id}">
-                  <i class="ti ti-history"></i> Ver histórico
-                </button>
-                <a th:unless="${reviewedMatchIds.contains(m.id)}"
-                   th:href="@{/pro/matches/{id}/review(id=${m.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
-                  <i class="ti ti-star"></i> Avaliar
-                </a>
-                <span th:if="${reviewedMatchIds.contains(m.id)}"
-                      class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100" style="opacity:0.6;pointer-events:none">
-                  <i class="ti ti-circle-check"></i> Avaliado
-                </span>
-                <a th:href="@{/pro/company/{id}(id=${m.project.company.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100">
-                  <i class="ti ti-building"></i> Ver empresa
-                </a>
+              <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
+                <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
+                            text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem">Score</div>
+                <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
+                  <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                    <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
+                    <circle cx="55" cy="55" r="46"
+                            th:class="'nexus-score-ring-fill ' + ${c}"
+                            stroke-width="5"
+                            stroke-dasharray="289.03"
+                            th:stroke-dashoffset="${289.03 - (s/100.0)*289.03}"/>
+                  </svg>
+                  <div class="nexus-score-ring-label">
+                    <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            <div class="row g-3 mb-4" style="font-size:0.78rem" th:if="${m.scoreBreakdown != null}">
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Skills</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.skills ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.skills ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Orçamento</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.budget ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.budget ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Histórico</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.history ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.history ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Reputação</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.reputation ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.reputation ?: 0}+'%'"></div></div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
+              <button type="button"
+                      class="nexus-btn nexus-btn-ghost history-trigger"
+                      style="width:190px;justify-content:center"
+                      th:data-id="${m.id}">
+                <i class="ti ti-history"></i> Ver histórico
+              </button>
+              <a th:unless="${reviewedMatchIds.contains(m.id)}"
+                 th:href="@{/pro/matches/{id}/review(id=${m.id})}"
+                 class="nexus-btn nexus-btn-ghost"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-star"></i> Avaliar
+              </a>
+              <span th:if="${reviewedMatchIds.contains(m.id)}"
+                    class="nexus-btn nexus-btn-ghost"
+                    style="width:190px;justify-content:center;opacity:0.6;pointer-events:none">
+                <i class="ti ti-circle-check"></i> Avaliado
+              </span>
+              <a th:href="@{/pro/company/{id}(id=${m.project.company.id})}"
+                 class="nexus-btn nexus-btn-ghost"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-building"></i> Ver empresa
+              </a>
             </div>
           </div>
         </div>
@@ -502,26 +677,148 @@
                    th:text="${#strings.substring(n,0,1).toUpperCase()}">T</div>
               <div class="flex-fill">
                 <div class="fw-semibold text-white" th:text="${m.project.title}">Projeto</div>
+                <span th:if="${m.project?.opportunityType == 'JOB'}"
+                      class="nexus-badge-job">
+                  <i class="ti ti-building" style="font-size:0.65rem;margin-right:2px"></i>Vaga
+                </span>
+                <span th:unless="${m.project?.opportunityType == 'JOB'}"
+                      class="nexus-badge-project">
+                  <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
+                </span>
                 <div style="color:#64748b;font-size:0.85rem;margin-bottom:0.4rem" th:text="${m.project.company.companyName}">Empresa</div>
+                <div th:if="${m.project?.requiredSkills != null and !#lists.isEmpty(m.project.requiredSkills)}"
+                     class="mb-2">
+                  <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                              letter-spacing:0.05em;margin-bottom:0.35rem">Skills exigidas</div>
+                  <div class="d-flex flex-wrap gap-1">
+                    <span th:each="sk : ${m.project.requiredSkills}"
+                          class="nexus-chip nexus-chip-tech"
+                          style="font-size:0.68rem;padding:0.15em 0.5em"
+                          th:text="${sk.name}">Skill</span>
+                  </div>
+                </div>
                 <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);
                             border-radius:8px;padding:0.4rem 0.7rem;color:#ef4444;font-size:0.78rem;
-                            font-weight:600;display:inline-block"
+                            font-weight:600;display:inline-block;margin-bottom:0.5rem"
                      th:text="${m.companyStatus != 'REJECTED' and m.professionalStatus != 'REJECTED'}
                               ? 'Oportunidade encerrada pela empresa' : 'Recusado'">Recusado</div>
+                <br>
+                <div th:if="${m.rejectionReasons != null and !#lists.isEmpty(m.rejectionReasons)}" class="mb-2">
+                  <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                              letter-spacing:0.05em;margin-bottom:0.35rem">Motivos da rejeição</div>
+                  <div class="d-flex flex-wrap gap-1">
+                    <span th:each="r : ${m.rejectionReasons}" th:switch="${r}"
+                          class="nexus-chip nexus-chip-tech" style="font-size:0.68rem;padding:0.15em 0.5em">
+                      <span th:case="'MISSING_REQUIRED_SKILLS'">Faltam skills exigidas</span>
+                      <span th:case="'INSUFFICIENT_EXPERIENCE'">Experiência insuficiente</span>
+                      <span th:case="'OVERQUALIFIED'">Superqualificado para a vaga</span>
+                      <span th:case="'TECHNOLOGY_MISMATCH'">Tecnologia não combina</span>
+                      <span th:case="'ROLE_EXPECTATION_MISMATCH'">Expectativa de papel não combina</span>
+                      <span th:case="'INCOMPLETE_PROFILE'">Perfil incompleto</span>
+                      <span th:case="'POOR_QUALITY_PORTFOLIO'">Portfólio de baixa qualidade</span>
+                      <span th:case="'NO_RELEVANT_PROJECTS'">Sem projetos relevantes</span>
+                      <span th:case="'FAILED_INTERVIEW_STAGE'">Não passou na entrevista</span>
+                      <span th:case="'NO_RESPONSE_FROM_CANDIDATE'">Sem resposta do candidato</span>
+                      <span th:case="'ANOTHER_CANDIDATE_SELECTED'">Outro candidato selecionado</span>
+                      <span th:case="'POSITION_FILLED'">Vaga já preenchida</span>
+                      <span th:case="'TOO_LOW_BUDGET'">Orçamento muito baixo</span>
+                      <span th:case="'UNDESIRED_TECHNOLOGY'">Tecnologia indesejada</span>
+                      <span th:case="'DISTANCE_TOO_LARGE'">Distância muito grande</span>
+                      <span th:case="'NO_REMOTE_OPTION'">Não é remoto</span>
+                      <span th:case="'RELOCATION_NOT_ACCEPTED'">Não aceito me mudar</span>
+                      <span th:case="'TIMEZONE_INCOMPATIBILITY'">Fuso horário incompatível</span>
+                      <span th:case="'NOT_AVAILABLE_TIMELINE'">Sem disponibilidade no prazo</span>
+                      <span th:case="'IMMEDIATE_START_REQUIRED'">Início imediato exigido</span>
+                      <span th:case="'CANNOT_MEET_SCHEDULE'">Não consigo cumprir a agenda</span>
+                      <span th:case="'CULTURE_MISMATCH'">Cultura não combina</span>
+                      <span th:case="'COMPANY_SIZE_PREFERENCE'">Preferência por tamanho de empresa</span>
+                      <span th:case="'WORK_MODEL_MISMATCH'">Modelo de trabalho não combina</span>
+                      <span th:case="'DEADLINE_TOO_SHORT'">Prazo muito curto</span>
+                      <span th:case="'COST_BENEFIT_INADEQUATE'">Custo-benefício inadequado</span>
+                      <span th:case="'HIRING_FROZEN'">Contratações congeladas</span>
+                      <span th:case="'PROJECT_CANCELLED'">Projeto cancelado</span>
+                      <span th:case="'OTHER'">Outro motivo</span>
+                      <span th:case="*" th:text="${r}">—</span>
+                    </span>
+                  </div>
+                </div>
+                <div th:if="${m.rejectionDescription != null and !#strings.isEmpty(m.rejectionDescription)}" class="mb-2">
+                  <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                              letter-spacing:0.05em;margin-bottom:0.35rem">Observação sobre a rejeição</div>
+                  <div style="color:#94a3b8;font-size:0.82rem;white-space:pre-wrap"
+                       th:text="${m.rejectionDescription}">—</div>
+                </div>
               </div>
-              <div class="d-flex flex-column align-items-end gap-2">
-                <a th:href="@{/pro/company/{id}(id=${m.project.company.id})}"
-                   class="nexus-btn nexus-btn-ghost nexus-btn-sm"
-                   style="width:210px;padding:0.3rem 0.85rem;justify-content:center">
-                  <i class="ti ti-building"></i> Ver empresa
-                </a>
-                <button type="button"
-                        class="nexus-btn nexus-btn-ghost nexus-btn-sm history-trigger"
-                        style="width:210px;padding:0.3rem 0.85rem;justify-content:center"
-                        th:data-id="${m.id}">
-                  <i class="ti ti-history"></i> Ver histórico
-                </button>
+              <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
+                <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
+                            text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem">Score</div>
+                <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
+                  <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                    <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
+                    <circle cx="55" cy="55" r="46"
+                            th:class="'nexus-score-ring-fill ' + ${c}"
+                            stroke-width="5"
+                            stroke-dasharray="289.03"
+                            th:stroke-dashoffset="${289.03 - (s/100.0)*289.03}"/>
+                  </svg>
+                  <div class="nexus-score-ring-label">
+                    <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            <div class="row g-3 mb-4" style="font-size:0.78rem" th:if="${m.scoreBreakdown != null}">
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Skills</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.skills ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.skills ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Orçamento</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.budget ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.budget ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Histórico</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.history ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.history ?: 0}+'%'"></div></div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span style="color:#64748b">Reputação</span>
+                  <span class="tabular" style="color:#a5b4fc"
+                        th:text="${#numbers.formatDecimal(m.scoreBreakdown.reputation ?: 0,1,0)}">—</span>
+                </div>
+                <div class="nexus-breakdown-bar"><div class="nexus-breakdown-bar-fill"
+                     th:style="'width:'+${m.scoreBreakdown.reputation ?: 0}+'%'"></div></div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
+              <a th:href="@{/pro/company/{id}(id=${m.project.company.id})}"
+                 class="nexus-btn nexus-btn-ghost"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-building"></i> Ver empresa
+              </a>
+              <button type="button"
+                      class="nexus-btn nexus-btn-ghost history-trigger"
+                      style="width:190px;justify-content:center"
+                      th:data-id="${m.id}">
+                <i class="ti ti-history"></i> Ver histórico
+              </button>
             </div>
           </div>
         </div>
@@ -629,6 +926,12 @@
                 <i class="ti ti-check"></i>Outro motivo
               </div>
             </label>
+          </div>
+          <div class="mt-3">
+            <label class="nexus-label" for="rejectDescription">Adicione uma descrição do motivo da rejeição</label>
+            <textarea name="description" id="rejectDescription" class="nexus-input" rows="3"
+                      placeholder="Opcional — detalhe o motivo pra empresa (ela vai ver isso no card do match recusado)"
+                      style="resize:vertical"></textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -760,6 +1063,7 @@ document.querySelectorAll('.reject-trigger').forEach(function(btn) {
     document.querySelectorAll('#rejectForm input[type=checkbox]').forEach(function(cb) {
       cb.checked = false;
     });
+    document.getElementById('rejectDescription').value = '';
     document.getElementById('confirmRejectBtn').disabled = true;
     new bootstrap.Modal(document.getElementById('rejectModal')).show();
   });

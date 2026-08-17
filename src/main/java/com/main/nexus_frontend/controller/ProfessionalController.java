@@ -101,8 +101,17 @@ public class ProfessionalController {
             projectsCount = 0;
         }
 
+        // ProfessionalProfileDTO.skills só tem os nomes (não os ids) — o componente de
+        // seleção de skills precisa dos ids pra pré-marcar, então resolve cruzando com
+        // o catálogo completo já carregado acima.
+        List<Long> currentSkillIds = allSkills.stream()
+                .filter(sk -> profile.getSkills() != null && profile.getSkills().contains(sk.getName()))
+                .map(SkillDTO::getId)
+                .toList();
+
         model.addAttribute("profile", profile);
         model.addAttribute("allSkills", allSkills);
+        model.addAttribute("currentSkillIds", currentSkillIds);
         model.addAttribute("projectsCount", projectsCount);
         try {
             model.addAttribute("reputation", reputationService.getProfessional(token, profile.getId()));
@@ -390,11 +399,12 @@ public class ProfessionalController {
     public String rejectMatch(
             @PathVariable Long matchId,
             @RequestParam(value = "reasons", required = false) List<String> reasons,
+            @RequestParam(value = "description", required = false) String description,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
         try {
-            matchService.professionalReject(token, matchId, reasons != null ? reasons : List.of());
+            matchService.professionalReject(token, matchId, reasons != null ? reasons : List.of(), description);
             redirectAttributes.addFlashAttribute("successMsg", "Convite recusado.");
         } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao recusar convite: " + e.getMessage());

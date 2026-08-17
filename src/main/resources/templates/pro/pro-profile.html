@@ -33,6 +33,11 @@
           </div>
       </div>
 
+      <script th:inline="javascript">
+        window.PROFILE_TYPE = "professional";
+        window.PROFILE_ID   = /*[[${profile.id}]]*/ null;
+      </script>
+
       <div class="row g-3">
 
         <div class="col-lg-4">
@@ -431,6 +436,8 @@
             </p>
           </div>
 
+          <div id="reviews-preview-mount" class="mt-3"></div>
+
         </div>
       </div>
 
@@ -584,23 +591,8 @@
             Selecione as skills que você domina. Elas impactam diretamente o componente de Skills no score de compatibilidade.
           </p>
           <label class="nexus-label mb-2">Suas skills</label>
-          <select class="nexus-select" name="skillIds" id="proSkills" multiple
-                  data-placeholder="Buscar e selecionar skills..."
-                  th:if="${allSkills != null and !#lists.isEmpty(allSkills)}">
-            <option th:each="sk : ${allSkills}"
-                    th:value="${sk.id}"
-                    th:text="${sk.name}"
-                    th:selected="${profile.skills != null and profile.skills.contains(sk.name)}">Skill</option>
-          </select>
-          <div th:unless="${allSkills != null and !#lists.isEmpty(allSkills)}"
-               style="color:#475569;font-size:0.875rem">
-            Catálogo de skills não disponível. Contate o administrador.
-          </div>
-          <style>
-            #skillsModal .ts-wrapper.nexus-select {
-              max-width: 100% !important;
-            }
-          </style>
+          <div id="skill-select-container-profile"></div>
+          <div id="skillIds-hidden-inputs-profile"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
@@ -942,6 +934,20 @@ document.getElementById('editModal').addEventListener('shown.bs.modal', function
   NexusScoreSimulator.simulate();
 });
 
+</script>
+<script th:inline="javascript">
+window.CURRENT_SKILL_IDS = /*[[${currentSkillIds}]]*/ [];
+
+initSkillSelect({
+  containerId: 'skill-select-container-profile',
+  selectedSkillIds: window.CURRENT_SKILL_IDS || [],
+  onSkillsChange: function(skills) {
+    var hiddenWrap = document.getElementById('skillIds-hidden-inputs-profile');
+    hiddenWrap.innerHTML = skills.map(function(sk) {
+      return '<input type="hidden" name="skillIds" value="' + sk.id + '">';
+    }).join('');
+  }
+});
 </script>
 </body>
 </html>

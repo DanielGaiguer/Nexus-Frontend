@@ -137,11 +137,11 @@ public class MatchService {
                 .toBodilessEntity();
     }
 
-    public void professionalReject(String token, Long matchId, List<String> reasons) {
+    public void professionalReject(String token, Long matchId, List<String> reasons, String description) {
         restClient.post()
                 .uri("/matches/{matchId}/professional-reject", matchId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .body(reasons)
+                .body(Map.of("reasons", reasons, "description", description == null ? "" : description))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw NexusApiException.from(res);
@@ -180,11 +180,11 @@ public class MatchService {
                 .toBodilessEntity();
     }
 
-    public void companyReject(String token, Long matchId, List<String> reasons) {
+    public void companyReject(String token, Long matchId, List<String> reasons, String description) {
         restClient.post()
                 .uri("/matches/{matchId}/company-reject", matchId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .body(reasons)
+                .body(Map.of("reasons", reasons, "description", description == null ? "" : description))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                     throw NexusApiException.from(res);

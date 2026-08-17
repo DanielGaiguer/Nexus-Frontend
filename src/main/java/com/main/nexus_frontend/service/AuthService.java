@@ -139,7 +139,7 @@ public class AuthService {
             }
             if (lower.contains("rejected")) {
                 return "O cadastro da sua empresa foi rejeitado. "
-                     + "Entre em contato com o suporte para mais informações.";
+                     + "Acesse seu e-mail para saber o motivo da rejeição.";
             }
             if (lower.contains("inactive")) {
                 return "Esta conta está desativada. Entre em contato com o suporte.";

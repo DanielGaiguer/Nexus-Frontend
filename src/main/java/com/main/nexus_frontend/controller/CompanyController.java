@@ -173,11 +173,8 @@ public class CompanyController {
 
     @GetMapping("/projects/new")
     public String newProjectForm(HttpSession session, Model model) {
-        String token = (String) session.getAttribute("token");
-        List<SkillDTO> allSkills = companyService.getSkills(token);
         model.addAttribute("editMode", false);
         model.addAttribute("project", null);
-        model.addAttribute("allSkills", allSkills);
         model.addAttribute("activePage", "projects");
         return "company/company-project-form";
     }
@@ -264,10 +261,8 @@ public class CompanyController {
             Model model) {
         String token = (String) session.getAttribute("token");
         ProjectDTO project = projectService.getProject(token, id);
-        List<SkillDTO> allSkills = companyService.getSkills(token);
         model.addAttribute("editMode", true);
         model.addAttribute("project", project);
-        model.addAttribute("allSkills", allSkills);
         model.addAttribute("activePage", "projects");
         return "company/company-project-form";
     }
@@ -562,11 +557,12 @@ public class CompanyController {
     public String rejectMatch(
             @PathVariable Long matchId,
             @RequestParam(value = "reasons", required = false) List<String> reasons,
+            @RequestParam(value = "description", required = false) String description,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
         try {
-            matchService.companyReject(token, matchId, reasons != null ? reasons : List.of());
+            matchService.companyReject(token, matchId, reasons != null ? reasons : List.of(), description);
             redirectAttributes.addFlashAttribute("successMsg", "Interesse recusado.");
         } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao recusar: " + e.getMessage());

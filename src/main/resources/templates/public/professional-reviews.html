@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/app-shell :: head('Avaliações — ' + ${profileName})}"></head>
+<body class="nexus-app">
+
+<div th:replace="~{fragments/app-shell :: shell}"></div>
+
+<div class="page-wrapper">
+  <div th:replace="~{fragments/app-shell :: topbar}"></div>
+
+  <div class="page-body">
+    <div class="container-xl py-4" style="max-width:820px">
+
+      <div class="mb-4">
+        <a th:href="@{/public/professional/{id}(id=${profileId})}"
+           class="d-inline-flex align-items-center gap-1 text-decoration-none mb-2"
+           style="color:#64748b;font-size:0.85rem">
+          <i class="ti ti-arrow-left"></i> Voltar ao perfil
+        </a>
+        <div style="color:#475569;font-size:0.75rem;margin-bottom:4px">
+          Perfil &rarr; Avaliações de <span th:text="${profileName}">Nome</span>
+        </div>
+        <h1 class="fw-bold mb-1" style="font-size:1.6rem;letter-spacing:-0.02em;color:#fff">
+          Avaliações de <span th:text="${profileName}">Nome</span>
+        </h1>
+        <p style="color:#64748b;font-size:0.875rem">
+          <span th:text="${reviews.totalReviews}">0</span>
+          avaliação<span th:if="${reviews.totalReviews != 1}">ões</span>
+          &middot; média <span th:text="${#numbers.formatDecimal(reviews.averageRating,1,1)}">0.0</span>
+          <i class="ti ti-star-filled" style="color:#f59e0b"></i>
+        </p>
+      </div>
+
+      <div class="nexus-tabs mb-4">
+        <button class="nexus-tab active review-filter-btn" data-rating="">Todas</button>
+        <button class="nexus-tab review-filter-btn" data-rating="5">
+          <i class="ti ti-star-filled" th:each="i : ${#numbers.sequence(1,5)}"></i>
+        </button>
+        <button class="nexus-tab review-filter-btn" data-rating="4">
+          <i class="ti ti-star-filled" th:each="i : ${#numbers.sequence(1,4)}"></i>
+        </button>
+        <button class="nexus-tab review-filter-btn" data-rating="3">
+          <i class="ti ti-star-filled" th:each="i : ${#numbers.sequence(1,3)}"></i>
+        </button>
+        <button class="nexus-tab review-filter-btn" data-rating="2">
+          <i class="ti ti-star-filled" th:each="i : ${#numbers.sequence(1,2)}"></i>
+        </button>
+        <button class="nexus-tab review-filter-btn" data-rating="1">
+          <i class="ti ti-star-filled"></i>
+        </button>
+      </div>
+
+      <div id="reviews-list"></div>
+      <div id="reviews-empty" class="nexus-card p-4 text-center" style="display:none">
+        <div style="color:#64748b;font-size:0.875rem">Nenhuma avaliação encontrada para este filtro.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/app-shell :: scripts}"></div>
+<script th:inline="javascript">
+  window.REVIEWS_PROFILE_TYPE = /*[[${profileType}]]*/ null;
+  window.REVIEWS_PROFILE_ID   = /*[[${profileId}]]*/ null;
+  window.REVIEWS_DATA         = /*[[${reviews}]]*/ null;
+</script>
+<script th:src="@{/js/nexus-reviews-page.js}"></script>
+
+</body>
+</html>

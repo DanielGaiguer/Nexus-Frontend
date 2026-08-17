@@ -1,6 +1,7 @@
 package com.main.nexus_frontend.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MatchDTO {
     private Long id;
@@ -13,6 +14,8 @@ public class MatchDTO {
     private ProfessionalSimpleDTO professional;
     private ScoreBreakdownDTO scoreBreakdown;
     private Boolean active;
+    private List<String> rejectionReasons;
+    private String rejectionDescription;
 
     public MatchDTO() {}
 
@@ -45,6 +48,12 @@ public class MatchDTO {
 
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
+
+    public List<String> getRejectionReasons() { return rejectionReasons; }
+    public void setRejectionReasons(List<String> rejectionReasons) { this.rejectionReasons = rejectionReasons; }
+
+    public String getRejectionDescription() { return rejectionDescription; }
+    public void setRejectionDescription(String rejectionDescription) { this.rejectionDescription = rejectionDescription; }
 
     public int getScoreAsInt() {
         if (matchScore == null) return 0;

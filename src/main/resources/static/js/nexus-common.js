@@ -53,6 +53,59 @@ function nexusToast(message, type) {
     }, 4000);
 }
 
+// Upgrada um <select class="nexus-select"> isolado pro visual padrão do sistema (TomSelect,
+// dropdown escuro custom em vez do <select> nativo do navegador). Exposta em window pra poder
+// ser chamada também em selects criados dinamicamente depois do DOMContentLoaded (ex.: o select
+// de categoria dentro do formulário "cadastrar nova skill" de nexus-skill-select.js) — sem isso,
+// esses selects ficam com a aparência nativa do SO, destoando do resto do sistema.
+function nexusInitSelect(el) {
+  if (typeof TomSelect === 'undefined' || !el || el.tomselect) return null;
+
+  var isMulti = el.hasAttribute('multiple');
+  var placeholderText = isMulti
+    ? (el.getAttribute('data-placeholder') || 'Todos os níveis')
+    : (el.getAttribute('data-placeholder') || '');
+  var ts = new TomSelect(el, {
+    maxOptions: null,
+    openOnFocus: true,
+    allowEmptyOption: true,
+    highlight: true,
+    copyClassesToDropdown: false,
+    dropdownParent: 'body',
+    placeholder: placeholderText,
+    plugins: isMulti ? ['remove_button'] : [],
+    onDropdownOpen: function() {
+      this.wrapper.classList.add('ts-dropdown-active');
+    },
+    onDropdownClose: function() {
+      this.wrapper.classList.remove('ts-dropdown-active');
+    }
+  });
+  nexusSyncSelectPlaceholder(ts);
+  ts.on('change', function() { nexusSyncSelectPlaceholder(ts); });
+  return ts;
+}
+
+function nexusSyncSelectPlaceholder(ts) {
+  var control = ts.wrapper.querySelector('.ts-control');
+  var input = control ? control.querySelector('input') : null;
+  if (!input) return;
+  var hasItems = ts.items.length > 0;
+  if (hasItems) {
+    input.removeAttribute('placeholder');
+    input.style.opacity = '0';
+    input.style.width = '0';
+    input.style.minWidth = '0';
+    input.style.padding = '0';
+  } else {
+    input.setAttribute('placeholder', ts.settings.placeholder || '');
+    input.style.opacity = '';
+    input.style.width = '';
+    input.style.minWidth = '';
+    input.style.padding = '';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   if (typeof TomSelect === 'undefined') return;
 
@@ -60,65 +113,40 @@ document.addEventListener('DOMContentLoaded', function() {
   TomSelect.prototype.positionDropdown = function() {
     origPositionDropdown.call(this);
     var rect = this.wrapper.getBoundingClientRect();
+    var margin = 4;
+    var preferredMax = 260;
+    var spaceBelow = window.innerHeight - rect.bottom - margin;
+    var spaceAbove = rect.top - margin;
+    // Abre pra cima quando não sobra espaço suficiente embaixo e tem mais espaço em cima —
+    // sem isso, um select perto do fim da tela abria o dropdown pra baixo e ele saía da
+    // viewport, deixando só uma opção visível antes de cortar.
+    var openUp = spaceBelow < preferredMax && spaceAbove > spaceBelow;
+    var maxHeight = Math.max(120, Math.min(preferredMax, openUp ? spaceAbove : spaceBelow));
+
     this.dropdown.style.position = 'fixed';
-    this.dropdown.style.top = (rect.bottom + 4) + 'px';
     this.dropdown.style.left = rect.left + 'px';
     this.dropdown.style.width = rect.width + 'px';
-    this.dropdown.style.maxHeight = '260px';
+    this.dropdown.style.maxHeight = maxHeight + 'px';
     this.dropdown.style.height = 'auto';
     this.dropdown.style.overflow = 'hidden';
+
+    if (openUp) {
+      this.dropdown.style.top = 'auto';
+      this.dropdown.style.bottom = (window.innerHeight - rect.top + margin) + 'px';
+    } else {
+      this.dropdown.style.bottom = 'auto';
+      this.dropdown.style.top = (rect.bottom + margin) + 'px';
+    }
+
     var dc = this.dropdown.querySelector('.ts-dropdown-content');
     if (dc) {
-      dc.style.maxHeight = '260px';
+      dc.style.maxHeight = maxHeight + 'px';
       dc.style.height = 'auto';
       dc.style.overflowY = 'auto';
     }
   };
 
-  document.querySelectorAll('select.nexus-select').forEach(function(el) {
-    var isMulti = el.hasAttribute('multiple');
-    var placeholderText = isMulti
-      ? (el.getAttribute('data-placeholder') || 'Todos os níveis')
-      : (el.getAttribute('data-placeholder') || '');
-    var ts = new TomSelect(el, {
-      maxOptions: null,
-      openOnFocus: true,
-      allowEmptyOption: true,
-      highlight: true,
-      copyClassesToDropdown: false,
-      dropdownParent: 'body',
-      placeholder: placeholderText,
-      plugins: isMulti ? ['remove_button'] : [],
-      onDropdownOpen: function() {
-        this.wrapper.classList.add('ts-dropdown-active');
-      },
-      onDropdownClose: function() {
-        this.wrapper.classList.remove('ts-dropdown-active');
-      }
-    });
-    syncPlaceholder(ts);
-    ts.on('change', function() { syncPlaceholder(ts); });
-  });
-
-  function syncPlaceholder(ts) {
-    var control = ts.wrapper.querySelector('.ts-control');
-    var input = control ? control.querySelector('input') : null;
-    if (!input) return;
-    var hasItems = ts.items.length > 0;
-    if (hasItems) {
-      input.removeAttribute('placeholder');
-      input.style.opacity = '0';
-      input.style.width = '0';
-      input.style.minWidth = '0';
-      input.style.padding = '0';
-    } else {
-      input.setAttribute('placeholder', ts.settings.placeholder || '');
-      input.style.opacity = '';
-      input.style.width = '';
-      input.style.minWidth = '';
-      input.style.padding = '';
-    }
-  }
+  document.querySelectorAll('select.nexus-select').forEach(nexusInitSelect);
 });
 
 function initDeadlines() {
@@ -373,3 +401,26 @@ setInterval(function() {
     loadChatUnreadTotal();
   }
 }, 30000);
+
+// Badge do item "Avaliações" da sidebar — mesmo padrão do loadChatUnreadTotal acima,
+// mas pra contagem de avaliações recebidas (rota auto-referente, resolve o dono pela
+// sessão logada, então funciona em qualquer página sem precisar de um ID).
+function loadReviewsCount() {
+  var badge = document.getElementById('reviews-count-badge');
+  if (!badge) return;
+
+  fetch('/app-api/reviews/my-count')
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) {
+      var total = data ? data.totalReviews : 0;
+      if (total > 0) {
+        badge.textContent = total > 99 ? '99+' : total;
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+    })
+    .catch(function() {});
+}
+
+document.addEventListener('DOMContentLoaded', loadReviewsCount);

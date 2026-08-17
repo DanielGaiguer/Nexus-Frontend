@@ -131,14 +131,19 @@
           <strong class="text-white" id="rejectCoName">—</strong>?
           A empresa não poderá acessar a plataforma. Esta ação não pode ser desfeita.
         </p>
+        <form id="rejectCoForm" method="post">
+          <label class="nexus-label">Motivo da rejeição</label>
+          <textarea name="reason" id="rejectCoReason" class="nexus-input" rows="3" required
+                    placeholder="Explique por que o cadastro está sendo rejeitado — esse texto será enviado por e-mail para a empresa."
+                    style="resize:vertical"></textarea>
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
-        <form id="rejectCoForm" method="post">
-          <button type="submit" class="nexus-btn nexus-btn-danger-outline">
-            <i class="ti ti-x"></i> Confirmar rejeição
-          </button>
-        </form>
+        <button type="submit" form="rejectCoForm" class="nexus-btn nexus-btn-danger-outline"
+                id="confirmRejectCoBtn" disabled>
+          <i class="ti ti-x"></i> Confirmar rejeição
+        </button>
       </div>
     </div>
   </div>
@@ -172,8 +177,14 @@ document.querySelectorAll('.reject-co-trigger').forEach(function(btn) {
   btn.addEventListener('click', function() {
     document.getElementById('rejectCoName').textContent = this.dataset.name;
     document.getElementById('rejectCoForm').action = '/admin/companies/' + this.dataset.id + '/reject';
+    document.getElementById('rejectCoReason').value = '';
+    document.getElementById('confirmRejectCoBtn').disabled = true;
     new bootstrap.Modal(document.getElementById('rejectCoModal')).show();
   });
+});
+
+document.getElementById('rejectCoReason').addEventListener('input', function() {
+  document.getElementById('confirmRejectCoBtn').disabled = this.value.trim().length === 0;
 });
 </script>
 </body>

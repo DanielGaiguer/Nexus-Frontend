@@ -16,6 +16,11 @@
       <i class="ti ti-arrow-left"></i> Voltar
     </a>
 
+    <script th:inline="javascript">
+      window.PROFILE_TYPE = "professional";
+      window.PROFILE_ID   = /*[[${professional.id}]]*/ null;
+    </script>
+
     <div class="card border-0 p-4 mb-3"
          style="background:linear-gradient(145deg,rgba(9,14,31,0.97),rgba(13,19,41,0.97));
                 border-radius:16px !important">
@@ -273,6 +278,8 @@
           </p>
         </div>
 
+        <div id="reviews-preview-mount" class="mt-3"></div>
+
       </div>
     </div>
 
@@ -285,7 +292,8 @@
      onclick="if(event.target===this)closeMatchModal()">
   <div style="background:rgba(9,14,31,0.98);border:1px solid rgba(107,110,255,0.2);
               border-radius:18px;width:100%;max-width:520px;padding:2rem;
-              position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.6)">
+              position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.6);
+              max-height:calc(100vh - 2rem);overflow-y:auto">
 
     <button onclick="closeMatchModal()"
             style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.06);
