@@ -408,6 +408,50 @@
             </div>
           </div>
 
+          <div class="nexus-card p-4 mt-3" th:with="certs=${profile.credentials != null ? profile.credentials.?[type == 'CERTIFICATE'] : {}}">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="fw-semibold text-white">Certificados</div>
+              <button type="button" class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                      data-bs-toggle="modal" data-bs-target="#certificatesModal">
+                <i class="ti ti-pencil"></i> Editar certificados
+              </button>
+            </div>
+            <div class="d-flex flex-wrap gap-2" th:if="${!#lists.isEmpty(certs)}">
+              <span th:each="c : ${certs}"
+                    th:class="'nexus-credential-badge nexus-credential-' + ${#strings.toLowerCase(c.color)}"
+                    th:text="${c.name}">Certificado</span>
+            </div>
+            <div th:if="${#lists.isEmpty(certs)}" style="color:#475569;font-size:0.875rem">
+              Nenhum certificado cadastrado.
+              <button type="button" data-bs-toggle="modal" data-bs-target="#certificatesModal"
+                      style="background:none;border:none;color:#6b6eff;cursor:pointer;font-size:0.875rem">
+                Adicionar agora →
+              </button>
+            </div>
+          </div>
+
+          <div class="nexus-card p-4 mt-3" th:with="events=${profile.credentials != null ? profile.credentials.?[type == 'EVENT'] : {}}">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="fw-semibold text-white">Eventos</div>
+              <button type="button" class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                      data-bs-toggle="modal" data-bs-target="#eventsModal">
+                <i class="ti ti-pencil"></i> Editar eventos
+              </button>
+            </div>
+            <div class="d-flex flex-wrap gap-2" th:if="${!#lists.isEmpty(events)}">
+              <span th:each="e : ${events}"
+                    th:class="'nexus-credential-badge nexus-credential-' + ${#strings.toLowerCase(e.color)}"
+                    th:text="${e.name}">Evento</span>
+            </div>
+            <div th:if="${#lists.isEmpty(events)}" style="color:#475569;font-size:0.875rem">
+              Nenhum evento cadastrado.
+              <button type="button" data-bs-toggle="modal" data-bs-target="#eventsModal"
+                      style="background:none;border:none;color:#6b6eff;cursor:pointer;font-size:0.875rem">
+                Adicionar agora →
+              </button>
+            </div>
+          </div>
+
           <div class="nexus-card p-4 mt-3" th:if="${profile.hasGitHub}">
             <div style="color:#94a3b8;font-size:0.72rem;text-transform:uppercase;
                         letter-spacing:0.05em;margin-bottom:0.75rem">
@@ -603,6 +647,142 @@
   </div>
 </div>
 
+<div class="modal fade nexus-modal" id="certificatesModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-semibold text-white">Certificados</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div th:with="certs=${profile.credentials != null ? profile.credentials.?[type == 'CERTIFICATE'] : {}}">
+          <div th:if="${!#lists.isEmpty(certs)}" class="d-flex flex-wrap gap-2 mb-3">
+            <span th:each="c : ${certs}" class="d-inline-flex align-items-center gap-1">
+              <span th:class="'nexus-credential-badge nexus-credential-' + ${#strings.toLowerCase(c.color)}"
+                    th:text="${c.name}">Certificado</span>
+              <button type="button" class="nexus-btn nexus-btn-ghost nexus-btn-sm credential-edit-trigger" style="padding:2px 6px"
+                      th:data-id="${c.id}" th:data-type="${c.type}" th:data-name="${c.name}" th:data-color="${c.color}">
+                <i class="ti ti-pencil" style="font-size:0.8rem"></i>
+              </button>
+              <button type="button" class="nexus-btn nexus-btn-danger-outline nexus-btn-sm credential-delete-trigger" style="padding:2px 6px"
+                      th:data-id="${c.id}" th:data-name="${c.name}">
+                <i class="ti ti-trash" style="font-size:0.8rem"></i>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <hr style="border-color:rgba(107,110,255,0.1)">
+
+        <form th:action="@{/pro/credentials}" method="post" id="certForm">
+          <input type="hidden" name="type" value="CERTIFICATE">
+          <input type="hidden" name="color" id="certColorInput" value="NEXUS">
+          <label class="nexus-label">Nome do certificado</label>
+          <input type="text" class="nexus-input mb-3" name="name" id="certNameInput" maxlength="150" required
+                 placeholder="Ex: AWS Certified Cloud Practitioner">
+          <label class="nexus-label mb-2 d-block">Cor do badge</label>
+          <div class="d-flex gap-2 flex-wrap mb-3 credential-swatches" data-target="certColorInput">
+            <span class="nexus-color-swatch" style="background:#6b6eff" data-color="NEXUS" title="Nexus"></span>
+            <span class="nexus-color-swatch" style="background:#475569" data-color="SLATE" title="Slate"></span>
+            <span class="nexus-color-swatch" style="background:#22d3ee" data-color="CIANO" title="Ciano"></span>
+            <span class="nexus-color-swatch" style="background:#a78bfa" data-color="VIOLETA" title="Violeta"></span>
+            <span class="nexus-color-swatch" style="background:#2dd4bf" data-color="TEAL" title="Teal"></span>
+            <span class="nexus-color-swatch" style="background:#fbbf24" data-color="AMBAR" title="Âmbar"></span>
+            <span class="nexus-color-swatch" style="background:#fb7185" data-color="ROSA" title="Rosa"></span>
+            <span class="nexus-color-swatch" style="background:#34d399" data-color="ESMERALDA" title="Esmeralda"></span>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="nexus-btn nexus-btn-ghost" id="certCancelEditBtn" style="display:none">Cancelar edição</button>
+            <button type="submit" class="nexus-btn nexus-btn-primary" id="certSubmitBtn">Adicionar certificado</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade nexus-modal" id="eventsModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-semibold text-white">Eventos</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div th:with="events=${profile.credentials != null ? profile.credentials.?[type == 'EVENT'] : {}}">
+          <div th:if="${!#lists.isEmpty(events)}" class="d-flex flex-wrap gap-2 mb-3">
+            <span th:each="e : ${events}" class="d-inline-flex align-items-center gap-1">
+              <span th:class="'nexus-credential-badge nexus-credential-' + ${#strings.toLowerCase(e.color)}"
+                    th:text="${e.name}">Evento</span>
+              <button type="button" class="nexus-btn nexus-btn-ghost nexus-btn-sm credential-edit-trigger" style="padding:2px 6px"
+                      th:data-id="${e.id}" th:data-type="${e.type}" th:data-name="${e.name}" th:data-color="${e.color}">
+                <i class="ti ti-pencil" style="font-size:0.8rem"></i>
+              </button>
+              <button type="button" class="nexus-btn nexus-btn-danger-outline nexus-btn-sm credential-delete-trigger" style="padding:2px 6px"
+                      th:data-id="${e.id}" th:data-name="${e.name}">
+                <i class="ti ti-trash" style="font-size:0.8rem"></i>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <hr style="border-color:rgba(107,110,255,0.1)">
+
+        <form th:action="@{/pro/credentials}" method="post" id="evtForm">
+          <input type="hidden" name="type" value="EVENT">
+          <input type="hidden" name="color" id="evtColorInput" value="NEXUS">
+          <label class="nexus-label">Nome do evento</label>
+          <input type="text" class="nexus-input mb-3" name="name" id="evtNameInput" maxlength="150" required
+                 placeholder="Ex: Campus Party 2025">
+          <label class="nexus-label mb-2 d-block">Cor do badge</label>
+          <div class="d-flex gap-2 flex-wrap mb-3 credential-swatches" data-target="evtColorInput">
+            <span class="nexus-color-swatch" style="background:#6b6eff" data-color="NEXUS" title="Nexus"></span>
+            <span class="nexus-color-swatch" style="background:#475569" data-color="SLATE" title="Slate"></span>
+            <span class="nexus-color-swatch" style="background:#22d3ee" data-color="CIANO" title="Ciano"></span>
+            <span class="nexus-color-swatch" style="background:#a78bfa" data-color="VIOLETA" title="Violeta"></span>
+            <span class="nexus-color-swatch" style="background:#2dd4bf" data-color="TEAL" title="Teal"></span>
+            <span class="nexus-color-swatch" style="background:#fbbf24" data-color="AMBAR" title="Âmbar"></span>
+            <span class="nexus-color-swatch" style="background:#fb7185" data-color="ROSA" title="Rosa"></span>
+            <span class="nexus-color-swatch" style="background:#34d399" data-color="ESMERALDA" title="Esmeralda"></span>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="nexus-btn nexus-btn-ghost" id="evtCancelEditBtn" style="display:none">Cancelar edição</button>
+            <button type="submit" class="nexus-btn nexus-btn-primary" id="evtSubmitBtn">Adicionar evento</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade nexus-modal" id="deleteCredentialModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom-color:rgba(239,68,68,0.2)">
+        <div class="d-flex align-items-center">
+          <div style="width:4px;height:40px;background:#ef4444;border-radius:2px;margin-right:0.75rem"></div>
+          <h5 class="modal-title fw-semibold text-white mb-0">Remover item</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="color:#94a3b8">
+          Tem certeza que deseja remover <strong class="text-white" id="deleteCredentialName">—</strong>?
+          Esta ação não pode ser desfeita.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="nexus-btn nexus-btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <form id="deleteCredentialForm" method="post">
+          <button type="submit" class="nexus-btn nexus-btn-danger-outline">
+            <i class="ti ti-trash"></i> Remover
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade nexus-modal" id="addLinkedinModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -670,6 +850,79 @@ document.addEventListener('DOMContentLoaded', function() {
     var min  = parseFloat(document.getElementById('editMinSalary').value) || 0;
     var max  = parseFloat(document.getElementById('editMaxSalary').value) || 0;
     return name.length >= 2 && validateCEP(cep) && min <= max;
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  function selectSwatch(group, color) {
+    var target = document.getElementById(group.dataset.target);
+    group.querySelectorAll('.nexus-color-swatch').forEach(function(s) {
+      s.classList.toggle('selected', s.dataset.color === color);
+    });
+    target.value = color;
+  }
+
+  document.querySelectorAll('.credential-swatches').forEach(function(group) {
+    var target = document.getElementById(group.dataset.target);
+    group.querySelectorAll('.nexus-color-swatch').forEach(function(s) {
+      s.addEventListener('click', function() { selectSwatch(group, s.dataset.color); });
+    });
+    selectSwatch(group, target.value || 'NEXUS');
+  });
+
+  function resetCredentialForm(prefix) {
+    var form = document.getElementById(prefix + 'Form');
+    if (!form) return;
+    form.action = '/pro/credentials';
+    form.reset();
+    var group = form.querySelector('.credential-swatches');
+    if (group) selectSwatch(group, 'NEXUS');
+    document.getElementById(prefix + 'SubmitBtn').textContent =
+        prefix === 'evt' ? 'Adicionar evento' : 'Adicionar certificado';
+    document.getElementById(prefix + 'CancelEditBtn').style.display = 'none';
+  }
+
+  document.querySelectorAll('.credential-edit-trigger').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var prefix = this.dataset.type === 'EVENT' ? 'evt' : 'cert';
+      var id = this.dataset.id;
+      var form = document.getElementById(prefix + 'Form');
+      form.action = '/pro/credentials/' + id + '/edit';
+      document.getElementById(prefix + 'NameInput').value = this.dataset.name || '';
+      var group = form.querySelector('.credential-swatches');
+      selectSwatch(group, this.dataset.color || 'NEXUS');
+      document.getElementById(prefix + 'SubmitBtn').textContent = 'Salvar alterações';
+      document.getElementById(prefix + 'CancelEditBtn').style.display = 'inline-flex';
+    });
+  });
+
+  document.querySelectorAll('.credential-delete-trigger').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = this.dataset.id;
+      document.getElementById('deleteCredentialName').textContent = this.dataset.name;
+      document.getElementById('deleteCredentialForm').action = '/pro/credentials/' + id + '/delete';
+      new bootstrap.Modal(document.getElementById('deleteCredentialModal')).show();
+    });
+  });
+
+  ['cert', 'evt'].forEach(function(prefix) {
+    var cancelBtn = document.getElementById(prefix + 'CancelEditBtn');
+    if (cancelBtn) cancelBtn.addEventListener('click', function() { resetCredentialForm(prefix); });
+
+    var form = document.getElementById(prefix + 'Form');
+    if (form) {
+      attachSubmitGuard(form, function() {
+        return form.querySelector('input[name="name"]').value.trim().length >= 2;
+      });
+    }
+  });
+
+  ['certificatesModal', 'eventsModal'].forEach(function(modalId) {
+    var modalEl = document.getElementById(modalId);
+    if (!modalEl) return;
+    modalEl.addEventListener('hidden.bs.modal', function() {
+      resetCredentialForm(modalId === 'eventsModal' ? 'evt' : 'cert');
+    });
   });
 });
 </script>

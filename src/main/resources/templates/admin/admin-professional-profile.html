@@ -335,6 +335,36 @@
             </div>
           </div>
 
+          <div class="nexus-card p-4 mb-3" th:with="certs=${profile.credentials != null ? profile.credentials.?[type == 'CERTIFICATE'] : {}}">
+            <div style="color:#94a3b8;font-size:0.72rem;text-transform:uppercase;
+                        letter-spacing:0.05em;margin-bottom:0.75rem">
+              Certificados
+            </div>
+            <div class="d-flex flex-wrap gap-2" th:if="${!#lists.isEmpty(certs)}">
+              <span th:each="c : ${certs}"
+                    th:class="'nexus-credential-badge nexus-credential-' + ${#strings.toLowerCase(c.color)}"
+                    th:text="${c.name}">Certificado</span>
+            </div>
+            <div th:if="${#lists.isEmpty(certs)}" style="color:#475569;font-size:0.875rem">
+              Nenhum certificado cadastrado.
+            </div>
+          </div>
+
+          <div class="nexus-card p-4 mb-3" th:with="events=${profile.credentials != null ? profile.credentials.?[type == 'EVENT'] : {}}">
+            <div style="color:#94a3b8;font-size:0.72rem;text-transform:uppercase;
+                        letter-spacing:0.05em;margin-bottom:0.75rem">
+              Eventos
+            </div>
+            <div class="d-flex flex-wrap gap-2" th:if="${!#lists.isEmpty(events)}">
+              <span th:each="e : ${events}"
+                    th:class="'nexus-credential-badge nexus-credential-' + ${#strings.toLowerCase(e.color)}"
+                    th:text="${e.name}">Evento</span>
+            </div>
+            <div th:if="${#lists.isEmpty(events)}" style="color:#475569;font-size:0.875rem">
+              Nenhum evento cadastrado.
+            </div>
+          </div>
+
           <div class="nexus-card p-4 mb-3" th:if="${profile.hasGitHub}">
             <div style="color:#94a3b8;font-size:0.72rem;text-transform:uppercase;
                         letter-spacing:0.05em;margin-bottom:0.75rem">

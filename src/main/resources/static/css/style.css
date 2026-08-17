@@ -1534,6 +1534,77 @@ body.nexus-app {
   letter-spacing: 0.05em;
 }
 
+/* Badges de Certificados/Eventos do profissional — paleta fixa de 8 cores,
+   sempre no mesmo recipe (bg baixa opacidade + borda + texto num tom mais claro
+   da mesma cor) pra não brigar com o dark theme do resto do sistema. */
+.nexus-credential-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.3em 0.75em;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+.nexus-credential-nexus {
+  background: rgba(107,110,255,0.10);
+  border-color: rgba(107,110,255,0.25);
+  color: #a5b4fc;
+}
+.nexus-credential-slate {
+  background: rgba(71,85,105,0.18);
+  border-color: rgba(71,85,105,0.4);
+  color: #94a3b8;
+}
+.nexus-credential-ciano {
+  background: rgba(34,211,238,0.10);
+  border-color: rgba(34,211,238,0.25);
+  color: #67e8f9;
+}
+.nexus-credential-violeta {
+  background: rgba(167,139,250,0.10);
+  border-color: rgba(167,139,250,0.25);
+  color: #c4b5fd;
+}
+.nexus-credential-teal {
+  background: rgba(45,212,191,0.10);
+  border-color: rgba(45,212,191,0.25);
+  color: #5eead4;
+}
+.nexus-credential-ambar {
+  background: rgba(251,191,36,0.10);
+  border-color: rgba(251,191,36,0.25);
+  color: #fcd34d;
+}
+.nexus-credential-rosa {
+  background: rgba(251,113,133,0.10);
+  border-color: rgba(251,113,133,0.25);
+  color: #fda4af;
+}
+.nexus-credential-esmeralda {
+  background: rgba(52,211,153,0.10);
+  border-color: rgba(52,211,153,0.25);
+  color: #6ee7b7;
+}
+
+/* Seletor de cor (swatch) usado no modal de adicionar/editar certificado/evento */
+.nexus-color-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.nexus-color-swatch:hover { transform: scale(1.08); }
+.nexus-color-swatch.selected {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px var(--primary, #6b6eff);
+}
+
 .fields-project,
 .fields-job { transition: opacity 0.2s; }
 .fields-hidden { display: none !important; }

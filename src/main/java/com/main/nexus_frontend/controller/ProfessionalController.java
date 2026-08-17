@@ -252,6 +252,75 @@ public class ProfessionalController {
         return "redirect:/pro/profile";
     }
 
+    @PostMapping("/credentials")
+    public String addCredential(
+            @RequestParam String type,
+            @RequestParam String name,
+            @RequestParam String color,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("token");
+        boolean isEvent = "EVENT".equals(type);
+        try {
+            ProfessionalCredentialDTO dto = new ProfessionalCredentialDTO();
+            dto.setType(type);
+            dto.setName(name);
+            dto.setColor(color);
+            professionalService.addCredential(token, dto);
+            redirectAttributes.addFlashAttribute("successMsg",
+                    isEvent ? "Evento adicionado com sucesso!" : "Certificado adicionado com sucesso!");
+        } catch (NexusApiException e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao adicionar: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
+        }
+        return "redirect:/pro/profile";
+    }
+
+    @PostMapping("/credentials/{credentialId}/edit")
+    public String editCredential(
+            @PathVariable Long credentialId,
+            @RequestParam String type,
+            @RequestParam String name,
+            @RequestParam String color,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("token");
+        try {
+            ProfessionalCredentialDTO dto = new ProfessionalCredentialDTO();
+            dto.setType(type);
+            dto.setName(name);
+            dto.setColor(color);
+            professionalService.updateCredential(token, credentialId, dto);
+            redirectAttributes.addFlashAttribute("successMsg", "Atualizado com sucesso!");
+        } catch (NexusApiException e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao atualizar: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
+        }
+        return "redirect:/pro/profile";
+    }
+
+    @PostMapping("/credentials/{credentialId}/delete")
+    public String deleteCredential(
+            @PathVariable Long credentialId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        String token = (String) session.getAttribute("token");
+        try {
+            professionalService.deleteCredential(token, credentialId);
+            redirectAttributes.addFlashAttribute("successMsg", "Removido com sucesso!");
+        } catch (NexusApiException e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao remover: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg",
+                    "Não foi possível conectar ao servidor. Tente novamente em instantes.");
+        }
+        return "redirect:/pro/profile";
+    }
+
     @GetMapping("/portfolio")
     public String portfolio(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");

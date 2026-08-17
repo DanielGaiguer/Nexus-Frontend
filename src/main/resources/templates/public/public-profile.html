@@ -248,6 +248,42 @@
         </div>
 
         <div class="card border-0 p-4 mt-3"
+             th:with="certs=${professional.credentials != null ? professional.credentials.?[type == 'CERTIFICATE'] : {}}"
+             style="background:rgba(13,19,41,0.9);border-radius:14px !important;
+                    border:1px solid rgba(107,110,255,0.1) !important">
+          <div style="color:#94a3b8;font-size:0.72rem;text-transform:uppercase;
+                      letter-spacing:0.05em;margin-bottom:0.75rem">
+            Certificados
+          </div>
+          <div class="d-flex flex-wrap gap-2" th:if="${!#lists.isEmpty(certs)}">
+            <span th:each="c : ${certs}"
+                  th:class="'nexus-credential-badge nexus-credential-' + ${#strings.toLowerCase(c.color)}"
+                  th:text="${c.name}">Certificado</span>
+          </div>
+          <div th:if="${#lists.isEmpty(certs)}" style="color:#475569;font-size:0.875rem">
+            Nenhum certificado cadastrado.
+          </div>
+        </div>
+
+        <div class="card border-0 p-4 mt-3"
+             th:with="events=${professional.credentials != null ? professional.credentials.?[type == 'EVENT'] : {}}"
+             style="background:rgba(13,19,41,0.9);border-radius:14px !important;
+                    border:1px solid rgba(107,110,255,0.1) !important">
+          <div style="color:#94a3b8;font-size:0.72rem;text-transform:uppercase;
+                      letter-spacing:0.05em;margin-bottom:0.75rem">
+            Eventos
+          </div>
+          <div class="d-flex flex-wrap gap-2" th:if="${!#lists.isEmpty(events)}">
+            <span th:each="e : ${events}"
+                  th:class="'nexus-credential-badge nexus-credential-' + ${#strings.toLowerCase(e.color)}"
+                  th:text="${e.name}">Evento</span>
+          </div>
+          <div th:if="${#lists.isEmpty(events)}" style="color:#475569;font-size:0.875rem">
+            Nenhum evento cadastrado.
+          </div>
+        </div>
+
+        <div class="card border-0 p-4 mt-3"
              th:if="${professional.hasGitHub}"
              style="background:rgba(13,19,41,0.9);border-radius:14px !important;
                     border:1px solid rgba(107,110,255,0.1) !important">

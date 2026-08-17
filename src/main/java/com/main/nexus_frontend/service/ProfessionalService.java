@@ -209,6 +209,65 @@ public class ProfessionalService {
                 .toBodilessEntity();
     }
 
+    public List<ProfessionalCredentialDTO> getCredentials(String token) {
+        ProfessionalCredentialDTO[] response = restClient.get()
+                .uri("/professional/credentials")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .body(ProfessionalCredentialDTO[].class);
+        return response != null ? Arrays.asList(response) : Collections.emptyList();
+    }
+
+    public void addCredential(String token, ProfessionalCredentialDTO dto) {
+        restClient.post()
+                .uri("/professional/credentials")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .body(dto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .toBodilessEntity();
+    }
+
+    public void updateCredential(String token, Long credentialId, ProfessionalCredentialDTO dto) {
+        restClient.put()
+                .uri("/professional/credentials/{credentialId}", credentialId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .body(dto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .toBodilessEntity();
+    }
+
+    public void deleteCredential(String token, Long credentialId) {
+        restClient.delete()
+                .uri("/professional/credentials/{credentialId}", credentialId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                    throw NexusApiException.from(res);
+                })
+                .toBodilessEntity();
+    }
+
     public List<MatchDTO> getOpportunities(String token) {
         MatchDTO[] response = restClient.get()
                 .uri("/professional/opportunities")

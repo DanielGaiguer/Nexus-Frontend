@@ -30,6 +30,7 @@ public class ProfessionalProfileDTO {
     private String githubUrl;
     private String githubLogin;
     private boolean hasGitHub;
+    private List<ProfessionalCredentialDTO> credentials;
 
     public ProfessionalProfileDTO() {}
 
@@ -87,4 +88,6 @@ public class ProfessionalProfileDTO {
     public void setGithubLogin(String githubLogin) { this.githubLogin = githubLogin; }
     public boolean isHasGitHub() { return hasGitHub; }
     public void setHasGitHub(boolean hasGitHub) { this.hasGitHub = hasGitHub; }
+    public List<ProfessionalCredentialDTO> getCredentials() { return credentials; }
+    public void setCredentials(List<ProfessionalCredentialDTO> credentials) { this.credentials = credentials; }
 }
