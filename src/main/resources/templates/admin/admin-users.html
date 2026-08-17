@@ -64,12 +64,20 @@
                   th:data-type="${u.type}">
                 <td>
                   <div class="d-flex align-items-center gap-2">
-                    <div class="nexus-avatar-initials nexus-avatar-sm"
-                         th:with="initials=${#strings.substring(u.name,0,1).toUpperCase()},
-                                  h=${u.name.hashCode()},
-                                  hue=${(h%360)<0?(h%360)+360:h%360}"
-                         th:style="'background:hsl('+${hue}+',50%,38%)'"
-                         th:text="${initials}">U</div>
+                    <th:block th:if="${u.profilePhotoUrl != null and !#strings.isEmpty(u.profilePhotoUrl)}">
+                      <img th:src="${u.profilePhotoUrl}"
+                           style="width:32px;height:32px;border-radius:50%;object-fit:cover;
+                                  border:2px solid rgba(107,110,255,0.25)"
+                           alt="Foto">
+                    </th:block>
+                    <th:block th:unless="${u.profilePhotoUrl != null and !#strings.isEmpty(u.profilePhotoUrl)}">
+                      <div class="nexus-avatar-initials nexus-avatar-sm"
+                           th:with="initials=${#strings.substring(u.name,0,1).toUpperCase()},
+                                    h=${u.name.hashCode()},
+                                    hue=${(h%360)<0?(h%360)+360:h%360}"
+                           th:style="'background:hsl('+${hue}+',50%,38%)'"
+                           th:text="${initials}">U</div>
+                    </th:block>
                     <span class="fw-medium text-white" style="font-size:0.875rem"
                           th:text="${u.name}">—</span>
                   </div>

@@ -67,12 +67,21 @@
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(receivedInterests)}">
           <div th:each="m : ${receivedInterests}" class="nexus-match-card">
             <div class="d-flex align-items-start gap-3 flex-wrap mb-3">
-              <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
-                   th:with="n=${m.professional != null ? m.professional.name : 'P'},
-                            h=${n.hashCode()},
-                            hue=${(h%360)<0?(h%360)+360:h%360}"
-                   th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
-                   th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              <th:block th:if="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
+                <img th:src="${m.professional.profilePhotoUrl}"
+                     class="flex-shrink-0"
+                     style="width:48px;height:48px;border-radius:50%;object-fit:cover;
+                            border:2px solid rgba(107,110,255,0.25)"
+                     alt="Foto">
+              </th:block>
+              <th:block th:unless="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
+                <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                     th:with="n=${m.professional != null ? m.professional.name : 'P'},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                     th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              </th:block>
               <div style="flex:0 1 360px;min-width:0;max-width:360px">
                 <div class="fw-semibold text-white"
                      th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
@@ -201,13 +210,22 @@
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(sentInvites)}">
           <div th:each="m : ${sentInvites}" class="nexus-match-card">
             <div class="d-flex align-items-start gap-3 flex-wrap mb-4">
-              <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
-                   th:with="n=${m.professional != null ? m.professional.name : 'P'},
-                            h=${n.hashCode()},
-                            hue=${(h%360)<0?(h%360)+360:h%360}"
-                   th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
-                   th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
-              <div class="flex-fill">
+              <th:block th:if="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
+                <img th:src="${m.professional.profilePhotoUrl}"
+                     class="flex-shrink-0"
+                     style="width:48px;height:48px;border-radius:50%;object-fit:cover;
+                            border:2px solid rgba(107,110,255,0.25)"
+                     alt="Foto">
+              </th:block>
+              <th:block th:unless="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
+                <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                     th:with="n=${m.professional != null ? m.professional.name : 'P'},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                     th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              </th:block>
+              <div style="flex:0 1 360px;min-width:0;max-width:360px">
                 <div class="fw-semibold text-white"
                      th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
                 <span th:if="${m.project?.opportunityType == 'JOB'}"
@@ -232,7 +250,8 @@
                   </div>
                 </div>
               </div>
-              <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
+              <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}"
+                   style="flex-shrink:0;margin-left:auto">
                 <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
                             text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem">Score</div>
                 <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
@@ -331,12 +350,21 @@
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(confirmed)}">
           <div th:each="m : ${confirmed}" class="nexus-match-card confirmed">
             <div class="d-flex align-items-start gap-3 flex-wrap">
-              <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
-                   th:with="n=${m.professional != null ? m.professional.name : 'P'},
-                            h=${n.hashCode()},
-                            hue=${(h%360)<0?(h%360)+360:h%360}"
-                   th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
-                   th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              <th:block th:if="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
+                <img th:src="${m.professional.profilePhotoUrl}"
+                     class="flex-shrink-0"
+                     style="width:48px;height:48px;border-radius:50%;object-fit:cover;
+                            border:2px solid rgba(107,110,255,0.25)"
+                     alt="Foto">
+              </th:block>
+              <th:block th:unless="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
+                <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                     th:with="n=${m.professional != null ? m.professional.name : 'P'},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                     th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              </th:block>
               <div style="flex:0 1 360px;min-width:0;max-width:360px">
                 <div class="fw-semibold text-white"
                      th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
@@ -500,12 +528,21 @@
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(previousProjects)}">
           <div th:each="m : ${previousProjects}" class="nexus-match-card">
             <div class="d-flex align-items-start gap-3 flex-wrap">
-              <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
-                   th:with="n=${m.professional != null ? m.professional.name : 'P'},
-                            h=${n.hashCode()},
-                            hue=${(h%360)<0?(h%360)+360:h%360}"
-                   th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
-                   th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              <th:block th:if="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
+                <img th:src="${m.professional.profilePhotoUrl}"
+                     class="flex-shrink-0"
+                     style="width:48px;height:48px;border-radius:50%;object-fit:cover;
+                            border:2px solid rgba(107,110,255,0.25)"
+                     alt="Foto">
+              </th:block>
+              <th:block th:unless="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
+                <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                     th:with="n=${m.professional != null ? m.professional.name : 'P'},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                     th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              </th:block>
               <div style="flex:0 1 360px;min-width:0;max-width:360px">
                 <div class="fw-semibold text-white"
                      th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>
@@ -636,12 +673,21 @@
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(rejected)}">
           <div th:each="m : ${rejected}" class="nexus-match-card">
             <div class="d-flex align-items-start gap-3 flex-wrap">
-              <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
-                   th:with="n=${m.professional != null ? m.professional.name : 'P'},
-                            h=${n.hashCode()},
-                            hue=${(h%360)<0?(h%360)+360:h%360}"
-                   th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
-                   th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              <th:block th:if="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
+                <img th:src="${m.professional.profilePhotoUrl}"
+                     class="flex-shrink-0"
+                     style="width:48px;height:48px;border-radius:50%;object-fit:cover;
+                            border:2px solid rgba(107,110,255,0.25)"
+                     alt="Foto">
+              </th:block>
+              <th:block th:unless="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
+                <div class="nexus-avatar-initials nexus-avatar-lg flex-shrink-0"
+                     th:with="n=${m.professional != null ? m.professional.name : 'P'},
+                              h=${n.hashCode()},
+                              hue=${(h%360)<0?(h%360)+360:h%360}"
+                     th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.95rem'"
+                     th:text="${#strings.substring(n,0,1).toUpperCase()}">P</div>
+              </th:block>
               <div style="flex:0 1 360px;min-width:0;max-width:360px">
                 <div class="fw-semibold text-white"
                      th:text="${m.professional != null ? m.professional.name : 'Profissional'}">Nome</div>

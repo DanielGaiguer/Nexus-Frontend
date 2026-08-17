@@ -85,14 +85,19 @@
 </div>
 </th:block>
 
-<th:block th:fragment="avatar(name, size)">
+<th:block th:fragment="avatar(name, size, photoUrl)">
 <th:block th:with="
     n=${name != null ? name : 'U'},
     initials=${#strings.substring(n,0,1)},
     hash=${n.hashCode()},
     hue=${(hash % 360) < 0 ? (hash % 360) + 360 : hash % 360},
-    sz=${(size == 'xl') ? 'avatar-xl' : (size == 'sm') ? 'avatar-sm' : 'avatar-md'}">
-    <span th:class="'avatar avatar-rounded ' + ${sz}"
+    sz=${(size == 'xl') ? 'avatar-xl' : (size == 'sm') ? 'avatar-sm' : 'avatar-md'},
+    hasPhoto=${photoUrl != null and !#strings.isEmpty(photoUrl)}">
+    <span th:if="${hasPhoto}"
+          th:class="'avatar avatar-rounded ' + ${sz}"
+          th:style="'background-image: url(' + ${photoUrl} + ')'"></span>
+    <span th:unless="${hasPhoto}"
+          th:class="'avatar avatar-rounded ' + ${sz}"
           th:style="'background:hsl(' + ${hue} + ',55%,45%);color:#fff;font-weight:600;'"
           th:text="${initials}">U</span>
 </th:block>

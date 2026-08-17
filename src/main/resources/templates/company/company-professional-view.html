@@ -29,14 +29,22 @@
         <div class="col-lg-4">
 
           <div class="nexus-card p-4 text-center mb-3">
-            <div class="nexus-avatar-xl mx-auto mb-3"
-                 th:with="n=${professional.name != null ? professional.name : 'P'},
-                          h=${n.hashCode()},
-                          hue=${(h%360)<0?(h%360)+360:h%360}"
-                 th:style="'background:hsl('+${hue}+',50%,40%);width:96px;height:96px;display:flex;align-items:center;justify-content:center'">
-              <span style="font-size:1.75rem;font-weight:700;color:#fff"
-                    th:text="${#strings.substring(n,0,1).toUpperCase()}">P</span>
-            </div>
+            <th:block th:if="${professional.profilePhotoUrl != null and !#strings.isEmpty(professional.profilePhotoUrl)}">
+              <img th:src="${professional.profilePhotoUrl}"
+                   class="nexus-profile-photo-xl mx-auto mb-3"
+                   style="width:96px;height:96px"
+                   alt="Foto de perfil">
+            </th:block>
+            <th:block th:unless="${professional.profilePhotoUrl != null and !#strings.isEmpty(professional.profilePhotoUrl)}">
+              <div class="nexus-avatar-xl mx-auto mb-3"
+                   th:with="n=${professional.name != null ? professional.name : 'P'},
+                            h=${n.hashCode()},
+                            hue=${(h%360)<0?(h%360)+360:h%360}"
+                   th:style="'background:hsl('+${hue}+',50%,40%);width:96px;height:96px;display:flex;align-items:center;justify-content:center'">
+                <span style="font-size:1.75rem;font-weight:700;color:#fff"
+                      th:text="${#strings.substring(n,0,1).toUpperCase()}">P</span>
+              </div>
+            </th:block>
 
             <div class="fw-bold text-white" style="font-size:1.15rem" th:text="${professional.name}">Nome</div>
             <div style="color:#64748b;font-size:0.85rem;margin-top:2px"

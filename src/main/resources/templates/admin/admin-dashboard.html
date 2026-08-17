@@ -242,12 +242,20 @@
                    th:classappend="${!iStat.last} ? 'border-bottom' : ''"
                    style="border-color:rgba(107,110,255,0.08)!important"
                    class="d-flex align-items-center gap-3 p-3">
-                <div class="nexus-avatar-initials nexus-avatar-sm"
-                     th:with="n=${co.companyName},
-                              h=${n.hashCode()},
-                              hue=${(h%360)<0?(h%360)+360:h%360}"
-                     th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.7rem'"
-                     th:text="${#strings.substring(n,0,1).toUpperCase()}">C</div>
+                <th:block th:if="${co.profilePhotoUrl != null and !#strings.isEmpty(co.profilePhotoUrl)}">
+                  <img th:src="${co.profilePhotoUrl}"
+                       style="width:32px;height:32px;border-radius:50%;object-fit:cover;
+                              border:2px solid rgba(107,110,255,0.25)"
+                       alt="Logo">
+                </th:block>
+                <th:block th:unless="${co.profilePhotoUrl != null and !#strings.isEmpty(co.profilePhotoUrl)}">
+                  <div class="nexus-avatar-initials nexus-avatar-sm"
+                       th:with="n=${co.companyName},
+                                h=${n.hashCode()},
+                                hue=${(h%360)<0?(h%360)+360:h%360}"
+                       th:style="'background:hsl('+${hue}+',50%,38%);font-size:0.7rem'"
+                       th:text="${#strings.substring(n,0,1).toUpperCase()}">C</div>
+                </th:block>
                 <div class="flex-fill overflow-hidden">
                   <div class="fw-medium text-white text-truncate" style="font-size:0.875rem"
                        th:text="${co.companyName}">Empresa</div>

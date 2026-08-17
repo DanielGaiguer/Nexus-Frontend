@@ -271,18 +271,18 @@
                 <th:block th:with="s=${c.scoreBreakdown != null ? c.scoreBreakdown.finalScore : 0},
                                    tier=${s >= 85 ? 'high' : (s >= 70 ? 'medium' : 'low')},
                                    pct=${s > 100 ? 100 : (s < 0 ? 0 : s)}">
-                  <div class="nexus-score-ring mx-auto" style="width:74px;height:74px">
-                    <svg width="74" height="74" viewBox="0 0 74 74">
-                      <circle cx="37" cy="37" r="31" class="nexus-score-ring-bg" stroke-width="6"/>
-                      <circle cx="37" cy="37" r="31"
+                  <div class="nexus-score-ring mx-auto" style="width:81px;height:81px">
+                    <svg width="81" height="81" viewBox="0 0 81 81">
+                      <circle cx="40.5" cy="40.5" r="34.5" class="nexus-score-ring-bg" stroke-width="6"/>
+                      <circle cx="40.5" cy="40.5" r="34.5"
                               th:class="'nexus-score-ring-fill ' + ${tier}"
                               stroke-width="6"
-                              stroke-dasharray="194.8"
-                              th:stroke-dashoffset="${194.8 - (pct/100.0)*194.8}"/>
+                              stroke-dasharray="216.77"
+                              th:stroke-dashoffset="${216.77 - (pct/100.0)*216.77}"/>
                     </svg>
                     <div class="nexus-score-ring-label">
                       <span class="nexus-score-ring-pct" style="font-size:1rem"
-                            th:text="${#numbers.formatDecimal(s,1,1)+'%'}">0%</span>
+                            th:text="${#numbers.formatDecimal(pct,1,1)+'%'}">0%</span>
                     </div>
                   </div>
                 </th:block>

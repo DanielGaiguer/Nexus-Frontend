@@ -6,6 +6,7 @@ public class UserSummaryDTO {
     private String email;
     private String type;
     private Boolean active;
+    private String profilePhotoUrl;
 
     public UserSummaryDTO() {}
 
@@ -19,4 +20,6 @@ public class UserSummaryDTO {
     public void setType(String type) { this.type = type; }
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
+    public String getProfilePhotoUrl() { return profilePhotoUrl; }
+    public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
 }
