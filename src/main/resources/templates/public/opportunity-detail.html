@@ -72,13 +72,20 @@
                       </div>
 
                       <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
-                          <form th:if="${session.userRole == 'PROFESSIONAL'}"
+                          <form th:if="${session.userRole == 'PROFESSIONAL'
+                                        and (opportunityScore == null or opportunityScore.status != 'PROFESSIONAL_INTERESTED')}"
                                 th:action="@{/pro/opportunities/{id}/interest(id=${project.id})}"
                                 method="post">
                               <button type="submit" class="nexus-btn nexus-btn-primary">
                                   <i class="ti ti-send"></i> Demonstrar interesse
                               </button>
                           </form>
+                          <span th:if="${session.userRole == 'PROFESSIONAL'
+                                        and opportunityScore != null and opportunityScore.status == 'PROFESSIONAL_INTERESTED'}"
+                                class="nexus-btn nexus-btn-ghost"
+                                style="opacity:0.6;pointer-events:none">
+                              <i class="ti ti-circle-check"></i> Interesse demonstrado
+                          </span>
 
                           <div class="text-center mt-4" th:if="${opportunityScore != null}"
                                th:with="s=${opportunityScore.getScoreAsInt()},

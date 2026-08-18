@@ -96,17 +96,6 @@
                   <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
                 </span>
                 <div class="fw-semibold" style="color:#a5b4fc;font-size:0.95rem" th:text="${m.project.title}">Projeto</div>
-                <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}"
-                     class="mt-2">
-                  <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
-                              letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
-                  <div class="d-flex flex-wrap gap-1">
-                    <span th:each="sk : ${m.professional.skills}"
-                          class="nexus-chip nexus-chip-tech"
-                          style="font-size:0.68rem;padding:0.15em 0.5em"
-                          th:text="${sk}">Skill</span>
-                  </div>
-                </div>
               </div>
               <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}"
                    style="flex-shrink:0;margin-left:auto">
@@ -124,6 +113,31 @@
                   <div class="nexus-score-ring-label">
                     <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-4 mb-3" style="margin-top:-45px">
+              <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}"
+                   style="flex:1 1 200px;min-width:180px">
+                <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                            letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span th:each="sk : ${m.professional.skills}"
+                        class="nexus-chip nexus-chip-tech"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk}">Skill</span>
+                </div>
+              </div>
+              <div th:if="${m.project?.requiredSkills != null and !#lists.isEmpty(m.project.requiredSkills)}"
+                   style="flex:1 1 200px;min-width:180px">
+                <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                            letter-spacing:0.05em;margin-bottom:0.35rem">Skills da oportunidade</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span th:each="sk : ${T(com.main.nexus_frontend.util.SkillSort).byMatch(m.project.requiredSkills, m.professional?.skills)}"
+                        th:class="${m.professional?.skills != null and m.professional.skills.contains(sk.name)} ? 'nexus-chip nexus-chip-tech' : 'nexus-chip nexus-chip-tech-mismatch'"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk.name}">Skill</span>
                 </div>
               </div>
             </div>
@@ -170,24 +184,24 @@
             <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
               <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
                  target="_blank"
-                 class="nexus-btn nexus-btn-ghost"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                  style="width:190px;justify-content:center">
                 <i class="ti ti-briefcase"></i> Ver oportunidade
               </a>
               <a th:href="@{/public/professional/{id}(id=${m.professional.id})}"
-                 class="nexus-btn nexus-btn-ghost"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                  style="width:190px;justify-content:center">
                 <i class="ti ti-user"></i> Ver profissional
               </a>
               <button type="button"
-                      class="nexus-btn nexus-btn-danger-outline company-reject-trigger"
+                      class="nexus-btn nexus-btn-danger-outline company-reject-trigger nexus-btn-sm"
                       style="width:190px;justify-content:center"
                       th:data-id="${m.id}">
                 <i class="ti ti-x"></i> Recusar
               </button>
               <form th:action="@{/company/matches/{id}/accept(id=${m.id})}" method="post"
                     style="width:190px">
-                <button type="submit" class="nexus-btn nexus-btn-success w-100" style="justify-content:center">
+                <button type="submit" class="nexus-btn nexus-btn-success nexus-btn-sm w-100" style="justify-content:center">
                   <i class="ti ti-check"></i> Aceitar
                 </button>
               </form>
@@ -239,16 +253,6 @@
                   <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
                 </span>
                 <div class="fw-semibold" style="color:#a5b4fc;font-size:0.95rem" th:text="${m.project.title}">Projeto</div>
-                <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}" class="mt-2">
-                  <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
-                              letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
-                  <div class="d-flex flex-wrap gap-1">
-                    <span th:each="sk : ${m.professional.skills}"
-                          class="nexus-chip nexus-chip-tech"
-                          style="font-size:0.68rem;padding:0.15em 0.5em"
-                          th:text="${sk}">Skill</span>
-                  </div>
-                </div>
               </div>
               <div th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}"
                    style="flex-shrink:0;margin-left:auto">
@@ -266,6 +270,31 @@
                   <div class="nexus-score-ring-label">
                     <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-4 mb-3" style="margin-top:-45px">
+              <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}"
+                   style="flex:1 1 200px;min-width:180px">
+                <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                            letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span th:each="sk : ${m.professional.skills}"
+                        class="nexus-chip nexus-chip-tech"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk}">Skill</span>
+                </div>
+              </div>
+              <div th:if="${m.project?.requiredSkills != null and !#lists.isEmpty(m.project.requiredSkills)}"
+                   style="flex:1 1 200px;min-width:180px">
+                <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                            letter-spacing:0.05em;margin-bottom:0.35rem">Skills da oportunidade</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span th:each="sk : ${T(com.main.nexus_frontend.util.SkillSort).byMatch(m.project.requiredSkills, m.professional?.skills)}"
+                        th:class="${m.professional?.skills != null and m.professional.skills.contains(sk.name)} ? 'nexus-chip nexus-chip-tech' : 'nexus-chip nexus-chip-tech-mismatch'"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk.name}">Skill</span>
                 </div>
               </div>
             </div>
@@ -315,17 +344,17 @@
               </span>
               <div class="d-flex justify-content-end gap-2 flex-wrap">
                 <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
-                   class="nexus-btn nexus-btn-ghost"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                    style="width:190px;justify-content:center">
                   <i class="ti ti-briefcase"></i> Ver oportunidade
                 </a>
                 <a th:href="@{/public/professional/{id}(id=${m.professional.id})}"
-                   class="nexus-btn nexus-btn-ghost"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                    style="width:190px;justify-content:center">
                   <i class="ti ti-user"></i> Ver perfil completo
                 </a>
                 <button type="button"
-                        class="nexus-btn nexus-btn-danger-outline cancel-match-trigger"
+                        class="nexus-btn nexus-btn-danger-outline cancel-match-trigger nexus-btn-sm"
                         style="width:190px;justify-content:center"
                         th:data-id="${m.id}">
                   <i class="ti ti-x"></i> Cancelar Match
@@ -398,17 +427,6 @@
                     ⚠️ Este match expira em <span th:text="${daysRemaining}">15</span> dias
                   </div>
                 </div>
-
-                <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}" class="mt-2">
-                  <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
-                              letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
-                  <div class="d-flex flex-wrap gap-1">
-                    <span th:each="sk : ${m.professional.skills}"
-                          class="nexus-chip nexus-chip-tech"
-                          style="font-size:0.68rem;padding:0.15em 0.5em"
-                          th:text="${sk}">Skill</span>
-                  </div>
-                </div>
               </div>
               <div style="flex-shrink:0;margin-left:auto" th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
                 <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
@@ -425,6 +443,31 @@
                   <div class="nexus-score-ring-label">
                     <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-4 mb-3">
+              <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}"
+                   style="flex:1 1 200px;min-width:180px">
+                <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                            letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span th:each="sk : ${m.professional.skills}"
+                        class="nexus-chip nexus-chip-tech"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk}">Skill</span>
+                </div>
+              </div>
+              <div th:if="${m.project?.requiredSkills != null and !#lists.isEmpty(m.project.requiredSkills)}"
+                   style="flex:1 1 200px;min-width:180px">
+                <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                            letter-spacing:0.05em;margin-bottom:0.35rem">Skills da oportunidade</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span th:each="sk : ${T(com.main.nexus_frontend.util.SkillSort).byMatch(m.project.requiredSkills, m.professional?.skills)}"
+                        th:class="${m.professional?.skills != null and m.professional.skills.contains(sk.name)} ? 'nexus-chip nexus-chip-tech' : 'nexus-chip nexus-chip-tech-mismatch'"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk.name}">Skill</span>
                 </div>
               </div>
             </div>
@@ -470,41 +513,41 @@
 
             <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
               <button type="button"
-                      class="nexus-btn nexus-btn-primary contact-trigger"
+                      class="nexus-btn nexus-btn-primary contact-trigger nexus-btn-sm"
                       style="width:190px;justify-content:center"
                       th:data-id="${m.id}">
                 <i class="ti ti-address-book"></i> Entrar em contato
               </button>
               <a th:href="@{/company/professional/{id}(id=${m.professional.id})}"
-                 class="nexus-btn nexus-btn-ghost"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                  style="width:190px;justify-content:center">
                 <i class="ti ti-user"></i> Ver perfil completo
               </a>
               <button type="button"
-                      class="nexus-btn nexus-btn-ghost history-trigger"
+                      class="nexus-btn nexus-btn-ghost history-trigger nexus-btn-sm"
                       style="width:190px;justify-content:center"
                       th:data-id="${m.id}">
                 <i class="ti ti-history"></i> Ver histórico
               </button>
               <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
-                 class="nexus-btn nexus-btn-ghost"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                  style="width:190px;justify-content:center">
                 <i class="ti ti-briefcase"></i> Ver oportunidade
               </a>
               <a th:unless="${reviewedMatchIds.contains(m.id)}"
                  th:href="@{/company/matches/{id}/review(id=${m.id})}"
-                 class="nexus-btn nexus-btn-ghost"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                  style="width:190px;justify-content:center">
                 <i class="ti ti-star"></i> Avaliar
               </a>
               <span th:if="${reviewedMatchIds.contains(m.id)}"
-                    class="nexus-btn nexus-btn-ghost"
+                    class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                     style="width:190px;justify-content:center;opacity:0.6;pointer-events:none">
                 <i class="ti ti-circle-check"></i> Avaliado
               </span>
               <button type="button"
                       th:if="${m.active == null or m.active}"
-                      class="nexus-btn nexus-btn-danger-outline cancel-match-trigger"
+                      class="nexus-btn nexus-btn-danger-outline cancel-match-trigger nexus-btn-sm"
                       style="width:190px;justify-content:center"
                       th:data-id="${m.id}">
                 <i class="ti ti-x"></i> Cancelar Match
@@ -562,16 +605,6 @@
                             font-weight:600;display:inline-block;margin:0.5rem 0">
                   Match encerrado
                 </div>
-                <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}" class="mt-2">
-                  <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
-                              letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
-                  <div class="d-flex flex-wrap gap-1">
-                    <span th:each="sk : ${m.professional.skills}"
-                          class="nexus-chip nexus-chip-tech"
-                          style="font-size:0.68rem;padding:0.15em 0.5em"
-                          th:text="${sk}">Skill</span>
-                  </div>
-                </div>
               </div>
               <div style="flex-shrink:0;margin-left:auto" th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
                 <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
@@ -588,6 +621,31 @@
                   <div class="nexus-score-ring-label">
                     <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-4 mb-3">
+              <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}"
+                   style="flex:1 1 200px;min-width:180px">
+                <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                            letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span th:each="sk : ${m.professional.skills}"
+                        class="nexus-chip nexus-chip-tech"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk}">Skill</span>
+                </div>
+              </div>
+              <div th:if="${m.project?.requiredSkills != null and !#lists.isEmpty(m.project.requiredSkills)}"
+                   style="flex:1 1 200px;min-width:180px">
+                <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                            letter-spacing:0.05em;margin-bottom:0.35rem">Skills da oportunidade</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span th:each="sk : ${T(com.main.nexus_frontend.util.SkillSort).byMatch(m.project.requiredSkills, m.professional?.skills)}"
+                        th:class="${m.professional?.skills != null and m.professional.skills.contains(sk.name)} ? 'nexus-chip nexus-chip-tech' : 'nexus-chip nexus-chip-tech-mismatch'"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk.name}">Skill</span>
                 </div>
               </div>
             </div>
@@ -633,24 +691,29 @@
 
             <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
               <button type="button"
-                      class="nexus-btn nexus-btn-ghost history-trigger"
+                      class="nexus-btn nexus-btn-ghost history-trigger nexus-btn-sm"
                       style="width:190px;justify-content:center"
                       th:data-id="${m.id}">
                 <i class="ti ti-history"></i> Ver histórico
               </button>
+              <a th:href="@{/company/professional/{id}(id=${m.professional.id})}"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-user"></i> Ver perfil completo
+              </a>
               <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
-                 class="nexus-btn nexus-btn-ghost"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                  style="width:190px;justify-content:center">
                 <i class="ti ti-briefcase"></i> Ver oportunidade
               </a>
               <a th:unless="${reviewedMatchIds.contains(m.id)}"
                  th:href="@{/company/matches/{id}/review(id=${m.id})}"
-                 class="nexus-btn nexus-btn-ghost"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                  style="width:190px;justify-content:center">
                 <i class="ti ti-star"></i> Avaliar
               </a>
               <span th:if="${reviewedMatchIds.contains(m.id)}"
-                    class="nexus-btn nexus-btn-ghost"
+                    class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                     style="width:190px;justify-content:center;opacity:0.6;pointer-events:none">
                 <i class="ti ti-circle-check"></i> Avaliado
               </span>
@@ -672,7 +735,7 @@
 
         <div class="d-flex flex-column gap-3" th:unless="${#lists.isEmpty(rejected)}">
           <div th:each="m : ${rejected}" class="nexus-match-card">
-            <div class="d-flex align-items-start gap-3 flex-wrap">
+            <div class="d-flex align-items-start gap-3 flex-wrap mb-4">
               <th:block th:if="${m.professional != null and m.professional.profilePhotoUrl != null and !#strings.isEmpty(m.professional.profilePhotoUrl)}">
                 <img th:src="${m.professional.profilePhotoUrl}"
                      class="flex-shrink-0"
@@ -702,16 +765,35 @@
                   <i class="ti ti-briefcase" style="font-size:0.65rem;margin-right:2px"></i>Projeto
                 </span>
                 <div class="fw-semibold" style="color:#a5b4fc;font-size:0.95rem" th:text="${m.project.title}">Projeto</div>
-                <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}" class="mt-2 mb-2">
-                  <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
-                              letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
-                  <div class="d-flex flex-wrap gap-1">
-                    <span th:each="sk : ${m.professional.skills}"
-                          class="nexus-chip nexus-chip-tech"
-                          style="font-size:0.68rem;padding:0.15em 0.5em"
-                          th:text="${sk}">Skill</span>
-                  </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-4 mb-3">
+              <div th:if="${m.professional?.skills != null and !#lists.isEmpty(m.professional.skills)}"
+                   style="flex:1 1 200px;min-width:180px">
+                <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                            letter-spacing:0.05em;margin-bottom:0.35rem">Skills do profissional</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span th:each="sk : ${m.professional.skills}"
+                        class="nexus-chip nexus-chip-tech"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk}">Skill</span>
                 </div>
+              </div>
+              <div th:if="${m.project?.requiredSkills != null and !#lists.isEmpty(m.project.requiredSkills)}"
+                   style="flex:1 1 200px;min-width:180px">
+                <div style="color:#64748b;font-size:0.72rem;text-transform:uppercase;
+                            letter-spacing:0.05em;margin-bottom:0.35rem">Skills da oportunidade</div>
+                <div class="d-flex flex-wrap gap-1">
+                  <span th:each="sk : ${T(com.main.nexus_frontend.util.SkillSort).byMatch(m.project.requiredSkills, m.professional?.skills)}"
+                        th:class="${m.professional?.skills != null and m.professional.skills.contains(sk.name)} ? 'nexus-chip nexus-chip-tech' : 'nexus-chip nexus-chip-tech-mismatch'"
+                        style="font-size:0.68rem;padding:0.15em 0.5em"
+                        th:text="${sk.name}">Skill</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
                 <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);
                             border-radius:8px;padding:0.4rem 0.7rem;color:#ef4444;font-size:0.78rem;
                             font-weight:600;display:inline-block;margin-bottom:0.5rem"
@@ -763,24 +845,6 @@
                   <div style="color:#94a3b8;font-size:0.82rem;white-space:pre-wrap"
                        th:text="${m.rejectionDescription}">—</div>
                 </div>
-              </div>
-              <div style="flex-shrink:0;margin-left:auto" th:with="s=${m.getScoreAsInt()},c=${s>=85?'high':(s>=70?'medium':'low')}">
-                <div style="width:110px;text-align:center;color:#64748b;font-size:0.68rem;font-weight:700;
-                            text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem">Score</div>
-                <div style="position:relative;width:110px;height:110px;flex-shrink:0;margin-right:25px">
-                  <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
-                    <circle cx="55" cy="55" r="46" class="nexus-score-ring-bg" stroke-width="5"/>
-                    <circle cx="55" cy="55" r="46"
-                            th:class="'nexus-score-ring-fill ' + ${c}"
-                            stroke-width="5"
-                            stroke-dasharray="289.03"
-                            th:stroke-dashoffset="${289.03 - (s/100.0)*289.03}"/>
-                  </svg>
-                  <div class="nexus-score-ring-label">
-                    <span class="nexus-score-ring-pct" style="font-size:24px" th:text="${s}+'%'">0%</span>
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div class="row g-3 mb-4" style="font-size:0.78rem" th:if="${m.scoreBreakdown != null}">
@@ -824,24 +888,29 @@
 
             <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
               <button type="button"
-                      class="nexus-btn nexus-btn-ghost history-trigger"
+                      class="nexus-btn nexus-btn-ghost history-trigger nexus-btn-sm"
                       style="width:190px;justify-content:center"
                       th:data-id="${m.id}">
                 <i class="ti ti-history"></i> Ver histórico
               </button>
+              <a th:href="@{/company/professional/{id}(id=${m.professional.id})}"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
+                 style="width:190px;justify-content:center">
+                <i class="ti ti-user"></i> Ver perfil completo
+              </a>
               <a th:href="@{/public/opportunity/{id}(id=${m.project.id})}"
-                 class="nexus-btn nexus-btn-ghost"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                  style="width:190px;justify-content:center">
                 <i class="ti ti-briefcase"></i> Ver oportunidade
               </a>
               <a th:unless="${reviewedMatchIds.contains(m.id)}"
                  th:href="@{/company/matches/{id}/review(id=${m.id})}"
-                 class="nexus-btn nexus-btn-ghost"
+                 class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                  style="width:190px;justify-content:center">
                 <i class="ti ti-star"></i> Avaliar
               </a>
               <span th:if="${reviewedMatchIds.contains(m.id)}"
-                    class="nexus-btn nexus-btn-ghost"
+                    class="nexus-btn nexus-btn-ghost nexus-btn-sm"
                     style="width:190px;justify-content:center;opacity:0.6;pointer-events:none">
                 <i class="ti ti-circle-check"></i> Avaliado
               </span>
@@ -1014,6 +1083,9 @@
         <a id="contactProfileLink" href="#" class="nexus-btn nexus-btn-primary">
           <i class="ti ti-user"></i> Ver perfil
         </a>
+        <a id="contactChatLink" href="#" class="nexus-btn nexus-btn-primary">
+          <i class="ti ti-message-circle"></i> Enviar mensagem
+        </a>
       </div>
     </div>
   </div>
@@ -1157,6 +1229,7 @@ document.querySelectorAll('.contact-trigger').forEach(function(btn) {
 
         document.getElementById('contactName').textContent = data.name || '—';
         document.getElementById('contactProfileLink').href = data.profileUrl || '#';
+        document.getElementById('contactChatLink').href = '/chat/' + matchId;
 
         var avatarWrap = document.getElementById('contactAvatarWrap');
         if (data.photoUrl) {

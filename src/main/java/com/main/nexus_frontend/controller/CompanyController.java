@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,6 +24,14 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/company")
 public class CompanyController {
+
+    // Mais recentes primeiro — usado nas listagens de projetos e nas abas de matches
+    // (recebidos, enviados, confirmados, recusados, histórico).
+    private static final Comparator<MatchDTO> BY_CREATED_AT_DESC =
+            Comparator.comparing(MatchDTO::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed();
+
+    private static final Comparator<ProjectDTO> PROJECT_BY_CREATED_AT_DESC =
+            Comparator.comparing(ProjectDTO::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed();
 
     @Autowired
     private CompanyService companyService;
@@ -152,6 +161,7 @@ public class CompanyController {
     public String projects(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         List<ProjectDTO> projects = projectService.getProjects(token);
+        projects.sort(PROJECT_BY_CREATED_AT_DESC);
         List<SkillDTO> allSkills = companyService.getSkills(token);
         model.addAttribute("projects", projects);
         model.addAttribute("allSkills", allSkills);
@@ -524,6 +534,11 @@ public class CompanyController {
         List<MatchDTO> confirmed = matchService.getConfirmedCompanyMatches(token);
         List<MatchDTO> previousProjects = matchService.getPreviousProjects(token);
         List<MatchDTO> rejected = matchService.getRejectedCompanyMatches(token);
+        receivedInterests.sort(BY_CREATED_AT_DESC);
+        sentInvites.sort(BY_CREATED_AT_DESC);
+        confirmed.sort(BY_CREATED_AT_DESC);
+        previousProjects.sort(BY_CREATED_AT_DESC);
+        rejected.sort(BY_CREATED_AT_DESC);
         model.addAttribute("receivedInterests", receivedInterests);
         model.addAttribute("sentInvites", sentInvites);
         model.addAttribute("confirmed", confirmed);
@@ -653,12 +668,28 @@ public class CompanyController {
             reviewService.submit(token, matchId, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Avaliação enviada com sucesso!");
         } catch (NexusApiException e) {
-            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar avaliação: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar avaliação: " + reviewErrorMessage(e));
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg",
                     "Não foi possível conectar ao servidor. Tente novamente em instantes.");
         }
         return "redirect:/company/matches";
+    }
+
+    private static String reviewErrorMessage(NexusApiException e) {
+        String reason = e.getRawReason();
+        if (reason == null) return e.getMessage();
+        return switch (reason) {
+            case "Please answer the match status check before reviewing." ->
+                    "Responda antes se houve contato com o profissional nesse match, na tela de matches.";
+            case "Reviews are not available when there was no contact." ->
+                    "Avaliação indisponível: esse match foi marcado como sem contato.";
+            case "Reviews are only allowed after a confirmed or rejected match." ->
+                    "Só é possível avaliar depois que o match for confirmado ou recusado.";
+            case "A review from this author type already exists for this match." ->
+                    "Você já avaliou esse match.";
+            default -> e.getMessage();
+        };
     }
 
     @GetMapping("/analytics")

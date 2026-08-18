@@ -321,7 +321,8 @@
               <div class="d-flex flex-wrap gap-2 mb-3"
                    th:if="${opp.project != null and opp.project.requiredSkills != null and !#lists.isEmpty(opp.project.requiredSkills)}">
                 <span th:each="sk : ${opp.project.requiredSkills}"
-                      class="nexus-chip nexus-chip-tech" th:text="${sk.name}">Skill</span>
+                      th:class="${mySkills != null and mySkills.contains(sk.name)} ? 'nexus-chip nexus-chip-tech' : 'nexus-chip nexus-chip-tech-mismatch'"
+                      th:text="${sk.name}">Skill</span>
               </div>
 
               <div class="d-flex flex-wrap gap-2 mb-3"
@@ -353,12 +354,28 @@
                         th:style="${s>=85?'color:#22c55e':(s>=70?'color:#f59e0b':'color:#ef4444')}">Alto</span>
                 </div>
               </div>
-              <a th:if="${opp.project != null and opp.project.companyId != null}"
-                 th:href="@{/pro/company/{id}(id=${opp.project.companyId})}"
-                 onclick="event.stopPropagation()"
-                 class="nexus-btn nexus-btn-ghost nexus-btn-sm mt-auto mb-1">
-                <i class="ti ti-building"></i> Ver empresa
-              </a>
+              <div class="d-flex flex-column align-items-stretch gap-2 mt-auto mb-1">
+                <a th:if="${opp.project != null and opp.project.companyId != null}"
+                   th:href="@{/pro/company/{id}(id=${opp.project.companyId})}"
+                   onclick="event.stopPropagation()"
+                   class="nexus-btn nexus-btn-ghost nexus-btn-sm">
+                  <i class="ti ti-building"></i> Ver empresa
+                </a>
+                <form th:if="${opp.project != null and opp.status != 'PROFESSIONAL_INTERESTED'}"
+                      th:action="@{/pro/opportunities/{id}/interest(id=${opp.project.id})}"
+                      method="post"
+                      onclick="event.stopPropagation()">
+                  <input type="hidden" name="redirectTo" value="list">
+                  <button type="submit" class="nexus-btn nexus-btn-primary nexus-btn-sm w-100">
+                    <i class="ti ti-send"></i> Demonstrar interesse
+                  </button>
+                </form>
+                <span th:if="${opp.status == 'PROFESSIONAL_INTERESTED'}"
+                      class="nexus-btn nexus-btn-ghost nexus-btn-sm w-100"
+                      style="opacity:0.6;pointer-events:none">
+                  <i class="ti ti-circle-check"></i> Interesse demonstrado
+                </span>
+              </div>
             </div>
           </div>
 

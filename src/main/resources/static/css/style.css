@@ -772,6 +772,14 @@ body.nexus-app {
   color: #67e8f9;
 }
 
+/* Espelha .nexus-chip-tech (mesma saturação/luminosidade), mas em vermelho — skill que a
+   vaga pede e o profissional não tem (ou, do lado da vaga, que não bate com o perfil dele). */
+.nexus-chip-tech-mismatch {
+  border-color: rgba(252,165,165,0.25);
+  background: rgba(252,165,165,0.07);
+  color: #fca5a5;
+}
+
 .nexus-breakdown-bar {
   height: 4px;
   border-radius: 4px;
@@ -892,7 +900,7 @@ body.nexus-app {
   color: #e2e8f0;
 }
 
-.nexus-btn-sm { padding: 0.35rem 0.85rem; font-size: 0.8rem; border-radius: 7px; }
+.nexus-btn-sm { padding: calc(0.35rem + 3px) 0.85rem; font-size: 0.8rem; border-radius: 7px; }
 
 .nexus-input {
   background: rgba(255,255,255,0.04);

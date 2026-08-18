@@ -16,12 +16,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/pro")
 public class ProfessionalController {
+
+    // Mais recentes primeiro — mesmo critério usado nas abas de matches do lado da empresa.
+    private static final Comparator<MatchDTO> BY_CREATED_AT_DESC =
+            Comparator.comparing(MatchDTO::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed();
 
     @Autowired
     private ProfessionalService professionalService;
@@ -401,9 +406,22 @@ public class ProfessionalController {
         return "redirect:/pro/portfolio";
     }
 
+    // Skills do próprio profissional logado — usado só pra colorir os chips de "Skills
+    // exigidas" nas telas de oportunidades/matches (azul quando ele já tem a skill, vermelho
+    // claro quando não tem). Nunca quebra a página se o perfil não puder ser carregado.
+    private List<String> getMySkillNames(String token) {
+        try {
+            List<String> skills = professionalService.getProfile(token).getSkills();
+            return skills != null ? skills : List.of();
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
     @GetMapping("/matches")
     public String matches(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
+        model.addAttribute("mySkills", getMySkillNames(token));
         List<MatchDTO> allMatches = professionalService.getMatches(token);
         List<MatchDTO> invites = professionalService.getPendingInvites(token);
         List<MatchDTO> sent = professionalService.getSentInterests(token);
@@ -414,6 +432,12 @@ public class ProfessionalController {
         List<MatchDTO> rejected = allMatches.stream()
                 .filter(m -> "REJECTED".equals(m.getStatus()))
                 .collect(Collectors.toList());
+
+        invites.sort(BY_CREATED_AT_DESC);
+        sent.sort(BY_CREATED_AT_DESC);
+        confirmed.sort(BY_CREATED_AT_DESC);
+        previousProjects.sort(BY_CREATED_AT_DESC);
+        rejected.sort(BY_CREATED_AT_DESC);
 
         model.addAttribute("invites", invites);
         model.addAttribute("sent", sent);
@@ -564,7 +588,7 @@ public class ProfessionalController {
             reviewService.submit(token, matchId, dto);
             redirectAttributes.addFlashAttribute("successMsg", "Avaliação enviada com sucesso!");
         } catch (NexusApiException e) {
-            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar avaliação: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar avaliação: " + reviewErrorMessage(e));
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg",
                     "Não foi possível conectar ao servidor. Tente novamente em instantes.");
@@ -572,18 +596,49 @@ public class ProfessionalController {
         return "redirect:/pro/matches";
     }
 
+    private static String reviewErrorMessage(NexusApiException e) {
+        String reason = e.getRawReason();
+        if (reason == null) return e.getMessage();
+        return switch (reason) {
+            case "Please answer the match status check before reviewing." ->
+                    "Responda antes se houve contato com a empresa nesse match, na tela de matches.";
+            case "Reviews are not available when there was no contact." ->
+                    "Avaliação indisponível: esse match foi marcado como sem contato.";
+            case "Reviews are only allowed after a confirmed or rejected match." ->
+                    "Só é possível avaliar depois que o match for confirmado ou recusado.";
+            case "A review from this author type already exists for this match." ->
+                    "Você já avaliou esse match.";
+            default -> e.getMessage();
+        };
+    }
+
     @GetMapping("/opportunities")
     public String opportunities(HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
-        List<MatchDTO> opportunities = professionalService.getOpportunities(token);
+
+        // Recém-demonstrado interesse (redirect da própria página): flash attribute setado
+        // em sendInterest, disponível aqui via merge automático do FlashMap no Model.
+        Long justAppliedProjectId = (Long) model.asMap().get("justAppliedProjectId");
+
+        // A vaga só continua na lista enquanto ainda está pendente (WAITING) — depois que o
+        // interesse é enviado ela some, exceto nesta primeira renderização pós-redirect, pra
+        // dar tempo do usuário ver o badge "Interesse demonstrado" antes de sumir de vez.
+        List<MatchDTO> opportunities = professionalService.getOpportunities(token).stream()
+                .filter(o -> "WAITING".equals(o.getStatus())
+                        || (justAppliedProjectId != null
+                            && o.getProject() != null
+                            && justAppliedProjectId.equals(o.getProject().getId())))
+                .collect(Collectors.toList());
         List<SkillDTO> allSkills = professionalService.getAllSkills(token);
 
         boolean showProfileWarning = false;
         boolean isAvailable = true;
+        List<String> mySkills = List.of();
         try {
             ProfessionalProfileDTO profile = professionalService.getProfile(token);
             showProfileWarning = missingScoreRelevantFields(profile);
             isAvailable = profile.getAvailable() == null || profile.getAvailable();
+            mySkills = profile.getSkills() != null ? profile.getSkills() : List.of();
         } catch (Exception e) {
             // Se o perfil não puder ser carregado, não bloqueia a página nem exibe o aviso.
         }
@@ -592,6 +647,7 @@ public class ProfessionalController {
         model.addAttribute("allSkills", allSkills);
         model.addAttribute("showProfileWarning", showProfileWarning);
         model.addAttribute("isAvailable", isAvailable);
+        model.addAttribute("mySkills", mySkills);
         model.addAttribute("activePage", "opportunities");
         return "pro/pro-opportunities";
     }
@@ -623,17 +679,22 @@ public class ProfessionalController {
     @PostMapping("/opportunities/{projectId}/interest")
     public String sendInterest(
             @PathVariable Long projectId,
+            @RequestParam(required = false) String redirectTo,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
         String token = (String) session.getAttribute("token");
         try {
             professionalService.sendInterest(token, projectId);
             redirectAttributes.addFlashAttribute("successMsg", "Interesse enviado com sucesso!");
+            redirectAttributes.addFlashAttribute("justAppliedProjectId", projectId);
         } catch (NexusApiException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "Erro ao enviar interesse: " + e.getMessage());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMsg",
                     "Não foi possível conectar ao servidor. Tente novamente em instantes.");
+        }
+        if ("list".equals(redirectTo)) {
+            return "redirect:/pro/opportunities";
         }
         return "redirect:/public/opportunity/" + projectId;
     }
