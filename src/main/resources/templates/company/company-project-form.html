@@ -36,6 +36,28 @@
           : 'Ao criar, o ranking de profissionais compatíveis será gerado automaticamente.'">—</span>
       </div>
 
+      <div class="ai-extract-panel" th:if="${!editMode}">
+        <label class="nexus-label mb-2" for="aiRawText">
+          <i class="ti ti-sparkles"></i> Preencher com IA (opcional)
+        </label>
+        <textarea class="nexus-input nexus-textarea" id="aiRawText" style="min-height:90px"
+                  placeholder="Cole aqui a descrição da vaga/projeto como você já tem escrita (ex: um texto informal, um post de LinkedIn, um briefing) — a IA tenta pré-preencher os campos abaixo para você revisar."></textarea>
+        <div class="d-flex align-items-center justify-content-between mt-2">
+          <div style="color:#94a3b8;font-size:0.72rem;max-width:520px">
+            Nada é publicado automaticamente. Os campos preenchidos pela IA ficam marcados
+            <span class="ai-suggested-tag"><i class="ti ti-sparkles"></i>sugestão</span> —
+            revise e edite livremente antes de publicar.
+          </div>
+          <button type="button" class="nexus-btn nexus-btn-primary nexus-btn-sm" id="aiExtractBtn"
+                  onclick="aiExtractFromText()">
+            <i class="ti ti-sparkles"></i> Preencher com IA
+          </button>
+        </div>
+        <div id="aiExtractError" class="nexus-alert nexus-alert-danger mt-2" style="display:none;font-size:0.8rem"></div>
+        <div id="aiExtractWarning" class="nexus-alert nexus-alert-warning mt-2" style="display:none;font-size:0.8rem"></div>
+        <div id="aiUnmatchedSkills" class="ai-unmatched-skills" style="display:none"></div>
+      </div>
+
       <div class="nexus-card p-4">
         <form th:action="${editMode
                 ? '/company/projects/' + project.id + '/edit'
@@ -118,7 +140,7 @@
 
             <div class="col-sm-6">
               <label class="nexus-label">Nível de experiência</label>
-              <select class="nexus-select" name="experienceLevel">
+              <select class="nexus-select" name="experienceLevel" id="projExperienceLevel">
                 <option value="">Não especificar</option>
                 <option value="INTERNSHIP"
                         th:selected="${project?.experienceLevel == 'INTERNSHIP'}">Estágio</option>
@@ -517,6 +539,157 @@ initSkillSelect({
     revalidate();
   }
 });
+
+// ---- Autopreenchimento por IA ----
+
+function aiExtractFromText() {
+  var textEl = document.getElementById('aiRawText');
+  var btn = document.getElementById('aiExtractBtn');
+  var errorBox = document.getElementById('aiExtractError');
+  var warningBox = document.getElementById('aiExtractWarning');
+  var rawText = (textEl.value || '').trim();
+
+  errorBox.style.display = 'none';
+  warningBox.style.display = 'none';
+
+  if (rawText.length < 20) {
+    errorBox.textContent = 'Cole um texto mais completo (pelo menos 20 caracteres) para a IA analisar.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  var originalLabel = btn.innerHTML;
+  btn.innerHTML = '<i class="ti ti-loader-2"></i> Analisando...';
+
+  fetch('/app-api/projects/ai-extract', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rawText: rawText })
+  })
+    .then(function (r) {
+      return r.json().then(function (body) { return { ok: r.ok, body: body }; })
+        .catch(function () { return { ok: r.ok, body: null }; });
+    })
+    .then(function (result) {
+      btn.disabled = false;
+      btn.innerHTML = originalLabel;
+
+      if (!result.ok) {
+        errorBox.textContent = (result.body && result.body.message)
+          || 'Não foi possível processar o texto agora. Preencha manualmente ou tente novamente.';
+        errorBox.style.display = 'block';
+        return;
+      }
+      applyAiSuggestion(result.body || {});
+    })
+    .catch(function () {
+      btn.disabled = false;
+      btn.innerHTML = originalLabel;
+      errorBox.textContent = 'Não foi possível conectar ao servidor. Tente novamente em instantes.';
+      errorBox.style.display = 'block';
+    });
+}
+
+function applyAiSuggestion(resp) {
+  var s = resp.suggestion || {};
+  var low = resp.lowConfidenceFields || [];
+  var warningBox = document.getElementById('aiExtractWarning');
+
+  clearAiMarks();
+
+  if (s.opportunityType === 'PROJECT' || s.opportunityType === 'JOB') {
+    setOpportunityType(s.opportunityType);
+  } else {
+    warningBox.textContent = 'Não identificamos com segurança se é Projeto ou Vaga de emprego — selecione manualmente abaixo antes de continuar preenchendo.';
+    warningBox.style.display = 'block';
+  }
+
+  setAiTextField('projTitle', s.title, isLow(low, 'title'));
+  setAiTextField('projDesc', s.description, isLow(low, 'description'));
+  setAiSelectField('projType', s.type, isLow(low, 'type'));
+  setAiSelectField('projWorkMode', s.workMode, isLow(low, 'workMode'));
+  setAiSelectField('projExperienceLevel', s.experienceLevel, isLow(low, 'experienceLevel'));
+  setAiTextField('projMaxPositions', s.maxPositions, isLow(low, 'maxPositions'));
+  setAiTextField('projCep', s.cep, isLow(low, 'cep'));
+
+  if (s.opportunityType === 'PROJECT') {
+    setAiTextField('projMinBudget', s.minimumBudget, isLow(low, 'minimumBudget'));
+    setAiTextField('projMaxBudget', s.maximumBudget, isLow(low, 'maximumBudget'));
+    setAiTextField('projDeadline', s.deadline, isLow(low, 'deadline'));
+  } else if (s.opportunityType === 'JOB') {
+    setAiSelectField('projContractType', s.contractType, isLow(low, 'contractType'));
+    setAiTextField('projWorkload', s.workloadHoursPerWeek, isLow(low, 'workloadHoursPerWeek'));
+    setAiTextField('projSalaryMin', s.monthlySalaryMin, isLow(low, 'monthlySalaryMin'));
+    setAiTextField('projSalaryMax', s.monthlySalaryMax, isLow(low, 'monthlySalaryMax'));
+    setAiTextField('projStartDate', s.startDate, isLow(low, 'startDate'));
+    if (s.benefits && s.benefits.length) {
+      setAiTextField('projBenefits', s.benefits.join(', '), isLow(low, 'benefits'));
+    }
+  }
+
+  applyAiSkillSuggestions(s.requiredSkills, s.niceToHaveSkills);
+  revalidate();
+}
+
+function isLow(lowList, fieldName) {
+  return Array.isArray(lowList) && lowList.indexOf(fieldName) !== -1;
+}
+
+function setAiTextField(id, value, lowConfidence) {
+  var el = document.getElementById(id);
+  if (!el || value === null || value === undefined || value === '') return;
+  el.value = value;
+  markAiField(el, lowConfidence);
+}
+
+function setAiSelectField(id, value, lowConfidence) {
+  var el = document.getElementById(id);
+  if (!el || !value) return;
+  if (el.tomselect) {
+    el.tomselect.setValue(value);
+  } else {
+    el.value = value;
+  }
+  markAiField(el, lowConfidence);
+}
+
+function markAiField(el, lowConfidence) {
+  el.classList.add('ai-suggested');
+  if (lowConfidence) el.classList.add('ai-suggested-low');
+  var wrapper = el.closest('.ts-wrapper');
+  if (wrapper) {
+    wrapper.classList.add('ai-suggested-wrap');
+    if (lowConfidence) wrapper.classList.add('ai-suggested-low-wrap');
+  }
+}
+
+function clearAiMarks() {
+  document.querySelectorAll('.ai-suggested, .ai-suggested-wrap').forEach(function (el) {
+    el.classList.remove('ai-suggested', 'ai-suggested-low', 'ai-suggested-wrap', 'ai-suggested-low-wrap');
+  });
+}
+
+function applyAiSkillSuggestions(requiredSkills, niceToHaveSkills) {
+  var unmatched = [];
+
+  (requiredSkills || []).concat(niceToHaveSkills || []).forEach(function (sk) {
+    if (sk.foundInCatalog && sk.matchedSkillId != null) {
+      window.nexusSkillSelectAddSuggested('skill-select-container-opportunity', sk.matchedSkillId, sk.matchedSkillName);
+    } else if (sk.extractedName) {
+      unmatched.push(sk.extractedName);
+    }
+  });
+
+  var box = document.getElementById('aiUnmatchedSkills');
+  if (unmatched.length) {
+    box.innerHTML = '<i class="ti ti-alert-triangle"></i> A IA mencionou estas skills, mas elas não estão no catálogo: '
+      + unmatched.map(function (n) { return '<b>' + n.replace(/</g, '&lt;') + '</b>'; }).join(', ') + '.';
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
+}
 </script>
 </body>
 </html>

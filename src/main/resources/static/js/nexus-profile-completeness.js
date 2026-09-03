@@ -6,7 +6,7 @@ var NexusCompleteness = ( function() {
     { key: 'cep',            label: 'Localização (CEP)',       weight: 10 },
     { key: 'profilePhotoUrl',label: 'Foto de perfil',          weight: 12 },
     { key: 'skills',         label: 'Skills (mín. 3)',         weight: 18, minLength: 3 },
-    { key: 'projects',       label: 'Projetos anteriores (mín. 1)', weight: 15, minLength: 1 },
+    { key: 'projects',       label: 'Oportunidades anteriores (mín. 1)', weight: 15, minLength: 1 },
     { key: 'experienceLevel',label: 'Nível de experiência',   weight: 10 },
     { key: 'salaryFilled',   label: 'Pretensão salarial',      weight: 10 },
     { key: 'preferredTypes', label: 'Tipos de oportunidade',   weight: 7,  minLength: 1 },

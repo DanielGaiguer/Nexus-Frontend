@@ -1634,3 +1634,52 @@ body.nexus-app {
   box-shadow: 0 0 12px rgba(167,139,250,0.55);
 }
 
+/* Autopreenchimento por IA (company-project-form.html) — marca visualmente cada campo que
+   veio de uma sugestão da IA, pra deixar claro pra empresa que aquilo precisa de revisão antes
+   de publicar. .ai-suggested-wrap cobre o caso de selects upgradados pra TomSelect, cujo
+   controle visível é o .ts-wrapper ao redor do <select> original (que fica oculto). */
+.ai-suggested,
+.ai-suggested-wrap {
+  border-color: #6b6eff !important;
+  box-shadow: 0 0 0 1px rgba(107,110,255,0.35) !important;
+  position: relative;
+}
+
+.ai-suggested-low,
+.ai-suggested-low-wrap {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 1px rgba(245,158,11,0.45) !important;
+}
+
+.ai-suggested-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #a5b4fc;
+  margin-left: 0.5em;
+}
+
+.ai-suggested-tag.low { color: #fde68a; }
+
+.ai-extract-panel {
+  background: rgba(107,110,255,0.07);
+  border: 1px solid rgba(107,110,255,0.22);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ai-unmatched-skills {
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.22);
+  border-radius: 9px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.78rem;
+  color: #fde68a;
+  margin-top: 0.6rem;
+}
+

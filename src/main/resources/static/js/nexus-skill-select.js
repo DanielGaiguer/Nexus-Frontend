@@ -64,6 +64,11 @@
       // Dispara mesmo sem interação do usuário — sem isso, um submit do formulário sem
       // mexer no seletor mandaria a lista de skills vazia e apagaria as já salvas.
       state.onSkillsChange(state.selected.slice());
+
+      // Aplica adições pedidas antes do catálogo terminar de carregar (ex: autopreenchimento
+      // por IA disparado antes do fetch acima resolver) — ver addSuggestedSkill().
+      (state.pendingAdds || []).forEach(function (fn) { fn(); });
+      state.pendingAdds = [];
     }).catch(function () {});
   }
 
@@ -333,5 +338,27 @@
       });
   }
 
+  // Usado pelo autopreenchimento por IA (company-project-form.html) para marcar como
+  // selecionada uma skill que já existe no catálogo (matchedSkillId), sem passar pelo fluxo
+  // de busca manual do usuário. Skills sem correspondência no catálogo NUNCA chegam aqui —
+  // isso é decidido no backend (ProjectAiExtractionService), que nunca cria skill nova.
+  function addSuggestedSkill(containerId, id, name) {
+    var state = instances[containerId];
+    if (!state || id == null) return;
+
+    var apply = function () {
+      var sk = state.allSkills.find(function (s) { return s.id === id; }) || { id: id, name: name, category: null };
+      addSkill(state, sk);
+    };
+
+    if (state.allSkills && state.allSkills.length) {
+      apply();
+    } else {
+      state.pendingAdds = state.pendingAdds || [];
+      state.pendingAdds.push(apply);
+    }
+  }
+
   window.initSkillSelect = initSkillSelect;
+  window.nexusSkillSelectAddSuggested = addSuggestedSkill;
 })();
